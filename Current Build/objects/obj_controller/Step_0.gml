@@ -1,9 +1,31 @@
-/// @description Updates what the current equipment/beam selection is
+/// @description Handles the background music and item screen stuff
 // You can write your code in this editor
 
 // Keyboard Variables
-keyEquipment = keyboard_check_pressed(vk_control);
-keyBeam = keyboard_check_pressed(vk_shift);
+keyEquipment = keyboard_check_pressed(vk_control);	// For swapping equipment (Missiles, Super Missiles, Power Bombs)
+keyBeam = keyboard_check_pressed(vk_shift);			// For swapping the current equipped beam
+
+// Adding to the time that the player has currently played
+if (global.hours < 99){
+	secondTimer--;
+	if (secondTimer <= 0){
+		secondTimer = 60;
+		// Incrementing seconds
+		global.seconds++;
+		if (global.seconds >= 60){
+			// Reset the seconds
+			global.seconds = 0;
+			// Incrementing minutes
+			global.minutes++;
+			if (global.minutes >= 60){
+				// Reset the minutes
+				global.minutes = 0;
+				// Incrementing hours
+				global.hours++;
+			}
+		}
+	}
+}
 
 // Samus kicking the bucket
 if (global.energy == 0 && global.eTanks == 0){
@@ -55,7 +77,7 @@ if (!global.started){
 if (global.itemCollected){
 	obj_samus.canMove = false;
 	global.isPaused = true;
-	if (keyboard_check_pressed(vk_enter) /*&& !audio_is_playing(global.itemTheme)*/){
+	if (keyboard_check_pressed(obj_samus.keyShoot) && !audio_is_playing(global.itemTheme)){
 		obj_samus.canMove = true;
 		global.isPaused = false;
 		global.itemCollected = false;
@@ -88,62 +110,41 @@ else{
 }
 
 // Switching equipment
-if (keyEquipment){
-	if ((global.curEquipmentIndex == 0 && global.maxEquipmentIndex > 0) || global.curEquipmentIndex == 2){
+if (obj_samus.canMove){
+	if (keyEquipment){
+		if ((global.curEquipmentIndex == 0 && global.maxEquipmentIndex > 0) || global.curEquipmentIndex == 2){
+			// Stopping the sound from overlapping
+			if (audio_is_playing(snd_equip_select)) audio_stop_sound(snd_equip_select);
+			audio_play_sound(snd_equip_select, 0, false);
+		}
+		if (global.curEquipmentIndex >= global.maxEquipmentIndex){
+			global.curEquipmentIndex = 0;
+		}
+		else{
+			global.curEquipmentIndex++;
+		}
+	}
+	// Switching Beams
+	if (keyBeam && global.maxBeamIndex > 0){
+		showBeamsTimer = 180;
 		// Stopping the sound from overlapping
-		if (audio_is_playing(snd_equip_select)) audio_stop_sound(snd_equip_select);
-		audio_play_sound(snd_equip_select, 0, false);
-	}
-	if (global.curEquipmentIndex >= global.maxEquipmentIndex){
-		global.curEquipmentIndex = 0;
-	}
-	else{
-		global.curEquipmentIndex++;
-	}
-}
-// Switching Beams
-if (keyBeam && global.maxBeamIndex > 0){
-	showBeamsTimer = 180;
-	// Stopping the sound from overlapping
-	if (audio_is_playing(snd_beam_select)) audio_stop_sound(snd_beam_select);
-	audio_play_sound(snd_beam_select, 0, false);
-	if (global.curBeamIndex >= global.maxBeamIndex){
-		global.curBeamIndex = 0;
-	}
-	else{
-		global.curBeamIndex++;
+		if (audio_is_playing(snd_beam_select)) audio_stop_sound(snd_beam_select);
+		audio_play_sound(snd_beam_select, 0, false);
+		if (global.curBeamIndex >= global.maxBeamIndex){
+			global.curBeamIndex = 0;
+		}
+		else{
+			global.curBeamIndex++;
+		}
 	}
 }
 if (showBeamsTimer > 0){
 	showBeamsTimer--;	
 }
 
-// Adding to the time that the player has currently played
-if (global.hours < 99){
-	secondTimer--;
-	if (secondTimer <= 0){
-		secondTimer = 60;
-		// Incrementing seconds
-		global.seconds++;
-		if (global.seconds >= 60){
-			// Reset the seconds
-			global.seconds = 0;
-			// Incrementing minutes
-			global.minutes++;
-			if (global.minutes >= 60){
-				// Reset the minutes
-				global.minutes = 0;
-				// Incrementing hours
-				global.hours++;
-			}
-		}
-	}
-}
-
 // Setting the camera
-if (view_current == 0){
+if (view_current == 0)
 	camera_apply(view_camera[0]);
-}
 
 // Debug Mode ////////////////////////////////////////////////////////////////////////
 if (keyboard_check_pressed(ord("D"))){
@@ -255,40 +256,8 @@ if (global.debug){
 			// Activating the varia and gravity suit
 			global.variaSuit = true;
 			global.gravitySuit = true;
-			global.damageRes = 0.25;
-			with(obj_samus){
-				// Standing
-				sprStand0 = spr_grav_stand0;
-				sprStand1 = spr_grav_stand1;
-				sprStand1m = spr_grav_stand1m;
-				sprStand2 = spr_grav_stand2;
-				sprStand2m = spr_grav_stand2m;
-
-				// Walking
-				sprWalk0 = spr_grav_walk0;
-				sprWalk1 = spr_grav_walk1;
-				sprWalk1m = spr_grav_walk1m;
-				sprWalk2 = spr_grav_walk2;
-				sprWalk2m = spr_grav_walk2m;
-
-				// Jumping
-				sprJump0 = spr_grav_jump0;
-				sprJump0a = spr_grav_jump0a;
-				sprJump0b = spr_grav_jump0b;
-				sprJump1 = spr_grav_jump1;
-				sprJump1m = spr_grav_jump1m;
-				sprJump2 = spr_grav_jump2;
-				sprJump2m = spr_grav_jump2m;
-				sprJump3 = spr_grav_jump3;
-
-				// Crouching
-				sprCrouch1 = spr_grav_crouch1;
-				sprCrouch1m = spr_grav_crouch1m;
-
-				// Morphball
-				sprMorphball1 = spr_grav_morphball1;
-				sprMorphball2 = spr_grav_morphball2;	
-			}
+			with(obj_samus)
+				scr_set_sprite_gravity();
 		}
 		else{
 			displayTxt = "God Mode Deactivated";
@@ -313,39 +282,8 @@ if (global.debug){
 			global.variaSuit = false;
 			global.gravitySuit = false;
 			global.damageRes = 1;
-			with(obj_samus){
-				// Standing
-				sprStand0 = spr_power_stand0;
-				sprStand1 = spr_power_stand1;
-				sprStand1m = spr_power_stand1m;
-				sprStand2 = spr_power_stand2;
-				sprStand2m = spr_power_stand2m;
-
-				// Walking
-				sprWalk0 = spr_power_walk0;
-				sprWalk1 = spr_power_walk1;
-				sprWalk1m = spr_power_walk1m;
-				sprWalk2 = spr_power_walk2;
-				sprWalk2m = spr_power_walk2m;
-
-				// Jumping
-				sprJump0 = spr_power_jump0;
-				sprJump0a = spr_power_jump0a;
-				sprJump0b = spr_power_jump0b;
-				sprJump1 = spr_power_jump1;
-				sprJump1m = spr_power_jump1m;
-				sprJump2 = spr_power_jump2;
-				sprJump2m = spr_power_jump2m;
-				sprJump3 = spr_power_jump3;
-
-				// Crouching
-				sprCrouch1 = spr_power_crouch1;
-				sprCrouch1m = spr_power_crouch1m;
-
-				// Morphball
-				sprMorphball1 = spr_power_morphball1;
-				sprMorphball2 = spr_power_morphball2;	
-			}
+			with(obj_samus)
+				scr_set_sprite_power();
 			global.curBeamIndex = 0;
 		}
 		displayTimer = displayTimerMax;
