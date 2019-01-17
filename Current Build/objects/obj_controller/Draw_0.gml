@@ -22,7 +22,7 @@ if (global.itemCollected){
 	draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 95, global.itemDescription, c_white, c_black);
 	
 	if (!audio_is_playing(global.itemTheme)){
-		draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 160, "Press [Enter] to continue.", c_white, c_black);
+		draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 160, "Press [Shoot] to continue.", c_white, c_black);
 	}
 	
 	// Reset the horizontal alignment
