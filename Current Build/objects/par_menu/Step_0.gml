@@ -27,12 +27,14 @@ if (selectedOption == -1){
 
 // Menu transitions
 if (menuTransition){
+	prevMenu = object_index;
 	alpha -= 0.1;
 	if (alpha == 0){
 		if (nextMenu != -1){
 			var obj;
 			obj = instance_create_depth(x, y, depth, nextMenu);
 			obj.alpha = 0;
+			obj.prevMenu = prevMenu;
 		}
 		instance_destroy(self);
 	}
@@ -40,5 +42,12 @@ if (menuTransition){
 else{
 	if (alpha < 1){
 		alpha += 0.1;
+	}
+}
+
+if (room = rm_main_menu){
+	// Play the menu theme
+	if (!audio_is_playing(music_main_menu)){
+		audio_play_sound(music_main_menu, 0, false);	
 	}
 }
