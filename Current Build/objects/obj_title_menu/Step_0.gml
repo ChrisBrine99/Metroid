@@ -11,6 +11,7 @@ if (keyPressed){
 	if (alpha == 0){
 		var obj = instance_create_depth(0, 0, depth, obj_main_menu);
 		obj.alpha = 0;
+		obj.prevMenu = obj_title_menu;
 		instance_destroy(self);
 	}	
 }
