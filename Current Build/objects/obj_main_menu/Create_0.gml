@@ -4,7 +4,7 @@
 // Call the parent's create event
 event_inherited();
 
-textPos = 30;
+yOffset = 30;
 textGap = 30;
 
 // Create the menu
@@ -29,6 +29,11 @@ for (var i = 0; i < 3; i++){
 		// Loading in the file's time data
 		hourData[i] = ds_map_find_value(data, "Hours");
 		minuteData[i] = ds_map_find_value(data, "Minutes");
+		// Loading in the file's missile, super missile, power bomb, and beam data
+		beamData[i] = ds_map_find_value(data, "MaxBeamIndex") + 1;
+		missData[i] = ds_map_find_value(data, "NumMissMax");
+		sMissData[i] = ds_map_find_value(data, "NumSMissMax");
+		pBombData[i] = ds_map_find_value(data, "NumPBombsMax");
 	}
 	else{
 		enData[i] = 0;
@@ -36,5 +41,9 @@ for (var i = 0; i < 3; i++){
 		eTankMaxData[i] = 0;
 		hourData[i] = 0;
 		minuteData[i] = 0;
+		beamData[i] = 0;
+		missData[i] = 0;
+		sMissData[i] = 0;
+		pBombData[i] = 0;
 	}
 }
