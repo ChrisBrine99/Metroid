@@ -7,7 +7,11 @@ selectedOption = -1;
 nextMenu = -1;
 menuTransition = false;
 
-textPos = 70;
+textPos = 0;
 textGap = 16;
 xOffset = 0;
 yOffset = 0;
+
+rectCol = c_blue;
+drawBack = true;
+drawHelp = true;
