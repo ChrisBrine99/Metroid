@@ -7,18 +7,19 @@ viewY = global.camHeight * scale;
 window_set_size(viewX, viewY);
 surface_resize(application_surface, viewX, viewY);
 
-if (!instance_exists(obj_fade) && !instance_exists(obj_pause_menu) && global.followPlayer){
-	x += (xTo - x) / 5;
-	y += (yTo - y) / 5;
+if (global.followPlayer){
+	if (!instance_exists(obj_fade) && !instance_exists(obj_pause_menu)){
+		x += (xTo - x) / 5;
+		y += (yTo - y) / 5;
+	}
+	// Setting camera bounds
+	scr_camera_bounds(0, 0, room_width, room_height);
 }
 
 if (curObject != self){
 	xTo = curObject.x;
 	yTo = curObject.y;
 }
-
-// Setting camera bounds
-scr_camera_bounds(0, 0, room_width, room_height);
 
 // Deactivating objects outside of the camera's view
 instance_deactivate_object(obj_star);
