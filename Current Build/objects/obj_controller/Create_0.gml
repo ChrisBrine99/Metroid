@@ -92,10 +92,7 @@ for (var pb = 0; pb < 25; pb++) {global.pBomb[pb] = false;}
 for (var e = 0; e < 12; e++) {global.eTank[e] = false;}
 
 // Variables to track Missile doors, Super Missile doors, and Power Bomb doors
-for (var md = 0; md < 10; md++) {global.mDoor[md] = false;}
-for (var smd = 0; smd < 1; smd++) {global.smDoor[smd] = false;}
-for (var pd = 0; pd < 1; pd++) {global.pDoor[pd] = false;}
-
+for (var sp = 0; sp < 25; sp++) {global.spDoor[sp] = false;}
 // Variable to track if certain events have been triggered or not
 for (var ev = 0; ev < 25; ev++) {global.event[ev] = false;}
 
