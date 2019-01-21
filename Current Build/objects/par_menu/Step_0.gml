@@ -3,20 +3,45 @@
 
 if (selectedOption == -1){
 	// Moving up the menu
-	if (keyboard_check_pressed(vk_up)){
-		audio_play_sound(snd_beam_select, 1, false);
-		curOption--;
-		if (curOption == -1){
-			curOption = menuSize - 1;	
+	if (keyboard_check(vk_up)){
+		if (cooldownTimer <= -1){
+			nextTimer--;
+			if (nextTimer <= 0){
+				nextTimer = nextTimerMax;
+				audio_play_sound(snd_beam_select, 1, false);
+				curOption--;
+				if (curOption == -1){
+					curOption = menuSize - 1;	
+				}
+			}
+			if (cooldownTimer == -1)
+				cooldownTimer = 30;
 		}
 	}
 	// Moving down the menu
-	if (keyboard_check_pressed(vk_down)){
-		audio_play_sound(snd_beam_select, 1, false);
-		curOption++;
-		if (curOption == menuSize){
-			curOption = 0;	
+	if (keyboard_check(vk_down)){
+		if (cooldownTimer <= -1){
+			nextTimer--;
+			if (nextTimer <= 0){
+				nextTimer = nextTimerMax;
+				audio_play_sound(snd_beam_select, 1, false);
+				curOption++;
+				if (curOption == menuSize){
+					curOption = 0;	
+				}
+			}
+			if (cooldownTimer == -1)
+				cooldownTimer = 30;
 		}
+	}
+	if (cooldownTimer > 0){
+		cooldownTimer--;
+		if (cooldownTimer == 2)
+			cooldownTimer = -2;
+	}
+	if (!keyboard_check(vk_up) && !keyboard_check(vk_down)){
+		cooldownTimer = -1;
+		nextTimer = 0;	
 	}
 	// Selecting an option
 	if (keyboard_check_pressed(ord("Z"))){

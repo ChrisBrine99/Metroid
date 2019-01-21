@@ -17,42 +17,14 @@ if (instance_exists(obj_door)){
 	var door = instance_nearest(x, y, obj_door);
 	if (!door.open){
 		if (place_meeting(x + hspd, y + vspd, door)){
-			if (door.type == 0){
+			if (door.type == 0 || (door.type == 5 && setIndex == 1) || (door.type == 6 && setIndex == 2)){
 				audio_play_sound(snd_door, 1, false);
 				door.open = true;
 			}
 			else{
-				switch(setIndex){
-					case 1: // Regular Missile
-						if (door.type == 5){
-							audio_play_sound(snd_door, 1, false);
-							global.mDoor[door.index] = true;
-							door.open = true;
-						}
-						else{
-							if (audio_is_playing(snd_door2)) audio_stop_sound(snd_door2);
-							audio_play_sound(snd_door2, 1, false);
-							canExplode = false;
-						}
-						break;
-					case 2: // Super Missile
-						if (door.type == 5){
-							audio_play_sound(snd_door, 1, false);
-							global.mDoor[door.index] = true;
-							door.open = true;
-						}
-						else if (door.type == 6){
-							audio_play_sound(snd_door, 1, false);
-							global.smDoor[door.index] = true;
-							door.open = true;
-						}
-						else{
-							if (audio_is_playing(snd_door2)) audio_stop_sound(snd_door2);
-							audio_play_sound(snd_door2, 1, false);
-							canExplode = false;
-						}
-						break;
-				}
+				if (audio_is_playing(snd_door2)) audio_stop_sound(snd_door2);
+				audio_play_sound(snd_door2, 1, false);
+				canExplode = false;
 			}
 		}
 	}

@@ -1,1 +1,2 @@
-type = 3;
+type = 6;
+index = 3;

@@ -47,3 +47,5 @@ switch(setIndex){
 		break;
 }
 canExplode = true;
+
+image_angle = direction;

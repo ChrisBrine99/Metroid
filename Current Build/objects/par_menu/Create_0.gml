@@ -4,6 +4,10 @@
 curOption = 0;
 selectedOption = -1;
 
+nextTimer = 0;
+nextTimerMax = 10;
+cooldownTimer = -1;
+
 nextMenu = -1;
 menuTransition = false;
 

@@ -68,4 +68,12 @@ if (file_exists(filename)){
 	for (var e = 0; e < array_length_1d(global.eTank); e++){
 		global.eTank[e] = ds_map_find_value(data, "ETank" + string(e));
 	}
+	
+	// Load in what events have already been triggered and what special doors have been opened
+	for (var sp = 0; sp < array_length_1d(global.spDoor); sp++){
+		global.spDoor[sp] = ds_map_find_value(data, "SpDoors" + string(sp));
+	}
+	for (var ev = 0; ev < array_length_1d(global.event); ev++){
+		global.event[ev] = ds_map_find_value(data, "Event" + string(ev));
+	}
 }

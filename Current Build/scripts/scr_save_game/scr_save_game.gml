@@ -63,6 +63,14 @@ for (var pb = 0; pb < array_length_1d(global.pBomb); pb++){
 for (var e = 0; e < array_length_1d(global.eTank); e++){
 	ds_map_add(data, "ETank" + string(e), global.eTank[e]);
 }
+
+// Saving what events have already been triggered and what special doors have been opened
+for (var sp = 0; sp < array_length_1d(global.spDoor); sp++){
+	ds_map_add(data, "SpDoors" + string(sp), global.spDoor[sp]);	
+}
+for (var ev = 0; ev < array_length_1d(global.event); ev++){
+	ds_map_add(data, "Event" + string(ev), global.event[ev]);	
+}
 			
 // Encrypt the file
 ds_map_secure_save(data, filename);

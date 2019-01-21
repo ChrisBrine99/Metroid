@@ -79,7 +79,6 @@ for (var b = 0; b < 3; b++){
 	}
 }
 
-
 draw_set_font(font_gui_small);
 // Modifying the Menu drawing stuff a little bit
 var color, xOffset;

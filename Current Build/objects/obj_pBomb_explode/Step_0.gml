@@ -10,9 +10,13 @@ scr_shake_camera(5, 5);
 // Door collision
 if (instance_exists(obj_door)){
 	var door = instance_nearest(x, y, obj_door);
-	if (!door.open && (door.type == 0 || door.type == 7)){
-		door.open = true;
-		if (door.type == 7) global.pDoor[door.index] = true;
+	if (!door.open){
+		if (place_meeting(x, y, door)){
+			if (door.type == 0 || door.type == 7){
+				audio_play_sound(snd_door, 1, false);
+				door.open = true;
+			}
+		}
 	}
 }
 

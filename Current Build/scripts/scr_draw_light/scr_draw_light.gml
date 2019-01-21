@@ -28,5 +28,5 @@ gpu_set_blendmode(bm_normal);
 //				if (instance_exists(obj_lighting)){
 //						// Call script here //
 //				}
-// Otherwise, the program will crash when attempting to draw a circle to the surface if the surface hasn't
-// been created. Eg. if obj_lighting hasn't been created yet.
+// Otherwise, the program will crash when attempting to draw a circle to the surface because the surface hasn't
+// been created.

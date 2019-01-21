@@ -15,13 +15,17 @@
         "d6c91f39-3596-425e-850f-2dad2e2a998d",
         "6152b33a-ce12-4376-8388-58a4e0737f7c",
         "fc5ea9df-f41f-4558-9c99-0f9b091e33df",
+        "57a8daba-ddf9-4b19-a898-6d485369bac5",
+        "851eeb7e-d6be-499e-80ef-2d09adc9bbad",
+        "27ab9cc8-c243-4e16-b415-8b2c299f2af4",
         "225fe617-6b29-4e13-80f2-ec2adfa39420",
         "7fbdd68c-ea83-4ac7-bebb-6a3b86744321",
         "ea7e0408-41bd-47e4-85d7-4ffc449734a8",
-        "e6a10484-1af4-48be-bd13-d4602348085d"
+        "e6a10484-1af4-48be-bd13-d4602348085d",
+        "53a51963-4e70-4df9-9a15-3e274b7cb0e4"
     ],
     "filterType": "GMRoom",
-    "folderName": "Test Rooms",
+    "folderName": "Dry Cavern Rooms",
     "isDefaultView": false,
     "localisedFolderName": ""
 }

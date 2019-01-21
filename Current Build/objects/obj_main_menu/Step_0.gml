@@ -2,8 +2,26 @@
 // You can write your code in this editor
 
 // Don't let the menu function whils the sub menu is open
-if (instance_exists(obj_file_menu))
+if (instance_exists(obj_message_box)){
+	if (obj_message_box.answer == true){
+		var filename = "File0" + string(curOption + 1) + ".dat";
+		// Check if the file exists
+		if (file_exists(filename)){
+			file_delete(filename);
+			// Return all the menu display variables to zero
+			enData[curOption] = 0;
+			eTankData[curOption] = 0;
+			eTankMaxData[curOption] = 0;
+			hourData[curOption] = 0;
+			minuteData[curOption] = 0;
+			beamData[curOption] = 0;
+			missData[curOption] = 0;
+			sMissData[curOption] = 0;
+			pBombData[curOption] = 0;
+		}
+	}
 	return;
+}
 
 // Call the parent's step event
 event_inherited();
@@ -39,8 +57,9 @@ if (curOption >= 0 && curOption <= 2){
 		// Check if the file exists
 		if (file_exists(filename)){
 			var obj;
-			obj = instance_create_depth(0, 0, depth - 1, obj_file_menu);
+			obj = instance_create_depth(0, 0, depth - 1, obj_message_box);
 			obj.alpha = 0;
+			obj.strPrompt = "Delete this file?";
 		}
 	}
 }

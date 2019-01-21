@@ -1,2 +1,2 @@
 objToSpawn = obj_zeb;
-typeToSpawn = 0;
+typeToSpawn = 1;
