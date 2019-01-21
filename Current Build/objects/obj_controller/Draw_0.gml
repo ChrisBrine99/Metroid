@@ -247,16 +247,18 @@ if (global.debug){
 	// Drawing Samus's collision mask
 	draw_sprite_ext(obj_samus.mask_index, 0, obj_samus.x, obj_samus.y, obj_samus.image_xscale, obj_samus.image_yscale, 0, c_white, 0.3);
 	// Drawing the background for the debug menu
-	draw_set_alpha(0.3);
+	draw_set_alpha(normAlpha * 0.3);
 	draw_set_color(c_dkgray);
 	draw_rectangle(global.camX + 216, global.camY, global.camX + global.camWidth, global.camY + 110, false);
-	draw_set_alpha(1);
-	var xTo = 0, yTo = 0;
-	if (instance_exists(obj_camera)){
-		xTo = obj_camera.xTo;
-		yTo = obj_camera.yTo;
-	}
-	draw_text_outline(global.camX + 220, global.camY + 2, "-- Debug Menu --\nFPS: " + string(fps) + "\nInstances: " + string(instance_number(all)) + "\nxPos: " + string(obj_samus.x) + "\nyPos: " + string(obj_samus.y) + "\nxVel: " + string(obj_samus.hspd) + "\nyVel: " + string(obj_samus.vspd) + "\nxTo: " + string(xTo) + "\nyTo: " + string(yTo), c_white, c_black);
+	var hr, mn, sc;
+	hr = string(global.hours);
+	mn = string(global.minutes);
+	sc = string(global.seconds);
+	if (global.hours < 10) hr = "0" + hr;
+	if (global.minutes < 10) mn = "0" + mn;
+	if (global.seconds < 10) sc = "0" + sc;
+	draw_set_alpha(normAlpha);
+	draw_text_outline(global.camX + 220, global.camY + 2, "-- Debug Menu --\nTime: " + hr + ":" + mn + ":" + sc + "\nFPS: " + string(fps) + "\nInstances: " + string(instance_number(all)) + "\nxPos: " + string(obj_samus.x) + "\nyPos: " + string(obj_samus.y) + "\nxVel: " + string(obj_samus.hspd) + "\nyVel: " + string(obj_samus.vspd), c_white, c_black);
 }
 
 // Make sure the alpha is set back to 1
