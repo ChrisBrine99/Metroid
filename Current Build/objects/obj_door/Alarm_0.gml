@@ -23,21 +23,21 @@ switch(type){
 		break;
 	case 5: // Missile Door (Only opens with Missiles/Super Missiles)
 		sprite_index = spr_missile_door;
-		if (global.mDoor[index] == true){ // Turn the door into a blue door if it has already been opened
+		if (global.spDoor[index] == true){ // Turn the door into a blue door if it has already been opened
 			sprite_index = spr_blue_door;
 			type = 0;
 		}
 		break;
 	case 6: // Super Missile Door (Only opens with Super Missiles)
 		sprite_index = spr_sMissile_door;
-		if (global.smDoor[index] == true){ // Turn the door into a blue door if it has already been opened
+		if (global.spDoor[index] == true){ // Turn the door into a blue door if it has already been opened
 			sprite_index = spr_blue_door;
 			type = 0;
 		}
 		break;
 	case 7: // Power Bomb Door (Only opens with Power Bombs)
 		sprite_index = spr_pBomb_door;
-		if (global.pDoor[index] == true){ // Turn the door into a blue door if it has already been opened
+		if (global.spDoor[index] == true){ // Turn the door into a blue door if it has already been opened
 			sprite_index = spr_blue_door;
 			type = 0;
 		}
