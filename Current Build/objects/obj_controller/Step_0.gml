@@ -77,13 +77,19 @@ if (!global.started){
 if (global.itemCollected){
 	obj_samus.canMove = false;
 	global.isPaused = true;
-	if (keyboard_check_pressed(obj_samus.keyShoot) && !audio_is_playing(global.itemTheme)){
-		obj_samus.canMove = true;
-		global.isPaused = false;
-		global.itemCollected = false;
-		audio_stop_sound(global.itemTheme);
-		audio_resume_all();
-		instance_destroy(instance_nearest(obj_samus.x, obj_samus.y, par_item));
+	if (obj_samus.keyShoot && !audio_is_playing(global.itemTheme))
+		fadeAway = true;
+	if (fadeAway){
+		alpha -= 0.1;
+		if (alpha <= 0){
+			fadeAway = false;
+			obj_samus.canMove = true;
+			global.isPaused = false;
+			global.itemCollected = false;
+			audio_stop_sound(global.itemTheme);
+			audio_resume_all();
+			instance_destroy(instance_nearest(obj_samus.x, obj_samus.y, par_item));
+		}
 	}
 	exit;	
 }

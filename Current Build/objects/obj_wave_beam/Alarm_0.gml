@@ -5,7 +5,7 @@
 itemIndex = 10;
 subIndex = -1;
 itemName = "Wave Beam";
-itemDescription = "An upgraded version of the Power Beam that does more\ndamage and shoots through walls. Opens pink doors.";
+itemDescription = "An upgraded version of the Power Beam that\ndoes more damage and shoots through walls.\nOpens pink doors.";
 
 color = c_purple;
 

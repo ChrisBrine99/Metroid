@@ -6,7 +6,7 @@ if (hitpoints = noone)
 	return;
 
 // Check if the pause menu has been opened
-if (instance_exists(obj_pause_menu) || global.itemCollected || x <= global.camX - buffer || x >= global.camX + global.camWidth + buffer || y <= global.camY - buffer || y >= global.camY + global.camHeight + buffer){
+if (instance_exists(par_menu) || global.itemCollected || x <= global.camX - buffer || x >= global.camX + global.camWidth + buffer || y <= global.camY - buffer || y >= global.camY + global.camHeight + buffer){
 	canMove = false;
 	exit;
 }

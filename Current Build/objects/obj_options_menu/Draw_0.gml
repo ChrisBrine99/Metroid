@@ -18,6 +18,6 @@ switch(curOption){
 		txt = "Return to the previous menu.";
 		break;
 }
-draw_text_outline(global.camX + 290, global.camY + 140, txt, c_white, c_black);
+draw_text_outline(global.camX + 290, global.camY + 145, txt, c_white, c_black);
 draw_set_halign(fa_left);
 draw_set_alpha(1);

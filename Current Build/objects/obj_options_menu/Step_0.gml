@@ -21,7 +21,10 @@ if (selectedOption == curOption){
 			break;
 		case 6: // Return to the previous menu
 			menuTransition = true;
-			nextMenu = obj_main_menu;
+			if (room == rm_main_menu)
+				nextMenu = obj_main_menu;
+			else
+				nextMenu = obj_pause_menu;
 			break;
 	}
 	if (selectedOption != 6)

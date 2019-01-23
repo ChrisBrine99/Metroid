@@ -7,8 +7,8 @@ viewY = global.camHeight * scale;
 window_set_size(viewX, viewY);
 surface_resize(application_surface, viewX, viewY);
 
-if (global.followPlayer){
-	if (!instance_exists(obj_fade) && !instance_exists(obj_pause_menu)){
+if (global.followPlayer && curObject = obj_samus){
+	if (obj_samus.canMove){
 		x += (xTo - x) / 5;
 		y += (yTo - y) / 5;
 	}

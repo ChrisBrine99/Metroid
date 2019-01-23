@@ -4,8 +4,11 @@
 // Call the parent's create event
 event_inherited();
 
-yOffset = 20;
-xOffset = 30;
+yOffset = global.camY + 30;
+xOffset = global.camX + 50;
+
+if (room != rm_main_menu)
+	rectCol = c_black;
 
 // Create the menu
 menuSize = 7;

@@ -8,7 +8,7 @@ event_inherited();
 scr_entity_create(2, 7, 0, 0, 0.25, 270);
 
 // Modify the damage variable
-damage = noone;
+damage = 4;
 
 // Variables specific to the wallfire's bomb projectile
 vspdRecoil = 0;

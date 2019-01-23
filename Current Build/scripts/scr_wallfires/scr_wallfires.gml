@@ -12,12 +12,10 @@ if (!canMove || frozen){
 if (vspdPenalty != 0){
 	if (hitpoints == 15){
 		vspdPenalty = 1;
-		flipCooldownMax = 420;
-		cooldownTimerMax = 60;
+		cooldownTimerMax = 60 + floor(random(20));
 	}
 	else if (hitpoints == 5){
 		vspdPenalty = 0;
-		flipCooldownMax = 240;
 	}
 }
 
@@ -30,11 +28,13 @@ if (cooldownTimer <= 0){
 	var obj;
 	// Firing a normal bullet
 	if (numFired < 3){
+		audio_play_sound(snd_plasmabeam, 1, false);
 		obj = instance_create_depth(x + (10 * sign(image_xscale)), y, depth, obj_wallfire_proj0);
 		obj.image_xscale = image_xscale;
 		numFired++;
 	}
 	else{ // Firing out a bomb
+		audio_play_sound(snd_bomb_deploy, 1, false);
 		obj = instance_create_depth(x + (10 * sign(image_xscale)), y, depth, obj_wallfire_proj1);
 		obj.image_xscale = image_xscale;
 		numFired = 0;	
@@ -54,22 +54,6 @@ if (cooldownTimer <= 45){
 	sprite_index = spr_wallfire_firing;
 	if (numFired >= 3)
 		image_speed = 0;
-}
-
-// Stops the wallfire from flipping rapidly when shot in quick succession
-if (flipCooldown > 0)
-	flipCooldown--;
-// Flipping the wallfre's movement
-if (hit && flipCooldown <= 0){
-	flipCooldown = flipCooldownMax;
-	if (up){
-		up = false;
-		down = true;
-	}
-	else{
-		up = true;
-		down = false;
-	}
 }
 
 // Call the collision script

@@ -5,7 +5,7 @@
 event_inherited();
 
 xOffset = global.camX + (global.camWidth / 2);
-yOffset = global.camY + 75;
+yOffset = global.camY + (global.camHeight / 2);
 textPos = -35;
 textGap = 12;
 

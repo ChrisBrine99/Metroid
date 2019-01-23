@@ -14,11 +14,8 @@ damage = 4;
 // Variables specifically for the wallfires
 hasFired = true;
 cooldownTimerMax = 100;
-cooldownTimer = 300;
+cooldownTimer = 60 + floor(random(120));
 numFired = 0;
-
-flipCooldownMax = 600;
-flipCooldown = 0;
 
 isActive = false;
 offset = 120;

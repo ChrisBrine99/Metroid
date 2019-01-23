@@ -45,6 +45,7 @@ if (selectedOption == -1){
 	}
 	// Selecting an option
 	if (keyboard_check_pressed(ord("Z"))){
+		if (audio_is_playing(snd_pause)) audio_stop_sound(snd_pause);
 		audio_play_sound(snd_pause, 1, false);
 		selectedOption = curOption;
 	}

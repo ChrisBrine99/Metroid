@@ -5,7 +5,7 @@
 itemIndex = 9;
 subIndex = -1;
 itemName = "Ice Beam";
-itemDescription = "This beam allows you to freeze weaker enemies to\nuse them as platforms. Opens white doors.";
+itemDescription = "This beam allows you to freeze weaker enemies\nto use them as platforms.\nOpens white doors.";
 
 color = c_aqua;
 

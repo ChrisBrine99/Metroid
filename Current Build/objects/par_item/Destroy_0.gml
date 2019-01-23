@@ -12,11 +12,10 @@ switch(itemIndex){
 	case 1: // Bombs
 		global.bombs = true;
 		// Locking the door for the boss fight event
-		if (instance_exists(obj_door)){
-			obj_door.alarm[0] = 1;
-			audio_play_sound(snd_bomb_explode, 1, false);
-			obj_door.type = -1;
-		}
+		instance_create_depth(16, 48, 200, obj_door);
+		obj_door.type = -1;
+		obj_door.closing = true;
+		obj_door.image_index = 2;
 		break;
 	case 2: // Spiderball
 		global.spiderBall = true;

@@ -14,6 +14,10 @@ if (instance_exists(obj_lighting)){
 	else{
 		color = choose(c_yellow, c_lime, c_aqua);
 		radius = choose(70, 75, 80, 85);
+		if (instance_exists(par_menu)){
+			color = c_white;
+			radius = 77;
+		}
 	}
 	origin = y;
 	if (crouching && !inMorphball) origin = y + lengthdir_y(6, gravDir);

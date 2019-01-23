@@ -5,7 +5,7 @@
 itemIndex = 14;
 itemName = "Super Missile Tank";
 if (global.sMissilesMax == 0){
-	itemDescription = "Press [Control] twice and then [Fire] to shoot a\nsuper missile. Opens Purple Doors.";
+	itemDescription = "Press [Control] twice and then [Fire] to shoot\na super missile.\nOpens Purple Doors.";
 }
 else{
 	themeToPlay = music_item2;

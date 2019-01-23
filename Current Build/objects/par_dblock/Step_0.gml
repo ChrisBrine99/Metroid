@@ -11,12 +11,14 @@ else{
 	if (regenTimer > 0){
 		// Create the block destruction effect
 		if (regenTimer == maxRegenTimer){
-			instance_create_depth(x,y,depth, obj_dblock_destroy);
+			instance_create_depth(x, y, 100, obj_dblock_destroy);
 		}
 		// Countdown a timer until the block regenerates
 		regenTimer--;
 		if (regenTimer == 0){
-			instance_create_depth(x,y,depth, obj_dblock_regen);
+			var obj;
+			obj = instance_create_depth(x, y, 100, obj_dblock_regen);
+			obj.forFx = false;
 		}
 	}
 	else if (regenTimer == -1){

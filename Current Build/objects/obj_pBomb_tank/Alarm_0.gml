@@ -5,7 +5,7 @@
 itemIndex = 15;
 itemName = "Power Bomb Tank";
 if (global.pBombsMax == 0){
-	itemDescription = "Press [Control] three times and then [Fire] while\nin morphball mode to deploy a power bomb. Opens\nYellow Doors.";
+	itemDescription = "Press [Control] three times and then [Fire] while\nin morphball to deploy a power bomb.\nOpens Yellow Doors.";
 }
 else{
 	themeToPlay = music_item2;

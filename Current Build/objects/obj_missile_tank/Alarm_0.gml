@@ -6,7 +6,7 @@
 itemIndex = 13;
 itemName = "Missile Tank";
 if (global.missilesMax == 0){
-	itemDescription = "Press [Control] and then [Fire] to shoot a missile\nfrom your arm cannon. Opens Red Doors.";
+	itemDescription = "Press [Control] and then [Fire] to shoot a\nmissile from your arm cannon.\nOpens Red Doors.";
 }
 else{
 	themeToPlay = music_item2;

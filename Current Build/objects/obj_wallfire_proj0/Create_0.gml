@@ -8,7 +8,7 @@ event_inherited();
 scr_entity_create(3, 0, 0, 0, 0, 270);
 
 // Modify the damage variable
-damage = 4;
+damage = 8;
 
 // Make the projectile invulnerable
 invulnerable = true;

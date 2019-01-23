@@ -5,7 +5,7 @@
 itemIndex = 0;
 subIndex = -1;
 itemName = "Morphball";
-itemDescription = "Press [Down] while crouching to active morphball\nmode. Gain access to narrow passageways while in\nmorphball mode.";
+itemDescription = "Press [Down] while crouching to active\nmorphball mode. Gain access to narrow\npassageways while in this state.";
 
 color = c_purple;
 

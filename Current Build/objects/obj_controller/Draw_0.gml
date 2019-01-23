@@ -10,8 +10,9 @@ draw_set_alpha(normAlpha);
 // Item Collection Screen /////////////////////////////////////////////////////////////////////////////////
 
 if (global.itemCollected){
+	if (alpha < 1 && !fadeAway) alpha += 0.1;
 	// Drawing the background for the item collection screen
-	draw_rect(0.3, 1, c_black, c_white, false, global.camX, global.camY, global.camWidth, global.camHeight);
+	draw_rect(alpha * 0.3, alpha, c_black, c_white, false, global.camX, global.camY, global.camWidth, global.camHeight);
 	// Center the horizontal alignment
 	draw_set_halign(fa_center);
 	// Drawing the item name
@@ -19,14 +20,17 @@ if (global.itemCollected){
 	draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 60, global.itemName, c_white, c_black);
 	// Drawing the item description
 	draw_set_font(font_gui_small);
+	draw_rect(alpha * 0.3, alpha, c_blue, c_black, true, global.camX, global.camY + 93, global.camWidth, string_height(global.itemDescription) + 2);
+	draw_sprite(spr_scanline, 0, global.camX, global.camY + 92);
+	draw_sprite(spr_scanline, 0, global.camX, global.camY + 92 + string_height(global.itemDescription) + 2);
 	draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 95, global.itemDescription, c_white, c_black);
 	
-	if (!audio_is_playing(global.itemTheme)){
+	if (!audio_is_playing(global.itemTheme))
 		draw_text_outline(global.camX + (global.camWidth / 2), global.camY + 160, "Press [Shoot] to continue.", c_white, c_black);
-	}
 	
-	// Reset the horizontal alignment
+	// Reset the horizontal alignment and alpha
 	draw_set_halign(fa_left);
+	draw_set_alpha(1);
 	return;
 }
 
@@ -39,7 +43,7 @@ if (global.energy == 0 && global.eTanks == 0){
 
 // If the pause menu is open //////////////////////////////////////////////////////////////////////////////
 
-if (instance_exists(obj_pause_menu)){
+if (instance_exists(par_menu)){
 	return;	
 }
 

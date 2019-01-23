@@ -5,7 +5,7 @@
 itemIndex = 4;
 subIndex = -1;
 itemName = "High Jump Boots";
-itemDescription = "Maximum jump height has been permanently increased.";
+itemDescription = "Maximum jump height has been permanently\nincreased.";
 
 color = c_orange;
 

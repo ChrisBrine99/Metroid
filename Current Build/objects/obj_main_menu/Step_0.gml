@@ -56,6 +56,7 @@ if (curOption >= 0 && curOption <= 2){
 		var filename = "File0" + string(curOption + 1) + ".dat";
 		// Check if the file exists
 		if (file_exists(filename)){
+			audio_play_sound(snd_pause, 1, false);
 			var obj;
 			obj = instance_create_depth(0, 0, depth - 1, obj_message_box);
 			obj.alpha = 0;

@@ -1,6 +1,9 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+if (instance_exists(par_menu))
+	return;
+
 // Don't activate the boss fight if the wallfires aren't active yet
 if (!isActive){
 	y += 0.5;

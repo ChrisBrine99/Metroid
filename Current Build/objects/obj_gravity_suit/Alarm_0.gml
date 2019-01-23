@@ -5,7 +5,7 @@
 itemIndex = 8;
 subIndex = -1;
 itemName = "Gravity Suit";
-itemDescription = "A unique modification to the Power Suit that allows\nfor complete and unhindered movement capabilities\nwhile submerged in water.";
+itemDescription = "A unique modification to the Power Suit.\nAllows for complete and unhindered movement\ncapabilities while submerged in water.";
 
 color = c_fuchsia;
 

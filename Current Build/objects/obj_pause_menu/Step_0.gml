@@ -1,6 +1,19 @@
 /// @description Moving through the menu, and handling what happens when an option is selected
 // You can write your code in this editor
 
+// Don't let the menu function whils the sub menu is open
+if (instance_exists(obj_message_box)){
+	menuTransition = false;
+	if (obj_message_box.answer == true){
+		nextMenu = obj_main_menu;
+		scr_create_fade(global.camX, global.camY, c_black, 0, false);
+	}
+	else{
+		selectedOption = -1;
+	}
+	return;
+}
+
 // Call the parent's step event
 event_inherited();
 
@@ -29,12 +42,14 @@ if (!menuTransition){
 				nextMenu = -1;
 				break;
 			case 1: // Going into the options
-				nextMenu = -1;
+				nextMenu = obj_options_menu;
+				menuTransition = true;
 				break;
 			case 2: // Exiting the Game
-				nextMenu = obj_main_menu;
-				menuTransition = false;
-				scr_create_fade(global.camX, global.camY, c_black, 0, false);
+				var obj;
+				obj = instance_create_depth(0, 0, depth - 1, obj_message_box);
+				obj.alpha = 0;
+				obj.strPrompt = "All unsaved progress will be lost.\nReturn to main menu?";
 				break;
 		}	
 	}

@@ -5,7 +5,7 @@
 itemIndex = 11;
 subIndex = -1;
 itemName = "Spazer Beam";
-itemDescription = "An upgraded version of the regular Power Beam that\ndoes a great deal of damage. Also widens the up\nand downward reach of the beam. Opens green doors.";
+itemDescription = "An upgraded version of the regular Power Beam\nthat does a great deal of damage.\nOpens green doors.";
 
 color = c_fuchsia;
 

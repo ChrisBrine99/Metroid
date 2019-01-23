@@ -5,7 +5,7 @@
 itemIndex = 12;
 subIndex = -1;
 itemName = "Plasma Beam";
-itemDescription = "A blast of pure energy that deals a ridiculous amount\nof damage to anything it hits.\nOn top of that, it shoots\nthrough anything. Opens dark red doors.";
+itemDescription = "A blast of pure energy that deals a ridiculous\namount of damage to anything it hits.\nOpens dark red doors.";
 
 color = c_lime;
 

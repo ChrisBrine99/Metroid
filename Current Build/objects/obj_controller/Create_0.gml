@@ -99,6 +99,8 @@ for (var ev = 0; ev < 25; ev++) {global.event[ev] = false;}
 // Variables for the item acquired screen
 global.itemName = "";
 global.itemDescription = "";
+alpha = 0;
+fadeAway = false;
 
 hasStarted = false;
 curSong = -1;

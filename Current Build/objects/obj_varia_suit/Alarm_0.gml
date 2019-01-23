@@ -5,7 +5,7 @@
 itemIndex = 7;
 subIndex = -1;
 itemName = "Varia Suit";
-itemDescription = "An advanced version of the Power Suit that\nincreases damage resistance while also giving\ncomplete protection against extreme cold and heat.";
+itemDescription = "An advanced version of the Power Suit.\nIncreases damage resistance while also providing\n protection against extreme temperatures.";
 
 color = c_orange;
 

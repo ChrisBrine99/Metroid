@@ -13,6 +13,7 @@ if (onGround){
 		else if (image_xscale < 0)
 			hspd = -maxHspd;
 		vspd = vspdRecoil;
+		audio_play_sound(snd_bomb_deploy, 1, false);
 	}
 }
 else{

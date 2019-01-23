@@ -5,7 +5,7 @@
 itemIndex = 3;
 subIndex = -1;
 itemName = "Spring Ball";
-itemDescription = "Press [Jump] while in morphball mode to jump.";
+itemDescription = "Press [Jump] while in morphball mode\nto launch into the air.";
 
 color = c_aqua;
 

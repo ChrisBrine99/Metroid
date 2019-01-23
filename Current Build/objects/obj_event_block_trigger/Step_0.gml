@@ -12,8 +12,11 @@ if (!beenTriggered){
 	}
 }
 else{
-	if (spawnTimer >= maxTimer && numSpawned < numToSpawn) 
-		instance_create_depth(startPosX, startPosY, 300, obj_dblock_regen);
+	if (spawnTimer >= maxTimer && numSpawned < numToSpawn){
+		var obj;
+		obj = instance_create_depth(startPosX, startPosY, 300, obj_dblock_regen);
+		obj.forFx = true;
+	}
 	spawnTimer--;
 	if (spawnTimer < 0){
 		if (numSpawned < numToSpawn){

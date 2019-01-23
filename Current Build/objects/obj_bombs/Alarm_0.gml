@@ -5,11 +5,15 @@
 itemIndex = 1;
 subIndex = -1;
 itemName = "Bombs";
-itemDescription = "Press [Fire] while in morphball mode to deploy a\nbomb.";
+itemDescription = "Press [Fire] while in morphball mode to\ndeploy a bomb.";
 
 color = c_aqua;
 
 if (global.bombs){
 	giveReward = false;
 	instance_destroy(self);
+}
+else{
+	with(obj_door)
+		instance_destroy(self);
 }

@@ -2,7 +2,7 @@
 // You can write your code in this editor
 
 // Check if the pause menu has been opened
-if (instance_exists(obj_pause_menu) || global.itemCollected){
+if (instance_exists(par_menu) || global.itemCollected){
 	exit;
 }
 

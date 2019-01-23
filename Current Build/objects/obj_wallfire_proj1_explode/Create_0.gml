@@ -12,3 +12,5 @@ damage = 8;
 
 // Make the projectile invulnerable
 invulnerable = true;
+
+audio_play_sound(snd_bomb_explode, 1, false);
