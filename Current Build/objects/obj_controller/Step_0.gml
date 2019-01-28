@@ -103,7 +103,7 @@ if (curSong != -1 && hasStarted){
 }
 
 // Opening the Pause Menu
-if (instance_exists(obj_pause_menu)){
+if (instance_exists(par_menu)){
 	exit;
 }	
 else{

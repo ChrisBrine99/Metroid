@@ -31,9 +31,10 @@ for (var i = 0; i < 3; i++){
 		minuteData[i] = ds_map_find_value(data, "Minutes");
 		// Loading in the file's missile, super missile, power bomb, and beam data
 		beamData[i] = ds_map_find_value(data, "MaxBeamIndex") + 1;
-		missData[i] = ds_map_find_value(data, "NumMissMax");
-		sMissData[i] = ds_map_find_value(data, "NumSMissMax");
-		pBombData[i] = ds_map_find_value(data, "NumPBombsMax");
+		equipData[i] = ds_map_find_value(data, "MaxEquipIndex");
+		missData[i] = ds_map_find_value(data, "NumMiss");
+		sMissData[i] = ds_map_find_value(data, "NumSMiss");
+		pBombData[i] = ds_map_find_value(data, "NumPBombs");
 	}
 	else{
 		enData[i] = 0;
@@ -42,6 +43,7 @@ for (var i = 0; i < 3; i++){
 		hourData[i] = 0;
 		minuteData[i] = 0;
 		beamData[i] = 0;
+		equipData[i] = 0;
 		missData[i] = 0;
 		sMissData[i] = 0;
 		pBombData[i] = 0;

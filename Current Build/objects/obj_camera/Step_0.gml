@@ -6,6 +6,7 @@ viewX = global.camWidth * scale;
 viewY = global.camHeight * scale;
 window_set_size(viewX, viewY);
 surface_resize(application_surface, viewX, viewY);
+window_center();
 
 if (global.followPlayer && curObject = obj_samus){
 	if (obj_samus.canMove){

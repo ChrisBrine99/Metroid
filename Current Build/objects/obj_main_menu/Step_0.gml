@@ -15,6 +15,7 @@ if (instance_exists(obj_message_box)){
 			hourData[curOption] = 0;
 			minuteData[curOption] = 0;
 			beamData[curOption] = 0;
+			equipData[curOption] = 0;
 			missData[curOption] = 0;
 			sMissData[curOption] = 0;
 			pBombData[curOption] = 0;

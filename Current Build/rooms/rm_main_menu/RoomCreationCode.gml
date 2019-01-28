@@ -6,7 +6,15 @@ global.camHeight = 172;
 global.camX = x - (global.camWidth / 2);
 global.camY = y - (global.camHeight / 2);
 
-instance_create_depth(320 / 2, 172 / 2, 0, obj_camera);
+// Load in the player's options
+if (file_exists("options"))
+	scr_load_options("options");
+else // Set the options to their default
+	scr_default_options();
+
+// Create the camera
+instance_create_depth(global.camWidth / 2, global.camHeight / 2, 0, obj_camera);
+// Create the title screen
 instance_create_depth(0, 0, 1, obj_title_menu);
 
 //global.curSong = music_area1;

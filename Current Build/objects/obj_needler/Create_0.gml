@@ -5,7 +5,7 @@
 event_inherited();
 
 // Modify the movement variables a little
-scr_entity_create(0, 2.5, 0, 0, 0.25, 270);
+scr_entity_create(0, 7, 0, 0, 0.25, 270);
 
 if (object_get_name(object_index) == "obj_needler"){
 	// Set the speed and image speed
@@ -13,6 +13,7 @@ if (object_get_name(object_index) == "obj_needler"){
 	imgSpd = 1;
 	spr = spr_needler0;
 }
+turnAngle = 90;
 
 // Modify the hp and damage variables
 hitpoints = 18;		// How much damage the entity can take
