@@ -1,6 +1,9 @@
 /// @description Handling Saving
 // You can write your code in this editor
 
+// Keyboard Variable
+keySave = keyboard_check_pressed(global.key[9]); // Button to save the game
+
 // Check if the player is above the platform
 if (place_meeting(x, y - 1, obj_samus)){
 	if (!isSaving && global.started){
@@ -21,7 +24,7 @@ else{
 	
 if (canSave){
 	if (!isSaving){ // Pressing enter to save the game
-		if (keyboard_check_pressed(vk_enter) && !hasSaved){
+		if (keySave && !hasSaved){
 			obj_samus.x = self.x + (sprite_width / 2);
 			isSaving = true;
 			obj_controller.displayTxt = "Saving...";

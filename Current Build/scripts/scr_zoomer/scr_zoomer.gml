@@ -27,7 +27,7 @@ if (onGround){
 		}
 	}
 	else{
-		turnAngle = 0;
+		turnAngle = 45;
 		direction = 0;
 		onGround = false;
 	}

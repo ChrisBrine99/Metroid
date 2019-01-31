@@ -28,7 +28,8 @@ if (selectedOption == curOption){
 			selectedOption = -1;
 			break;
 		case 4: // Opening the keybinds menu 
-			selectedOption = -1;
+			menuTransition = true;
+			nextMenu = obj_controls_menu;
 			break;
 		case 5: // Resetting options to their defaults
 			scr_default_options();
@@ -47,6 +48,6 @@ if (selectedOption == curOption){
 			if (global.option[i] == true) optionStr[i] = "On";
 			else optionStr[i] = "Off";
 		}
-		optionStr[3] = string(global.option[i]) + "x";
+		optionStr[3] = string(global.option[i]) + "x [" + string(global.camWidth * global.option[i]) + " x " + string(global.camHeight * global.option[i]) + "]";
 	}
 }

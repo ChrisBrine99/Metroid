@@ -18,4 +18,5 @@ yOffset = 0;
 
 rectCol = c_blue;
 drawBack = true;
+backAlpha = 0.15;
 drawHelp = true;

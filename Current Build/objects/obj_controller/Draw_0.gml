@@ -53,19 +53,12 @@ if (instance_exists(par_menu)){
 draw_set_font(font_gui_large);
 var healthCol;
 // Setting the color of the health
-if (global.eTanks == 0 && global.energy < 30){
-	healthCol = make_color_rgb(255 - (99 - global.energy), 255 - ((global.maxEnergy * 2.55) - (global.energy * 2.55)), 255 - ((global.maxEnergy * 2.55) - (global.energy * 2.55)));
-}
-else{
-	healthCol = c_white;
-}
+if (global.eTanks == 0 && global.energy < 30) healthCol = c_maroon;
+else healthCol = c_white;
 // Drawing the amount to the screen
-if (global.energy >= 10){
-	draw_text_outline(global.camX + 2, global.camY + 3, string(global.energy), healthCol, c_black);
-}
-else{
-	draw_text_outline(global.camX + 2, global.camY + 3, "0" + string(global.energy), healthCol, c_black);
-}
+if (global.energy >= 10) draw_text_outline(global.camX + 2, global.camY + 3, string(global.energy), healthCol, c_black);
+else draw_text_outline(global.camX + 2, global.camY + 3, "0" + string(global.energy), healthCol, c_black);
+
 var xOffset, yOffset, index, color;
 xOffset = global.camX + 23;
 yOffset = 0;
@@ -253,7 +246,7 @@ if (global.debug){
 	// Drawing the background for the debug menu
 	draw_set_alpha(normAlpha * 0.3);
 	draw_set_color(c_dkgray);
-	draw_rectangle(global.camX + 216, global.camY, global.camX + global.camWidth, global.camY + 110, false);
+	draw_rectangle(global.camX + 216, global.camY, global.camX + global.camWidth, global.camY + 120, false);
 	var hr, mn, sc;
 	hr = string(global.hours);
 	mn = string(global.minutes);
@@ -262,7 +255,7 @@ if (global.debug){
 	if (global.minutes < 10) mn = "0" + mn;
 	if (global.seconds < 10) sc = "0" + sc;
 	draw_set_alpha(normAlpha);
-	draw_text_outline(global.camX + 220, global.camY + 2, "-- Debug Menu --\nTime: " + hr + ":" + mn + ":" + sc + "\nFPS: " + string(fps) + "\nInstances: " + string(instance_number(all)) + "\nxPos: " + string(obj_samus.x) + "\nyPos: " + string(obj_samus.y) + "\nxVel: " + string(obj_samus.hspd) + "\nyVel: " + string(obj_samus.vspd), c_white, c_black);
+	draw_text_outline(global.camX + 220, global.camY + 2, "-- Debug Menu --\nTime: " + hr + ":" + mn + ":" + sc + "\nFPS: " + string(fps) + "\nInstances: " + string(instance_number(all)) + "\nxPos: " + string(obj_samus.x) + "\nyPos: " + string(obj_samus.y) + "\nxVel: " + string(obj_samus.hspd) + "\nyVel: " + string(obj_samus.vspd) + "\ncamX: " + string(global.camX) + "\ncamY: " + string(global.camY), c_white, c_black);
 }
 
 // Make sure the alpha is set back to 1

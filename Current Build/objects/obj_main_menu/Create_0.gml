@@ -4,6 +4,8 @@
 // Call the parent's create event
 event_inherited();
 
+prevMenu = obj_title_menu;
+
 yOffset = 30;
 textGap = 30;
 

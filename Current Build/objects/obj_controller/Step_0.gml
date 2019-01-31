@@ -2,8 +2,9 @@
 // You can write your code in this editor
 
 // Keyboard Variables
-keyEquipment = keyboard_check_pressed(vk_control);	// For swapping equipment (Missiles, Super Missiles, Power Bombs)
-keyBeam = keyboard_check_pressed(vk_shift);			// For swapping the current equipped beam
+keyEquipment = keyboard_check_pressed(global.key[6]);	// For swapping equipment (Missiles, Super Missiles, Power Bombs)
+keyBeam = keyboard_check_pressed(global.key[7]);		// For swapping the current equipped beam
+keyPause = keyboard_check_pressed(global.key[8]);		// For pausing/unpausing the game
 
 // Adding to the time that the player has currently played
 if (global.hours < 99){
@@ -60,7 +61,7 @@ if (!global.started){
 		}
 	}
 	if (!audio_is_playing(music_intro) && !instance_exists(obj_fade)){
-		if (keyboard_check_pressed(vk_right) || keyboard_check_pressed(vk_left)){
+		if (keyboard_check_pressed(global.key[0]) || keyboard_check_pressed(global.key[1])){
 			// Playing the current room's song
 			alarm[0] = 1;
 			global.started = true;
@@ -107,7 +108,7 @@ if (instance_exists(par_menu)){
 	exit;
 }	
 else{
-	if (keyboard_check_pressed(vk_escape) && !global.isPaused){
+	if (keyPause && !global.isPaused){
 		audio_pause_all();
 		audio_play_sound(snd_pause, 1, false);
 		var obj = instance_create_depth(global.camX, global.camY, depth, obj_pause_menu);

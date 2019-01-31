@@ -110,15 +110,15 @@ for (var i = 0; i < menuSize; i++){ // This code is disgusting, but it works so.
 	}
 }
 
-var controlStr, a;
-controlStr = "[Z] Select";
-a = 1;
+var controlStr;
+controlStr = "[" + draw_keyboard_key(global.key[14]) + "] Select";
 if (curOption < 3) // Let the user know they can delete files by pushing D
-	controlStr = "[Z] Select\n[D] Delete File";
-if (prevMenu == obj_title_menu && alpha < 1) 
-	a = alpha;
+	controlStr = "[" + draw_keyboard_key(global.key[14]) + "] Select\n[" + draw_keyboard_key(global.key[16]) + "] Delete File";
 // Draw the controls to the screen
-draw_controls(a, global.camX, global.camY, "[Up/Down] Move Cursor", controlStr);
+if (nextMenu == obj_title_menu) 
+	draw_controls(alpha, global.camX, global.camY, "[" + draw_keyboard_key(global.key[10]) + "/" + draw_keyboard_key(global.key[11]) + "] Move Cursor", controlStr);
+else
+	draw_controls(1, global.camX, global.camY, "[" + draw_keyboard_key(global.key[10]) + "/" + draw_keyboard_key(global.key[11]) + "] Move Cursor", controlStr);
 
 // Reset the alpha value
 draw_set_alpha(1);

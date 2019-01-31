@@ -27,13 +27,16 @@ if (doorFade){
 					}
 					if (instance_exists(obj_vertical_camera_lock)){
 						var vLock = obj_vertical_camera_lock;
-						if ((vLock.yTo > obj_camera.yTo && vLock.upwardLock) || (vLock.yTo < obj_camera.yTo && !vLock.upwardLock)){
+						if ((obj_camera.y < vLock.yTo && vLock.upwardLock) || (obj_camera.y > vLock.yTo && !vLock.upwardLock)){
 							obj_camera.yTo = vLock.yTo;
 							obj_camera.y = vLock.yTo;
 							global.camY = obj_camera.y - (global.camHeight / 2);
 						}
 					}
+					obj_samus.visible = false;
 					xTo = obj_samus.x - global.camX;
+					if (obj_samus.facingRight) xTo--;
+					else xTo++;
 					yTo = obj_samus.y - global.camY;
 				}
 			}

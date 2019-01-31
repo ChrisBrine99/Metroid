@@ -2,13 +2,13 @@
 // You can write your code in this editor
 
 // Keyboard Variables
-keyRight = keyboard_check(vk_right);				// For moving to the right
-keyLeft = keyboard_check(vk_left);					// For moving to the left
-keyUp = keyboard_check(vk_up);						// For aiming up, standing up, and exiting morphball
-keyDown = keyboard_check(vk_down);					// For aiming down, crouching, and entering morphball
-keyShoot = keyboard_check_pressed(ord("Z"));		// For shooting beams and missiles or dropping bombs
-keyJump = keyboard_check_pressed(ord("X"));			// For jumping
-keyStopJump = keyboard_check_released(ord("X"));	// For controlling overall jump height
+keyRight = keyboard_check(global.key[0]);			 // For moving to the right
+keyLeft = keyboard_check(global.key[1]);			 // For moving to the left
+keyUp = keyboard_check(global.key[2]);				 // For aiming up, standing up, and exiting morphball
+keyDown = keyboard_check(global.key[3]);			 // For aiming down, crouching, and entering morphball
+keyShoot = keyboard_check_pressed(global.key[4]);	 // For shooting beams and missiles or dropping bombs
+keyJump = keyboard_check_pressed(global.key[5]);	 // For jumping
+keyStopJump = keyboard_check_released(global.key[5]);// For controlling overall jump height
 
 // If Samus is in her "starting" position or an item has currently been collected
 if (global.isPaused || !canMove){

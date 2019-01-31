@@ -1,6 +1,8 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+draw_rect(backAlpha, 1, rectCol, c_black, true, global.camX, global.camY, global.camWidth, global.camHeight);
+
 // Call the parent's draw event
 event_inherited();
 
@@ -19,6 +21,9 @@ for (var i = 0; i < array_length_1d(optionStr); i++){
 	draw_text_outline(global.camX + 268, yOffset + (textGap * i), string(optionStr[i]), color, c_black);
 }
 
+// Drawing a rectangle behind the information text
+draw_rect(alpha, 1, c_black, c_black, false, global.camX, global.camY + 140, global.camWidth, 14);
+draw_rect(alpha * 0.3, alpha, c_blue,c_black, true, global.camX, global.camY + 141, global.camWidth, 12);
 // Drawing information about what each option does
 draw_set_font(font_gui_xSmall);
 var txt;
@@ -31,7 +36,7 @@ switch(curOption){
 		txt = "Enable/Disable V-sync (Prevents tearing).";
 		break;
 	case 3: // Information about the window scaling option
-		txt = "Alters the non-fullscreen window size.";
+		txt = "The resolution of the game window.";
 		break;
 	case 4: // Changing the keybindings
 		txt = "Change the keyboard bindings.";
