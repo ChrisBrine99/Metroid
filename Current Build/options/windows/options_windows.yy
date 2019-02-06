@@ -4,13 +4,13 @@
     "mvc": "1.0",
     "name": "Windows",
     "option_windows_allow_fullscreen_switching": true,
-    "option_windows_borderless": false,
+    "option_windows_borderless": true,
     "option_windows_company_info": "YoYo Games Ltd",
     "option_windows_copy_exe_to_dest": false,
-    "option_windows_copyright_info": "(c) 2018 CompanyName",
+    "option_windows_copyright_info": "(c) 2018 Nintendo",
     "option_windows_description_info": "A GameMaker Studio 2 Game",
     "option_windows_display_cursor": false,
-    "option_windows_display_name": "Made in GameMaker Studio 2",
+    "option_windows_display_name": "Metroid",
     "option_windows_enable_steam": false,
     "option_windows_executable_name": "${project_name}",
     "option_windows_icon": "${base_options_dir}\\windows\\icons\\icon.ico",
@@ -19,7 +19,7 @@
     "option_windows_interpolate_pixels": false,
     "option_windows_license": "${base_options_dir}\\windows\\installer\\license.txt",
     "option_windows_nsis_file": "${base_options_dir}\\windows\\installer\\nsis_script.nsi",
-    "option_windows_product_info": "Made in GameMaker Studio 2",
+    "option_windows_product_info": "Metroid",
     "option_windows_resize_window": true,
     "option_windows_save_location": 0,
     "option_windows_scale": 0,
@@ -29,10 +29,10 @@
     "option_windows_texture_page": "2048x2048",
     "option_windows_use_splash": false,
     "option_windows_version": {
-        "build": 0,
+        "build": 2,
         "major": 0,
         "minor": 0,
-        "revision": 1
+        "revision": 4
     },
-    "option_windows_vsync": true
+    "option_windows_vsync": false
 }

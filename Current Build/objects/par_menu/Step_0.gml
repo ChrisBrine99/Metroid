@@ -1,9 +1,19 @@
 /// @description Menu Controls
 // You can write your code in this editor
 
-if (selectedOption == -1){
+// Keyboard Variables
+keyUp = keyboard_check_pressed(global.key[10]);		// Scrolling up through a menu
+keyDown = keyboard_check_pressed(global.key[11]);	// Scrolling down through a menu
+keyLeft = keyboard_check_pressed(global.key[13]);	// Shifting to the left in the menu
+keyRight = keyboard_check_pressed(global.key[12]);	// Shifting to the right in the menu
+keyUpHold = keyboard_check(global.key[10]);			// Holding the up key
+keyDownHold = keyboard_check(global.key[11]);		// Holding the down key
+keySelect = keyboard_check_pressed(global.key[14]);	// Selecting a menu's given option
+keyReturn = keyboard_check_pressed(global.key[15]); // Returning to a previous menu (If one exists)
+
+if (selectedOption == -1 && !menuTransition){
 	// Moving up the menu
-	if (keyboard_check(vk_up)){
+	if (keyUpHold){
 		if (cooldownTimer <= -1){
 			nextTimer--;
 			if (nextTimer <= 0){
@@ -19,7 +29,7 @@ if (selectedOption == -1){
 		}
 	}
 	// Moving down the menu
-	if (keyboard_check(vk_down)){
+	if (keyDownHold){
 		if (cooldownTimer <= -1){
 			nextTimer--;
 			if (nextTimer <= 0){
@@ -39,28 +49,33 @@ if (selectedOption == -1){
 		if (cooldownTimer == 2)
 			cooldownTimer = -2;
 	}
-	if (!keyboard_check(vk_up) && !keyboard_check(vk_down)){
+	if (!keyUpHold && !keyDownHold){
 		cooldownTimer = -1;
 		nextTimer = 0;	
 	}
 	// Selecting an option
-	if (keyboard_check_pressed(ord("Z"))){
+	if (keySelect){
 		if (audio_is_playing(snd_pause)) audio_stop_sound(snd_pause);
 		audio_play_sound(snd_pause, 1, false);
 		selectedOption = curOption;
+	}
+	// Going back to a previous menu
+	if (keyReturn){
+		if (audio_is_playing(snd_pause)) audio_stop_sound(snd_pause);
+		audio_play_sound(snd_pause, 1, false);
+		nextMenu = prevMenu;
+		menuTransition = true;
 	}
 }
 
 // Menu transitions
 if (menuTransition){
-	prevMenu = object_index;
 	alpha -= 0.1;
 	if (alpha == 0){
 		if (nextMenu != -1){
 			var obj;
 			obj = instance_create_depth(x, y, depth, nextMenu);
 			obj.alpha = 0;
-			obj.prevMenu = prevMenu;
 		}
 		instance_destroy(self);
 	}

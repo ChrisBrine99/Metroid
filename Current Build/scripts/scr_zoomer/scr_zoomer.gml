@@ -13,20 +13,29 @@ if (!canMove || frozen){
 
 if (onGround){
 	speed = spd;
-	if (place_meeting(x + lengthdir_x(sign(spd), direction + 45 * sign(spd)), y + lengthdir_y(sign(spd), direction + 45 * sign(spd)), par_block)){
-		direction += 45 * sign(spd);
+	if (turnAngle <= 90){
+		if (place_meeting(x + lengthdir_x(sign(spd), direction + 45 * sign(spd)), y + lengthdir_y(sign(spd), direction + 45 * sign(spd)), par_block)){
+			direction += 45 * sign(spd);
+			turnAngle += 45;
+		}
+		else if (!place_meeting(x + lengthdir_x(sign(spd), direction - 45 * sign(spd)), y + lengthdir_y(sign(spd), direction - 45 * sign(spd)), par_block)){
+			direction -= 45 * sign(spd);
+			turnAngle += 45;
+		}
+		else{
+			turnAngle = 0;	
+		}
 	}
-	else if (!place_meeting(x + lengthdir_x(sign(spd), direction - 45 * sign(spd)), y + lengthdir_y(sign(spd), direction - 45 * sign(spd)), par_block)){
-		direction -= 45 * sign(spd);
-	}
-	else if (!place_meeting(x + lengthdir_x(1, direction - 90), y + lengthdir_y(1, direction - 90), par_block)){
+	else{
+		turnAngle = 45;
 		direction = 0;
 		onGround = false;
 	}
 }
 else{
 	speed = 0;
-	vspd += grav;
+	if (vspd < maxVspd)
+		vspd += grav;
 	// The zoomer's gravity
 	if (place_meeting(x + lengthdir_x(1, direction - 90), y + lengthdir_y(1, direction - 90), par_block)){
 		vspd = 0;

@@ -3,7 +3,7 @@
 
 // Draw a blue gradient for the title screen
 if (drawBack)
-	draw_rect(0.15, 1, rectCol, c_black, true, global.camX, global.camY, global.camWidth, global.camHeight);
+	draw_rect(backAlpha, 1, rectCol, c_black, true, global.camX, global.camY, global.camWidth, global.camHeight);
 
 draw_set_alpha(alpha);
 draw_set_font(font_gui_small);
@@ -18,4 +18,4 @@ for (var i = 0; i < menuSize; i++){
 }
 
 if (drawHelp)
-	draw_controls(1, global.camX, global.camY, "[Up/Down] Move Cursor", "[Z] Select");
+	draw_controls(1, global.camX, global.camY, "[" + draw_keyboard_key(global.key[10]) + "/" + draw_keyboard_key(global.key[11]) + "] Move Cursor", "[" + draw_keyboard_key(global.key[14]) + "] Select");

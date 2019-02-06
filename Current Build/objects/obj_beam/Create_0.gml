@@ -39,7 +39,7 @@ switch(setIndex){
 		waveMotion = true;
 		break;
 	case 3: // Spazerbeam
-		damage = 2;
+		damage = 3;
 		sprite_index = spr_spazerbeam;
 		// Stop the sound from overlapping
 		if (audio_is_playing(snd_spazerbeam)) audio_stop_sound(snd_spazerbeam);
@@ -48,7 +48,7 @@ switch(setIndex){
 		increment = 45;
 		break;
 	case 4: // Plasmabeam
-		damage = 12;
+		damage = 16;
 		sprite_index = spr_plasmabeam;
 		// Stop the sound from overlapping
 		if (audio_is_playing(snd_plasmabeam)) audio_stop_sound(snd_plasmabeam);

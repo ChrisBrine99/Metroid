@@ -10,7 +10,7 @@ halfHeight = (string_height(strPrompt) + (textGap * 2) + 4) / 2;
 draw_set_alpha(alpha);
 draw_set_color(c_black);
 draw_rectangle(floor(xOffset - halfWidth - 3), yOffset - halfHeight - 1, floor(xOffset + halfWidth + 3), yOffset + halfHeight + 1, false);
-draw_rect(alpha * 0.15, alpha, c_blue, c_black, true, floor(xOffset - halfWidth - 2), yOffset - halfHeight, floor(halfWidth * 2 + 4), halfHeight * 2 + 2);
+draw_rect(alpha * backAlpha, alpha, c_blue, c_black, true, floor(xOffset - halfWidth - 2), yOffset - halfHeight, floor(halfWidth * 2 + 4), halfHeight * 2 + 2);
 
 event_inherited();
 

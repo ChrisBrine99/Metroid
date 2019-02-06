@@ -1,6 +1,9 @@
 /// @description Moving through the menu, and handling what happens when an option is selected
 // You can write your code in this editor
 
+// Unique Keyboard Variable
+keyDelete = keyboard_check_pressed(global.key[16]);
+
 // Don't let the menu function whils the sub menu is open
 if (instance_exists(obj_message_box)){
 	if (obj_message_box.answer == true){
@@ -15,6 +18,7 @@ if (instance_exists(obj_message_box)){
 			hourData[curOption] = 0;
 			minuteData[curOption] = 0;
 			beamData[curOption] = 0;
+			equipData[curOption] = 0;
 			missData[curOption] = 0;
 			sMissData[curOption] = 0;
 			pBombData[curOption] = 0;
@@ -52,7 +56,7 @@ if (selectedOption == curOption){
 
 // Deleting a file
 if (curOption >= 0 && curOption <= 2){
-	if (keyboard_check_pressed(ord("D"))){
+	if (keyDelete){
 		var filename = "File0" + string(curOption + 1) + ".dat";
 		// Check if the file exists
 		if (file_exists(filename)){

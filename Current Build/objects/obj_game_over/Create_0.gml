@@ -4,6 +4,8 @@
 // Call the parent's create event
 event_inherited();
 
+prevMenu = -1;
+
 // Create the menu
 menuSize = 2;
 scr_create_menu(menuSize);

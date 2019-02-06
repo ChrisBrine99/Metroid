@@ -239,6 +239,14 @@
             }
         },
         {
+            "Key": "0e93fa9a-9367-47fe-8897-9e083897d0af",
+            "Value": {
+                "id": "2c8b0b20-09b0-4fbc-a93c-d9d97d4b8e48",
+                "resourcePath": "scripts\\scr_save_options\\scr_save_options.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "0f4e9cb5-bb8b-4aef-9df2-ffb682d0abb4",
             "Value": {
                 "id": "ff7221dc-a04c-434b-bd3c-949d0d307430",
@@ -732,6 +740,14 @@
                 "id": "f4d49e16-6704-4fbc-8825-c7ad7708127a",
                 "resourcePath": "sprites\\spr_multiviola0\\spr_multiviola0.yy",
                 "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "29cbf05b-f1fe-469f-a523-0478f2fc81da",
+            "Value": {
+                "id": "c72ee564-a32b-4492-ad9d-ef506aacd8a7",
+                "resourcePath": "views\\29cbf05b-f1fe-469f-a523-0478f2fc81da.yy",
+                "resourceType": "GMFolder"
             }
         },
         {
@@ -1831,6 +1847,14 @@
             }
         },
         {
+            "Key": "7030bcaa-3372-4a43-90ff-2f96255b0b9f",
+            "Value": {
+                "id": "29884de8-4ea3-4c44-971c-323c8accdeb4",
+                "resourcePath": "scripts\\draw_keyboard_key\\draw_keyboard_key.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "703481f2-d2b0-44be-9b18-0ab4c8c11a2f",
             "Value": {
                 "id": "d1d8af25-d427-48c0-b78a-5052c4070262",
@@ -2391,6 +2415,14 @@
             }
         },
         {
+            "Key": "9da552cf-4196-45f2-8305-545ee34f4533",
+            "Value": {
+                "id": "32be86d3-1a04-4b40-8e05-ca2a5e00fa2f",
+                "resourcePath": "objects\\obj_controls_menu\\obj_controls_menu.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "9e62af90-cabb-41a7-9ab3-40b2d6a3778f",
             "Value": {
                 "id": "1048d54c-6eea-4aeb-9f60-6d6392b873bb",
@@ -2643,6 +2675,14 @@
             "Value": {
                 "id": "3c24fdf2-0430-4655-82a2-f5f126d66c13",
                 "resourcePath": "scripts\\draw_rect\\draw_rect.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "affe42ee-facf-44cd-aace-c0923f7ae17e",
+            "Value": {
+                "id": "13eb7e08-03b1-48c0-b876-556e2ad9f88c",
+                "resourcePath": "scripts\\scr_default_options\\scr_default_options.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -3287,6 +3327,14 @@
             }
         },
         {
+            "Key": "db5ca29c-15f2-42f1-be03-0e7256f83ebf",
+            "Value": {
+                "id": "27e934c0-441f-4367-a52e-75e979002645",
+                "resourcePath": "scripts\\scr_load_options\\scr_load_options.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "dc275a53-73c2-481b-b308-b3c3151531c2",
             "Value": {
                 "id": "f7f22b0c-b01d-4e03-8904-3e3cd8070b38",
@@ -3889,6 +3937,7 @@
         "48a953b5-1a09-4de6-b91d-cb8905902465",
         "afbfdea6-5ace-499c-8777-8a77a8125d66",
         "f04bc5af-5d75-450d-b13b-b957843ad188",
+        "7030bcaa-3372-4a43-90ff-2f96255b0b9f",
         "21c8353d-92d3-4fa5-b01b-630200f44ca9",
         "4e974d9e-445f-414b-9333-ad083b644b96",
         "272bbe96-1808-4eb6-9268-1f81303a0c1a",
@@ -3898,9 +3947,12 @@
         "34363bc8-c4fa-4bc5-bc13-6e199fbdd750",
         "c9869a9e-de4b-4b24-85ce-8b2ab882a021",
         "271685ef-7d8b-4182-ac34-b371585f13af",
+        "affe42ee-facf-44cd-aace-c0923f7ae17e",
         "fa32f832-303b-4cee-b0c2-3c2b60bfbfe4",
         "8a510dff-7859-448b-86bf-2caa66697db9",
-        "a5919816-a923-4cef-a465-f1ac4610ade0"
+        "a5919816-a923-4cef-a465-f1ac4610ade0",
+        "0e93fa9a-9367-47fe-8897-9e083897d0af",
+        "db5ca29c-15f2-42f1-be03-0e7256f83ebf"
     ],
     "tutorial": ""
 }

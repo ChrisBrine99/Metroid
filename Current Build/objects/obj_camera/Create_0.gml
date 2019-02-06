@@ -2,7 +2,7 @@
 // You can write your code in this editor
 
 // How scaled up the game window will get
-scale = 4;
+scale = global.option[3];
 
 // Creating the actual camera
 camera = camera_create();

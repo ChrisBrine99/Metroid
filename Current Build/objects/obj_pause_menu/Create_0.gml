@@ -7,7 +7,9 @@ event_inherited();
 xOffset = global.camX + 50;
 yOffset = global.camY + 70;
 
-rectCol = c_black;
+backAlpha = 0.3;
+rectCol = c_green;
+drawBack = false;
 
 // Create the menu
 menuSize = 3;
@@ -25,3 +27,5 @@ global.isPaused = true;
 obj_samus.canMove = false;
 
 keyPressed = false;
+prevMenu = -1;
+nextMenu = obj_options_menu;

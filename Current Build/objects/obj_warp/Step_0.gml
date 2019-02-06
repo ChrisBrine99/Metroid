@@ -9,6 +9,7 @@ if (place_meeting(x,y,obj_samus)){
     if (!isWarping){
         isWarping = true;
 		scr_create_fade(global.camX, global.camY, c_black, 1, true);
+		obj_samus.canMove = false;
 		global.isPaused = true;
     }
     if (instance_exists(obj_fade)){

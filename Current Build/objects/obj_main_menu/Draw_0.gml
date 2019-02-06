@@ -55,24 +55,25 @@ for (var b = 0; b < 3; b++){
 		draw_text_outline(213, 47 + (b * 30), "Time 0" + string(hourData[b]) + ":" + str + string(minuteData[b]), col, c_black);			
 	}
 	// Drawing the file's beam data to the screen
-	for (var ii = 0; ii < beamData[b]; ii++){
-		draw_sprite(spr_beams_menu, ii, 176 + (7 * ii), 47 + (b * 30));
+	for (var ii = 0; ii < 5; ii++){
+		if (ii < beamData[b]) draw_sprite(spr_beams_menu, ii, 176 + (7 * ii), 47 + (b * 30));
+		else draw_sprite(spr_beams_menu, 5, 176 + (7 * ii), 47 + (b * 30));
 	}
 	// Drawing the file's missile data to the screen
-	if (missData[b] > 0){
+	if (equipData[b] > 0){
 		draw_sprite(spr_missile_hud, 0, 180, 34 + (b * 30));
 		if (missData[b] < 10) draw_text_outline(192, 36 + (b * 30), "00" + string(missData[b]), col, c_black);
 		else if (missData[b] < 100) draw_text_outline(192, 36 + (b * 30), "0" + string(missData[b]), col, c_black);
 		else draw_text_outline(192, 36 + (b * 30), string(missData[b]), col, c_black);
 	}
 	// Drawing the file's super missile data to the screen
-	if (sMissData[b] > 0){
+	if (equipData[b] > 1){
 		draw_sprite(spr_sMissile_hud, 0, 208, 33 + (b * 30));
 		if (sMissData[b] < 10) draw_text_outline(224, 36 + (b * 30), "0" + string(sMissData[b]), col, c_black);
 		else draw_text_outline(224, 36 + (b * 30), string(sMissData[b]), col, c_black);
 	}
 	// Drawing the file's power bomb data to the screen
-	if (pBombData[b] > 0){
+	if (equipData[b] > 2){
 		draw_sprite(spr_pBomb_hud, 0, 235, 35 + (b * 30));
 		if (pBombData[b] < 10) draw_text_outline(247, 36 + (b * 30), "0" + string(pBombData[b]), col, c_black);
 		else draw_text_outline(247, 36 + (b * 30), string(pBombData[b]), col, c_black);
@@ -109,15 +110,15 @@ for (var i = 0; i < menuSize; i++){ // This code is disgusting, but it works so.
 	}
 }
 
-var controlStr, a;
-controlStr = "[Z] Select";
-a = 1;
+var controlStr;
+controlStr = "[" + draw_keyboard_key(global.key[14]) + "] Select";
 if (curOption < 3) // Let the user know they can delete files by pushing D
-	controlStr = "[Z] Select\n[D] Delete File";
-if (prevMenu == obj_title_menu && alpha < 1) 
-	a = alpha;
+	controlStr = "[" + draw_keyboard_key(global.key[14]) + "] Select\n[" + draw_keyboard_key(global.key[16]) + "] Delete File";
 // Draw the controls to the screen
-draw_controls(a, global.camX, global.camY, "[Up/Down] Move Cursor", controlStr);
+if (nextMenu == obj_title_menu) 
+	draw_controls(alpha, global.camX, global.camY, "[" + draw_keyboard_key(global.key[10]) + "/" + draw_keyboard_key(global.key[11]) + "] Move Cursor", controlStr);
+else
+	draw_controls(1, global.camX, global.camY, "[" + draw_keyboard_key(global.key[10]) + "/" + draw_keyboard_key(global.key[11]) + "] Move Cursor", controlStr);
 
 // Reset the alpha value
 draw_set_alpha(1);
