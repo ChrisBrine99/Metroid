@@ -11,6 +11,8 @@ cooldownTimer = -1;
 nextMenu = -1;
 menuTransition = false;
 
+snd = -1;
+
 textPos = 0;
 textGap = 16;
 xOffset = 0;

@@ -101,6 +101,7 @@ if (curSong != -1 && hasStarted){
 		if (global.offset != 0)
 			audio_sound_set_track_position(song, global.offset);
 	}
+	audio_sound_gain(global.curSong, global.option[3] / 100, 0);
 }
 
 // Opening the Pause Menu
@@ -154,6 +155,7 @@ if (view_current == 0)
 	camera_apply(view_camera[0]);
 
 // Debug Mode ////////////////////////////////////////////////////////////////////////
+
 if (keyboard_check_pressed(ord("D"))){
 	if (!global.debug){
 		global.maxEquipmentIndex = 3;
@@ -170,6 +172,7 @@ if (keyboard_check_pressed(ord("D"))){
 					global.maxEquipmentIndex = 0;
 			}
 		}
+		par_block.visible = false;
 		room_speed = 60;
 		global.debug = false;
 	}
@@ -304,4 +307,5 @@ if (global.debug){
 			room_speed = 60;
 	}
 }
+
 //////////////////////////////////////////////////////////////////////////////////////

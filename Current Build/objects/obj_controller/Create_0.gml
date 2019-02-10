@@ -104,6 +104,7 @@ fadeAway = false;
 
 hasStarted = false;
 curSong = -1;
+snd = -1;
 
 // Play the intro fanfare
 hasPlayed = false;

@@ -10,8 +10,10 @@ global.fileName = filename;
 scr_create_fade(0, 0, c_black, 0, false);
 if (obj_fade.setAlpha == 1){
 	if (!file_exists(filename + ".dat")){ // Starting a new game since no file was found
+		//instance_create_depth(1136, 636, 300, obj_samus);
+		//room_goto(rm_A01);
 		instance_create_depth(480, 108, 300, obj_samus);
-		room_goto(rm_test01);
+		room_goto(rm_dry01);
 	}
 	else{ // Loading up the save file that was found
 		scr_load_game(filename);	

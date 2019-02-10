@@ -237,35 +237,67 @@ if (up || down){
 }
 
 if (keyShoot){ // Shooting Samus's arm cannon/Dropping bombs
-	if (!inMorphball){
+	if (!inMorphball && counterFR <= 0){
 		if (global.curEquipmentIndex < 1 || global.curEquipmentIndex > 2){ // Spawn a beam if Samus doesn't have her missiles selected
-			if (global.curBeamIndex == 3){
-				var b1, b2, b3;
-				b1 = instance_create_depth(x, y, depth, obj_beam);
-				b1.waveMotion = true;
-				b1.topBeam = false;
-				b2 = instance_create_depth(x, y, depth, obj_beam);
-				b2.waveMotion = true;
-				b2.topBeam = true;
-				b3 = instance_create_depth(x, y, depth, obj_beam);
-				b3.waveMotion = false;
-				b3.topBeam = false;
-			}
-			else{
-				instance_create_depth(x,y, depth + 1, obj_beam);
+			var beamIndex, b1, b2, b3;
+			beamIndex = global.curBeamIndex;
+			// Check what beam is being fired and set the fire rate accordingly
+			switch(beamIndex){
+				case 0: // Power Beam
+					instance_create_depth(x,y, depth + 1, obj_beam);
+					counterFR = powerBeamFR;
+					break;
+				case 1: // Ice Beam
+					instance_create_depth(x, y, depth + 1, obj_beam);
+					counterFR = iceBeamFR;
+					break;
+				case 2: // Wave Beam
+					b1 = instance_create_depth(x, y, depth, obj_beam);
+					b1.waveMotion = true;
+					b1.topBeam = false;
+					b2 = instance_create_depth(x, y, depth, obj_beam);
+					b2.waveMotion = true;
+					b2.topBeam = true;
+					counterFR = waveBeamFR;
+					break;
+				case 3: // Spazer Beam
+					b1 = instance_create_depth(x, y, depth, obj_beam);
+					b1.waveMotion = true;
+					b1.topBeam = false;
+					b2 = instance_create_depth(x, y, depth, obj_beam);
+					b2.waveMotion = true;
+					b2.topBeam = true;
+					b3 = instance_create_depth(x, y, depth, obj_beam);
+					b3.waveMotion = false;
+					b3.topBeam = false;
+					counterFR = spazerBeamFR;
+					break;
+				case 4: // Plasma Beam
+					instance_create_depth(x, y, depth + 1, obj_beam);
+					counterFR = plasmaBeamFR;
+					break;
 			}
 		}
 		else{ // Spawn a missile if Samus has her missiles selected
-			if (global.curEquipmentIndex == 1 || global.curEquipmentIndex == 2 && !instance_exists(obj_missile)){
-				instance_create_depth(x,y, depth + 1, obj_missile);	
-			}
+			var equipIndex = global.curEquipmentIndex;
+			switch(equipIndex){
+				case 1: // Regular Missiles	
+					instance_create_depth(x,y, depth + 1, obj_missile);
+					counterFR = iceBeamFR;
+					break;
+				case 2: // Super Missiles
+					instance_create_depth(x,y, depth + 1, obj_missile);
+					counterFR = plasmaBeamFR;
+					break;
+					
+			}	
 		}
 		if (audio_is_playing(snd_samus_screwattack)) audio_stop_sound(snd_samus_screwattack);
 		isShooting = true;
 		cooldownTimer = 20;
 		jumpspin = false;
 	}
-	else{
+	else if (inMorphball){
 		if (global.bombs){
 			if (global.curEquipmentIndex != 3){
 				if (instance_number(obj_bomb) < 3)
@@ -282,7 +314,9 @@ if (keyShoot){ // Shooting Samus's arm cannon/Dropping bombs
 		}
 	}
 }
-
+// The fire rate counter
+if (counterFR > 0)
+	counterFR--;
 if (isShooting){
 	cooldownTimer--;
 	if (cooldownTimer < 0){ // Making Samus not aim her gun anymore

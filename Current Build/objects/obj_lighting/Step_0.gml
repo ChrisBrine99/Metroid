@@ -1,8 +1,9 @@
-/// @description etting up the base surface
+/// @description Setting up the base surface
 // You can write your code in this editor
 
 // Don't try to setup the surface if the surface doesn't exist
 if (!surface_exists(global.lighting)){
+	global.lighting = surface_create(global.camWidth, global.camHeight);
 	return;	
 }
 

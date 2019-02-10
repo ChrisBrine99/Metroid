@@ -11,6 +11,14 @@ inMorphball = false;		// If true, Samus is inside her morphball; changing her co
 isShooting = false;			// Checks if Samus is shooting or not
 cooldownTimer = 20;			// The time it takes for Samus to lower her weapon after firing it
 
+// Fire rates for the various beam weapons
+powerBeamFR = 1;
+iceBeamFR = 6;
+waveBeamFR = 15;
+spazerBeamFR = 20;
+plasmaBeamFR = 30;
+counterFR = 0;		// The counter for the fire rates
+
 // Stops Samus from moving
 canMove = false;
 

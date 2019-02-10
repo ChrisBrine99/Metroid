@@ -14,3 +14,7 @@ if (global.activeLightSystem){
 if (global.started){
 	alarm[0] = 1;
 }
+
+// Setting the volume of all sound effects and music
+audio_sound_gain(global.curSong, global.option[3] / 100, 0);
+scr_set_volume();

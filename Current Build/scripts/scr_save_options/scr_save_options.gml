@@ -10,8 +10,9 @@ ini_open(fileName);
 
 ini_write_real("Options", "Scanlines", global.option[0]);		// Scanlines
 ini_write_real("Options", "V-Sync", global.option[1]);			// V-Sync
-ini_write_real("Options", "Unused", global.option[2]);			// Unused option
-ini_write_real("Options", "WindowScale", global.option[3]);		// Windowed-mode scaling
+ini_write_real("Options", "ResolutionScale", global.option[2]);	// Resolution Scale
+ini_write_real("Options", "MusicVol", global.option[3]);		// Music Volume
+ini_write_real("Options", "SoundVol", global.option[4]);		// Sound Volume
 
 ini_write_real("KeyBindings", "RightKey", global.key[0]);		// Right Key binding
 ini_write_real("KeyBindings", "LeftKey", global.key[1]);		// Left Key binding

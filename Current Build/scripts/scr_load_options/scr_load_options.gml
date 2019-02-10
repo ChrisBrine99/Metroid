@@ -10,8 +10,9 @@ ini_open(fileName);
 
 global.option[0] = ini_read_real("Options", "Scanlines", true);			// Scanlines
 global.option[1] = ini_read_real("Options", "V-Sync", false);			// V-Sync
-global.option[2] = ini_read_real("Options", "Unused", false);			// Unused
-global.option[3] = ini_read_real("Options", "WindowScale", 4);			// Window Scale
+global.option[2] = ini_read_real("Options", "ResolutionScale", 4);		// Resolution Scale
+global.option[3] = ini_read_real("Options", "MusicVol", 100);			// Music Volume
+global.option[4] = ini_read_real("Options", "SoundVol", 100);			// Sound Volume
 
 global.key[0] = ini_read_real("KeyBindings", "RightKey", vk_right);		// Right Key binding
 global.key[1] = ini_read_real("KeyBindings", "LeftKey", vk_left);		// Left Key binding

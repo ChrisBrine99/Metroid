@@ -2,7 +2,8 @@
 // You can write your code in this editor
 
 if (!surface_exists(global.lighting)){
-	global.lighting = surface_create(global.camWidth, global.camHeight);	
+	global.lighting = surface_create(global.camWidth, global.camHeight);
+	return;
 }
 
 gpu_set_blendmode(bm_subtract);

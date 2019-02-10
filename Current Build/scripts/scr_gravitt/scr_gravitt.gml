@@ -57,7 +57,10 @@ scr_enemy_horizontal_movement();
 scr_entity_collision(true, true, false);
 // Flipping directions
 turnTimer--;
-if (hspd == 0 || turnTimer <= 0){
+if (turnTimer <= 0){
+	hspd = 0;
+}
+if (hspd == 0){
 	turnTimer = 240;
 	if (right){
 		right = false;

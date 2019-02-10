@@ -19,6 +19,14 @@ for (var i = 0; i < array_length_1d(optionStr); i++){
 	draw_rectangle(global.camX + 140, yOffset - 2 + (textGap * i), global.camX + 270, yOffset + 11 + (textGap * i), false);
 	draw_set_alpha(alpha);
 	draw_text_outline(global.camX + 268, yOffset + (textGap * i), string(optionStr[i]), color, c_black);
+	if (i >= 3) {
+		draw_rectangle(global.camX + 144, yOffset + 2 + (textGap * i), global.camX + 246, yOffset + 7 + (textGap * i), false);	
+		draw_set_color(c_dkgray);
+		draw_rectangle(global.camX + 145, yOffset + 3 + (textGap * i), global.camX + 245, yOffset + 6 + (textGap * i), false);
+		draw_set_color(c_green);
+		if (global.option[i] > 0) 
+			draw_rectangle(global.camX + 145, yOffset + 3 + (textGap * i), global.camX + 145 + global.option[i], yOffset + 6 + (textGap * i), false);
+	}
 }
 
 // Drawing a rectangle behind the information text
@@ -35,16 +43,22 @@ switch(curOption){
 	case 1: // Information about V-Sync
 		txt = "Enable/Disable V-sync (Prevents tearing).";
 		break;
-	case 3: // Information about the window scaling option
+	case 2: // Information about the window scaling option
 		txt = "The resolution of the game window.";
 		break;
-	case 4: // Changing the keybindings
+	case 3: // Information about the music volume setting
+		txt = "The volume of the background music.";
+		break;
+	case 4: // Information about the sound effect volume setting
+		txt = "The volume of in-game sound effects.";
+		break;
+	case 5: // Changing the keybindings
 		txt = "Change the keyboard bindings.";
 		break;
-	case 5: // Resetting the options
+	case 6: // Resetting the options
 		txt = "Reset options to their default settings.";
 		break;
-	case 6: // Drawing info for the "Back" option
+	case 7: // Drawing info for the "Back" option
 		txt = "Return to the previous menu.";
 		break;
 }

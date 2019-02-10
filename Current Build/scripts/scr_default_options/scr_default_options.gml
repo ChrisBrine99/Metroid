@@ -5,8 +5,9 @@
 
 global.option[0] = true;	// The scanline toggle
 global.option[1] = false;	// The vsync toggle
-global.option[2] = false;	// Unused option
-global.option[3] = 1;		// Windowed mode scale
+global.option[2] = 4;		// Windowed mode scale
+global.option[3] = 75;		// Music Volume
+global.option[4] = 85;		// Sound Effect Volume
 
 // The Default Keybindings ///////////////////////////////////////
 
@@ -33,4 +34,4 @@ global.key[16] = ord("D");	// The delete file button for menus
 
 display_reset(0, global.option[1]);
 if (instance_exists(obj_camera))
-	obj_camera.scale = global.option[3];
+	obj_camera.scale = global.option[2];

@@ -2,8 +2,10 @@
 // You can write your code in this editor
 
 if (instance_exists(obj_item_ball)){
-	hidden = true;	
-	return;
+	if (place_meeting(x, y, obj_item_ball)){
+		hidden = true;
+		return;
+	}
 }
 hidden = false;
 

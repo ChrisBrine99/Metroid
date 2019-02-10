@@ -68,3 +68,12 @@ if (curOption >= 0 && curOption <= 2){
 		}
 	}
 }
+
+// FOR DEBUGGING PURPOSES ONLY /////////////////////////////////////////
+
+if (keyboard_check_pressed(ord("T"))){
+	room_goto(rm_test00);
+	instance_create_depth(96, 300, 350, obj_samus);	
+}
+
+////////////////////////////////////////////////////////////////////////

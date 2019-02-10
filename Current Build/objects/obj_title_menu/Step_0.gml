@@ -22,6 +22,7 @@ else{
 }
 
 // Play the menu theme
-if (!audio_is_playing(music_main_menu)){
-	audio_play_sound(music_main_menu, 0, false);	
+if (!audio_is_playing(global.curSong)){
+	global.curSong = audio_play_sound(music_main_menu, 0, false);
 }
+audio_sound_gain(global.curSong, global.option[3] / 100, 0);
