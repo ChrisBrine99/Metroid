@@ -19,10 +19,14 @@ repeat(round(abs(hspd))){
 		x += sign(hspd);
 		y += lengthdir_y(1, gravDir - 180);
 	} else{
-		// Stopping horizontal movement
-		hspd = 0;
 		// Deleting the object if it is destroyed upon collision
-		if (destroyOnCollision) {instance_destroy(self);}
+		if (destroyOnCollision){
+			var block = instance_place(x + sign(hspd), y, par_block);
+			if (block.isGeneric) {instance_destroy(self);}
+		} else{
+			// Stopping horizontal movement
+			hspd = 0;
+		}
 	}
 }
 // Vertical collision
@@ -30,9 +34,13 @@ repeat(round(abs(vspd))){
 	if (!place_meeting(x, y + sign(vspd), par_block) || (!stopMovement && !destroyOnCollision)){
 		y += sign(vspd);
 	} else{
-		// Stopping vertical movement
-		vspd = 0;
 		// Deleting the object if it is destroyed upon collision
-		if (destroyOnCollision) {instance_destroy(self);}
+		if (destroyOnCollision){
+			var block = instance_place(x, y + sign(vspd), par_block);
+			if (block.isGeneric) {instance_destroy(self);}
+		} else{
+			// Stopping vertical movement
+			vspd = 0;
+		}
 	}
 }

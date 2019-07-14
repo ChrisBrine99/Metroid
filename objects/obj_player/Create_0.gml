@@ -20,10 +20,10 @@ damageRes = 1;					// 1 = 100%, 0.5 = 50%, etc.
 #region Unique Variables for the Player
 
 // Some variables for currently equipped weaponry and what has been unlocked yet
-curWeaponIndex = 6;
+curWeaponIndex = 0;
 curBombIndex = 7;
 for (var i = 0; i < 9; i++){
-	isWeaponUnlocked[i] = true;
+	isWeaponUnlocked[i] = false;
 }
 // Weapon indexes for the various weapons Samus can obtain:
 //		0 = Power Beam

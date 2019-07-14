@@ -12,3 +12,6 @@ damage = 5;
 
 // Set the explosion effect object
 FXobj = obj_missile_collide;
+
+// Set the blocks that the missile can destroy
+blockToDestroy = DYNAMIC_BLOCK.MISSILE;

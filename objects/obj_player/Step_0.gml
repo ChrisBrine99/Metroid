@@ -55,6 +55,8 @@ if (onGround){
 		if (vspdRecoil < 0){
 			vspd = vspdRecoil;
 			hspd = sign(hspd);
+		} else{ // Reset the variable used for bomb jumping
+			jumpspin = false;	
 		}
 	}
 } else{ // Calculating how far the morphball will bounce
@@ -237,8 +239,8 @@ if (keyShoot){
 	// Stop the player from Somersault if they are airbourne
 	jumpspin = false;
 	// Actually spawning in the projectile/bomb
-	if (isWeaponUnlocked[curWeaponIndex]){
-		if (!inMorphball){
+	if (!inMorphball){
+		if (isWeaponUnlocked[curWeaponIndex]){
 			if (fireRateTimer <= 0){
 				var projectile;
 				projectile[0] = noone;
@@ -332,16 +334,22 @@ if (keyShoot){
 					}
 				}
 			}
-		} else{
+		}
+	} else{
+		if (isWeaponUnlocked[curBombIndex]){
 			switch(curBombIndex){
 				case 7: // Deploying a Normal Bomb
-					instance_create_depth(x, y + 14, depth - 1, obj_bomb);
+					if (instance_number(obj_bomb) < 3){ // A maximum number of 3 bombs can be on-screen at once
+						instance_create_depth(x, y + 14, depth - 1, obj_bomb);
+					}
 					break;
 				case 8: // Deploying a Power Bomb
-					instance_create_depth(x, y + 14, depth - 1, obj_pBomb);
+					if (!instance_exists(obj_pBomb)){ // A maximum number of one power bomb can be on-screen at once
+						instance_create_depth(x, y + 14, depth - 1, obj_pBomb);
+					}
 					break;
 			}
-		}
+		} 
 	}
 }
 // Counting doen the fire rate timer
@@ -373,6 +381,26 @@ if (onGround){
 } else{
 	if (!inMorphball){
 		mask_index = spr_jumping_mask;
+	}
+}
+
+// Colliding with the Bomb Explosion to allow it to launch the user while in morphball mode
+if (inMorphball){
+	if (instance_exists(obj_bomb_explode)){
+		var bomb = instance_nearest(x, y, obj_bomb_explode);
+		// Make sure the player isn't below the bomb explosion
+		if (bomb.y > y + 8){
+			if (place_meeting(x, y, bomb)){
+				vspd = -3;
+				if (x < bomb.x - 3){
+					jumpspin = true;
+					hspd = -1;
+				} else if (x >= bomb.x + 3){
+					jumpspin = true;
+					hspd = 1;	
+				}
+			}
+		}
 	}
 }
 

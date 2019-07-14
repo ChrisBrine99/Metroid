@@ -7,3 +7,6 @@ event_inherited();
 // Modify a few variables to fit the power bomb
 explodeTime = 100;
 //setExplodeFX = obj_pBomb_explode;
+
+// Set the blocks that the power bomb can destroy
+blockToDestroy = DYNAMIC_BLOCK.POWER_BOMB;
