@@ -26,7 +26,7 @@ if (inMorphball){
 if (!missilesEquipped){ // Sprites while missiles aren't equipped
 	if (onGround){ // Sprites while grounded
 		if (!crouching){
-			if (hspd >= 1 || hspd <= -1){ // Walking
+			if (hspd > 0.9 || hspd < -0.9){ // Walking
 				if (!isShooting && !up) {sprite_index = sprWalk0;}
 				else if (!up) {sprite_index = sprWalk1;}
 				else {sprite_index = sprWalk2;}
@@ -39,7 +39,9 @@ if (!missilesEquipped){ // Sprites while missiles aren't equipped
 		}
 	} else{ // Sprites while airbourne
 		if (jumpspin && !isShooting){ // Somersaulting
-			sprite_index = sprJump0;
+			if (global.item[ITEM.SCREW_ATTACK]) {sprite_index = sprJump0b;}
+			else if (global.item[ITEM.SPACE_JUMP]) {sprite_index = sprJump0a;}
+			else {sprite_index = sprJump0;}
 		} else{ // Standard jumping
 			if (!up && !down){ // Aiming Forward
 				sprite_index = sprJump1;
@@ -66,7 +68,9 @@ if (!missilesEquipped){ // Sprites while missiles aren't equipped
 		}
 	} else{
 		if (jumpspin && !isShooting){ // Somersaulting
-			sprite_index = sprJump0;
+			if (global.item[ITEM.SCREW_ATTACK]) {sprite_index = sprJump0b;}
+			else if (global.item[ITEM.SPACE_JUMP]) {sprite_index = sprJump0a;}
+			else {sprite_index = sprJump0;}
 		} else{ // Standard jumping
 			if (!up && !down){ // Aiming Forward
 				sprite_index = sprJump1m;

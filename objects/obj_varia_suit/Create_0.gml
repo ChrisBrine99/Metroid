@@ -5,9 +5,9 @@
 index = ITEM.VARIA_SUIT;
 subIndex = 0;
 
+// Call the parent's create event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "Varia Suit";
 itemDescription = "";
-
-// Call the parent's create event
-event_inherited();

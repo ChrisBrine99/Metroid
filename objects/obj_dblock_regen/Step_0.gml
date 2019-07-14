@@ -1,6 +1,12 @@
 /// @description Destroying the Object
 // You can write your code in this editor
 
+if (global.gameState == GAME_STATE.PAUSED){
+	image_speed = 0;
+	return;	
+}
+image_speed = -1;
+
 if (image_index == 0){
 	// Set the block that spawned this effect back to solid again
 	if (spawnerId != noone){

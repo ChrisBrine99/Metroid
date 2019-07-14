@@ -5,9 +5,9 @@
 index = ITEM.HI_JUMP;
 subIndex = 0;
 
+// Call the parent's create event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "High Jump Boots";
 itemDescription = "Your maximum jump height has permanently\nbeen increased.";
-
-// Call the parent's create event
-event_inherited();

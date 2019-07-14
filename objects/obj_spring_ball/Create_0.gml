@@ -5,9 +5,9 @@
 index = ITEM.SPRING_BALL;
 subIndex = 0;
 
+// Call the parent's create event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "Spring Ball";
 itemDescription = "Pressing [Jump] while in morphball mode will\nnow allow you to jump.";
-
-// Call the parent's create event
-event_inherited();

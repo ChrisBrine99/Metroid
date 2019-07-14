@@ -10,7 +10,7 @@ image_speed = imgSpd;
 
 // Countdown Until the Bomb Explodes
 explodeTime--;
-if (explodeTime == 30){
+if (explodeTime == 15){
 	imgSpd = 2;
 } else if (explodeTime <= 0){
 	// Create the set explosion effect

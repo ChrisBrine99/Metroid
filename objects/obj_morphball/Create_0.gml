@@ -5,9 +5,9 @@
 index = ITEM.MORPHBALL;
 subIndex = 0;
 
+// Call the parent'screate event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "Morphball";
 itemDescription = "Pressing [Down] while crouching to enter morphball mode.\nWith this mode you can access narrow passageways.";
-
-// Call the parent's create event
-event_inherited();

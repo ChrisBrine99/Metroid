@@ -5,9 +5,9 @@
 index = ITEM.SPACE_JUMP;
 subIndex = 0;
 
+// Call the parent's create event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "Space Jump";
 itemDescription = "Pressing [Jump] while airbourne will allow you to\njump again, which can be done indefinitely.";
-
-// Call the parent's create event
-event_inherited();

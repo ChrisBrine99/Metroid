@@ -58,7 +58,7 @@ global.camY = obj_camera.y - (global.camHeight / 2);
 
 // Deactivating objects outside of the camera's view
 instance_deactivate_object(obj_culled_object);
-instance_activate_region(x - (global.camWidth / 2) - 16, y - (global.camHeight / 2) - 16, x + (global.camWidth / 2) + 16, y + (global.camHeight / 2) + 16, true);
+instance_activate_region(x - (global.camWidth / 2) - 16, y - (global.camHeight / 2) - 16, x + (global.camWidth / 2) + 32, y + (global.camHeight / 2) + 32, true);
 
 // Resetting the view matrix
 var vm = matrix_build_lookat(x, y, -10, x, y, 0, 0, 1, 0);

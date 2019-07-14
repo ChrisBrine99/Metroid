@@ -5,9 +5,9 @@
 index = ITEM.SCREW_ATTACK;
 subIndex = 0;
 
+// Call the parent's create event
+event_inherited();
+
 // Edit the object's name and description
 itemName = "Screw Attack";
 itemDescription = "Somersaulting will now create a lethal electrical field that\ndamages any enemies that come in contact with it.";
-
-// Call the parent's create event
-event_inherited();

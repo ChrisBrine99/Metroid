@@ -1151,6 +1151,14 @@
             }
         },
         {
+            "Key": "a9ff5bdd-3e4d-4c3c-bf1a-3d649cdf51ef",
+            "Value": {
+                "id": "0fabcf1a-01a8-43cc-9f7b-c99fdd815b37",
+                "resourcePath": "objects\\obj_dblock_screw_attack\\obj_dblock_screw_attack.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "aa143b64-7d1f-4358-92e3-5b4e013fb9d4",
             "Value": {
                 "id": "5e710000-f62c-47cb-841d-acb14ef5974e",

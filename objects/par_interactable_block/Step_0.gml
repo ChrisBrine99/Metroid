@@ -15,7 +15,7 @@ image_speed = 1;
 #region Destroy when collected
 
 if (place_meeting(x, y, obj_player)){
-	global.item[index] = true;
+	global.item[index + subIndex] = true;
 	// TODO -- Create an item screen prompt object to display item information.
 	instance_destroy(self);
 }

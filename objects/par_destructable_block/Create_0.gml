@@ -4,6 +4,8 @@
 // Let collision know that this isn't a generic block
 isGeneric = false;
 
+// The default for the setObject variable
+setObject[0] = noone;
 if (blockType == DYNAMIC_BLOCK.NORMAL){ // Destroyed by everything
 	setObject[0] = par_projectile;
 	setObject[1] = obj_bomb_explode;
@@ -16,8 +18,6 @@ if (blockType == DYNAMIC_BLOCK.NORMAL){ // Destroyed by everything
 } else if (blockType == DYNAMIC_BLOCK.BOMB){ // Destroyed by bombs and power bombs
 	setObject[0] = obj_bomb_explode;
 	//setObject[1] = obj_pBomb_explode;
-} else if (blockType == DYNAMIC_BLOCK.FALL_THROUGH || blockType == DYNAMIC_BLOCK.SCREW_ATTACK){
-	setObject[0] = obj_player;
 }
 entityNum = array_length_1d(setObject);
 

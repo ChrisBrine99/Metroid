@@ -5,6 +5,11 @@
 
 if (alpha > 0){
 	draw_set_alpha(alpha);
+	
+	//with(test_block){
+	//	draw_text(5, 5, "isDestroyed = " + string(isDestroyed) + "\ncheckForCollision = " + string(checkForCollision) + "\ndestroyTimer: " + string(destroyTimer));	
+	//}
+	
 	// Return the alpha back to normal
 	draw_set_alpha(1);
 }

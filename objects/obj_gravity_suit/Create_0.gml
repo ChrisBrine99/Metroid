@@ -7,3 +7,7 @@ subIndex = 0;
 
 // Call the parent's create event
 event_inherited();
+
+// Edit the object's name and description
+itemName = "Gravity Suit";
+itemDescription = "";
