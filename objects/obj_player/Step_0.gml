@@ -3,6 +3,7 @@
 
 #region Keyboard Input
 
+var keyRight, keyLeft, keyJump, keyStopJump, keyUp, keyDown, keyShoot, keyQuickMenu;
 keyRight = keyboard_check(vk_right);				// When true, Samus should move to the right OR will stand up from crouching.
 keyLeft = keyboard_check(vk_left);					// When true, Samus should move to the left OR will stand up from crouching.
 keyJump = keyboard_check_pressed(ord("X"));			// When true, Samus will jump into the air. With the Space Jump, Samus will be able to jump again while airbourne
@@ -465,9 +466,11 @@ scr_entity_collision(true, true, false);
 
 if (ambLight != noone){
 	// Setting the ambient light's size and color as their default values
-	ambLight.xRad = 35;
-	ambLight.yRad = 35;
-	ambLight.lightCol = c_ltgray;
+	with(ambLight){
+		xRad = 35;
+		yRad = 35;
+		lightCol = c_ltgray;
+	}
 	// Altering the position and size of the ambient light
 	if (onGround){
 		if (inMorphball){
@@ -481,9 +484,11 @@ if (ambLight != noone){
 		if (!inMorphball){
 			// Creating a crazy alactrical flashing effect for the screw attack
 			if (jumpspin && global.item[ITEM.SCREW_ATTACK]){
-				ambLight.xRad = choose(75, 80, 85);
-				ambLight.yRad = ambLight.xRad;
-				ambLight.lightCol = choose(c_aqua, c_lime, c_white);
+				with(ambLight){
+					xRad = choose(75, 80, 85);
+					yRad = ambLight.xRad;
+					lightCol = choose(c_aqua, c_lime, c_white);
+				}
 			}
 		}
 	}
