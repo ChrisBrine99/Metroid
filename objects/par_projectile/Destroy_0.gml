@@ -2,5 +2,5 @@
 // You can write your code in this editor
 
 if (destroyFX && FXobj != noone){
-	instance_create_depth(x, y, depth - 100, FXobj);
+	instance_create_depth(x, y, 45, FXobj);
 }

@@ -44,3 +44,8 @@ left = false;			// Lets us know if the object is moving right
 up = false;				// If true, the entity is moving upward
 down = false;			// If true, the entity is moving downward
 canMove = true;			// If false, the entity will stop updating
+
+// Variables for the ambient light that can surround certain entities
+ambLight = noone;		// The unique instance ID for this object's ambient light
+xOffset = 0;			// The offset on the x-axis that the light should be placed at
+yOffset = 0;			// The offset on the y-axis that the light should be placed at

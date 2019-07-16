@@ -19,13 +19,12 @@ damageRes = 1;					// 1 = 100%, 0.5 = 50%, etc.
 
 #region Unique Variables for the Player
 
-// Some variables for currently equipped weaponry and what has been unlocked yet
+// Some variables for currently equipped projectile and what has been unlocked yet
 curWeaponIndex = 0;
-curBombIndex = 7;
 for (var i = 0; i < 9; i++){
 	isWeaponUnlocked[i] = false;
 }
-// Weapon indexes for the various weapons Samus can obtain:
+// Indexes for the various projectile weapons Samus can obtain:
 //		0 = Power Beam
 //		1 = Ice Beam
 //		2 = Wave Beam
@@ -33,15 +32,22 @@ for (var i = 0; i < 9; i++){
 //		4 = Plasma Beam
 //		5 = Missiles
 //		6 = Super Missiles
-//		7 = Bombs
-//		8 = Power Bombs
 
 // The Power Beam should be unlocked by default
 isWeaponUnlocked[0] = true;
 
+// Some variables for currently equipped bomb and what has been unlocked yet
+curBombIndex = 0;
+for (var ii = 0; ii < 2; ii++){
+	isBombUnlocked[i] = false;	
+}
+// Indexes for the various bombs Samus can obtain:
+//		0 = Bombs
+//		1 = Power Bombs
+
 // Samus's current ammo for her Missiles, Super Missiles, and Power Bombs
 numMissiles = 0;
-MaxMissiles = 0;
+maxMissiles = 0;
 numSMissiles = 0;
 maxSMissiles = 0;
 numPBombs = 0;
@@ -76,6 +82,13 @@ standTimer = 8;
 
 // Allows the morphball to bounce
 vspdRecoil = 0;
+
+// Holds the instance ID for the ambient light that is around Samus
+ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
+ambLight.xRad = 35;
+ambLight.yRad = 35;
+ambLight.lightCol = c_ltgray;
+ambLight.persistent = true;
 
 // Set Samus's sprites
 alarm[0] = 1;

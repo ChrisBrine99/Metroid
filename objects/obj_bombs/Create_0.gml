@@ -8,6 +8,14 @@ subIndex = 0;
 // Call the parent's create event
 event_inherited();
 
+// Create the ambient light for the Morphball
+ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
+with(ambLight){
+	xRad = 30;
+	yRad = 30;
+	lightCol = c_aqua;
+}
+
 // Edit the object's name and description
 itemName = "Bombs";
 itemDescription = "Pressing [Fire] will now deploy a bomb; allowing the\nability to damage enemies while in morphball mode.";

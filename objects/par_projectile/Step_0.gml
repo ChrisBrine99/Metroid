@@ -1,7 +1,13 @@
 /// @description Moving the projectile
 // You can write your code in this editor
 
-#region Enabling/Disabling the Step Event
+#region Enabling/Disabling the Step Event/Destroying the Object When Its Off-Screen
+
+// Check if the projectil is outside of the player's view
+if (global.camX - 32 >= x || global.camY - 32 >= y || global.camX + global.camWidth + 32 <= x || global.camY + global.camHeight + 32 <= y){
+	destroyFX = false;
+	instance_destroy(self);
+} 
 
 // Stop the projectile from updating if they cannot move
 if (!canMove){
@@ -48,5 +54,19 @@ image_angle = direction;
 
 // Checking for collisions with walls
 scr_entity_collision(false, destroyOnWallCollide, destroyOnWallCollide);
+
+#endregion
+
+#region Editing the size of the ambient light
+
+if (ambLight != noone){
+	if (left || right){ // Moving left or right
+		ambLight.xRad = sprite_width * 2;
+		ambLight.yRad = sprite_height * 2;
+	} else if (up || down){ // Moving up or down
+		ambLight.xRad = sprite_height * 2;
+		ambLight.yRad = sprite_width * 2;
+	}
+}
 
 #endregion

@@ -21,3 +21,20 @@ if (place_meeting(x, y, obj_player)){
 }
 
 #endregion
+
+#region Dynamically changing the Light size depending on the current image being displayed
+
+if (ambLight != noone){
+	switch(floor(image_index)){
+		case 0: // The "Bright" state
+			ambLight.xRad = 38;
+			ambLight.yRad = 38;
+			break;
+		case 1: // The "Normal" state
+			ambLight.xRad = 26;
+			ambLight.yRad = 26;
+			break;
+	}
+}
+
+#endregion

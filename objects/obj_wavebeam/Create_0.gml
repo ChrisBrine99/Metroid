@@ -16,3 +16,6 @@ movingUp = false;
 
 // Enable the Wave Beam to pass through walls
 destroyOnWallCollide = false;
+
+// Altering the ambient light's color
+ambLight.lightCol = c_fuchsia;

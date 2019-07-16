@@ -9,3 +9,8 @@ setExplodeFX = obj_bomb_explode;
 
 // Set the blocks that the bomb can destroy
 blockToDestroy = DYNAMIC_BLOCK.BOMB;
+
+// Editing the ambient light source's characteristics
+ambLight.xRad = 20;
+ambLight.yRad = 20;
+ambLight.lightCol = c_aqua;

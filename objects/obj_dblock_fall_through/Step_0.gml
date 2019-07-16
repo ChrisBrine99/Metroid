@@ -12,4 +12,4 @@ if (!isDestroyed && checkForCollision){ // Checking for collisions with the play
 }
 
 // Call the parent's step event
-event_inherited();	
+event_inherited();

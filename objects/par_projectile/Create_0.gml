@@ -17,3 +17,8 @@ FXobj = noone;							// The object that will be used for the destroy effect
 // Correctly setting the position of the projectile
 visible = false;
 alarm[0] = 1;
+
+// Creating the ambient light source
+ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
+ambLight.xRad = 0;
+ambLight.yRad = 0;

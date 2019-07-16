@@ -15,6 +15,10 @@ enum ITEM{
 	SPAZER_BEAM = 10,
 	PLASMA_BEAM = 11,
 	CHARGE_BEAM = 12,
+	MISSILES = 25,
+	SUPER_MISSILES = 75,
+	POWER_BOMBS = 100,
+	ENERGY_TANKS = 125,
 };
 
 // The Enumerator to keep track of the game's current state
@@ -42,7 +46,7 @@ enum DYNAMIC_BLOCK{
 instance_create_depth(64, 64, 305, obj_player);
 
 // Some helpful global variables for identical values that are referenced in multiple places
-global.totalItems = 126;		// The total number of items (Ex. Morphball or Bombs) in the game
+global.totalItems = 137;		// The total number of items (Ex. Morphball or Bombs) in the game
 global.totalLockedDoors = 50;	// The total number of locked doors in the game
 
 // Create the controller and camera objects

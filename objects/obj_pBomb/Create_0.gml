@@ -10,3 +10,8 @@ explodeTime = 100;
 
 // Set the blocks that the power bomb can destroy
 blockToDestroy = DYNAMIC_BLOCK.POWER_BOMB;
+
+// Editing the ambient light source's characteristics
+ambLight.xRad = 20;
+ambLight.yRad = 20;
+ambLight.lightCol = c_fuchsia;

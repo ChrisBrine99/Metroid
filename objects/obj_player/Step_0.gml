@@ -6,10 +6,11 @@
 keyRight = keyboard_check(vk_right);				// When true, Samus should move to the right OR will stand up from crouching.
 keyLeft = keyboard_check(vk_left);					// When true, Samus should move to the left OR will stand up from crouching.
 keyJump = keyboard_check_pressed(ord("X"));			// When true, Samus will jump into the air. With the Space Jump, Samus will be able to jump again while airbourne
-keyStopJump = keyboard_check_released(ord("X"));	// When true, Samus' total jump height will be able to be controlled.
+keyStopJump = keyboard_check_released(ord("X"));	// When true, Samus's total jump height will be able to be controlled.
 keyUp = keyboard_check(vk_up);						// When true, Samus will either aim upward, exit morphball, or stand up.
 keyDown = keyboard_check(vk_down);					// When true, Samus will either aim downward, start crouching, or enter morphball.
 keyShoot = keyboard_check_pressed(ord("Z"));		// When true, Samus will fire her currently equipped weapon OR will deploy the currently equipped bomb.
+keyQuickMenu = keyboard_check_pressed(vk_shift);	// Shifts through Samus's quick menu (Where all beams and bombs are shown)
 
 #endregion
 
@@ -277,93 +278,142 @@ if (keyShoot){
 						fireRateTimer = plasmaBeamFR;
 						break;
 					case 5: // Missiles
-						projectile[0] = instance_create_depth(x, y, 310, obj_missile);
-						// Resetting the fireRateTimer variable
-						fireRateTimer = missileFR;
+						if (numMissiles > 0){
+							projectile[0] = instance_create_depth(x, y, 310, obj_missile);
+							// Resetting the fireRateTimer variable
+							fireRateTimer = missileFR;
+							// Remove a missile from Samus's ammo reserves
+							numMissiles--;
+						}
 						break;
 					case 6: // Super Missiles
-						projectile[0] = instance_create_depth(x, y, 310, obj_sMissile);
-						// Resetting the fireRateTimer variable
-						fireRateTimer = sMissileFR;
+						if (numSMissiles > 0){
+							projectile[0] = instance_create_depth(x, y, 310, obj_sMissile);
+							// Resetting the fireRateTimer variable
+							fireRateTimer = sMissileFR;
+							// Remove a missile from Samus's ammo reserves
+							numSMissiles--;
+						}
 						break;
 				}
 				// Setting the offset of the projectile correctly (If one exists)
-				for (var i = 0; i < array_length_1d(projectile); i++){
+				var length, isUp, isDown, isCrouching, curHspd, curVspd, facing, isGrounded, imageXScale;
+				length = array_length_1d(projectile);
+				// Setting all referenced player states as local variables to speed up execution
+				isUp = up;
+				isDown = down;
+				isCrouching = crouching;
+				curHspd = hspd;
+				curVspd = vspd;
+				facing = facingRight;
+				isGrounded = onGround;
+				imageXScale = image_xscale;
+				for (var i = 0; i < length; i++){
 					if (projectile[i] != noone){
-						if (onGround){ // Firing on the Ground
-							if (hspd >= 1  || hspd <= -1){ // Shooting while moving
-								if (!up){ // Aiming Forward
-									projectile[i].offsetX = 20 * sign(image_xscale);
-									projectile[i].offsetY = -7;
-								} else{ // Aiming Upward
-									projectile[i].offsetX = 8 * sign(image_xscale);
-									projectile[i].offsetY = -20;
+						with(projectile[i]){
+							if (isGrounded){ // Firing on the Ground
+								if (curHspd >= 1 || curHspd <= -1){ // Shooting while moving
+									if (!isUp){ // Aiming Forward
+										offsetX = 20 * sign(imageXScale);
+										offsetY = -7;
+									} else{ // Aiming Upward
+										offsetX = 8 * sign(imageXScale);
+										offsetY = -20;
+									}
+								} else{
+									if (!isUp && !isCrouching){ // Aiming Forward
+										offsetX = 10 * sign(imageXScale);
+										offsetY = -3;
+									} else if (isUp){ // Aiming Upward
+										offsetX = 3 * sign(imageXScale);
+										offsetY = -20;
+									} else if (isCrouching){ // Crouching
+										offsetX = 10 * sign(imageXScale);
+										offsetY = 7;
+									}
 								}
+							} else{ // Firing while Airbourne
+								if (!isUp && !isDown){ // Aiming Forward
+									offsetX = (12 + curHspd) * sign(imageXScale);
+									offsetY = -1 + curVspd;
+								} else if (isUp){ // Aiming Upward
+									offsetX = (4 + curHspd) * sign(imageXScale);
+									offsetY = -20 + curVspd;
+								} else if (isDown){ // Aiming Downward
+									offsetX = (5 + curHspd) * sign(imageXScale);
+									offsetY = 14 + curVspd;
+								}
+							}
+							// Setting the direction of the projectile
+							if (!isUp && !isDown){
+								if (facing) {right = true;}
+								else {left = true;}
 							} else{
-								if (!up && !crouching){ // Aiming Forward
-									projectile[i].offsetX = 10 * sign(image_xscale);
-									projectile[i].offsetY = -3;
-								} else if (up){ // Aiming Upward
-									projectile[i].offsetX = 3 * sign(image_xscale);
-									projectile[i].offsetY = -20;
-								} else if (crouching){ // Crouching
-									projectile[i].offsetX = 10 * sign(image_xscale);
-									projectile[i].offsetY = 7;
-								}
+								up = isUp;
+								down = isDown;
 							}
-						} else{ // Firing while Airbourne
-							if (!up && !down){ // Aiming Forward
-								projectile[i].offsetX = (12 + hspd) * sign(image_xscale);
-								projectile[i].offsetY = -1 + vspd;
-							} else if (up){ // Aiming Upward
-								projectile[i].offsetX = (4 + hspd) * sign(image_xscale);
-								projectile[i].offsetY = -20 + vspd;
-							} else if (down){ // Aiming Downward
-								projectile[i].offsetX = (5 + hspd) * sign(image_xscale);
-								projectile[i].offsetY = 14 + vspd;
-							}
-						}
-						// Setting the direction of the projectile
-						if (!up && !down){
-							if (facingRight) {projectile[i].right = true;}
-							else {projectile[i].left = true;}
-						} else{
-							projectile[i].up = up;
-							projectile[i].down = down;
 						}
 					}
 				}
 			}
 		}
 	} else{
-		if (isWeaponUnlocked[curBombIndex]){
+		if (isBombUnlocked[curBombIndex]){
 			switch(curBombIndex){
-				case 7: // Deploying a Normal Bomb
+				case 0: // Deploying a Normal Bomb
 					if (instance_number(obj_bomb) < 3){ // A maximum number of 3 bombs can be on-screen at once
 						instance_create_depth(x, y + 14, depth - 1, obj_bomb);
 					}
 					break;
-				case 8: // Deploying a Power Bomb
-					if (!instance_exists(obj_pBomb)){ // A maximum number of one power bomb can be on-screen at once
-						instance_create_depth(x, y + 14, depth - 1, obj_pBomb);
+				case 1: // Deploying a Power Bomb
+					if (numPBombs > 0){
+						if (!instance_exists(obj_pBomb)){ // A maximum number of one power bomb can be on-screen at once
+							instance_create_depth(x, y + 14, depth - 1, obj_pBomb);
+							numPBombs--;
+						}
 					}
 					break;
 			}
-		} 
+		}
 	}
 }
 // Counting doen the fire rate timer
 if (fireRateTimer > 0){
-	fireRateTimer--;	
+	fireRateTimer--;
 }
 // Counting down the timer that prevents the player from 
 if (isShooting){
 	shootStateTimer--;
 	if (shootStateTimer <= 0){
 		isShooting = false;
-		shootStateTimer = 20;	
+		shootStateTimer = 20;
 	}
 }
+
+// TEMPORARY CODE FOR SWITCHING WEAPONRY ////////////////////////////////////////////////
+if (keyQuickMenu){
+	if (!inMorphball){ // Swapping Beams
+		var length = array_length_1d(isWeaponUnlocked);
+		for (var i = curWeaponIndex + 1; i <= length; i++){
+			// Returning back to the Power Beam
+			if (i == length){
+				curWeaponIndex = 0;
+				fireRateTimer = 0;
+				missilesEquipped = false;
+				break;
+			}
+			// Checking for the next beam/missile that Samus can equip
+			if (isWeaponUnlocked[i]){
+				curWeaponIndex = i;
+				fireRateTimer = 0;
+				if (i == 5 || i == 6) {missilesEquipped = true;}
+				else {missilesEquipped = false;}
+				break;
+			}
+		}
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////
 
 #endregion
 
@@ -408,5 +458,35 @@ if (inMorphball){
 
 // Calling the Entity Collision script
 scr_entity_collision(true, true, false);
+
+#endregion
+
+#region Editing Samus's Ambient Light source
+
+if (ambLight != noone){
+	// Setting the ambient light's size and color as their default values
+	ambLight.xRad = 35;
+	ambLight.yRad = 35;
+	ambLight.lightCol = c_ltgray;
+	// Altering the position and size of the ambient light
+	if (onGround){
+		if (inMorphball){
+			yOffset = 12;
+		} else if (crouching){
+			yOffset = 8;	
+		} else{
+			yOffset = 0;	
+		}
+	} else{
+		if (!inMorphball){
+			// Creating a crazy alactrical flashing effect for the screw attack
+			if (jumpspin && global.item[ITEM.SCREW_ATTACK]){
+				ambLight.xRad = choose(75, 80, 85);
+				ambLight.yRad = ambLight.xRad;
+				ambLight.lightCol = choose(c_aqua, c_lime, c_white);
+			}
+		}
+	}
+}
 
 #endregion

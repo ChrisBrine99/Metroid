@@ -12,3 +12,6 @@ damage = 16;
 // Enable the Plasma Beam to pass through walls and entities
 destroyOnWallCollide = false;
 destroyOnEntityCollide = false;
+
+// Altering the ambient light's color
+ambLight.lightCol = c_red;

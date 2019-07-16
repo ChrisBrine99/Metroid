@@ -4,7 +4,26 @@
     "mvc": "1.0",
     "name": "obj_missile_collide",
     "eventList": [
-        
+        {
+            "id": "a75c19bf-47cd-4fab-b32d-1be41d4f30e4",
+            "modelName": "GMEvent",
+            "mvc": "1.0",
+            "IsDnD": false,
+            "collisionObjectId": "00000000-0000-0000-0000-000000000000",
+            "enumb": 0,
+            "eventtype": 0,
+            "m_owner": "c6e0e0aa-e3f5-41b5-81ef-d77a6032e251"
+        },
+        {
+            "id": "229c9931-737c-41d5-baa3-976ff8529f78",
+            "modelName": "GMEvent",
+            "mvc": "1.0",
+            "IsDnD": false,
+            "collisionObjectId": "00000000-0000-0000-0000-000000000000",
+            "enumb": 0,
+            "eventtype": 3,
+            "m_owner": "c6e0e0aa-e3f5-41b5-81ef-d77a6032e251"
+        }
     ],
     "maskSpriteId": "00000000-0000-0000-0000-000000000000",
     "overriddenProperties": null,

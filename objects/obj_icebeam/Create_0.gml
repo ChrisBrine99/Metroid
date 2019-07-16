@@ -8,3 +8,6 @@ event_inherited();
 maxHspd = 7;
 maxVspd = 7;
 damage = 1;
+
+// Altering the ambient light's color
+ambLight.lightCol = c_aqua;
