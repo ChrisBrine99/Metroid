@@ -486,7 +486,7 @@ if (ambLight != noone){
 			if (jumpspin && global.item[ITEM.SCREW_ATTACK]){
 				with(ambLight){
 					xRad = choose(75, 80, 85);
-					yRad = ambLight.xRad;
+					yRad = xRad;
 					lightCol = choose(c_aqua, c_lime, c_white);
 				}
 			}

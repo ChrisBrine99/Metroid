@@ -20,5 +20,7 @@ alarm[0] = 1;
 
 // Creating the ambient light source
 ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
-ambLight.xRad = 0;
-ambLight.yRad = 0;
+with(ambLight){
+	xRad = 0;
+	yRad = 0;
+}

@@ -5,6 +5,36 @@ if (!surface_exists(global.lighting)){
 	global.lighting = surface_create(global.camWidth, global.camHeight);
 }
 
+// Draw to the lighting surface
+surface_set_target(global.lighting);
+
+// Drawing the darkened rectangle that the light sources will be placecd on
+draw_set_color(global.curLightingCol); // The lighter the color, the darker the surface
+draw_rectangle(0, 0, global.camWidth, global.camHeight, false);
+
+// Setting the blend mode to subtract to create the spotlight lighting system
 gpu_set_blendmode(bm_subtract);
+
+// Looping through all of the current active light sources
+if (!ds_list_empty(global.lightSources)){
+	var length = ds_list_size(global.lightSources);
+	for (var i = 0; i < length; i++){
+		// Draw a light to the surface for every light that is currently active
+		var curLight = ds_list_find_value(global.lightSources, i);
+		with(curLight){
+			// Only draw the light if it is visible on screen
+			if (global.camX - xRad < x && global.camY - yRad < y && global.camX + global.camWidth + xRad > x && global.camY + global.camHeight + yRad > y){
+				draw_ellipse_color(x - xRad - global.camX, y - yRad - global.camY, x + xRad - global.camX, y + yRad - global.camY, lightCol, c_black, false);
+			} 
+		}
+	}
+}
+
+// Reset drawing back to the application
+surface_reset_target();
+
+// Drawing the completed surface to the screen
 draw_surface(global.lighting, 0, 0);
+
+// Returning the blend mode back to normal
 gpu_set_blendmode(bm_normal);

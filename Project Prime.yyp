@@ -1087,10 +1087,26 @@
             }
         },
         {
+            "Key": "912fbb33-2d92-41ba-8c93-6026d4b33977",
+            "Value": {
+                "id": "b280ce56-6a15-4699-86c3-60534d4d4537",
+                "resourcePath": "views\\912fbb33-2d92-41ba-8c93-6026d4b33977.yy",
+                "resourceType": "GMFolder"
+            }
+        },
+        {
             "Key": "95036d7e-549a-4ce4-870f-8e3e69a4f60d",
             "Value": {
                 "id": "6b414b8c-5f4d-49f9-b35d-fcaeb04ef153",
                 "resourcePath": "objects\\obj_ice_beam\\obj_ice_beam.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "953d429b-78d8-417c-afba-a5d4e0f76226",
+            "Value": {
+                "id": "7b6c2a71-7476-470f-bc7f-71bf785ecc39",
+                "resourcePath": "objects\\obj_sMissile_tank\\obj_sMissile_tank.yy",
                 "resourceType": "GMObject"
             }
         },
@@ -1231,6 +1247,14 @@
             }
         },
         {
+            "Key": "a235fd30-5626-4e31-bae7-892596eb63e4",
+            "Value": {
+                "id": "c6766f9f-5e6e-434a-afa5-883e158d656a",
+                "resourcePath": "views\\a235fd30-5626-4e31-bae7-892596eb63e4.yy",
+                "resourceType": "GMFolder"
+            }
+        },
+        {
             "Key": "a2d79bb8-6056-418e-a6c2-3a22997743ef",
             "Value": {
                 "id": "322cb8e6-92d0-4232-883e-a64775f39575",
@@ -1252,6 +1276,14 @@
                 "id": "4f8438d3-adab-4153-8d80-effae99760ac",
                 "resourcePath": "views\\a4d087fa-e0fb-47c0-b5db-8ec249c711bc.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "a5f36fc2-2360-4b21-bf17-0c61e3bc3f28",
+            "Value": {
+                "id": "d924987d-0df3-47cd-abbc-945c0f146fe2",
+                "resourcePath": "objects\\obj_new_item_prompt\\obj_new_item_prompt.yy",
+                "resourceType": "GMObject"
             }
         },
         {
@@ -1459,6 +1491,22 @@
             "Value": {
                 "id": "e2d8fe98-4632-4f4e-9e50-5f5e3591f331",
                 "resourcePath": "objects\\obj_missile\\obj_missile.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "bab6353a-46d7-4495-88fd-3ca0101a4a83",
+            "Value": {
+                "id": "def5227f-f12e-42ba-9ded-929abc32ef63",
+                "resourcePath": "views\\bab6353a-46d7-4495-88fd-3ca0101a4a83.yy",
+                "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "bc9e435e-adc3-4f55-8475-4a0317d8b8c9",
+            "Value": {
+                "id": "92595b20-7ccc-4ea2-8053-4f3298a80920",
+                "resourcePath": "objects\\obj_pBomb_tank\\obj_pBomb_tank.yy",
                 "resourceType": "GMObject"
             }
         },

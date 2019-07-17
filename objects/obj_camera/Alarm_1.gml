@@ -14,5 +14,4 @@ if (!global.oVideo[1]){
 display_set_gui_maximize(global.xScale, global.yScale, 0, 0);
 
 // Set the window to Fullscreen
-window_set_fullscreen(global.oVideo[1]);
-window_set_fullscreen(true);*/
+window_set_fullscreen(global.oVideo[1]);*/

@@ -693,7 +693,7 @@
             "id": "29c4e1c8-18f8-4c46-8fd3-e179c3b9ba40",
             "animationFPS": 15,
             "animationSpeedType": "0",
-            "colour": { "Value": 4278190080 },
+            "colour": { "Value": 4281545523 },
             "depth": 505,
             "grid_x": 32,
             "grid_y": 32,

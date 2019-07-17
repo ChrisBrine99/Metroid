@@ -27,12 +27,16 @@ if (place_meeting(x, y, obj_player)){
 if (ambLight != noone){
 	switch(floor(image_index)){
 		case 0: // The "Bright" state
-			ambLight.xRad = 38;
-			ambLight.yRad = 38;
+			with(ambLight){
+				xRad = 38;
+				yRad = 38;
+			}
 			break;
 		case 1: // The "Normal" state
-			ambLight.xRad = 26;
-			ambLight.yRad = 26;
+			with(ambLight){
+				xRad = 26;
+				yRad = 26;
+			}
 			break;
 	}
 }
