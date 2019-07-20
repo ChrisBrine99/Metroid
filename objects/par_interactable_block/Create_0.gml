@@ -9,9 +9,10 @@ yOffset = 7;			// The offset on the y-axis that the light should be placed at
 // If true, the item will be destroyed and not give out its reward.
 hasCollected = false;
 
-// The item's name and description
+// Variables that will be passed onto the item prompt object
 itemName = "Default Name";
 itemDescription = "Default Description";
+scrollingText = true;						// If true, the new item prompt will scroll it's text upon displaying
 
 // Check if the object has already been collected
 alarm[0] = 1;

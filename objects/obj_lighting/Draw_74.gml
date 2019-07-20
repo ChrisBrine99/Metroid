@@ -1,11 +1,16 @@
 /// @description Drawing the lighting system to the screen.
 // You can write your code in this editor
 
+#region Ensuring the lighting surface exists before drawing
+
 if (!surface_exists(global.lighting)){
 	global.lighting = surface_create(global.camWidth, global.camHeight);
 }
 
-// Draw to the lighting surface
+#endregion
+
+#region Drawing to the lighting surface
+
 surface_set_target(global.lighting);
 
 // Drawing the darkened rectangle that the light sources will be placecd on
@@ -33,8 +38,13 @@ if (!ds_list_empty(global.lightSources)){
 // Reset drawing back to the application
 surface_reset_target();
 
+#endregion
+
+#region Display to the screen
+
 // Drawing the completed surface to the screen
 draw_surface(global.lighting, 0, 0);
-
 // Returning the blend mode back to normal
 gpu_set_blendmode(bm_normal);
+
+#endregion

@@ -1,8 +1,13 @@
 /// @description Insert description here
 // You can write your code in this editor
 
-// Set the gui size to a 1:1 scale of the application surface
+#region Alter the GUI sccaling for accurate drawing
+
 display_set_gui_maximize(1, 1, 0, 0);
+
+#endregion
+
+#region Creating the necessary surfaces if they don't already exist
 
 // Create the blooming surface if it doesn't exist
 if (!surface_exists(surfBloom)){
@@ -19,6 +24,10 @@ if (!surface_exists(surfBlur)){
 if (surface_exists(global.lighting)){
 	appTexture = surface_get_texture(global.lighting);	
 }
+
+#endregion
+
+#region Drawing the bloom to the required surfaces
 
 // 1st Pass: Draw brights to the bloom shader
 // application_surface -> surfBloom
@@ -63,9 +72,17 @@ shader_set_uniform_f(sBloomDarken, bloomDarken);
 shader_set_uniform_f(sBloomSaturation, bloomSaturation);
 texture_set_stage(sBloomTexture, bloomTexture);
 
-draw_surface(application_surface, 0, 0);
+#endregion
 
+#region Drawing the surface to the screen
+
+draw_surface(application_surface, 0, 0);
 shader_reset();
 
-// Return the game's GUI scaling to normal
+#endregion
+
+#region Return the game's GUI scaling to normal
+
 display_set_gui_maximize(global.xScale, global.yScale, 0, 0);
+
+#endregion

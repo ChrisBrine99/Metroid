@@ -14,10 +14,15 @@ image_speed = 1;
 
 #region Destroy when collected
 
-if (place_meeting(x, y, obj_player)){
-	global.item[index + subIndex] = true;
-	// TODO -- Create an item screen prompt object to display item information.
-	instance_destroy(self);
+if (!instance_exists(obj_new_item_prompt)){
+	if (place_meeting(x, y, obj_player)){
+		global.item[index + subIndex] = true;
+		var obj = instance_create_depth(0, 0, 15, obj_new_item_prompt);
+		obj.displayTxt = itemDescription;
+		obj.itemName = itemName;
+		obj.scrollingText = scrollingText;
+		obj.creatorID = id;
+	}
 }
 
 #endregion

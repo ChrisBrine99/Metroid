@@ -1,7 +1,7 @@
-/// @description Draw the in-game HUD
+/// @description Draw the in-game screen elements
 // You can write your code in this editor
 
-// Draw everything for the HUD below this comment ////////////////////////////////////////////////
+#region Drawing the in-game HUD
 
 if (alpha > 0){
 	// Set the alpha of the HUD
@@ -18,6 +18,10 @@ if (alpha > 0){
 	draw_set_alpha(1);
 }
 
+#endregion
+
+#region Drawing the Debug Menu elements
+
 show_debug_overlay(true);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
