@@ -15,5 +15,11 @@ scrollingText = false;	// If true, the text will scroll out instead of being ins
 txtAlignment = fa_left;	// The alignment of the text on the screen
 txtCol = c_white;		// The color of the text
 txtOCol = c_gray;		// The color of the text's surrounding outline 
+nameCol = c_white;		// The color of the item name
+nameOCol = c_gray;		// The color of the item name text's outline
 
 creatorID = noone;		// The instance ID of the object that created this
+
+// Create the background blur
+blurID = instance_create_depth(0, 0, 50, obj_blur);
+blurID.sigma = 0.001;

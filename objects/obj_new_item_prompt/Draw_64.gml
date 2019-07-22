@@ -41,7 +41,7 @@ if (alpha > 0){
 	
 	// Drawing the item's name
 	draw_set_font(font_gui_large);
-	draw_text_outline(global.camWidth / 2, 60, itemName, c_white, c_gray);
+	draw_text_outline(global.camWidth / 2, 60, itemName, nameCol, nameOCol);
 	draw_set_halign(fa_left);
 	
 	// Return the alpha back to normal

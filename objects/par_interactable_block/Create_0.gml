@@ -12,7 +12,9 @@ hasCollected = false;
 // Variables that will be passed onto the item prompt object
 itemName = "Default Name";
 itemDescription = "Default Description";
-scrollingText = true;						// If true, the new item prompt will scroll it's text upon displaying
+scrollingText = true;						// If true, the item's description text will scroll onto the screen
+nameCol = c_red;							// The color of the item name
+nameOCol = c_maroon;						// The color of the item name text's outline
 
 // Check if the object has already been collected
 alarm[0] = 1;

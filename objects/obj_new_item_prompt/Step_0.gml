@@ -31,7 +31,7 @@ if (keyClose){
 
 if (!isClosing){ // Making the text fade in
 	if (alpha < 1){
-		alpha += 0.1;	
+		alpha += 0.1;
 	}
 } else{ // Making the text fade out and destroying this object
 	if (alpha > 0){
@@ -40,12 +40,21 @@ if (!isClosing){ // Making the text fade in
 		instance_destroy(self);
 		// Return the Game State back to normal
 		global.gameState = GAME_STATE.IN_GAME;
+		// Destroy the background blur
+		if (blurID != noone){
+			instance_destroy(blurID);
+			blurID = noone;	
+		}
 	}
 	// Delete the creator object
 	if (creatorID != noone){
 		instance_destroy(creatorID);
 		creatorID = noone;
 	}
+}
+// Make the blur have a gradual fading in and out along with the menu
+if (blurID != noone){
+	blurID.sigma = alpha * 0.25;
 }
 
 #endregion

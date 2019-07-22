@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Ice Beam";
-itemDescription = "An upgrade to the standard arm cannon that can\nfreeze enemies for use as platforms.\nOpens white doors.";
+itemDescription = "An upgrade to the standard arm cannon that can\nfreeze enemies for use as platforms. It can\nalso open white-coloured doors.";

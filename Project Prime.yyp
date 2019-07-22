@@ -439,6 +439,14 @@
             }
         },
         {
+            "Key": "3abee1e9-d980-42a5-8dfb-048726ddcd1a",
+            "Value": {
+                "id": "e08d1263-ca67-45c3-aee3-8ad0a9163dd0",
+                "resourcePath": "objects\\obj_blur\\obj_blur.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "3c727073-a2d7-44b9-8f49-b558e6ba7668",
             "Value": {
                 "id": "57970227-e256-4239-854b-595a64b79f10",

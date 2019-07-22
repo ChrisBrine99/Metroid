@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Spazer Beam";
-itemDescription = "A very powerful beam that splits the beam into three\npowerful projectiles.\nOpens green doors.";
+itemDescription = "A very powerful beam that splits the beam into three\npowerful projectiles. Opens green-coloured doors.";

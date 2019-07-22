@@ -17,5 +17,5 @@ with(ambLight){
 }
 
 // Edit the object's name and description
-itemName = "Ice Beam";
-itemDescription = "An upgrade that allows the arm cannon to shoot a blast of\npure energy that can phase through anything with tremendous power.\nOpens maroon doors.";
+itemName = "Plasma Beam";
+itemDescription = "An upgrade that allows the arm cannon to shoot a blast\nof pure energy that can phase through anything with\ntremendous power. Opens maroon doors.";

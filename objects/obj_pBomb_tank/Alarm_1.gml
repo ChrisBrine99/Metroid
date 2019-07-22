@@ -3,7 +3,7 @@
 
 if (obj_player.maxSMissiles <= 0){ // The first-time message for obtaining a missile tank
 	itemName = "Power Bombs";
-	itemDescription = "An upgrade to the standard bombs that allows for massive destructive power.\nThese will obliterate anything in sight upon detonation.\nThey also open yellow doors.";
+	itemDescription = "An upgrade to the standard bombs that allows for\nmassive destructive power. These will obliterate anything in sight upon\ndetonation. They also open yellow-coloured doors.";
 } else{ // The normal message for obtaining a missile tank
 	itemName = "Power Bomb Tank";
 	itemDescription = "Power Bomb storage capacity has been\npermanently increased by two.";	

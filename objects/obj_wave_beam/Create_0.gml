@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Wave Beam";
-itemDescription = "A powerful weapon that splits the beam into a wave and\nhas the abilty to move through solid walls.\nOpens pink doors.";
+itemDescription = "A powerful weapon that splits the beam into a wave and\nhas the abilty to move through solid walls.\nOpens pink-coloured doors.";

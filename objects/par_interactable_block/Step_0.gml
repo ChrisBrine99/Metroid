@@ -21,6 +21,8 @@ if (!instance_exists(obj_new_item_prompt)){
 		obj.displayTxt = itemDescription;
 		obj.itemName = itemName;
 		obj.scrollingText = scrollingText;
+		obj.nameCol = nameCol;
+		obj.nameOCol = nameOCol;
 		obj.creatorID = id;
 	}
 }
