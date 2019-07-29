@@ -24,3 +24,8 @@ for(var i = 0; i < global.totalItems; i++){
 for (var d = 0; d < global.totalLockedDoors; d++){
 	global.door[d] = false;	// If true, the door will be replaced by a generic blue door
 }
+
+// Variables for the Debug Mode
+global.debugMode = false;
+global.entities = ds_list_create();
+showStreamlinedDebug = false;

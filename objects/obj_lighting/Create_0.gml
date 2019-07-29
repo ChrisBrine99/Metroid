@@ -7,3 +7,4 @@ global.curLightingCol = c_gray;
 
 // The ds_list to hold every light source in the current room
 global.lightSources = ds_list_create();
+numDrawn = 0;

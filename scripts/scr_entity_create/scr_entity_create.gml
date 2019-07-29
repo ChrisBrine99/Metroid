@@ -49,3 +49,6 @@ canMove = true;			// If false, the entity will stop updating
 ambLight = noone;		// The unique instance ID for this object's ambient light
 xOffset = 0;			// The offset on the x-axis that the light should be placed at
 yOffset = 0;			// The offset on the y-axis that the light should be placed at
+
+// Add the entity to the ds_list of entities
+alarm[10] = 1;

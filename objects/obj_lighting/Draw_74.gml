@@ -23,6 +23,7 @@ gpu_set_blendmode(bm_subtract);
 // Looping through all of the current active light sources
 if (!ds_list_empty(global.lightSources)){
 	var length = ds_list_size(global.lightSources);
+	numDrawn = 0;
 	for (var i = 0; i < length; i++){
 		// Draw a light to the surface for every light that is currently active
 		var curLight = ds_list_find_value(global.lightSources, i);
@@ -30,6 +31,7 @@ if (!ds_list_empty(global.lightSources)){
 			// Only draw the light if it is visible on screen
 			if (global.camX - xRad < x && global.camY - yRad < y && global.camX + global.camWidth + xRad > x && global.camY + global.camHeight + yRad > y){
 				draw_ellipse_color(x - xRad - global.camX, y - yRad - global.camY, x + xRad - global.camX, y + yRad - global.camY, lightCol, c_black, false);
+				other.numDrawn++;
 			} 
 		}
 	}
