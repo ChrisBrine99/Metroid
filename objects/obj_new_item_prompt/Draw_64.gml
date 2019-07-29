@@ -14,13 +14,13 @@ txtHalfHeight = floor(string_height(displayTxt) / 2);
 
 if (alpha > 0){
 	// Drawing the prompt's background
-	draw_set_alpha(alpha * 0.3);
-	draw_set_color(c_black);
-	draw_rectangle(0, 0, global.camWidth, global.camHeight, false);
-	draw_set_color(c_dkgray);
-	// The background behind the item's description
-	draw_rectangle(0, 112 - txtHalfHeight - 10, global.camWidth, 112 + txtHalfHeight + 10, false);
-	draw_rectangle(0, 112 - txtHalfHeight - 4, global.camWidth, 112 + txtHalfHeight + 4, false);
+	var rectAlpha, rectPosY, rectHeight;
+	rectAlpha = alpha * 0.3;
+	rectPosY = 112 - txtHalfHeight - 10;
+	rectHeight = (txtHalfHeight + 10) * 2;
+	draw_sprite_ext(spr_generic_rectangle, 0, 0, 0, global.camWidth, global.camHeight, 0, c_black, rectAlpha);
+	draw_sprite_ext(spr_generic_rectangle, 0, 0, rectPosY, global.camWidth, rectHeight, 0, c_dkgray, rectAlpha);
+	draw_sprite_ext(spr_generic_rectangle, 0, 0, rectPosY + 6, global.camWidth, rectHeight - 12, 0, c_dkgray, rectAlpha);
 	
 	// Checking if the text needs to be scrolled or not
 	if (displayTxt != curDisplayedStr){

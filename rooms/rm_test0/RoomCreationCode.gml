@@ -1,4 +1,4 @@
-// -- PLACE THESE ENUMERATORS IN THE CREATION CODE OF THE FIRST ROOM IN THE GAME -- //
+// -- PLACE THESE ENUMERATORS AND THE CODE BELOW IN THE CREATION CODE OF THE FIRST ROOM IN THE GAME -- //
 
 // The Enumerator for the unique item values for important items
 enum ITEM{
@@ -40,17 +40,25 @@ enum DYNAMIC_BLOCK{
 	POWER_BOMB = 201,
 	SCREW_ATTACK = 250,
 };
-// The player will have curState and a curSubState variables to handle the actions they are currently performing.
-// Some examples of a sub action would be shooting while jumping or aiming up while standing or walking.
 
+// Creating the Player
 instance_create_depth(64, 64, 305, obj_player);
 
+// Code used to assign what background music is being played at the moment. The offset is what to start the song
+// on when it loops around to the beginning.
+global.curSong = music_area1;
+global.offset = 9.046;
+global.loopLength = 81.399;
+
+// Songs and their offsets/lengths:
+// 8-bit Rock Maridia		--		offset =	9.046,	loopLength =	81.399
+
 // Some helpful global variables for identical values that are referenced in multiple places
-global.totalItems = 137;		// The total number of items (Ex. Morphball or Bombs) in the game
-global.totalLockedDoors = 50;	// The total number of locked doors in the game
+global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
+global.totalLockedDoors = 50;	// The total number of locked doors (Ex. Missile/Power Bomb Doors) in the game
 
 // Create the controller and camera objects
 instance_create_depth(0, 0, 0, obj_camera);
 instance_create_depth(0, 0, 10, obj_controller);
 
-//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,7 @@ if (explodeTime == 15){
 } else if (explodeTime <= 0){
 	// Create the set explosion effect
 	if (setExplodeFX != noone){
-		instance_create_depth(x, y, depth - 100, setExplodeFX);
+		instance_create_depth(x, y, 45, setExplodeFX);
 	}
 	instance_destroy(self);
 }

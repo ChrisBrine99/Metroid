@@ -25,6 +25,16 @@ for (var d = 0; d < global.totalLockedDoors; d++){
 	global.door[d] = false;	// If true, the door will be replaced by a generic blue door
 }
 
+// Variables for the current background song that is playing
+curSong = -1;
+song = -1;
+fadingOut = false;
+totalLength = 0;
+fadeTime = 300;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
+// Unseen here are:
+//		global.curSong	--	The current song that is playing in the background.
+//		global.offset	--	The amount of time in seconds to start from when looping a song.
+
 // Variables for the Debug Mode
 global.debugMode = false;
 global.entities = ds_list_create();

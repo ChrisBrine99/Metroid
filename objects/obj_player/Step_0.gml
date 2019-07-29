@@ -326,7 +326,7 @@ if (keyShoot){
 										offsetX = 10 * sign(imageXScale);
 										offsetY = -3;
 									} else if (isUp){ // Aiming Upward
-										offsetX = 3 * sign(imageXScale);
+										offsetX = 4 * sign(imageXScale);
 										offsetY = -20;
 									} else if (isCrouching){ // Crouching
 										offsetX = 10 * sign(imageXScale);
