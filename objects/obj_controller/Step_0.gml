@@ -25,7 +25,7 @@ if (!global.debugMode){
 // Opening the full debug menu
 if (keyDebug && !keyDebug2){
 	if (instance_exists(obj_debug_controller)){ // Disabling Debug Mode
-		instance_destroy(obj_debug_controller);	
+		with(obj_debug_controller) {fadeDestroy = true;}
 		global.debugMode = false;
 	} else{	// Enabling Debug Mode
 		instance_create_depth(0, 0, 10, obj_debug_controller);
