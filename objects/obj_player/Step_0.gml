@@ -11,7 +11,7 @@ keyStopJump = keyboard_check_released(ord("X"));	// When true, Samus's total jum
 keyUp = keyboard_check(vk_up);						// When true, Samus will either aim upward, exit morphball, or stand up.
 keyDown = keyboard_check(vk_down);					// When true, Samus will either aim downward, start crouching, or enter morphball.
 keyShoot = keyboard_check_pressed(ord("Z"));		// When true, Samus will fire her currently equipped weapon OR will deploy the currently equipped bomb.
-keyQuickMenu = keyboard_check_pressed(vk_shift);	// Shifts through Samus's quick menu (Where all beams and bombs are shown)
+keyQuickMenu = keyboard_check(vk_shift);			// Shifts through Samus's quick menu (Where all beams and bombs are shown)
 
 #endregion
 
@@ -391,30 +391,12 @@ if (isShooting){
 	}
 }
 
-// TEMPORARY CODE FOR SWITCHING WEAPONRY ////////////////////////////////////////////////
+// Open up the Quick Menu
 if (keyQuickMenu){
-	if (!inMorphball){ // Swapping Beams
-		var length = array_length_1d(isWeaponUnlocked);
-		for (var i = curWeaponIndex + 1; i <= length; i++){
-			// Returning back to the Power Beam
-			if (i == length){
-				curWeaponIndex = 0;
-				fireRateTimer = 0;
-				missilesEquipped = false;
-				break;
-			}
-			// Checking for the next beam/missile that Samus can equip
-			if (isWeaponUnlocked[i]){
-				curWeaponIndex = i;
-				fireRateTimer = 0;
-				if (i == 5 || i == 6) {missilesEquipped = true;}
-				else {missilesEquipped = false;}
-				break;
-			}
-		}
+	if (!instance_exists(obj_weapon_menu)){
+		instance_create_depth(0, 0, 10, obj_weapon_menu);
 	}
 }
-/////////////////////////////////////////////////////////////////////////////////////////
 
 #endregion
 

@@ -9,8 +9,8 @@ scr_entity_create(2.1, 7, 0.3, -5, 0.25, 270);
 // Editing the cur/maxHitpoints and cur/maxLives variables
 maxHitpoints = 99;				// The max amount of "Energy" for Samus
 curHitpoints = maxHitpoints;
-maxLives = 12;					// The total "Energy Tanks" Samus currently has
-curLives = 12;
+maxLives = 0;					// The total "Energy Tanks" Samus currently has
+curLives = 0;
 
 // The variable that calculates how much damage Samus takes from attacks
 damageRes = 1;					// 1 = 100%, 0.5 = 50%, etc.

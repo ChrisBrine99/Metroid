@@ -207,6 +207,14 @@
             }
         },
         {
+            "Key": "15d13d0d-a59a-465c-9d59-566ee1171765",
+            "Value": {
+                "id": "c075e136-a556-405c-b6ae-2bd33e8824b6",
+                "resourcePath": "sprites\\spr_icebeam_icon\\spr_icebeam_icon.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "15f91d79-aabc-4b13-9637-8ffbefdde2a9",
             "Value": {
                 "id": "736fd3c9-6347-4237-aca3-e3206c7d8da5",
@@ -479,6 +487,14 @@
             }
         },
         {
+            "Key": "3d1e69f5-2ee9-4fa3-8edf-8e8f41918fcc",
+            "Value": {
+                "id": "2e48dd93-4baf-43aa-a860-11972f1d9bd6",
+                "resourcePath": "sprites\\spr_wavebeam_icon\\spr_wavebeam_icon.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "3d389c46-28d6-4720-9eba-bd7769348ac3",
             "Value": {
                 "id": "472fd7e2-7ec3-4d06-a15d-db9f00bbe554",
@@ -548,6 +564,14 @@
                 "id": "3cc4ef4c-5159-44b6-be30-7870f0d7fd96",
                 "resourcePath": "objects\\obj_block\\obj_block.yy",
                 "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "43c27dd2-1ed4-4d14-9a19-679a50f32db8",
+            "Value": {
+                "id": "079c57e3-39a8-4d1c-8c07-2f794727af98",
+                "resourcePath": "sprites\\spr_powerbeam_icon\\spr_powerbeam_icon.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
@@ -675,6 +699,14 @@
             "Value": {
                 "id": "30e7646f-9ecc-4045-b733-f4915d71948f",
                 "resourcePath": "sprites\\spr_missile_tank\\spr_missile_tank.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "57f64342-5b17-4558-897c-1adc0fed22e4",
+            "Value": {
+                "id": "7686ec6e-07c8-469f-bbe7-6d7324aa81de",
+                "resourcePath": "sprites\\spr_energy_tank_gui\\spr_energy_tank_gui.yy",
                 "resourceType": "GMSprite"
             }
         },
@@ -895,6 +927,14 @@
             }
         },
         {
+            "Key": "6cee79c1-16c1-4e2c-8799-4a5b49123a08",
+            "Value": {
+                "id": "0505b34c-a25b-4a78-952c-f28273dc83ad",
+                "resourcePath": "sprites\\spr_plasmabeam_icon\\spr_plasmabeam_icon.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
             "Key": "6dc9b00e-f88a-4ee0-a88c-4dbe75f5de18",
             "Value": {
                 "id": "68404049-a75c-454a-a18e-97763fcfd54d",
@@ -1052,6 +1092,14 @@
                 "id": "f8c3fb1b-cd91-4218-913e-5c1fbf68acf9",
                 "resourcePath": "views\\82f8355d-9fda-4e13-b0b3-efb87e711ca7.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "8320f3df-7883-4a1c-bdb8-46000b76acd6",
+            "Value": {
+                "id": "1c53a39f-8fc5-4690-b765-60845f91b245",
+                "resourcePath": "objects\\obj_weapon_menu\\obj_weapon_menu.yy",
+                "resourceType": "GMObject"
             }
         },
         {
@@ -1836,6 +1884,14 @@
                 "id": "425a71aa-d490-4b92-84f6-e6bd7af0a4e0",
                 "resourcePath": "views\\db23f944-d31f-4bf0-a880-30a4fc5dda8c.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "db332d1e-f5b1-4249-8370-0d801b3bb020",
+            "Value": {
+                "id": "e1610186-800f-47cd-9d41-fd0e8c14f6f4",
+                "resourcePath": "sprites\\spr_spazerbeam_icon\\spr_spazerbeam_icon.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
