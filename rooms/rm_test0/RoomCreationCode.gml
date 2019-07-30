@@ -46,12 +46,13 @@ instance_create_depth(64, 64, 305, obj_player);
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_area1;
+global.curSong = music_area2;
 global.offset = 9.046;
 global.loopLength = 81.399;
 
 // Songs and their offsets/lengths:
-// 8-bit Rock Maridia		--		offset =	9.046,	loopLength =	81.399
+// Surface of SR388			--		offset =	9.359,	loopLength =	60.510
+// 8-bit Rocky Maridia		--		offset =	9.046,	loopLength =	81.399
 
 // Some helpful global variables for identical values that are referenced in multiple places
 global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game

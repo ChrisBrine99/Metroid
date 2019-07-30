@@ -1,8 +1,8 @@
 {
-    "id": "694c3983-92f7-4df4-a980-7b049fb17b1b",
+    "id": "104061c2-deef-4987-8c8e-6339ebdf1b4b",
     "modelName": "GMSound",
     "mvc": "1.0",
-    "name": "music_area1",
+    "name": "music_area2",
     "audioGroupGuid": "7b2c4976-1e09-44e5-8256-c527145e03bb",
     "bitDepth": 1,
     "bitRate": 128,

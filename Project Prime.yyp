@@ -146,7 +146,7 @@
             "Key": "104061c2-deef-4987-8c8e-6339ebdf1b4b",
             "Value": {
                 "id": "4915cac5-72bf-41ed-a270-49139108e95f",
-                "resourcePath": "sounds\\music_area1\\music_area1.yy",
+                "resourcePath": "sounds\\music_area2\\music_area2.yy",
                 "resourceType": "GMSound"
             }
         },
@@ -844,6 +844,14 @@
                 "id": "1545db52-ab2e-45eb-9c74-b241d6a89983",
                 "resourcePath": "sprites\\spr_power_jump0a\\spr_power_jump0a.yy",
                 "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "694c3983-92f7-4df4-a980-7b049fb17b1b",
+            "Value": {
+                "id": "329ab953-4a55-4dbf-a510-587100bb935e",
+                "resourcePath": "sounds\\music_area1\\music_area1.yy",
+                "resourceType": "GMSound"
             }
         },
         {

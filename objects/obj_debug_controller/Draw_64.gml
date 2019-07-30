@@ -30,14 +30,19 @@ if (alpha > 0){
 											   numActiveEntities + "\n" + 
 											   numLightSources + "\n" + 
 											   numDrawnLights, c_fuchsia, c_purple);
+	// Control Information
+	draw_text_outline(global.camWidth - 5, 162, "Change BGM -- [M]\nExit Menu -- [D]", c_white, c_gray);
 	
 	draw_set_halign(fa_left);
 	// Camera Position Information
-	draw_text_outline(global.camWidth - 120, 10, "Camera X (True):\nCamera Y (True):\n     Top-Left X   --\n     Top-Left Y   --", c_white, c_gray);	
+	draw_text_outline(global.camWidth - 120, 10, "Camera X (True):\nCamera Y (True):\n     Top-Left X\n     Top-Left Y", c_white, c_gray);
+	draw_text_outline(global.camWidth - 42, 10, "\n\n--\n--", c_white, c_gray);
 	// Player Position Information
-	draw_text_outline(global.camWidth - 120, 50, "Player X:\nPlayer Y:\n     Hspeed       --\n     Vspeed       --", c_white, c_gray);	
+	draw_text_outline(global.camWidth - 120, 50, "Player X:\nPlayer Y:\n     Hspeed\n     Vspeed", c_white, c_gray);	
+	draw_text_outline(global.camWidth - 42, 50, "\n\n--\n--", c_white, c_gray);
 	// Instance Information
-	draw_text_outline(global.camWidth - 120, 90, "Unculled Objects\n     Active        --\nEntities\n     Active        --\nLight Sources\n     Drawn        --", c_white, c_gray);	
+	draw_text_outline(global.camWidth - 120, 90, "Unculled Objects\n     Active\nEntities\n     Active\nLight Sources\n     Drawn", c_white, c_gray);	
+	draw_text_outline(global.camWidth - 42, 90, "\n--\n\n--\n\n--", c_white, c_gray);
 	
 	// Return the alpha level back to normal
 	draw_set_alpha(1);
