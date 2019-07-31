@@ -90,6 +90,9 @@ ambLight.yRad = 35;
 ambLight.lightCol = c_ltgray;
 ambLight.persistent = true;
 
+// Create the in-game HUD
+instance_create_depth(0, 0, 15, obj_hud);
+
 // Set Samus's sprites
 alarm[0] = 1;
 

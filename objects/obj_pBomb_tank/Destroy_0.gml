@@ -6,5 +6,9 @@ if (!hasCollected){
 		numPBombs += 2;
 		maxPBombs += 2;
 		isBombUnlocked[1] = true;
+		// Update the HUD if the player has power bombs equipped
+		if (curWeaponIndex == 1){
+			with(obj_hud) {alarm[0] = 1;}	
+		}
 	}
 }

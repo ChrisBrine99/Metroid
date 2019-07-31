@@ -1,8 +1,6 @@
 /// @description Load in the Full Menu
 // You can write your code in this editor
 
-fullMenu = true;
-
 if (global.gameState != GAME_STATE.IN_GAME){
 	instance_destroy(self);
 	return;
@@ -18,26 +16,41 @@ if (!obj_player.inMorphball){
 					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
 					weaponInfo[menuSize, 1] = "Power Beam";
 					weaponInfo[menuSize, 2] = "";
+					// Set the ammo variables to zero
+					weaponInfo[menuSize, 4] = 0;
+					weaponInfo[menuSize, 5] = 0;
 					break;
 				case 1: // Add the Ice Beam Icon to the Menu
 					weaponInfo[menuSize, 0] = spr_icebeam_icon;
 					weaponInfo[menuSize, 1] = "Ice Beam";
 					weaponInfo[menuSize, 2] = "";
+					// Set the ammo variables to zero
+					weaponInfo[menuSize, 4] = 0;
+					weaponInfo[menuSize, 5] = 0;
 					break;
 				case 2: // Add the Wave Beam Icon to the Menu
 					weaponInfo[menuSize, 0] = spr_wavebeam_icon;
 					weaponInfo[menuSize, 1] = "Wave Beam";
 					weaponInfo[menuSize, 2] = "";
+					// Set the ammo variables to zero
+					weaponInfo[menuSize, 4] = 0;
+					weaponInfo[menuSize, 5] = 0;
 					break;
 				case 3: // Add the Spazer Beam Icon to the Menu
 					weaponInfo[menuSize, 0] = spr_spazerbeam_icon;
 					weaponInfo[menuSize, 1] = "Spazer Beam";
 					weaponInfo[menuSize, 2] = "";
+					// Set the ammo variables to zero
+					weaponInfo[menuSize, 4] = 0;
+					weaponInfo[menuSize, 5] = 0;
 					break;
 				case 4: // Add the Plasma Beam Icon to the Menu
 					weaponInfo[menuSize, 0] = spr_plasmabeam_icon;
 					weaponInfo[menuSize, 1] = "Plasma Beam";
-					weaponInfo[menuSize, 2] = ""
+					weaponInfo[menuSize, 2] = "";
+					// Set the ammo variables to zero
+					weaponInfo[menuSize, 4] = 0;
+					weaponInfo[menuSize, 5] = 0;
 					break;	
 				case 5: // Add the Missile Icon to the Menu
 					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
@@ -89,7 +102,15 @@ if (!obj_player.inMorphball){
 			menuSize++;
 		}
 	}
+	// If nothing has been added to the menu, delete this object
+	if (menuSize == 0){
+		instance_destroy(self);
+		return;
+	}
 }
+
+// Make the HUD invisible
+with(obj_hud) {isVisible = false;}
 
 // Set the current Game State
 global.gameState = GAME_STATE.PAUSED;

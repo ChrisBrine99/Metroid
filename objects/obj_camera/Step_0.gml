@@ -23,32 +23,15 @@ if (isLocked){
 				curObject = obj_player;
 			}
 		}
-		// Make the HUD invisible
-		isVisible = false;
 	} else{
 		// Move the camera toward where it needs to go
 		x += (xTo - x) / 5;
 		y += (yTo - y) / 5;
 		// Setting camera bounds
 		scr_camera_bounds(0, 0, room_width, room_height);
-		// Make the HUD visible
-		isVisible = true;
 		// Update the next goto position for the camera
 		xTo = curObject.x;
 		yTo = curObject.y;
-	}
-}
-
-// Fading the HUD in and out
-if (isVisible){
-	alpha += 0.1;
-	if (alpha > 1){
-		alpha = 1;	
-	}
-} else{
-	alpha -= 0.1;
-	if (alpha < 0){
-		alpha = 0;	
 	}
 }
 

@@ -15,9 +15,7 @@ weaponInfo[0, 5] = 0;		// The weapon's maximum ammo
 
 // Variables for the menu transition
 alpha = 0;
-fadingOut = false;
-
-// TODO -- Add Variable to hold the Blur Object's ID for quick reference
+isVisible = true;
 
 // The cooldown for quick swapping and opening the full menu
 fullMenu = false;

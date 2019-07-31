@@ -359,6 +359,14 @@
             }
         },
         {
+            "Key": "2b68a569-dfef-48e4-a179-6bc267c2f807",
+            "Value": {
+                "id": "0d74b9c8-0309-481e-a74b-476cc779f77d",
+                "resourcePath": "objects\\obj_hud\\obj_hud.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "2d642e39-480f-40d7-93f4-9a5e03e2fbf6",
             "Value": {
                 "id": "28d2d9bd-d7e9-48e4-94f7-5752ac52396d",
@@ -2123,6 +2131,14 @@
             "Value": {
                 "id": "deb41c06-e934-498f-9004-061d18e321cc",
                 "resourcePath": "sprites\\spr_missile_collide\\spr_missile_collide.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "f9c8ed59-6925-419a-b034-daf7eacab822",
+            "Value": {
+                "id": "23a0c6f1-cb91-4f9c-99e0-0deaf9ec790c",
+                "resourcePath": "sprites\\spr_locked_weapon_icon\\spr_locked_weapon_icon.yy",
                 "resourceType": "GMSprite"
             }
         },

@@ -18,7 +18,6 @@ if (!fullMenu){
 					curWeaponIndex = i;
 					fireRateTimer = 0;
 					if (i == 5 || i == 6) {missilesEquipped = true;}
-					else {missilesEquipped = false;}
 					break;
 				}
 			}
@@ -38,4 +37,9 @@ if (!fullMenu){
 			// TODO -- Swapping Bombs	
 		}
 	}
+}
+// Update the icon on the HUD
+with(obj_hud){
+	isVisible = true;
+	alarm[0] = 1;
 }

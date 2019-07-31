@@ -14,7 +14,7 @@ keyLifeDown = keyboard_check_pressed(ord("A"));			// Decreases Samus's Energy Ta
 #region Handling the Menu Transition
 
 var isVisible;
-isVisible = obj_camera.isVisible;
+isVisible = obj_hud.isVisible;
 
 // Fading the Debug Menu in and out
 if (isVisible && !fadeDestroy){

@@ -23,3 +23,6 @@ creatorID = noone;		// The instance ID of the object that created this
 // Create the background blur
 blurID = instance_create_depth(0, 0, 50, obj_blur);
 blurID.sigma = 0.001;
+
+// Make the HUD invisible
+with(obj_hud) {isVisible = false;}

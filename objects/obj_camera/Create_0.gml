@@ -48,10 +48,3 @@ window_set_fullscreen(true);
 
 // If false, the camera will temporarily be unlocked from following the player because of an effect (Ex. screen shaking)
 isLocked = true;
-
-// The opacity of the various HUD elements (Of which there are very few)
-alpha = 0;
-isVisible = false;
-
-// Variable to control the noise filter's speed
-image_speed = 0.25;

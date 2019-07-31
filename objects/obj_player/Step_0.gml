@@ -93,8 +93,8 @@ if (keyJump){
 					jumpspin = true;
 					hspd = sign(image_xscale);
 					vspd = 0;
-				} else if (global.item[ITEM.SPACE_JUMP]){ // The Space Jump
-					if (vspd >= 3){
+				} else if (global.item[ITEM.SPACE_JUMP] && jumpspin){ // The Space Jump
+					if (vspd >= 2.5){
 						vspd = jumpSpd;	
 					}
 				}
@@ -197,6 +197,8 @@ if (keyUp && !down){
 				vspdRecoil = 0;
 				if (!onGround) {vspd = 0;}
 				else {crouching = true;}
+				// Update the HUD to display the current non-bomb weapon
+				with(obj_hud) {alarm[0] = 1;}
 			}
 		} else if (crouching){ // Standing Up
 			if (!place_meeting(x, y - 8, par_block)){
@@ -222,6 +224,7 @@ if (keyDown && !up){
 			} else if (crouching && global.item[ITEM.MORPHBALL]){ // Entering Morphball
 				crouching = false;
 				inMorphball = true;	
+				with(obj_hud) {alarm[0] = 1;}
 			}
 		} else{ // Aiming Downward (Only while airbourne)
 			jumpspin = false;
@@ -285,6 +288,7 @@ if (keyShoot){
 							fireRateTimer = missileFR;
 							// Remove a missile from Samus's ammo reserves
 							numMissiles--;
+							global.curAmmo--;
 						}
 						break;
 					case 6: // Super Missiles
@@ -294,6 +298,7 @@ if (keyShoot){
 							fireRateTimer = sMissileFR;
 							// Remove a missile from Samus's ammo reserves
 							numSMissiles--;
+							global.curAmmo--;
 						}
 						break;
 				}
@@ -371,6 +376,7 @@ if (keyShoot){
 						if (!instance_exists(obj_pBomb)){ // A maximum number of one power bomb can be on-screen at once
 							instance_create_depth(x, y + 14, depth - 1, obj_pBomb);
 							numPBombs--;
+							global.curAmmo--;
 						}
 					}
 					break;

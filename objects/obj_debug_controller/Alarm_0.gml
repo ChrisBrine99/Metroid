@@ -7,7 +7,10 @@ numInstances = string(instance_number(all));
 numActiveObjects = string(instance_number(obj_culled_object) + 
 						  instance_number(obj_entity_controller) + 
 						  instance_number(par_interactable_block) +
-						  instance_number(par_player_effect));
+						  instance_number(par_player_effect) +
+						  instance_number(obj_hud) +
+						  instance_number(obj_camera) +
+						  instance_number(obj_controller));
 
 numEntities = string(ds_list_size(global.entities));
 var total = 0;

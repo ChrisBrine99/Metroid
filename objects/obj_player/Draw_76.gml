@@ -56,8 +56,7 @@ if (!missilesEquipped){ // Sprites while missiles aren't equipped
 	if (onGround){
 		if (!crouching){
 			if (hspd >= 1 || hspd <= -1){ // Walking
-				if (!isShooting && !up) {sprite_index = sprWalk0;}
-				else if (!up) {sprite_index = sprWalk1m;}
+				if (!up) {sprite_index = sprWalk1m;}
 				else {sprite_index = sprWalk2m;}
 			} else{ // Standing Still
 				if (!up) {sprite_index = sprStand1m;}
