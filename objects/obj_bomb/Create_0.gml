@@ -7,6 +7,9 @@ event_inherited();
 // Set the explosion effect
 setExplodeFX = obj_bomb_explode;
 
+// Play the bomb setting sound effect
+scr_play_sound(snd_bomb_set, 0, false, true);
+
 // Set the blocks that the bomb can destroy
 blockToDestroy = DYNAMIC_BLOCK.BOMB;
 

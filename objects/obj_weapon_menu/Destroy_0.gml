@@ -4,22 +4,34 @@
 if (!fullMenu){
 	with(obj_player){
 		if (!inMorphball){ // Swapping Beams
-			var length = array_length_1d(isWeaponUnlocked);
+			var length, prevIndex;
+			length = array_length_1d(isWeaponUnlocked);
+			prevIndex = curWeaponIndex;
 			for (var i = curWeaponIndex + 1; i <= length; i++){
 				// Returning back to the Power Beam
 				if (i == length){
 					curWeaponIndex = 0;
 					fireRateTimer = 0;
-					missilesEquipped = false;
+					if (missilesEquipped){
+						missilesEquipped = false;
+						scr_play_sound(snd_missile_select, 0, false, true);
+					}
 					break;
 				}
 				// Checking for the next beam/missile that Samus can equip
 				if (isWeaponUnlocked[i]){
 					curWeaponIndex = i;
 					fireRateTimer = 0;
-					if (i == 5 || i == 6) {missilesEquipped = true;}
+					if ((i == 5 || i == 6) && !missilesEquipped){
+						missilesEquipped = true;
+						scr_play_sound(snd_missile_select, 0, false, true);
+					}
 					break;
 				}
+			}
+			// Play the sound for switeching weapons only if the weapon was actually changed
+			if (curWeaponIndex != prevIndex){
+				scr_play_sound(snd_beam_select, 0, false, true);
 			}
 		} else{
 			// TODO -- Swapping Bombs	
@@ -31,10 +43,15 @@ if (!fullMenu){
 		if (!inMorphball){
 			curWeaponIndex = index;
 			fireRateTimer = 0;
-			if (index == 5 || index == 6) {missilesEquipped = true;}
-			else {missilesEquipped = false;}
+			if ((index == 5 || index == 6) && !missilesEquipped){
+				missilesEquipped = true;
+				scr_play_sound(snd_missile_select, 0, false, true);
+			} else if (missilesEquipped){
+				missilesEquipped = false;
+				scr_play_sound(snd_missile_select, 0, false, true);
+			}
 		} else{
-			// TODO -- Swapping Bombs	
+			curBombIndex = index;	
 		}
 	}
 }

@@ -42,15 +42,19 @@ if (fullMenu){
 #region Input Functionality (Sifting through Menu/Closing it)
 
 if (fullMenu){
-	if (keyRight){
-		curIndex++;
-		if (curIndex > menuSize - 1){
-			curIndex = 0;	
-		}
-	} else if (keyLeft){
-		curIndex--;
-		if (curIndex < 0){
-			curIndex = menuSize - 1;	
+	if (menuSize > 1){
+		if (keyRight){
+			curIndex++;
+			if (curIndex > menuSize - 1){
+				curIndex = 0;	
+			}
+			scr_play_sound(snd_beam_select, 0, false, true);
+		} else if (keyLeft){
+			curIndex--;
+			if (curIndex < 0){
+				curIndex = menuSize - 1;	
+			}
+			scr_play_sound(snd_beam_select, 0, false, true);
 		}
 	}
 	

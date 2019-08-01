@@ -10,6 +10,9 @@ maxVspd = 8;
 accel = 0.5;
 damage = 25;
 
+// Play the Super Missile fire sound effect
+ scr_play_sound(snd_sMissile_fire, 0, false, true);
+
 // Set the explosion effect object
 FXobj = obj_sMissile_collide;
 

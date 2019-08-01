@@ -14,6 +14,9 @@ increment = 4;
 maxAmplitude = increment * 2;
 movingUp = false;
 
+// Play the Wave Beam sound effect
+scr_play_sound(snd_wave_beam, 0, false, true);
+
 // Enable the Wave Beam to pass through walls
 destroyOnWallCollide = false;
 

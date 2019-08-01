@@ -9,5 +9,8 @@ maxHspd = 7;
 maxVspd = 7;
 damage = 1;
 
+// Play the Ice Beam sound effect
+scr_play_sound(snd_ice_beam, 0, false, true);
+
 // Altering the ambient light's color
 ambLight.lightCol = c_aqua;

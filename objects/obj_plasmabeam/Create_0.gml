@@ -13,5 +13,8 @@ damage = 16;
 destroyOnWallCollide = false;
 destroyOnEntityCollide = false;
 
+// Play the Plasma Beam sound effect
+scr_play_sound(snd_plasma_beam, 0, false, true);
+
 // Altering the ambient light's color
 ambLight.lightCol = c_red;

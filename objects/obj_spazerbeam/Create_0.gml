@@ -14,6 +14,9 @@ increment = 2;
 maxAmplitude = increment * 3;
 movingUp = false;
 
+// Play the Spazer Beam sound effect
+scr_play_sound(snd_spazer_beam, 0, false, true);
+
 // Enable the Spazer Beam to pass through walls
 destroyOnWallCollide = false;
 

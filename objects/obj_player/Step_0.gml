@@ -55,6 +55,10 @@ if (onGround){
 		down = false;
 		// Reset Samus's vertical speed
 		vspd = 0;
+		// Stop the screw attack soound effect
+		if (audio_is_playing(snd_samus_screw_attack)){
+			audio_stop_sound(snd_samus_screw_attack);	
+		}
 	} 
 	if (inMorphball){ // Making the morphball bounce
 		if (vspdRecoil < 0){
@@ -90,6 +94,11 @@ if (keyJump){
 						jumpspin = true;
 					}
 				}
+				if (jumpspin && global.item[ITEM.SCREW_ATTACK]){ // Play the screw attack jump sound
+					scr_play_sound(snd_samus_screw_attack, 0, false, true);
+				} else{ // Play the normal jump sound
+					scr_play_sound(snd_samus_jump, 0, false, true);
+				}
 			} else{
 				// Somersaulting while airbourne
 				if (!jumpspin && !isShooting){
@@ -98,7 +107,12 @@ if (keyJump){
 					vspd = 0;
 				} else if (global.item[ITEM.SPACE_JUMP] && jumpspin){ // The Space Jump
 					if (vspd >= 2.5){
-						vspd = jumpSpd;	
+						vspd = lengthdir_y(jumpSpd + (vspdPenalty / 2), gravDir);
+						if (global.item[ITEM.SCREW_ATTACK]){ // Play the screw attack jump sound
+							scr_play_sound(snd_samus_screw_attack, 0, false, true);
+						} else{ // Play the normal jump sound
+							scr_play_sound(snd_samus_jump, 0, false, true);
+						}
 					}
 				}
 			}
@@ -106,6 +120,7 @@ if (keyJump){
 	} else{ // The Spring Ball's jump
 		if (onGround && global.item[ITEM.SPRING_BALL]){
 			vspd = jumpSpd * 0.8;
+			scr_play_sound(snd_samus_jump, 0, false, true);
 		}
 	}
 }
@@ -200,6 +215,7 @@ if (keyUp && !down){
 				vspdRecoil = 0;
 				if (!onGround) {vspd = 0;}
 				else {crouching = true;}
+				scr_play_sound(snd_samus_transform, 0, false, true);
 				// Update the HUD to display the current non-bomb weapon
 				with(obj_hud) {alarm[0] = 1;}
 			}
@@ -224,9 +240,11 @@ if (keyDown && !up){
 		if (onGround){
 			if (!inMorphball && !crouching){ // Crouching
 				crouching = true;
+				scr_play_sound(snd_samus_crouch, 0, false, true);
 			} else if (crouching && global.item[ITEM.MORPHBALL]){ // Entering Morphball
 				crouching = false;
-				inMorphball = true;	
+				inMorphball = true;
+				scr_play_sound(snd_samus_transform, 0, false, true);
 				with(obj_hud) {alarm[0] = 1;}
 			}
 		} else{ // Aiming Downward (Only while airbourne)
