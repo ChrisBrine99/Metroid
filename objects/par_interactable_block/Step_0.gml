@@ -14,9 +14,10 @@ image_speed = 1;
 
 #region Destroy when collected
 
-if (!instance_exists(obj_new_item_prompt)){
+if (!global.item[index + subIndex]){
 	if (place_meeting(x, y, obj_player)){
 		global.item[index + subIndex] = true;
+		// Create the Item Information Screen
 		var obj = instance_create_depth(0, 0, 15, obj_new_item_prompt);
 		obj.displayTxt = itemDescription;
 		obj.itemName = itemName;
@@ -24,6 +25,10 @@ if (!instance_exists(obj_new_item_prompt)){
 		obj.nameCol = nameCol;
 		obj.nameOCol = nameOCol;
 		obj.creatorID = id;
+		obj.fanfare = fanfare;
+		// Play the designated fanfare
+		audio_pause_all();
+		scr_play_sound(fanfare, 0, false, true);
 	}
 }
 

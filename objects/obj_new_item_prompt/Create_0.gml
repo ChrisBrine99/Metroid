@@ -26,3 +26,6 @@ blurID.sigma = 0.001;
 
 // Make the HUD invisible
 with(obj_hud) {isVisible = false;}
+
+// Stores which fanfare was played during collection
+fanfare = music_item_fanfare;

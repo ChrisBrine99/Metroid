@@ -2,7 +2,7 @@
 // You can write your code in this editor
 
 // Edit the item's index and subIndex
-index = ITEM.ICE_BEAM;
+index = ITEM.WAVE_BEAM;
 subIndex = 0;
 
 // Call the parent's create event

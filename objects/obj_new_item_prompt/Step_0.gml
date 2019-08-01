@@ -19,7 +19,7 @@ global.gameState = GAME_STATE.PAUSED;
 
 if (keyClose){
 	if (curDisplayedStr == displayTxt){ // Close the menu (Only if the full block of text is being displayed)
-		isClosing = true;	
+		isClosing = true;
 	} else{ // Display the whole block of text if it isn't being displayed already
 		curDisplayedStr = displayTxt;
 	}
@@ -47,6 +47,9 @@ if (!isClosing){ // Making the text fade in
 			instance_destroy(blurID);
 			blurID = noone;	
 		}
+		// Resume all audio that was playing before the player picked up the item
+		if (audio_is_playing(fanfare)) {audio_stop_sound(fanfare);}
+		audio_resume_all();
 	}
 	// Delete the creator object
 	if (creatorID != noone){

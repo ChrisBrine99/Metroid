@@ -146,7 +146,7 @@
             "Key": "104061c2-deef-4987-8c8e-6339ebdf1b4b",
             "Value": {
                 "id": "4915cac5-72bf-41ed-a270-49139108e95f",
-                "resourcePath": "sounds\\music_area2\\music_area2.yy",
+                "resourcePath": "sounds\\music_rocky_maridia\\music_rocky_maridia.yy",
                 "resourceType": "GMSound"
             }
         },
@@ -890,7 +890,7 @@
             "Key": "694c3983-92f7-4df4-a980-7b049fb17b1b",
             "Value": {
                 "id": "329ab953-4a55-4dbf-a510-587100bb935e",
-                "resourcePath": "sounds\\music_area1\\music_area1.yy",
+                "resourcePath": "sounds\\music_surface_sr388\\music_surface_sr388.yy",
                 "resourceType": "GMSound"
             }
         },
@@ -1135,6 +1135,14 @@
             }
         },
         {
+            "Key": "88b480a6-95b1-4981-ac58-7e7982a814e1",
+            "Value": {
+                "id": "0e42f4bb-31ac-4328-bba5-d4457d0a103c",
+                "resourcePath": "sounds\\music_item_fanfare\\music_item_fanfare.yy",
+                "resourceType": "GMSound"
+            }
+        },
+        {
             "Key": "8a167feb-210b-4c50-91eb-25fd32afede1",
             "Value": {
                 "id": "bf9b30dc-de1c-458a-9fa3-870007158d12",
@@ -1343,6 +1351,14 @@
             }
         },
         {
+            "Key": "a15867be-8eb7-4bec-b8de-ffdd275e26bf",
+            "Value": {
+                "id": "13ff2d23-d245-4d2e-82f8-23dfb7dbb327",
+                "resourcePath": "sounds\\music_brinstar\\music_brinstar.yy",
+                "resourceType": "GMSound"
+            }
+        },
+        {
             "Key": "a2217bf0-8a8e-4bbf-ad0a-d59ee2908736",
             "Value": {
                 "id": "0f0e6ec6-3736-469a-90ab-09707ea500f1",
@@ -1364,6 +1380,14 @@
                 "id": "322cb8e6-92d0-4232-883e-a64775f39575",
                 "resourcePath": "objects\\obj_slope2a_r\\obj_slope2a_r.yy",
                 "resourceType": "GMObject"
+            }
+        },
+        {
+            "Key": "a31de4e9-e597-4dc0-b0b6-e3496a08d02d",
+            "Value": {
+                "id": "152a00fa-2afb-4a18-92d4-70c9e1da2026",
+                "resourcePath": "scripts\\scr_play_sound\\scr_play_sound.yy",
+                "resourceType": "GMScript"
             }
         },
         {
@@ -1780,6 +1804,14 @@
                 "id": "169c424a-1f5e-49b4-84fa-14040934ac21",
                 "resourcePath": "options\\windows\\options_windows.yy",
                 "resourceType": "GMWindowsOptions"
+            }
+        },
+        {
+            "Key": "ce45152d-ba54-4d4f-a9cf-471f70d661b2",
+            "Value": {
+                "id": "bca92533-0291-4d3d-8f41-bcb7a33baf1a",
+                "resourcePath": "sounds\\music_item_room\\music_item_room.yy",
+                "resourceType": "GMSound"
             }
         },
         {
@@ -2228,6 +2260,7 @@
         "29421de3-8114-4570-800f-e5581ef2690d",
         "c9c02378-4717-4fac-933c-b6c228c0ce0c",
         "64f328e8-8152-4809-9c6b-49c0e4f64605",
+        "a31de4e9-e597-4dc0-b0b6-e3496a08d02d",
         "1a59e793-aa11-403b-953b-4247deddee6a"
     ],
     "tutorial": ""

@@ -30,6 +30,9 @@ if (alpha > 0){
 		} else{
 			curDisplayedStr	= displayTxt;
 		}
+	} else{ // Displaying the user prompt to close the menu
+		draw_set_halign(fa_center);
+		draw_text_outline(global.camWidth / 2, 112 + txtHalfHeight + 20, "Press [Z] To Continue", c_white, c_gray);
 	}
 	
 	// Drawing the item's description
@@ -38,11 +41,6 @@ if (alpha > 0){
 	if (txtAlignment == fa_center) {txtHalfWidth = 0;}
 	draw_text_outline((global.camWidth / 2) - txtHalfWidth, 112 - txtHalfHeight, curDisplayedStr, txtCol, txtOCol);
 	draw_set_halign(fa_center);
-	
-	// Displaying the user prompt to close the menu
-	if (curDisplayedStr == displayTxt){
-		draw_text_outline(global.camWidth / 2, 112 + txtHalfHeight + 20, "Press [Z] To Continue", c_white, c_gray);
-	}
 	
 	// Drawing the item's name
 	draw_set_font(font_gui_large);

@@ -15,6 +15,7 @@ itemDescription = "Default Description";
 scrollingText = true;						// If true, the item's description text will scroll onto the screen
 nameCol = c_red;							// The color of the item name
 nameOCol = c_maroon;						// The color of the item name text's outline
+fanfare = music_item_fanfare;				// The music that will play unpon the item being collected
 
 // Check if the object has already been collected
 alarm[0] = 1;

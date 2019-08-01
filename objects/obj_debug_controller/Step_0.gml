@@ -42,13 +42,23 @@ if (global.gameState != GAME_STATE.IN_GAME){
 if (keySongSwitch){
 	if (audio_is_playing(global.curSong)){
 		switch(global.curSong){
-			case music_area1:
-				global.curSong = music_area2;
+			case music_surface_sr388:
+				global.curSong = music_rocky_maridia;
 				global.offset = 9.046;
 				global.loopLength = 81.399;
 				break;
-			case music_area2:
-				global.curSong = music_area1;
+			case music_rocky_maridia:
+				global.curSong = music_brinstar;
+				global.offset = 0;
+				global.loopLength = 53.881;
+				break;
+			case music_brinstar:
+				global.curSong = music_item_room;
+				global.offset = 0.809;
+				global.loopLength = 40.548;
+				break;
+			case music_item_room:
+				global.curSong = music_surface_sr388;
 				global.offset = 9.359;
 				global.loopLength = 60.51;
 				break;
