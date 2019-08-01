@@ -12,34 +12,36 @@ keyDebug2 = keyboard_check(vk_lcontrol);
 
 #region Handling Background Music
 
-if (song != -1){
-	var curPos = audio_sound_get_track_position(song);
-	if (curPos > totalLength){
-		audio_sound_set_track_position(song, curPos - global.loopLength);
-	}
-	// Checking if the song has been changed while in the same room
-	if (global.curSong != curSong){
-		// Stopping the previous song
-		if (audio_sound_get_gain(curSong) == 0){
-			audio_stop_sound(curSong);
-			curSong = -1;
-			song = -1;
-			fadingOut = false;
-		} else if (!fadingOut){ // Starting the song's fade out
-			audio_sound_gain(curSong, 0, fadeTime);	
-			fadingOut = true;
+if (playMusic){
+	if (song != -1){
+		var curPos = audio_sound_get_track_position(song);
+		if (curPos > totalLength){
+			audio_sound_set_track_position(song, curPos - global.loopLength);
 		}
+		// Checking if the song has been changed while in the same room
+		if (global.curSong != curSong){
+			// Stopping the previous song
+			if (audio_sound_get_gain(curSong) == 0){
+				audio_stop_sound(curSong);
+				curSong = -1;
+				song = -1;
+				fadingOut = false;
+			} else if (!fadingOut){ // Starting the song's fade out
+				audio_sound_gain(curSong, 0, fadeTime);	
+				fadingOut = true;
+			}
+		}
+	} else{ // Play the new song
+		if (global.curSong != -1){
+			curSong = global.curSong;
+			song = audio_play_sound(curSong, 1000, false);
+			// Set the sound's volume to 0 and slowly fade it in over one second
+			audio_sound_gain(curSong, 0, 0);
+			audio_sound_gain(curSong, 1, 1000);
+			// Setting up the looping length variables
+			totalLength = global.loopLength + global.offset;
+		} 
 	}
-} else{ // Play the new song
-	if (global.curSong != -1){
-		curSong = global.curSong;
-		song = audio_play_sound(curSong, 1000, false);
-		// Set the sound's volume to 0 and slowly fade it in over one second
-		audio_sound_gain(curSong, 0, 0);
-		audio_sound_gain(curSong, 1, 1000);
-		// Setting up the looping length variables
-		totalLength = global.loopLength + global.offset;
-	} 
 }
 
 #endregion

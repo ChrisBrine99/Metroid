@@ -96,4 +96,7 @@ instance_create_depth(0, 0, 15, obj_hud);
 // Set Samus's sprites
 alarm[0] = 1;
 
+// Play her little intro fanfare
+scr_play_sound(music_samus_appears, 0, false, false);
+
 #endregion

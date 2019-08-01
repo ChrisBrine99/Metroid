@@ -455,6 +455,14 @@
             }
         },
         {
+            "Key": "373c576f-e56c-42d3-9893-1b712bd2a7ba",
+            "Value": {
+                "id": "a3615677-fb54-45c9-9cdf-6da703c8b749",
+                "resourcePath": "sounds\\music_samus_appears\\music_samus_appears.yy",
+                "resourceType": "GMSound"
+            }
+        },
+        {
             "Key": "37706e08-ed8e-4241-8fb1-70bf919d9300",
             "Value": {
                 "id": "083c1e1c-a2f6-4eb3-83f8-ff83fe80f87f",

@@ -29,6 +29,7 @@ for (var d = 0; d < global.totalLockedDoors; d++){
 curSong = -1;
 song = -1;
 fadingOut = false;
+playMusic = false;
 totalLength = 0;
 fadeTime = 300;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 // Unseen here are:

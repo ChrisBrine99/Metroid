@@ -24,7 +24,10 @@ if (!canMove){
 
 if (!hasStarted){
 	if (keyRight || keyLeft){
-		hasStarted  = true;	
+		if (!audio_is_playing(music_samus_appears)){
+			hasStarted  = true;	
+			with(obj_controller) {playMusic = true;}
+		}
 	}
 	return;	
 }
