@@ -14,7 +14,23 @@ image_speed = 1;
 
 #region Destroy when collected
 
-if (!global.item[index + subIndex]){
+// Check if the object is hidden
+var blockAbove = instance_place(x, y, par_destructable_block);
+if (blockAbove != noone){
+	if (!isHidden){
+		visible = false;
+		isHidden = true;
+		ambLight.canDraw = false;
+	}
+} else{
+	if (isHidden){
+		visible = true;
+		isHidden = false;
+		ambLight.canDraw = true;
+	}
+}
+// Check for collision with the item only when the object is visible
+if (!isHidden && !global.item[index + subIndex]){
 	if (place_meeting(x, y, obj_player)){
 		global.item[index + subIndex] = true;
 		// Create the Item Information Screen

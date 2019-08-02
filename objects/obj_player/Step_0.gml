@@ -466,6 +466,17 @@ if (inMorphball){
 
 // TODO -- Add in collision between the various interactable objects. (Ex. Enemies, Water, Lava, etc.)
 
+// Colliding with a warp
+var warp = instance_place(x, y, obj_warp);
+if (warp != noone){
+	// Enable this warp and go to its destinatino
+	with(warp){
+		isWarping = true;
+		// TODO -- Add Fade Transition object
+		//fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
+	}
+}
+
 // Calling the Entity Collision script
 scr_entity_collision(true, true, false);
 

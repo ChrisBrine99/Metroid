@@ -28,11 +28,14 @@ if (!ds_list_empty(global.lightSources)){
 		// Draw a light to the surface for every light that is currently active
 		var curLight = ds_list_find_value(global.lightSources, i);
 		with(curLight){
-			// Only draw the light if it is visible on screen
-			if (x > global.camX - xRad && y > global.camY - yRad && x < global.camX + global.camWidth + xRad && y < global.camY + global.camHeight + yRad){
-				draw_ellipse_color(x - xRad - global.camX, y - yRad - global.camY, x + xRad - global.camX, y + yRad - global.camY, lightCol, c_black, false);
-				other.numDrawn++;
-			} 
+			// If the light is disabled, don't bother checking if it is on screen
+			if (canDraw){
+				// Only draw the light if it is visible on screen
+				if (x > global.camX - xRad && y > global.camY - yRad && x < global.camX + global.camWidth + xRad && y < global.camY + global.camHeight + yRad){
+					draw_ellipse_color(x - xRad - global.camX, y - yRad - global.camY, x + xRad - global.camX, y + yRad - global.camY, lightCol, c_black, false);
+					other.numDrawn++;
+				} 
+			}
 		}
 	}
 }

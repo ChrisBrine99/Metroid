@@ -32,7 +32,7 @@ fadingOut = false;
 playMusic = false;
 totalLength = 0;
 fadeTime = 300;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
-// Unseen here are:
+// Unseen Here Are:
 //		global.curSong	--	The current song that is playing in the background.
 //		global.offset	--	The amount of time in seconds to start from when looping a song.
 

@@ -6,7 +6,8 @@
     "children": [
         "9662fa72-6cd6-4afd-a83f-3f16d2c24273",
         "d2af8825-fefe-4ffb-a508-592669349dde",
-        "f9f37eaf-7f20-4055-be93-a708d903c328"
+        "f9f37eaf-7f20-4055-be93-a708d903c328",
+        "34cc8e13-4d72-4e43-ae1a-c6dad61a7a73"
     ],
     "filterType": "GMObject",
     "folderName": "Collision Blocks",

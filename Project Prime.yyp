@@ -39,6 +39,14 @@
             }
         },
         {
+            "Key": "0043c2ae-cfdf-4ada-a48b-ed1d5cb8d6c9",
+            "Value": {
+                "id": "4f49095c-cf8e-4865-a8b6-ad1ea5777cf6",
+                "resourcePath": "objects\\obj_warp\\obj_warp.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "00cc8555-d9e0-4687-b32a-0ec553835762",
             "Value": {
                 "id": "d6f342e9-851f-4e47-a0ad-1235d3bc9e74",
@@ -492,6 +500,14 @@
                 "id": "b443d33b-bf1b-47e7-8b0e-22c80a5a5f7e",
                 "resourcePath": "sprites\\spr_power_jump0\\spr_power_jump0.yy",
                 "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "34cc8e13-4d72-4e43-ae1a-c6dad61a7a73",
+            "Value": {
+                "id": "a06c3ac1-1f9b-4e57-81e0-41423e543aaa",
+                "resourcePath": "views\\34cc8e13-4d72-4e43-ae1a-c6dad61a7a73.yy",
+                "resourceType": "GMFolder"
             }
         },
         {
@@ -1015,11 +1031,27 @@
             }
         },
         {
+            "Key": "6aefd399-4724-4411-9a7f-46c558916afc",
+            "Value": {
+                "id": "65ce4261-7a69-4164-b0de-9e0469faafce",
+                "resourcePath": "objects\\obj_dblock_item_ball\\obj_dblock_item_ball.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "6b29ae7c-332b-4e72-ad2b-7d64765d147e",
             "Value": {
                 "id": "c87a91a1-57a2-4c45-a028-26ea9be8478c",
                 "resourcePath": "sounds\\snd_wave_beam\\snd_wave_beam.yy",
                 "resourceType": "GMSound"
+            }
+        },
+        {
+            "Key": "6b3ef3b3-165e-4ae8-8056-abf0b392f610",
+            "Value": {
+                "id": "b697cb00-8dc8-4780-a102-a582d6aebfa7",
+                "resourcePath": "sprites\\spr_warp\\spr_warp.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
@@ -2092,6 +2124,14 @@
                 "id": "dcc3ddb3-b2b4-4a9a-b4f7-1389b405ace5",
                 "resourcePath": "sprites\\spr_varia_morphball1\\spr_varia_morphball1.yy",
                 "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "d73c58fb-b3f1-4468-aa6a-11dd37f88672",
+            "Value": {
+                "id": "e2963faa-ae81-428e-9987-c706c3212e7f",
+                "resourcePath": "views\\d73c58fb-b3f1-4468-aa6a-11dd37f88672.yy",
+                "resourceType": "GMFolder"
             }
         },
         {

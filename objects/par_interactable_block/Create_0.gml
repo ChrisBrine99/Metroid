@@ -9,6 +9,9 @@ yOffset = 7;			// The offset on the y-axis that the light should be placed at
 // If true, the item will be destroyed and not give out its reward.
 hasCollected = false;
 
+// If true, the item will be hidden behind a destructable object
+isHidden = false;
+
 // Variables that will be passed onto the item prompt object
 itemName = "Default Name";
 itemDescription = "Default Description";

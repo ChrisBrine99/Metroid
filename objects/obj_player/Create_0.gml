@@ -85,10 +85,12 @@ vspdRecoil = 0;
 
 // Holds the instance ID for the ambient light that is around Samus
 ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
-ambLight.xRad = 35;
-ambLight.yRad = 35;
-ambLight.lightCol = c_ltgray;
-ambLight.persistent = true;
+with(ambLight){
+	xRad = 35;
+	yRad = 35;
+	lightCol = c_ltgray;
+	persistent = true;
+}
 
 // Create the in-game HUD
 instance_create_depth(0, 0, 15, obj_hud);
