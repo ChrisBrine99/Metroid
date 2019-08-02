@@ -46,9 +46,9 @@ instance_create_depth(64, 64, 305, obj_player);
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_brinstar;
+global.curSong = music_save_room;
 global.offset = 0;
-global.loopLength = 53.881;
+global.loopLength = 58.124;
 
 // Songs and their offsets/lengths:
 //
@@ -56,6 +56,8 @@ global.loopLength = 53.881;
 // 8-bit Rocky Maridia		--		offset =	9.046,	loopLength =	81.399
 // Brinstar					--		offset =	0.000,	loopLength =	53.881
 // Item Room				--		offset =	0.809,	loopLength =	40.548
+// Unknown0					--		offset =	0.000,	loopLength =	85.719
+// Save Room Theme			--		offset =	0.000,	loopLength =	58.124
 //
 //	These stupid fucking values are beyond tedious to figure out pls send help
 

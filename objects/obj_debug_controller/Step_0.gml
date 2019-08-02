@@ -58,6 +58,16 @@ if (keySongSwitch){
 				global.loopLength = 40.548;
 				break;
 			case music_item_room:
+				global.curSong = music_unknown0;
+				global.offset = 0;
+				global.loopLength = 85.719;
+				break;
+			case music_unknown0:
+				global.curSong = music_save_room;
+				global.offset = 0;
+				global.loopLength = 58.124;
+				break;
+			case music_save_room:
 				global.curSong = music_surface_sr388;
 				global.offset = 9.359;
 				global.loopLength = 60.51;

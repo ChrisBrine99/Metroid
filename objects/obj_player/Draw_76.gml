@@ -26,7 +26,7 @@ if (inMorphball){
 if (!missilesEquipped){ // Sprites while missiles aren't equipped
 	if (onGround){ // Sprites while grounded
 		if (!crouching){
-			if (hspd > 0.9 || hspd < -0.9){ // Walking
+			if (hspd > 0.5 || hspd < -0.5){ // Walking
 				if (!isShooting && !up) {sprite_index = sprWalk0;}
 				else if (!up) {sprite_index = sprWalk1;}
 				else {sprite_index = sprWalk2;}
@@ -55,7 +55,7 @@ if (!missilesEquipped){ // Sprites while missiles aren't equipped
 } else{ // Sprites while missiles are equipped
 	if (onGround){
 		if (!crouching){
-			if (hspd >= 1 || hspd <= -1){ // Walking
+			if (hspd > 0.5 || hspd < -0.5){ // Walking
 				if (!up) {sprite_index = sprWalk1m;}
 				else {sprite_index = sprWalk2m;}
 			} else{ // Standing Still

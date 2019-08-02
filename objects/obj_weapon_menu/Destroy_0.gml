@@ -41,14 +41,16 @@ if (!fullMenu){
 	var index = weaponInfo[curIndex, 3];
 	with(obj_player){
 		if (!inMorphball){
-			curWeaponIndex = index;
-			fireRateTimer = 0;
-			if ((index == 5 || index == 6) && !missilesEquipped){
-				missilesEquipped = true;
-				scr_play_sound(snd_missile_select, 0, false, true);
-			} else if (missilesEquipped){
-				missilesEquipped = false;
-				scr_play_sound(snd_missile_select, 0, false, true);
+			if (index != curWeaponIndex){
+				curWeaponIndex = index;
+				fireRateTimer = 0;
+				if ((index == 5 || index == 6) && !missilesEquipped){
+					missilesEquipped = true;
+					scr_play_sound(snd_missile_select, 0, false, true);
+				} else if ((index < 5 || index > 6) && missilesEquipped){
+					missilesEquipped = false;
+					scr_play_sound(snd_missile_select, 0, false, true);
+				}
 			}
 		} else{
 			curBombIndex = index;	
