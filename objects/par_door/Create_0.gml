@@ -13,9 +13,10 @@ open = false;
 if (distance_to_object(obj_player) <= 16){
 	image_index = 2;
 	open = true;
-}
-// If true, the door will be opening from projectile/bomb collision
-unlocked = false;
+}	
+unlocked = false;		// If true, the door will be opening from projectile/bomb collision
+soundHasPlayed = false; // If true, the sound of the door opening/closing will no longer play
+index = -1;				// The index the door will set to true when opened by the player
 
 // Make sure the projectile knows that this block is not generic
 isGeneric = false;

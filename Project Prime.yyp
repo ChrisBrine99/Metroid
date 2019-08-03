@@ -351,6 +351,14 @@
             }
         },
         {
+            "Key": "2165cc90-183d-47ce-9242-1a24213e5657",
+            "Value": {
+                "id": "629f9b18-d98e-4d15-8f0d-fdcdcee27fdb",
+                "resourcePath": "sounds\\snd_projectile_ping\\snd_projectile_ping.yy",
+                "resourceType": "GMSound"
+            }
+        },
+        {
             "Key": "22308374-af9f-45f0-80d5-320f0d3b7758",
             "Value": {
                 "id": "d8cb74a6-837d-4874-ab7f-fc5aa2b6c89e",
@@ -1500,6 +1508,14 @@
                 "id": "b280ce56-6a15-4699-86c3-60534d4d4537",
                 "resourcePath": "views\\912fbb33-2d92-41ba-8c93-6026d4b33977.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "91d4b045-f1de-454e-980c-7e6b1f0962ec",
+            "Value": {
+                "id": "7aa8d03a-098a-4db5-adae-757556ab5571",
+                "resourcePath": "sounds\\snd_door\\snd_door.yy",
+                "resourceType": "GMSound"
             }
         },
         {

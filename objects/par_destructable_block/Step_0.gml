@@ -1,6 +1,8 @@
 /// @description Checking for collision with the required projectile/bomb/entity.
 // You can write your code in this editor
 
+#region Determine if the Object Should be Actively Checking Collisions
+
 // Freeze the block if the game is paused
 if (global.gameState == GAME_STATE.PAUSED){
 	checkForCollision = false;
@@ -14,6 +16,10 @@ if (global.camX - 32 < x && global.camY - 32 < y && global.camX + global.camWidt
 	checkForCollision = false;
 }
 
+#endregion
+
+#region Checking for Collisions with Objects that Can Destroy the Block
+
 if (!isDestroyed){
 	mask_index = sprite_index;
 	if (checkForCollision){
@@ -25,6 +31,7 @@ if (!isDestroyed){
 					var obj = instance_nearest(x, y, setObject[i]);
 					if (place_meeting(x - sign(obj.hspd), y - sign(obj.vspd), obj)){
 						if (destroyTimerMax > 0){
+							hidden = false;
 							isDestroyed = true;
 							destroyTimer = destroyTimerMax;
 						} else{
@@ -45,6 +52,8 @@ if (!isDestroyed){
 			var proj = instance_nearest(x, y, par_projectile);
 			if (place_meeting(x - sign(proj.hspd), y - sign(proj.vspd), proj)){
 				if (proj.destroyOnWallCollide) {instance_destroy(proj);}
+				// Make the hidden block visible if it was hidden
+				hidden = false;
 			}
 		}
 	}
@@ -60,3 +69,5 @@ if (!isDestroyed){
 		}
 	}
 }
+
+#endregion

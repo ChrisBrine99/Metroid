@@ -12,7 +12,19 @@ if (open){
 		image_speed = 0;
 		image_index = 0;
 		open = false;
+		soundHasPlayed = false;
+		return;
+	}
+	// Play the Door sound effect
+	if (!soundHasPlayed){
+		scr_play_sound(snd_door, 0, false, true);
+		soundHasPlayed = true;
 	}
 } else if (unlocked){
-	image_speed = 1;	
+	image_speed = 1;
+	// Play the Door sound effect
+	if (!soundHasPlayed){
+		scr_play_sound(snd_door, 0, false, true);
+		soundHasPlayed = true;
+	}
 }

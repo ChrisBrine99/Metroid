@@ -1,9 +1,8 @@
-/// @description Initializing Important Variables
+/// @description Altering Some Variables
 // You can write your code in this editor
-
-// The block type and how long the blcok will stay destroyed for
-blockType = DYNAMIC_BLOCK.NORMAL;
-destroyTimerMax = 600;
 
 // Calling the parent's create event
 event_inherited();
+
+// Adjust how long the normal block can stay destroyed for. (10 seconds at a time)
+destroyTimerMax = 600;

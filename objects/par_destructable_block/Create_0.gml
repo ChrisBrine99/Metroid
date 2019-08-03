@@ -4,28 +4,15 @@
 // Let collision know that this isn't a generic block
 isGeneric = false;
 
-// The default for the setObject variable
-setObject[0] = noone;
-if (blockType == DYNAMIC_BLOCK.NORMAL){ // Destroyed by everything
-	setObject[0] = par_projectile;
-	setObject[1] = obj_bomb_explode;
-	//setObject[2] = obj_pBomb_explode;
-} else if (blockType == DYNAMIC_BLOCK.MISSILE){ // Destroyed by the missile and super missile
-	setObject[0] = obj_missile;
-	setObject[1] = obj_sMissile;
-} else if (blockType == DYNAMIC_BLOCK.SUPER_MISSILE){ // Destroyed by super missiles
-	setObject[0] = obj_sMissile;
-} else if (blockType == DYNAMIC_BLOCK.BOMB){ // Destroyed by bombs and power bombs
-	setObject[0] = obj_bomb_explode;
-	//setObject[1] = obj_pBomb_explode;
-}
-entityNum = array_length_1d(setObject);
-
 // Variables that keep track of the block's current state
-isDestroyed = false;
-destroyTimer = 0;
-checkForCollision = true;
-// Unseen:		destroyTimerMax		-- The maximum number of frames a block will be destroyed for.
-//				blockType			-- Determines what objects destroy this block.
-//				hidden				-- If true, the block will be disguised as a regular tile.
-//				hiddenImg			-- The index of the block's hidden sprite.
+isDestroyed = false;				// If true, the block will be destroy either temporarily or until the user exits the room.
+destroyTimer = 0;					// The time in frames before the block will regenerate.
+destroyTimerMax = 0;				// The maximum number of frames a block will be destroyed for.
+checkForCollision = true;			// If false, any collision checks will not execute.
+blockType = DYNAMIC_BLOCK.NORMAL;	// Determines what objects destroy this block.
+hidden = false;						// If true, the block will be hidden by a tile.
+tileMap = noone;					// Holds the tileMap on the layer that the hidden block will draw to.
+tileData = noone;					// Holds the tile that will be drawn on top of the hidden block.
+
+// Check if the block should be hidden
+alarm[0] = 1;

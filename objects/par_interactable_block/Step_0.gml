@@ -6,6 +6,11 @@
 // Don't allow the player to collide with an interactable object whent the game is paused
 if (global.gameState != GAME_STATE.IN_GAME){
 	image_speed = 0;
+	// Don't draw the ambient light if the item is hidden
+	if (instance_place(x, y, par_destructable_block) != noone){
+		visible = false;
+		ambLight.canDraw = false;
+	}
 	return;	
 }
 image_speed = 1;

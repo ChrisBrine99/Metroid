@@ -1,8 +1,7 @@
 /// @description Check if Unlocked Already
 // You can write your code in this editor
 
-indexExists = variable_instance_exists(id, "index");
-if (indexExists){
+if (index >= 0){
 	if (global.door[index]){
 		// Create Generic Door
 		instance_create_depth(x, y, depth, obj_door_normal);

@@ -2,8 +2,6 @@
 // You can write your code in this editor
 
 if (!open){
-	if (indexExists){
-		if (index >= 0) {global.door[index] = true;}
-	}
+	if (index >= 0) {global.door[index] = true;}
 	instance_destroy(self);
 }
