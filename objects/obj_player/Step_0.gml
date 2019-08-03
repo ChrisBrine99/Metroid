@@ -472,8 +472,28 @@ if (warp != noone){
 	// Enable this warp and go to its destinatino
 	with(warp){
 		isWarping = true;
-		// TODO -- Add Fade Transition object
-		//fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
+		fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
+		// Set up the warp to create the sprite sweeping transition
+		with(fadeID){
+			// Set up the sprite sweep to use Samus's current sprite and position
+			effectID = instance_create_depth(obj_player.x - global.camX, obj_player.y - global.camY, 40, obj_sprite_sweep_transition);
+			with(effectID){
+				fadeID = warp.fadeID;
+				curRoom = room;
+				// Starting coordinates
+				startXPos = x;
+				startYPos = y;
+				// Set the transition speed
+				transitionSpd = 5;
+				// The sprite parameters being passed on from the PLayer to this
+				playerSpr = obj_player.sprite_index;
+				curImg = obj_player.image_index;
+				imgXScale = sign(obj_player.image_xscale);
+				imgYScale = sign(obj_player.image_yscale);
+			}
+			// Alter the opaque time to 0.5 seconds
+			opaqueTime = 30;
+		}
 	}
 }
 

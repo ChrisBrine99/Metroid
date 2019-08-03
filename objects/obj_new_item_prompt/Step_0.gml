@@ -38,8 +38,9 @@ if (!isClosing){ // Making the text fade in
 		alpha -= 0.1;	
 	} else{
 		instance_destroy(self);
-		// Make the HUD visible again
+		// Make the HUD visible again and unfreeze the camera
 		with(obj_hud) {isVisible = true;}
+		with(obj_camera) {camSpd = 1;}
 		// Return the Game State back to normal
 		global.gameState = GAME_STATE.IN_GAME;
 		// Destroy the background blur

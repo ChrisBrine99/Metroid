@@ -8,32 +8,19 @@ viewY = global.camHeight * global.yScale;
 window_set_size(viewX, viewY);
 surface_resize(application_surface, viewX, viewY);
 
-// Check if the camera needs to be unlocked for whatever reason
-if (global.gameState != GAME_STATE.IN_GAME){
-	curObject = self;
-}
-
 // Only move the camera based on the object it is following when the camera isn't shaking
 if (isLocked){
-	// Check what object the camera should be following
-	if (curObject == self){
-		if (global.gameState == GAME_STATE.IN_GAME){
-			// Only attempt to lock the camera back onto the player if they already exist
-			if (instance_exists(obj_player)){
-				curObject = obj_player;
-			}
-		}
-	} else{
+	if (curObject != self){
 		// Move the camera toward where it needs to go
-		x += (xTo - x) / 5;
-		y += (yTo - y) / 5;
-		// Setting camera bounds
-		scr_camera_bounds(0, 0, room_width, room_height);
+		x += ((xTo - x) / 5) * camSpd;
+		y += ((yTo - y) / 5) * camSpd;
 		// Update the next goto position for the camera
 		xTo = curObject.x;
 		yTo = curObject.y;
 	}
 }
+// Setting camera bounds
+scr_camera_bounds(0, 0, room_width, room_height);
 
 // Getting the x and y position of the camera
 global.camX = obj_camera.x - (global.camWidth / 2);

@@ -24,6 +24,7 @@ if (instance_exists(obj_player)){
 }
 xTo = x;
 yTo = y;
+camSpd = 1;
 
 // TEMPORARY CODE ///////////////////////////////////////////////////
 

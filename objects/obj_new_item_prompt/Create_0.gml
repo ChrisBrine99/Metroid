@@ -24,8 +24,9 @@ creatorID = noone;		// The instance ID of the object that created this
 blurID = instance_create_depth(0, 0, 50, obj_blur);
 blurID.sigma = 0.001;
 
-// Make the HUD invisible
+// Make the HUD invisible and freeze the Camera
 with(obj_hud) {isVisible = false;}
+with(obj_camera) {camSpd = 0;}
 
 // Stores which fanfare was played during collection
 fanfare = music_item_fanfare;

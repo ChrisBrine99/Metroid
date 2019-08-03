@@ -31,7 +31,7 @@ if (alpha > 0){
 											   numLightSources + "\n" + 
 											   numDrawnLights, c_fuchsia, c_purple);
 	// Control Information
-	draw_text_outline(global.camWidth - 5, 162, "Change BGM -- [M]\nExit Menu -- [D]", c_white, c_gray);
+	draw_text_outline(global.camWidth - 5, 154, "Disable BGM -- [L-Ctrl + M]\nChange BGM -- [M]\nExit Menu -- [D]", c_white, c_gray);
 	
 	draw_set_halign(fa_left);
 	// Camera Position Information
