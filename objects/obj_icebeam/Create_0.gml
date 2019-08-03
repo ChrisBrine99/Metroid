@@ -9,6 +9,9 @@ maxHspd = 7;
 maxVspd = 7;
 damage = 1;
 
+// Modify what door the Ice Beam can open
+primaryDoor = DOOR_TYPE.ICE;	
+
 // Play the Ice Beam sound effect
 scr_play_sound(snd_ice_beam, 0, false, true);
 

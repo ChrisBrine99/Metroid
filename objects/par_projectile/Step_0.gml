@@ -52,6 +52,25 @@ image_angle = direction;
 
 #region Collision with the World And Other Entities
 
+// Checking for collisions with the game's various doors
+if (instance_exists(par_door)){
+	var door, type;
+	door = instance_nearest(x + sign(hspd), y + sign(vspd), par_door);
+	type = door.doorType;
+	// Make sure the door can actually be opened by the current projectile
+	if (place_meeting(x + sign(hspd), y + sign(vspd), door)){
+		if (type == DOOR_TYPE.NORMAL || type == primaryDoor || type == secondaryDoor){
+			// Start the animation that will end with the door being destroyed
+			with(door) {unlocked = true;}
+		} else{ // Change theexplosion effect to the default "didn't do anything" collision
+			destroyFX = true;
+			FXobj = obj_generic_collide;
+		}
+		// Destroy the projectile if it can collide with walls
+		if (destroyOnWallCollide) {instance_destroy(self);}
+	}
+}
+
 // Checking for collisions with walls
 scr_entity_collision(false, destroyOnWallCollide, destroyOnWallCollide);
 

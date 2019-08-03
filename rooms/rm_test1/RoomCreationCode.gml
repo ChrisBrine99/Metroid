@@ -2,9 +2,9 @@
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_rocky_maridia;
-global.offset = 9.046;
-global.loopLength = 81.399;
+global.curSong = music_brinstar;
+global.offset = 0;
+global.loopLength = 53.881;
 
 // Songs and their offsets/lengths:
 //
@@ -19,6 +19,15 @@ global.loopLength = 81.399;
 
 // Only execute this code before the game actually begins
 if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
+	// The Enumerator to keep track of the game's current state
+	enum GAME_STATE{
+		IN_GAME = 1000,
+		PAUSED = 1001,
+		CUTSCENE = 1002,
+		IN_MENU = 1003,
+	};
+	global.gameState = GAME_STATE.IN_GAME;	// TODO -- Change to "GAME_STATE.IN_MENU" when moving this code later.
+	
 	// The Enumerator for the unique item values for important items
 	enum ITEM{
 		MORPHBALL = 0,
@@ -39,16 +48,7 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		POWER_BOMBS = 100,
 		ENERGY_TANKS = 125,
 	};
-
-	// The Enumerator to keep track of the game's current state
-	enum GAME_STATE{
-		IN_GAME = 1000,
-		PAUSED = 1001,
-		CUTSCENE = 1002,
-		IN_MENU = 1003,
-	};
-	global.gameState = GAME_STATE.IN_GAME;	// TODO -- Change to "GAME_STATE.IN_MENU" when moving this code later.
-
+	
 	// The Enumerator for the hierarchy of destructable blocks in the game
 	enum DYNAMIC_BLOCK{
 		FALL_THROUGH = 100,
@@ -58,6 +58,18 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		BOMB = 200,
 		POWER_BOMB = 201,
 		SCREW_ATTACK = 250,
+	};
+	
+	// The Enumerator for the different types of doors that can be found in the game
+	enum DOOR_TYPE{
+		NORMAL = 300,
+		ICE = 301,
+		WAVE = 302,
+		SPAZER = 303,
+		PLASMA = 304,
+		MISSILE = 305,
+		SUPER_MISSILE = 306,
+		POWER_BOMB = 307,
 	};
 
 	// Creating the Player

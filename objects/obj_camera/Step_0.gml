@@ -23,12 +23,12 @@ if (isLocked){
 scr_camera_bounds(0, 0, room_width, room_height);
 
 // Getting the x and y position of the camera
-global.camX = obj_camera.x - (global.camWidth / 2);
-global.camY = obj_camera.y - (global.camHeight / 2);
+global.camX = x - (global.camWidth / 2);
+global.camY = y - (global.camHeight / 2);
 
 // Deactivating objects outside of the camera's view
 instance_deactivate_object(obj_culled_object);
-instance_activate_region(x - (global.camWidth / 2) - 16, y - (global.camHeight / 2) - 16, x + (global.camWidth / 2) + 32, y + (global.camHeight / 2) + 32, true);
+instance_activate_region(global.camX - 48, global.camY - 48, global.camX + global.camWidth + 48, global.camY + global.camHeight + 48, true);
 
 // Resetting the view matrix
 var vm = matrix_build_lookat(x, y, -10, x, y, 0, 0, 1, 0);

@@ -14,6 +14,11 @@ offsetY = 0;							// The offset on the y-axis from the entity's origin
 destroyFX = true;						// If true, an explosion effect will spawn
 FXobj = noone;							// The object that will be used for the destroy effect
 
+
+// Unique Variables for what doors the projectile can collide with
+primaryDoor = DOOR_TYPE.NORMAL;			// The main door this projectile can unlock (Normal is a generic default)
+secondaryDoor = DOOR_TYPE.NORMAL;		// The secondary door this projectile can unlock (Normal is a generic default)
+
 // Correctly setting the position of the projectile
 visible = false;
 alarm[0] = 1;

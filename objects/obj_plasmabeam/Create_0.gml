@@ -13,6 +13,9 @@ damage = 16;
 destroyOnWallCollide = false;
 destroyOnEntityCollide = false;
 
+// Modify what door the Plasma Beam can open
+primaryDoor = DOOR_TYPE.PLASMA;
+
 // Play the Plasma Beam sound effect
 scr_play_sound(snd_plasma_beam, 0, false, true);
 
