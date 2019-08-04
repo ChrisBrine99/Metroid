@@ -43,8 +43,9 @@ if (!isDestroyed){
 						if (variable_instance_exists(obj, "destroyOnWallCollide")){
 							if (obj.destroyOnWallCollide) {instance_destroy(obj);}	
 						}
+						return;
 					}
-				} 
+				}
 			}
 		}
 		// Check for collisions with generic projectiles

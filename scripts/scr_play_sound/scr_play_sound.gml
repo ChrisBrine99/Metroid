@@ -5,15 +5,18 @@
 /// @param soundLoops
 /// @param stopPrevious
 
-var soundId, soundPriority, soundLoops, stopPrevious;
+var soundId, soundPriority, soundLoops, stopPrevious, sound;
 soundId = argument0;
 soundPriority = argument1;
 soundLoops = argument2;
 stopPrevious = argument3;
+sound = -1;
 
 // Stopping the sound from playing multiple times at once
 if (stopPrevious){
 	if (audio_is_playing(soundId)) {audio_stop_sound(soundId);}
 }
 // Play the sound
-audio_play_sound(soundId, soundPriority, soundLoops);
+sound = audio_play_sound(soundId, soundPriority, soundLoops);
+
+return sound;

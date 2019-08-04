@@ -15,6 +15,14 @@ if (!hasStarted){
 	return;
 }
 
+// Setting the image speed while on the ground
+if (onGround) {image_speed = abs(hspd / maxHspd);}
+else {image_speed = 1;}
+
+// Setting the direction that samus is facing
+if (facingRight) {image_xscale = 1;}
+else {image_xscale = -1;}
+
 // Morphball Sprites
 if (inMorphball){
 	sprite_index = sprMorphball1;
@@ -81,13 +89,5 @@ if (!missilesEquipped){ // Sprites while missiles aren't equipped
 		}
 	}
 }
-
-// Setting the image speed while on the ground
-if (onGround) {image_speed = abs(hspd / maxHspd);}
-else {image_speed = 1;}
-
-// Setting the direction that samus is facing
-if (facingRight) {image_xscale = 1;}
-else {image_xscale = -1;}
 
 /////////////////////////////////////////////////////////////////////////////////////////

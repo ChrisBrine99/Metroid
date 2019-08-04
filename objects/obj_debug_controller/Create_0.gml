@@ -18,3 +18,6 @@ numDrawnLights = defaultVal;
 // The alpha level for the debug menu
 alpha = 0;
 fadeDestroy = false;
+
+// Variable to check if all Items is enabled
+allItems = false;

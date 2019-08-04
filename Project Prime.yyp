@@ -159,6 +159,14 @@
             }
         },
         {
+            "Key": "0acba72b-34b0-4485-9600-18c37083c325",
+            "Value": {
+                "id": "c6cdce73-aaa9-43b7-80e5-794b162cebb8",
+                "resourcePath": "sounds\\snd_samus_land\\snd_samus_land.yy",
+                "resourceType": "GMSound"
+            }
+        },
+        {
             "Key": "0b1e79bd-e89c-449f-8cc2-15ee3ea5102b",
             "Value": {
                 "id": "c9a1be60-f682-4617-9503-cd82f3bb1784",
@@ -586,7 +594,7 @@
             "Key": "3729b3d8-687c-4dc5-8ae1-5f41b37e0aa2",
             "Value": {
                 "id": "1406c539-0249-47ef-838e-93f5303d7742",
-                "resourcePath": "scripts\\scr_fade_transition\\scr_fade_transition.yy",
+                "resourcePath": "scripts\\draw_create_prompt\\draw_create_prompt.yy",
                 "resourceType": "GMScript"
             }
         },
@@ -1863,6 +1871,14 @@
             }
         },
         {
+            "Key": "aea32372-99d3-4a70-8cfd-3cbc6fd1dd76",
+            "Value": {
+                "id": "8c6e544b-ac31-4c94-ad93-d104cad59db8",
+                "resourcePath": "objects\\obj_jumpspin_effect\\obj_jumpspin_effect.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "aeb9bcca-a2ae-4b54-a7c4-3a9bb0c12bbb",
             "Value": {
                 "id": "f7fa4201-f878-4c9f-b3ec-8321a4e02572",
@@ -2348,6 +2364,14 @@
                 "id": "e2963faa-ae81-428e-9987-c706c3212e7f",
                 "resourcePath": "views\\d73c58fb-b3f1-4468-aa6a-11dd37f88672.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "d88638b5-e1c7-4b65-986a-69ae34759f12",
+            "Value": {
+                "id": "c8fe4f68-28ca-4e0a-8d6a-b16136c7d489",
+                "resourcePath": "objects\\obj_on_screen_prompt\\obj_on_screen_prompt.yy",
+                "resourceType": "GMObject"
             }
         },
         {

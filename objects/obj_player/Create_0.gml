@@ -21,7 +21,7 @@ damageRes = 1;					// 1 = 100%, 0.5 = 50%, etc.
 
 // Some variables for currently equipped projectile and what has been unlocked yet
 curWeaponIndex = 0;
-for (var i = 0; i < 9; i++){
+for (var i = 0; i < 7; i++){
 	isWeaponUnlocked[i] = false;
 }
 // Indexes for the various projectile weapons Samus can obtain:
@@ -39,7 +39,7 @@ isWeaponUnlocked[0] = true;
 // Some variables for currently equipped bomb and what has been unlocked yet
 curBombIndex = 0;
 for (var ii = 0; ii < 2; ii++){
-	isBombUnlocked[i] = false;	
+	isBombUnlocked[ii] = false;	
 }
 // Indexes for the various bombs Samus can obtain:
 //		0 = Bombs
@@ -78,7 +78,12 @@ hasPressedUp = false;
 hasPressedDown = false;
 
 // The time in frames it will take for Samus to stand up when crouching and hitting left or right
-standTimer = 8;
+standTimerMax = 8;
+standTimer = standTimerMax;
+
+// The timer for the footstep sound effect
+footstepTimerMax = 12;
+footstepTimer = footstepTimerMax;
 
 // Allows the morphball to bounce
 vspdRecoil = 0;

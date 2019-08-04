@@ -3,12 +3,12 @@
 
 #region Keyboard Inputs
 
-var keySongSwitch, keyTrigger, keyLifeUp, keyLifeDown, keySecInput;
+var keySongSwitch, keyTrigger, keyLifeUp, keyLifeDown, keyAllItems;
 keySongSwitch = keyboard_check_pressed(ord("M"));		// Switches the current background music
 keyTrigger = keyboard_check(vk_control);				// Enables manipulation of player variables
 keyLifeUp = keyboard_check_pressed(ord("S"));			// Increases Samus's Energy Tank count
 keyLifeDown = keyboard_check_pressed(ord("A"));			// Decreases Samus's Energy Tank count
-keySecInput = keyboard_check(vk_control);				// Allows for multiple control input on each key
+keyAllItems = keyboard_check_pressed(ord("Q"));			// Gives Samus all of her items
 
 #endregion
 
@@ -38,17 +38,34 @@ if (global.gameState != GAME_STATE.IN_GAME){
 	return;	
 }
 
+// Variables that are related to keyboard inputs
+var createPrompt, message, col, oCol;
+createPrompt = false;
+message = "";
+col = c_white;
+oCol = c_gray;
+
 #region Switching Music Tracks
 
 if (keySongSwitch){
-	if (keySecInput && global.curSong != -1){ // Muting the music
+	if (keyTrigger && global.curSong != -1){ // Muting the music
 		global.curSong = -1;
+		// Create an On Screen Prompt
+		createPrompt = true;
+		message = "Music Has Been Muted";
+		col = c_red;
+		oCol = c_maroon;
 	} else{	// Playing the next song
 		if (global.curSong == -1){ // Default to the Save Room Theme
-			if (keySecInput){
+			if (keyTrigger){
 				global.curSong = music_save_room;
 				global.offset = 0;
 				global.loopLength = 58.124;
+				// Create an On Screen Prompt
+				createPrompt = true;
+				message = "Music Has Been UnMuted";
+				col = c_lime;
+				oCol = c_green;
 			}
 		} else if (audio_is_playing(global.curSong)){ // Play the next track in sequential order
 			switch(global.curSong){
@@ -97,17 +114,79 @@ if (keySongSwitch){
 if (keyTrigger){
 	with(obj_player){
 		if (keyLifeUp){ // Increasing Energy Tanks
+			// Create an On Screen Prompt
+			createPrompt = true;
+			message = "Energy Tank Has Been Added";
+			col = c_lime;
+			oCol = c_green;
 			if (maxLives < 12){
 				maxLives++;
 				curLives++;
+			} else{ // Alter the Prompt's message and color
+				message = "Energy Tank Capacity Has Been Reached";
+				col = c_red;
+				oCol = c_maroon;	
 			}
 		} else if (keyLifeDown){ // Decreasing Energy Tanks
+			// Create an On Screen Prompt
+			createPrompt = true;
+			message = "Energy Tank Has Been Removed";
+			col = c_red;
+			oCol = c_maroon;
 			if (maxLives > 0){
 				maxLives--;
-				if (curLives > maxLives) {curLives = maxLives;}
+				if (curLives > maxLives){
+					curLives = maxLives;
+				}
+			} else{ // Alter the Prompt's message
+				message = "No Energy Tanks Are Left";	
 			}
 		}
-	}	
+		
+		if (keyAllItems){ // Giving Samus all of her items
+			// Create an On Screen Prompt
+			createPrompt = true;
+			message = "Samus Has Been Given All Her Items";
+			if (!other.allItems){
+				other.allItems = true;
+				// Unlock all of Samus's Generic Items (Morphball, Space Jump, Screw Attack, etc.)
+				for (var i = 0; i < 12; i++){
+					global.item[i] = true;
+				}
+				alarm[0] = 1;
+				// Adjust the maximum jumping height
+				jumpSpd = -7;
+				// Max out Samus's Missiles, Super Missiles, and Power Bombs
+				maxMissiles = 999;
+				numMissiles = maxMissiles;
+				maxSMissiles = 999;
+				numSMissiles = maxSMissiles;
+				maxPBombs = 999;
+				numPBombs = maxPBombs;
+				// Unlock all of Samus's Weapons and Bombs
+				var size = array_length_1d(isWeaponUnlocked);
+				for (var w = 0; w < size; w++){
+					isWeaponUnlocked[w] = true;	
+				}
+				size = array_length_1d(isBombUnlocked);
+				for (var b = 0; b < size; b++){
+					isBombUnlocked[b] = true;	
+				}
+			} else{
+				message = "Samus Already Has Everything";
+				col = c_red;
+				oCol = c_maroon;
+			}
+		}
+	}
+}
+
+#endregion
+
+#region Check if the On-Screen Prompt needs to be created
+
+if (createPrompt){
+	draw_create_prompt(obj_on_screen_prompt, 3, 21, message, col, oCol, fa_left, 90);	
 }
 
 #endregion

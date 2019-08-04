@@ -1,4 +1,4 @@
-/// @description Insert description here
+/// @description Move the entity's ambient light
 // You can write your code in this editor
 
 if (ambLight != noone){

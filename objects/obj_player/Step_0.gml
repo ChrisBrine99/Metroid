@@ -55,10 +55,12 @@ if (onGround){
 		down = false;
 		// Reset Samus's vertical speed
 		vspd = 0;
-		// Stop the screw attack soound effect
+		// Stop the screw attack sound effect
 		if (audio_is_playing(snd_samus_screw_attack)){
 			audio_stop_sound(snd_samus_screw_attack);	
 		}
+		// Play a landing sound effect
+		scr_play_sound(snd_samus_land, 0, false, true);
 	} 
 	if (inMorphball){ // Making the morphball bounce
 		if (vspdRecoil < 0){
@@ -67,6 +69,28 @@ if (onGround){
 		} else{ // Reset the variable used for bomb jumping
 			jumpspin = false;	
 		}
+	} else{
+		// Playing the Footstep Sound Effect
+		if (hspd > 0.5 || hspd < -0.5){
+			footstepTimer--;
+			if (footstepTimer <= 0){
+				// Play the sound, but vary its pitch and volume
+				var sound, gain, pitch;
+				sound = scr_play_sound(snd_samus_walk, 0, false, true);
+				gain = 1 - random(0.5);
+				pitch = 1 + choose(random(0.1), -random(0.1));
+				// Inject the altered pitch and volume into the sound
+				audio_sound_pitch(sound, pitch);
+				audio_sound_gain(sound, gain, 0);
+				// Reset the timer
+				footstepTimer = footstepTimerMax;
+			}
+		} else{ // Stopping the Footstop sound effect
+			if (audio_is_playing(snd_samus_walk)){
+				audio_stop_sound(snd_samus_walk);
+			}
+			footstepTimer = 0;
+		}	
 	}
 } else{ // Calculating how far the morphball will bounce
 	if (inMorphball){
@@ -92,12 +116,18 @@ if (keyJump){
 				if (!isShooting){
 					if ((hspd >= 1 || hspd <= -1) && !up && !down){
 						jumpspin = true;
+						// Create the jump effect object
+						instance_create_depth(x, y, depth, obj_jumpspin_effect);
 					}
 				}
 				if (jumpspin && global.item[ITEM.SCREW_ATTACK]){ // Play the screw attack jump sound
 					scr_play_sound(snd_samus_screw_attack, 0, false, true);
 				} else{ // Play the normal jump sound
 					scr_play_sound(snd_samus_jump, 0, false, true);
+				}
+				// Stop the walking sound if it was still playing
+				if (audio_is_playing(snd_samus_walk)){
+					audio_stop_sound(snd_samus_walk);
 				}
 			} else{
 				// Somersaulting while airbourne
@@ -120,7 +150,6 @@ if (keyJump){
 	} else{ // The Spring Ball's jump
 		if (onGround && global.item[ITEM.SPRING_BALL]){
 			vspd = jumpSpd * 0.8;
-			scr_play_sound(snd_samus_jump, 0, false, true);
 		}
 	}
 }
@@ -192,12 +221,12 @@ if (crouching){
 	if ((keyRight && !keyLeft) || (keyLeft && !keyRight)){
 		standTimer--;
 		if (standTimer <= 0){
-			standTimer = 8;
+			standTimer = standTimerMax;
 			crouching = false;
 		}
 	} else{
 		// Reset the timer
-		standTimer = 8;
+		standTimer = standTimerMax;
 	}
 }
 
@@ -264,6 +293,10 @@ if (keyShoot){
 	shootStateTimer = 20;
 	// Stop the player from Somersault if they are airbourne
 	jumpspin = false;
+	// Stop the screw attack sound effect
+	if (audio_is_playing(snd_samus_screw_attack)){
+		audio_stop_sound(snd_samus_screw_attack);	
+	}
 	// Actually spawning in the projectile/bomb
 	if (!inMorphball){
 		if (isWeaponUnlocked[curWeaponIndex]){
@@ -522,7 +555,7 @@ if (ambLight != noone){
 		}
 	} else{
 		if (!inMorphball){
-			// Creating a crazy alactrical flashing effect for the screw attack
+			// Creating a crazy elactrical flashing effect for the screw attack
 			if (jumpspin && global.item[ITEM.SCREW_ATTACK]){
 				with(ambLight){
 					xRad = choose(75, 80, 85);
