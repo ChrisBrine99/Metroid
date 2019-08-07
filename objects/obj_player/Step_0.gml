@@ -135,6 +135,8 @@ if (keyJump){
 					jumpspin = true;
 					hspd = sign(image_xscale);
 					vspd = 0;
+					// Create the jump effect object
+					instance_create_depth(x, y, depth, obj_jumpspin_effect);
 				} else if (global.item[ITEM.SPACE_JUMP] && jumpspin){ // The Space Jump
 					if (vspd >= 2.5){
 						vspd = lengthdir_y(jumpSpd + (vspdPenalty / 2), gravDir);

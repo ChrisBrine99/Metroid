@@ -13,7 +13,7 @@ open = false;
 if (distance_to_object(obj_player) <= 16){
 	image_index = 2;
 	open = true;
-}	
+}
 unlocked = false;		// If true, the door will be opening from projectile/bomb collision
 soundHasPlayed = false; // If true, the sound of the door opening/closing will no longer play
 index = -1;				// The index the door will set to true when opened by the player

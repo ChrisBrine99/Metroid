@@ -38,3 +38,13 @@ camera_set_view_mat(camera, vm);
 if (keyboard_check(vk_f12) && keyboard_check(vk_f1)){
 	game_end();
 }
+// Freezing the Game (For Debugging)
+if (keyboard_check_pressed(vk_f2)){
+	if (global.gameState == GAME_STATE.IN_GAME){
+		global.gameState = GAME_STATE.PAUSED;
+		with(obj_camera) {curObject = self;}
+	} else{
+		global.gameState = GAME_STATE.IN_GAME;
+		with(obj_camera) {curObject = obj_player;}
+	}
+}

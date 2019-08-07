@@ -2,9 +2,9 @@
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_brinstar;
-global.offset = 0;
-global.loopLength = 53.881;
+global.curSong = music_rocky_maridia;
+global.offset = 9.046;
+global.loopLength = 81.399;
 
 // Songs and their offsets/lengths:
 //
@@ -71,7 +71,13 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		SUPER_MISSILE = 306,
 		POWER_BOMB = 307,
 	};
-
+	
+	// The Enumerator for the possible shapes a light source can be
+	enum LIGHT{
+		SPHERE = 400,
+		RECTANGLE = 401,
+	}
+	
 	// Creating the Player
 	instance_create_depth(856, 316, 305, obj_player);
 

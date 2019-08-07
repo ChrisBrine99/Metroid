@@ -14,7 +14,7 @@ if (!surface_exists(global.lighting)){
 surface_set_target(global.lighting);
 
 // Drawing the darkened rectangle that the light sources will be placecd on
-draw_set_color(global.curLightingCol); // The lighter the color, the darker the surface
+draw_set_color(curLightingCol); // The lighter the color, the darker the surface
 draw_rectangle(0, 0, global.camWidth, global.camHeight, false);
 
 // Setting the blend mode to subtract to create the spotlight lighting system
@@ -22,7 +22,8 @@ gpu_set_blendmode(bm_subtract);
 
 // Looping through all of the current active light sources
 if (!ds_list_empty(global.lightSources)){
-	var length = ds_list_size(global.lightSources);
+	var length;
+	length = ds_list_size(global.lightSources);
 	numDrawn = 0;
 	for (var i = 0; i < length; i++){
 		// Draw a light to the surface for every light that is currently active
@@ -32,12 +33,23 @@ if (!ds_list_empty(global.lightSources)){
 			if (canDraw){
 				// Only draw the light if it is visible on screen
 				if (x > global.camX - xRad && y > global.camY - yRad && x < global.camX + global.camWidth + xRad && y < global.camY + global.camHeight + yRad){
-					draw_ellipse_color(x - xRad - global.camX, y - yRad - global.camY, x + xRad - global.camX, y + yRad - global.camY, lightCol, c_black, false);
+					var leftSide, rightSide, topSide, botSide;
+					leftSide = x - xRad - global.camX;
+					rightSide = x + xRad - global.camX;
+					topSide = y - yRad - global.camY;
+					botSide = y + yRad - global.camY;
+					draw_ellipse_color(leftSide, topSide, rightSide, botSide, lightCol, c_black, false);
+					//draw_rectangle_color(leftSide, topSide, rightSide, botSide, c_black, c_black, lightCol, lightCol, false);
 					other.numDrawn++;
-				} 
+				}
 			}
 		}
 	}
+}
+
+// Drawing a nice lower gradient rectangle if the need arises
+if (drawRectangle){
+	draw_rectangle_color(xPos, yPos, xPos + width, yPos + height, oRectCol, oRectCol, rectCol, rectCol, false);
 }
 
 // Reset drawing back to the application

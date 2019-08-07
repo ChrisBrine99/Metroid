@@ -22,3 +22,7 @@ scr_play_sound(snd_sMissile_fire, 0, false, true);
 
 // Set the blocks that the missile can destroy
 blockToDestroy = DYNAMIC_BLOCK.SUPER_MISSILE;
+
+// Remove the Ambient Light Source
+with(ambLight) {instance_destroy(self);}
+ambLight = noone;
