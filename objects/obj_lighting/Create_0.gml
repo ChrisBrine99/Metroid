@@ -6,7 +6,7 @@ surfWidth = global.camWidth * scale;
 surfHeight = global.camHeight * scale;
 global.lighting = surface_create(surfWidth, surfHeight);
 // The current colors of the lighting system
-curLightingCol = c_gray;
+curLightingCol = c_ltgray;
 // Color for water areas: make_color_rgb(220, 220, 220);
 
 // Variables for the rectangle that can be draw on the screen with a nice gradient effect

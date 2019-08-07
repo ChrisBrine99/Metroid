@@ -10,7 +10,7 @@ alpha -= 0.1;
 // Create another of these effects
 if (alpha == 0.2){
 	with(obj_player){
-		if (!onGround && !isShooting){
+		if (!onGround && jumpspin){
 			instance_create_depth(x, y, depth + 1, obj_jumpspin_effect);
 		}
 	}
