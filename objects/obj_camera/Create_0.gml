@@ -22,9 +22,7 @@ if (instance_exists(obj_player)){
 	alarm[0] = 1;
 	curObject = obj_player;
 }
-xTo = x;
-yTo = y;
-camSpd = 1;
+camSpd = 2;
 
 // TEMPORARY CODE ///////////////////////////////////////////////////
 

@@ -74,9 +74,11 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	
 	// The Enumerator for the possible shapes a light source can be
 	enum LIGHT{
-		SPHERE = 400,
-		RECTANGLE = 401,
-	}
+		CIRCLE = 400,
+		RECT_UP_FADE = 401,
+		RECT_DOWN_FADE = 402,
+		SPRITE = 403,
+	};
 	
 	// Creating the Player
 	instance_create_depth(856, 316, 305, obj_player);
