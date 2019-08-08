@@ -32,28 +32,35 @@ if (!ds_list_empty(global.lightSources)){
 		with(curLight){
 			// If the light is disabled, don't bother checking if it is on screen
 			if (canDraw){
-				// Only draw the light if it is visible on screen
-				if (x > global.camX - xRad && y > global.camY - yRad && x < global.camX + global.camWidth + xRad && y < global.camY + global.camHeight + yRad){
-					var leftSide, rightSide, topSide, botSide;
-					leftSide = (x - xRad - global.camX) * scaleAmount;
-					rightSide = (x + xRad - global.camX) * scaleAmount;
-					topSide = (y - yRad - global.camY) * scaleAmount;
-					botSide = (y + yRad - global.camY) * scaleAmount;
-					// Find out what type of light needs to be drawn
-					switch(lightType){
-						case LIGHT.CIRCLE: // Draws a spotlight style light
+				var leftSide, rightSide, topSide, botSide;
+				// Find out what type of light needs to be drawn
+				switch(lightType){
+					case LIGHT.CIRCLE: // Draws a spotlight style light
+						// Only draw the light if it is visible on screen
+						if (x >= global.camX - xRad && y >= global.camY - yRad && x <= global.camX + global.camWidth + xRad && y <= global.camY + global.camHeight + yRad){
+							leftSide = (x - xRad - global.camX) * scaleAmount;
+							rightSide = (x + xRad - global.camX) * scaleAmount;
+							topSide = (y - yRad - global.camY) * scaleAmount;
+							botSide = (y + yRad - global.camY) * scaleAmount;
 							draw_ellipse_color(leftSide, topSide, rightSide, botSide, lightCol, c_black, false);
-							break;
-						case LIGHT.RECT_UP_FADE: // Draws a rectangle that fades upward
-							draw_rectangle_color(leftSide, topSide, rightSide, botSide, c_black, c_black, lightCol, lightCol, false);
-							break;
-						case LIGHT.RECT_DOWN_FADE: // Draws a rectangle that fades downward
-							draw_rectangle_color(leftSide, topSide, rightSide, botSide, lightCol, lightCol, c_black, c_black, false);
-							break;
-						case LIGHT.SPRITE:
-							break;
-					}
-					other.numDrawn++;
+							other.numDrawn++;
+						}
+						break;
+					case LIGHT.RECT_FADE: // Draws a rectangle that fades upward
+						// Only draw the light if it is visible on screen
+						if (x >= global.camX - xRad && y >= global.camY - yRad && x <= global.camX + global.camWidth && y < global.camY + global.camHeight){
+							leftSide = (x - global.camX) * scaleAmount;
+							rightSide = xRad  * scaleAmount;
+							topSide = (y - global.camY) * scaleAmount;
+							botSide = yRad * scaleAmount;
+							draw_rectangle_color(leftSide, topSide, leftSide + rightSide, topSide + botSide, c_black, c_black, lightCol, lightCol, false);
+							if (subLightHeight > 0){
+								draw_set_color(lightCol);
+								draw_rectangle(leftSide, topSide + botSide, leftSide + rightSide, topSide + botSide + (subLightHeight * scaleAmount), false);
+							}
+							other.numDrawn++;
+						}
+						break;
 				}
 			}
 		}

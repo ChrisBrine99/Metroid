@@ -75,9 +75,8 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	// The Enumerator for the possible shapes a light source can be
 	enum LIGHT{
 		CIRCLE = 400,
-		RECT_UP_FADE = 401,
-		RECT_DOWN_FADE = 402,
-		SPRITE = 403,
+		RECT_FADE = 401,
+		RECT_FULL = 402,
 	};
 	
 	// Creating the Player

@@ -6,8 +6,10 @@ surfWidth = global.camWidth * scale;
 surfHeight = global.camHeight * scale;
 global.lighting = surface_create(surfWidth, surfHeight);
 // The current colors of the lighting system
-curLightingCol = c_ltgray;
-// Color for water areas: make_color_rgb(220, 220, 220);
+curLightingCol = make_color_rgb(0, 105, 230);
+// Regular Cave Color:		c_ltgray
+// Color for water areas:	make_color_rgb(220, 220, 220);
+// Color for hot areas:		make_color_rgb(0, 105, 230);
 
 // Variables for the rectangle that can be draw on the screen with a nice gradient effect
 rectCol = c_blue;		// Color for the lower portion of the rectangle

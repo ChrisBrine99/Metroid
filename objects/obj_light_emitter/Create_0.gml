@@ -6,6 +6,9 @@ xRad = 70;
 yRad = 70;
 lightCol = c_white;
 
+// For drawing light sources that are rectangular
+subLightHeight = 40;
+
 // IMPORTANT NOTE:
 //		When the light emitter is drawing a rectangle, it will use the xRad and yRad just like it
 //		does when drawing a sphere. So, this means that the position of the light will be in the center
