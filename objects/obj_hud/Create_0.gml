@@ -1,8 +1,8 @@
 /// @description Initializing the HUD variables
 // You can write your code in this editor
 
-// Call the parent's create event
-event_inherited();
+// Enable this object to use the alpha control scripts
+scr_alpha_control_create();
 
 // If false, the HUD will no longer be visible
 isVisible = true;

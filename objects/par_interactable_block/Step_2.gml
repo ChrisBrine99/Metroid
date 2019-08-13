@@ -1,4 +1,4 @@
-/// @description Insert description here
+/// @description Update the ambient light's position
 // You can write your code in this editor
 
 if (ambLight != noone){

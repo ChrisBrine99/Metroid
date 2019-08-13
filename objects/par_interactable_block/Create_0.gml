@@ -1,6 +1,9 @@
 /// @description Initializing Variables
 // You can write your code in this editor
 
+// Call the script that will enable animation in this object
+scr_animation_create();
+
 // Variables for the ambient light that can surround certain entities
 ambLight = noone;		// The unique instance ID for this object's ambient light
 xOffset = 7;			// The offset on the x-axis that the light should be placed at

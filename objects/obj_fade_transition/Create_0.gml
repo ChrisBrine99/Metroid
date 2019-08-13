@@ -1,8 +1,8 @@
 /// @description Initializing Default Variables
 // You can write your code in this editor
 
-// Call the parent's create event
-event_inherited();
+// Enable this object to use the alpha control scripts
+scr_alpha_control_create();
 fadingIn = true;
 
 // Don't allow the Fade Transition to do its thing if the game is paused

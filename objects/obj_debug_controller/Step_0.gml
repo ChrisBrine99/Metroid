@@ -183,3 +183,13 @@ if (createPrompt){
 }
 
 #endregion
+
+
+// TEMPORARY CODE
+
+if(keyboard_check_pressed(ord("P"))){
+	with(obj_camera){
+		if (curObject != self) {curObject = self;}
+		else {curObject = obj_player;}
+	}
+}

@@ -4,15 +4,16 @@
 // The door's classification which will determine what can open it
 doorType = DOOR_TYPE.NORMAL;
 
-// Freeze the animation so it doesn't get destroyed instantly
-imgSpd = 0;				// Determines the speed that the image animates at
-imgIndex = 0;			// The current frame of a sprite that is being displayed
+// Create the necessary variables for animation
+scr_animation_create();
+// Freeze the animation
+imgSpd = 0;
 
 // If true, the door will be closing behind Samus
 open = false;
 // Check if the door needs to be opened
 if (distance_to_object(obj_player) <= 16){
-	image_index = 2;
+	imgIndex = 2;
 	open = true;
 }
 unlocked = false;		// If true, the door will be opening from projectile/bomb collision

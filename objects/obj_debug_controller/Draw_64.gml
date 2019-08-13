@@ -30,6 +30,10 @@ if (alpha > 0){
 											   numActiveEntities + "\n" + 
 											   numLightSources + "\n" + 
 											   numDrawnLights, c_fuchsia, c_purple);
+											   
+	// Delta Time Information
+	draw_text_outline(global.camWidth - 5, 145, string(global.deltaTime), c_red, c_maroon);
+	
 	// Control Information
 	draw_text_outline(global.camWidth - 5, 162, "Change BGM -- [M]\nExit Menu -- [D]", c_white, c_gray);
 	
@@ -43,6 +47,9 @@ if (alpha > 0){
 	// Instance Information
 	draw_text_outline(global.camWidth - 120, 90, "Unculled Objects\n     Active\nEntities\n     Active\nLight Sources\n     Drawn", c_white, c_gray);	
 	draw_text_outline(global.camWidth - 42, 90, "\n--\n\n--\n\n--", c_white, c_gray);
+	
+	// Delta Time Information
+	draw_text_outline(global.camWidth - 120, 145, "Delta Time", c_white, c_gray);
 	
 	// Return the alpha level back to normal
 	draw_set_alpha(1);

@@ -3,10 +3,8 @@
 
 
 if (global.gameState == GAME_STATE.PAUSED){
-	imgSpd = 0;
 	return;
 }
-imgSpd = 1;
 
 pulseTime = scr_update_value_delta(pulseTime, -1);
 if (pulseTime <= 0){

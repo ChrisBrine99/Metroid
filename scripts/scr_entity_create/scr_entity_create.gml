@@ -1,4 +1,5 @@
 /// @decsription Creates the necessary variables for a dynamic entity (Ex. A Player Object, Enemy AI, NPCs, etc.)
+///	NOTE -- This script must be placed in the create event of an object in order to function.
 /// @param maxHspd
 /// @param maxVspd
 /// @param accel
@@ -6,8 +7,10 @@
 /// @param grav
 /// @param gravDir
 
-// Call the parent's create event
-event_inherited();
+// Don't allow this script to execute if it is being called outside of the create event of an object
+if (event_type != ev_create){
+	return;	
+}
 
 // Initializing the entity variables
 hspd = 0;				// Horizontal speed
@@ -45,6 +48,9 @@ left = false;			// Lets us know if the object is moving right
 up = false;				// If true, the entity is moving upward
 down = false;			// If true, the entity is moving downward
 canMove = true;			// If false, the entity will stop updating
+
+// Variables for the animation functionality
+scr_animation_create();
 
 // Variables for the ambient light that can surround certain entities
 ambLight = noone;		// The unique instance ID for this object's ambient light

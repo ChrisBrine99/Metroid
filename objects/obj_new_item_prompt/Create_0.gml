@@ -1,8 +1,8 @@
 /// @description Initializing Variables
 // You can write your code in this editor
 
-// Call the parent's create event
-event_inherited();
+// Enable this object to use the alpha control scripts
+scr_alpha_control_create();
 // Let the on screen prompt destroy itself upon fading away
 destroyOnZero = true;
 
@@ -25,12 +25,12 @@ nameOCol = c_gray;		// The color of the item name text's outline
 creatorID = noone;		// The instance ID of the object that created this
 
 // Create the background blur
-blurID = instance_create_depth(0, 0, 50, obj_blur);
+blurID = instance_create_depth(0, 0, 40, obj_blur);
 blurID.sigma = 0.001;
 
 // Make the HUD invisible and freeze the Camera
 with(obj_hud) {isVisible = false;}
-with(obj_camera) {camSpd = 0;}
+with(obj_camera) {curObject = false;}
 
 // Stores which fanfare was played during collection
 fanfare = music_item_fanfare;

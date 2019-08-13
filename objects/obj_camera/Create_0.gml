@@ -23,7 +23,7 @@ if (instance_exists(obj_player)){
 	curObject = obj_player;
 }
 // The higher the value, the slower the camera moves toward it's current object
-camSpd = 5;
+camSpd = 4;
 
 // TEMPORARY CODE ///////////////////////////////////////////////////
 

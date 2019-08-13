@@ -1,4 +1,5 @@
 /// @description Handles collision between a dynamic entity and a wall.
+///	NOTE -- This script must be placed in the step event of an object in order to function.
 /// @param hspd
 /// @param vspd
 /// @param onGround
@@ -15,6 +16,11 @@ gravDir = argument3;
 useSlopes = argument4;
 stopMovement = argument5;
 destroyOnCollision = argument6;
+
+// Don't check for collisions outside of the object's step event
+if (event_type != ev_step){
+	return;	
+}
 
 // Horizontal Collision
 repeat(round(abs(hspd))){

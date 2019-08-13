@@ -3,7 +3,7 @@
 
 // Make the HUD visible again and unfreeze the camera
 with(obj_hud) {isVisible = true;}
-with(obj_camera) {camSpd = 1;}
+with(obj_camera) {curObject = obj_player;}
 // Return the Game State back to normal
 global.gameState = GAME_STATE.IN_GAME;
 // Destroy the background blur

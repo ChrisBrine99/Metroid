@@ -70,7 +70,7 @@ if (onGround){
 	} else{
 		// Playing the Footstep Sound Effect
 		if (hspd > 0.5 || hspd < -0.5){
-			footstepTimer--;
+			footstepTimer = scr_update_value_delta(footstepTimer, -1);
 			if (footstepTimer <= 0){
 				// Play the sound, but vary its pitch and volume
 				var sound, gain, pitch;

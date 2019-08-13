@@ -3,10 +3,8 @@
 
 // Prevent the Bomb From Exploding When the Game is Paused
 if (global.gameState == GAME_STATE.PAUSED){
-	imgSpd = 0;
 	return;
 }
-imgSpd = 1;
 
 // Countdown Until the Bomb Explodes
 explodeTime = scr_update_value_delta(explodeTime, -1);

@@ -1,7 +1,8 @@
 /// @description Calculates gravity. Place this at the top of an entity's step event.
+///	NOTE -- This script must be placed in the step event of an object in order to function.
 
 // If the entity's gravity is switched off, don't bother checking
-if (grav == 0){
+if (grav == 0 || event_type != ev_step){
 	return;	
 }
 

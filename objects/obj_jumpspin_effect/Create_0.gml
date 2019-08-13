@@ -7,9 +7,8 @@ imgIndex = obj_player.image_index;
 imgXScale = obj_player.image_xscale;
 imgYScale = obj_player.image_yscale;
 
-// Call the parent's Create Event
-event_inherited();
-
+// Enable this object to use the alpha control scripts
+scr_alpha_control_create();
 // Tell the animation controller to fade out
 alpha = 0.5;
 fadingIn = false;
