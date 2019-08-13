@@ -3,14 +3,14 @@
 
 // Prevent the Bomb From Exploding When the Game is Paused
 if (global.gameState == GAME_STATE.PAUSED){
-	image_speed = 0;
+	imgSpd = 0;
 	return;
 }
-image_speed = imgSpd;
+imgSpd = 1;
 
 // Countdown Until the Bomb Explodes
-explodeTime--;
-if (explodeTime == 15){
+explodeTime = scr_update_value_delta(explodeTime, -1);
+if (explodeTime <= 15 && explodeTime > 0){
 	imgSpd = 2;
 } else if (explodeTime <= 0){
 	// Create the set explosion effect

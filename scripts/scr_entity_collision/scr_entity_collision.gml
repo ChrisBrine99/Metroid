@@ -1,22 +1,30 @@
 /// @description Handles collision between a dynamic entity and a wall.
+/// @param hspd
+/// @param vspd
+/// @param onGround
+/// @param gravDir
 /// @param useSlopes
 /// @param stopMovement
 /// @param destroyOnCollision
 
-var useSlopes, stopMovement, destroyOnCollision;
-useSlopes = argument0;
-stopMovement = argument1;
-destroyOnCollision = argument2;
+var hspd, vspd, onGround, gravDir, useSlopes, stopMovement, destroyOnCollision;
+hspd = argument0;
+vspd = argument1;
+onGround = argument2;
+gravDir = argument3;
+useSlopes = argument4;
+stopMovement = argument5;
+destroyOnCollision = argument6;
 
 // Horizontal Collision
 repeat(round(abs(hspd))){
-	if (!place_meeting(x + sign(hspd), y + lengthdir_y(1, gravDir), par_block) && onGround && useSlopes){
-		x += sign(hspd);
+	if (!place_meeting(x + sign(hspd) * global.deltaTime, y + lengthdir_y(1, gravDir), par_block) && onGround && useSlopes){
+		x += sign(hspd) * global.deltaTime;
 		y += lengthdir_y(1, gravDir);
-	} else if (!place_meeting(x + sign(hspd), y, par_block) || (!stopMovement && !destroyOnCollision)){
-		x += sign(hspd);
-	} else if (!place_meeting(x + sign(hspd), y + lengthdir_y(1, gravDir - 180), par_block) && useSlopes){
-		x += sign(hspd);
+	} else if (!place_meeting(x + sign(hspd) * global.deltaTime, y, par_block) || (!stopMovement && !destroyOnCollision)){
+		x += sign(hspd) * global.deltaTime;
+	} else if (!place_meeting(x + sign(hspd) * global.deltaTime, y + lengthdir_y(1, gravDir - 180), par_block) && useSlopes){
+		x += sign(hspd) * global.deltaTime;
 		y += lengthdir_y(1, gravDir - 180);
 	} else{
 		// Deleting the object if it is destroyed upon collision
@@ -25,14 +33,14 @@ repeat(round(abs(hspd))){
 			if (block.isGeneric) {instance_destroy(self);}
 		} else{
 			// Stopping horizontal movement
-			hspd = 0;
+			self.hspd = 0;
 		}
 	}
 }
 // Vertical collision
 repeat(round(abs(vspd))){
-	if (!place_meeting(x, y + sign(vspd), par_block) || (!stopMovement && !destroyOnCollision)){
-		y += sign(vspd);
+	if (!place_meeting(x, y + sign(vspd) * global.deltaTime, par_block) || (!stopMovement && !destroyOnCollision)){
+		y += sign(vspd) * global.deltaTime;
 	} else{
 		// Deleting the object if it is destroyed upon collision
 		if (destroyOnCollision){
@@ -40,7 +48,7 @@ repeat(round(abs(vspd))){
 			if (block.isGeneric) {instance_destroy(self);}
 		} else{
 			// Stopping vertical movement
-			vspd = 0;
+			self.vspd = 0;
 		}
 	}
 }

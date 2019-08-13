@@ -41,8 +41,6 @@ scr_entity_gravity();
 
 // Setting the player's state based on if they are on or off the ground
 if (onGround){
-	// Reset the hspd penalty
-	hspdPenalty = 0;
 	// Stopping Samus from getting stuck in the ground
 	if (mask_index == spr_jumping_mask){
 		if (gravDir == 270) {y -= 8;}
@@ -67,7 +65,7 @@ if (onGround){
 			vspd = vspdRecoil;
 			hspd = sign(hspd);
 		} else{ // Reset the variable used for bomb jumping
-			jumpspin = false;	
+			jumpspin = false;
 		}
 	} else{
 		// Playing the Footstep Sound Effect
@@ -90,7 +88,8 @@ if (onGround){
 				audio_stop_sound(snd_samus_walk);
 			}
 			footstepTimer = 0;
-		}	
+		}
+		footstepTimerMax = 12;
 	}
 } else{ // Calculating how far the morphball will bounce
 	if (inMorphball){
@@ -137,6 +136,10 @@ if (keyJump){
 					vspd = 0;
 					// Create the jump effect object
 					instance_create_depth(x, y, depth, obj_jumpspin_effect);
+					// Play the screw attack jump sound
+					if (global.item[ITEM.SCREW_ATTACK]){
+						scr_play_sound(snd_samus_screw_attack, 0, false, true);
+					}
 				} else if (global.item[ITEM.SPACE_JUMP] && jumpspin){ // The Space Jump
 					if (vspd >= 2.5){
 						vspd = lengthdir_y(jumpSpd + (vspdPenalty / 2), gravDir);
@@ -174,11 +177,11 @@ if (keyRight){
 		if (hspd < 0 && onGround) {hspd = 0;}
 	}
 	// Smoothly accelerate (Half-speed while airbourne)
-	if (onGround) {hspd += accel;}
-	else {hspd += accel / 2;}
+	if (onGround) {hspd = scr_update_value_delta(hspd, accel);}
+	else {hspd = scr_update_value_delta(hspd, accel / 2);}
 	// Prevent the horizontal speed from becoming too large
 	if (hspd > maxHspd - hspdPenalty){
-		hspd = maxHspd - hspdPenalty;
+		hspd = (maxHspd - hspdPenalty);
 	}
 	right = true;
 } else{ // The right key is no longer being pressed down
@@ -192,8 +195,8 @@ if (keyLeft){
 		if (hspd > 0 && onGround) {hspd = 0;}
 	}
 	// Smoothly accelerate (Half-speed while airbourne)
-	if (onGround) {hspd -= accel;} 
-	else {hspd -= accel / 2;}
+	if (onGround) {hspd = scr_update_value_delta(hspd, -accel);} 
+	else {hspd = scr_update_value_delta(hspd, -accel / 2);}
 	// Prevent the horizontal speed from becoming too large
 	if (hspd < -(maxHspd - hspdPenalty)){
 		hspd = -(maxHspd - hspdPenalty);
@@ -206,9 +209,9 @@ if (keyLeft){
 if ((keyRight && keyLeft) || (!keyRight && !keyLeft)){
 	if (onGround || (!onGround && !jumpspin)){
 		if (hspd < -accel){ // Slowing down while moving left
-			hspd += accel;
+			hspd = scr_update_value_delta(hspd, accel);
 		} else if (hspd > accel){ // Slowing down while moving right
-			hspd -= accel;
+			hspd = scr_update_value_delta(hspd, -accel);
 		} else{
 			// Setting a penalty for horizontal movement in the air
 			if (!onGround) {hspdPenalty = 1;}
@@ -221,7 +224,7 @@ if (crouching){
 	hspd = 0;
 	// Decrement the timer for Samus to stand up when pressing either left or right
 	if ((keyRight && !keyLeft) || (keyLeft && !keyRight)){
-		standTimer--;
+		standTimer = scr_update_value_delta(standTimer, -1);
 		if (standTimer <= 0){
 			standTimer = standTimerMax;
 			crouching = false;
@@ -442,11 +445,11 @@ if (keyShoot){
 }
 // Counting doen the fire rate timer
 if (fireRateTimer > 0){
-	fireRateTimer--;
+	fireRateTimer = scr_update_value_delta(fireRateTimer, -1);
 }
 // Counting down the timer that prevents the player from 
 if (isShooting){
-	shootStateTimer--;
+	shootStateTimer = scr_update_value_delta(shootStateTimer, -1);
 	if (shootStateTimer <= 0){
 		isShooting = false;
 		shootStateTimer = 20;
@@ -489,63 +492,91 @@ if (inMorphball){
 				vspd = -3;
 				if (x < bomb.x - 3){
 					jumpspin = true;
-					hspd = -1;
+					hspd = -60;
 				} else if (x >= bomb.x + 3){
 					jumpspin = true;
-					hspd = 1;	
+					hspd = 60;	
 				}
 			}
 		}
 	}
 }
 
-// TODO -- Add in collision between the various interactable objects. (Ex. Enemies, Water, Lava, etc.)
-
-// Colliding with a warp
-var warp = instance_place(x, y, obj_warp);
-if (warp != noone){
-	// Enable this warp and go to its destinatino
-	with(warp){
-		isWarping = true;
-		fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
-		// Set up the warp to create the sprite sweeping transition
-		with(fadeID){
-			// Set up the sprite sweep to use Samus's current sprite and position
-			effectID = instance_create_depth(obj_player.x - global.camX, obj_player.y - global.camY, 40, obj_sprite_sweep_transition);
-			with(effectID){
-				fadeID = warp.fadeID;
-				curRoom = room;
-				// Starting coordinates
-				startXPos = x;
-				startYPos = y;
-				// Set the transition speed
-				transitionSpd = 5;
-				// The sprite parameters being passed on from the PLayer to this
-				playerSpr = obj_player.sprite_index;
-				curImg = obj_player.image_index;
-				imgXScale = sign(obj_player.image_xscale);
-				imgYScale = sign(obj_player.image_yscale);
-			}
-			// Alter the opaque time to 0.5 seconds
-			opaqueTime = 30;
+// Handling collisions between the Player and anything that can interact with it
+var object = instance_place(x, y, all);
+if (object != noone){
+	with(object){ 
+		// Check if the object has a parent
+		var parentObj = object_get_parent(object_index);
+		if (parentObj <= -1) {parentObj = object_index;} // Use the object's index if it doesn't have a parent
+		// Find out what object the Player actually collided with
+		switch(parentObj){
+			// The Player has come into contact with a room warp
+			case obj_warp:
+				isWarping = true;
+				fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
+				// Set up the warp to create the sprite sweeping transition
+				with(fadeID){
+					// Set up the sprite sweep to use the Player's current sprite and position
+					effectID = instance_create_depth(obj_player.x - global.camX, obj_player.y - global.camY, 40, obj_sprite_sweep_transition);
+					with(effectID){
+						fadeID = object.fadeID;
+						curRoom = room;
+						// Starting coordinates
+						startXPos = x;
+						startYPos = y;
+						// Set the transition speed
+						transitionSpd = 5;
+						// The sprite parameters being passed on from the PLayer to this
+						playerSpr = obj_player.sprite_index;
+						curImg = obj_player.image_index;
+						imgXScale = sign(obj_player.image_xscale);
+						imgYScale = sign(obj_player.image_yscale);
+					}
+					// Alter the opaque time to 0.5 seconds
+					opaqueTime = 30;
+				}
+				break;
+			// The Player has come into contact with a hazardous object (Ex. Water, Lava, Acid, Spikes)
+			case par_hazard_block:
+				if (slowPlayer){
+					with(other){
+						// Slow down the Player and the footstep sound's speed
+						if (hspd > 1 || hspd < -1) {hspd = sign(hspd);}	
+						footstepTimerMax = 18;
+					}
+				}
+				// Don't take away damage if the object isn't damaging (Ex. Water)
+				if (damage > 0){
+					if (isContinuous){ // Continual Damage Dealing (Ex. Submerged in Lava)
+						dmgTimer = scr_update_value_delta(dmgTimer, -1);
+						// Deal out damage to the Player
+						if (dmgTimer <= 0){
+							var dmg = damage;
+							dmgTimer = dmgTimerMax;
+							with(other) {scr_update_hitpoints(-round(dmg * damageRes));}
+							scr_play_sound(snd_samus_drown, 0, false, true);
+						}
+					} else{ // Sudden Damage Dealing (Ex. Hitting a Spike)
+						
+					}
+				}
+				break;
+			// TODO -- Add Collision between the Player and enemies
+			//case par_enemy:
+			//	break;
 		}
 	}
 }
 
 // Calling the Entity Collision script
-scr_entity_collision(true, true, false);
+scr_entity_collision(hspd, vspd, onGround, gravDir, true, true, false);
 
 #endregion
 
 #region Editing Samus's Ambient Light source
 
 if (ambLight != noone){
-	// Setting the ambient light's size and color as their default values
-	with(ambLight){
-		xRad = 35;
-		yRad = 35;
-		lightCol = c_ltgray;
-	}
 	// Altering the position and size of the ambient light
 	if (onGround){
 		if (inMorphball){
@@ -555,14 +586,33 @@ if (ambLight != noone){
 		} else{
 			yOffset = 0;	
 		}
+		// Setting the ambient light's size and color as their default values
+		with(ambLight){
+			xRad = 35;
+			yRad = 35;
+			lightCol = c_ltgray;
+		}	
 	} else{
 		if (!inMorphball){
-			// Creating a crazy elactrical flashing effect for the screw attack
-			if (jumpspin && global.item[ITEM.SCREW_ATTACK]){
+			// Creating a crazy electrical flashing effect for the screw attack
+			if (global.item[ITEM.SCREW_ATTACK]){
+				flashingTime = scr_update_value_delta(flashingTime, -1);
+				var fTime, jmpSpin;
+				fTime = flashingTime;
+				jmpSpin = jumpspin;
 				with(ambLight){
-					xRad = choose(75, 80, 85);
-					yRad = xRad;
-					lightCol = choose(c_aqua, c_lime, c_white);
+					if (jmpSpin){
+						xRad = choose(75, 80, 85);
+						yRad = xRad;
+						if (fTime <= 0){
+							lightCol = choose(c_aqua, c_lime, c_white);
+							other.flashingTime = 1;	
+						}
+					} else{
+						xRad = 35;
+						yRad = 35;
+						lightCol = c_ltgray;	
+					}
 				}
 			}
 		}

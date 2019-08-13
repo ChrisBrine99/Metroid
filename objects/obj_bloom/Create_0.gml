@@ -9,7 +9,7 @@ sBloomRange = shader_get_uniform(shaderBloomLuminence, "bloomRange");
 sAppTexture = shader_get_sampler_index(shaderBloomLuminence, "appTexture");
 
 // The properties that determine how bright a color needs to be to have bloom applied
-bloomThreshold = 0.5;
+bloomThreshold = 0.4;
 bloomRange = 0.1;
 
 // Getting shader stuff that wil alter how intense the blooming is
@@ -34,8 +34,8 @@ sTexelSize = shader_get_uniform(shaderBlur, "texel_size");
 sBlurVector = shader_get_uniform(shaderBlur, "blur_vector");
 
 // The properties for determining how intense the blurring of select colors will be
-blurSteps = 2;
-sigma = 0.1;
+blurSteps = 4;
+sigma = 0.15;
 
 // Two surfaces; one for bluring, and one for getting only the bright colors on the screen
 surfBloom = -1;

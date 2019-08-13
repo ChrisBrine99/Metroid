@@ -1,6 +1,11 @@
 /// @description Initializing Variables
 // You can write your code in this editor
 
+// Call the parent's create event
+event_inherited();
+// Let the on screen prompt destroy itself upon fading away
+destroyOnZero = true;
+
 // The text itself
 displayTxt = "";
 
@@ -13,7 +18,6 @@ txtAlignment = fa_center;
 font = font_gui_xSmall;
 displayTxtCol = c_white;
 displayTxtOCol = c_gray;
-alpha = 0;
 
 // The time until the displayed message begins fading away
 displayTimer = 90;

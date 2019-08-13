@@ -16,8 +16,8 @@ if (!hasStarted){
 }
 
 // Setting the image speed while on the ground
-if (onGround) {image_speed = abs(hspd / maxHspd);}
-else {image_speed = 1;}
+if (onGround) {imgSpd = abs(hspd / maxHspd);}
+else {imgSpd = 1;}
 
 // Setting the direction that samus is facing
 if (facingRight) {image_xscale = 1;}
@@ -26,7 +26,7 @@ else {image_xscale = -1;}
 // Morphball Sprites
 if (inMorphball){
 	sprite_index = sprMorphball1;
-	image_speed = 1;
+	imgSpd = 1;
 	return;	
 }
 

@@ -19,6 +19,7 @@ global.gameState = GAME_STATE.PAUSED;
 
 if (keyClose){
 	if (curDisplayedStr == displayTxt){ // Close the menu (Only if the full block of text is being displayed)
+		fadingIn = false;
 		isClosing = true;
 	} else{ // Display the whole block of text if it isn't being displayed already
 		curDisplayedStr = displayTxt;
@@ -29,30 +30,8 @@ if (keyClose){
 
 #region Fading the text in and out
 
-if (!isClosing){ // Making the text fade in
-	if (alpha < 1){
-		alpha += 0.1;
-	}
-} else{ // Making the text fade out and destroying this object
-	if (alpha > 0){
-		alpha -= 0.1;	
-	} else{
-		instance_destroy(self);
-		// Make the HUD visible again and unfreeze the camera
-		with(obj_hud) {isVisible = true;}
-		with(obj_camera) {camSpd = 1;}
-		// Return the Game State back to normal
-		global.gameState = GAME_STATE.IN_GAME;
-		// Destroy the background blur
-		if (blurID != noone){
-			instance_destroy(blurID);
-			blurID = noone;	
-		}
-		// Resume all audio that was playing before the player picked up the item
-		if (audio_is_playing(fanfare)) {audio_stop_sound(fanfare);}
-		audio_resume_all();
-	}
-	// Delete the creator object
+fadingIn = !isClosing;
+if (isClosing){ // Delete the creator object
 	if (creatorID != noone){
 		instance_destroy(creatorID);
 		creatorID = noone;

@@ -72,6 +72,6 @@ if (instance_exists(par_door)){
 }
 
 // Checking for collisions with walls
-scr_entity_collision(false, destroyOnWallCollide, destroyOnWallCollide);
+scr_entity_collision(hspd, vspd, onGround, gravDir, false, destroyOnWallCollide, destroyOnWallCollide);
 
 #endregion

@@ -5,7 +5,8 @@
 doorType = DOOR_TYPE.NORMAL;
 
 // Freeze the animation so it doesn't get destroyed instantly
-image_speed = 0;
+imgSpd = 0;				// Determines the speed that the image animates at
+imgIndex = 0;			// The current frame of a sprite that is being displayed
 
 // If true, the door will be closing behind Samus
 open = false;

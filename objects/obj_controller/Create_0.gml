@@ -1,6 +1,9 @@
 /// @description Setting up all the required variables for the game.
 // You can write your code in this editor
 
+// Holds the time in seconds between each frame
+global.deltaTime = get_delta_time();
+
 // The array that holds all of the main powerups in the game
 for(var i = 0; i < global.totalItems; i++){
 	global.item[i] = false;	// If true, the item at that index will delete itself
@@ -38,5 +41,6 @@ fadeTime = 300;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 
 // Variables for the Debug Mode
 global.debugMode = false;
+global.godMode = false;
 global.entities = ds_list_create();
 showStreamlinedDebug = false;

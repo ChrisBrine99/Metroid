@@ -11,8 +11,8 @@ surface_resize(application_surface, viewX, viewY);
 // Only move the camera based on the object it is following when the camera isn't shaking
 if (isLocked){
 	if (curObject != self){
-		x += (curObject.x - x) / camSpd;
-		y += (curObject.y - y) / camSpd;
+		x += ((round(curObject.x) - x) / camSpd) * global.deltaTime;
+		y += ((round(curObject.y) - y) / camSpd) * global.deltaTime;
 	}
 }
 // Setting camera bounds

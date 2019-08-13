@@ -93,9 +93,10 @@ ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
 with(ambLight){
 	xRad = 35;
 	yRad = 35;
-	lightCol = c_ltgray;
+	lightCol = c_gray;
 	persistent = true;
 }
+flashingTime = 1;
 
 // Create the in-game HUD
 instance_create_depth(0, 0, 15, obj_hud);
@@ -103,7 +104,8 @@ instance_create_depth(0, 0, 15, obj_hud);
 // Set Samus's sprites
 alarm[0] = 1;
 
-// Play her little intro fanfare
+// Play her little intro fanfare and lock the camera
 scr_play_sound(music_samus_appears, 0, false, false);
+with(obj_camera) {curObject = obj_player;}
 
 #endregion

@@ -6,4 +6,6 @@ if (global.gameState != GAME_STATE.IN_GAME){ // Freezing the entity
 	canMove = false;
 } else{ // Unfreezing the entity
 	canMove = true;	
+	// Reset the hspd penalty
+	hspdPenalty = 0;
 }

@@ -1,7 +1,11 @@
 /// @description Initializing Variables
 // You can write your code in this editor
 
-alpha = 0;				// The transparency level of the menu
+// Call the parent's create event
+event_inherited();
+// Let the on screen prompt destroy itself upon fading away
+destroyOnZero = true;
+
 isClosing = false;		// If true, the menu will fade away and disappear
 
 itemName = "";			// The name of the item being displayed

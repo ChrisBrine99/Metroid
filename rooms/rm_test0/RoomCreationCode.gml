@@ -17,6 +17,20 @@ global.loopLength = 81.399;
 //
 //	These stupid fucking values are beyond tedious to figure out pls send help
 
+// Edit the bloom and lighting system settings
+if (instance_exists(obj_lighting)){
+	with(obj_lighting){
+		curLightingCol = make_color_rgb(0, 105, 230);
+	}
+}
+if (instance_exists(obj_bloom)){
+	with(obj_bloom){
+		bloomThreshold = 0.4;
+		blurSteps = 4;
+		sigma = 0.15;
+	}
+}
+
 // Only execute this code before the game actually begins
 if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	// The Enumerator to keep track of the game's current state
@@ -78,9 +92,6 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		RECT_FADE = 401,
 		RECT_FULL = 402,
 	};
-	
-	// Creating the Player
-	instance_create_depth(856, 316, 305, obj_player);
 
 	// Some helpful global variables for identical values that are referenced in multiple places
 	global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
@@ -92,7 +103,10 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	
 	// Create the lighting and bloom objects
 	instance_create_depth(0, 0, 15, obj_lighting);	
-	instance_create_depth(0, 0, 45, obj_bloom); 
+	instance_create_depth(0, 0, 50, obj_bloom); 
+	
+	// Creating the Player
+	instance_create_depth(856, 316, 305, obj_player);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

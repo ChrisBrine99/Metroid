@@ -23,7 +23,6 @@ if (playMusic){
 			// Stopping the previous song
 			if (audio_sound_get_gain(curSong) == 0){
 				audio_stop_sound(curSong);
-				curSong = -1;
 				song = -1;
 				fadingOut = false;
 			} else if (!fadingOut){ // Starting the song's fade out
@@ -54,19 +53,25 @@ if (keyPause){
 
 if (!global.debugMode){
 	// Opening a streamlined debug menu
-	if (keyDebug2 && keyDebug) {showStreamlinedDebug = !showStreamlinedDebug;}
+	if (keyDebug2 && keyDebug){
+		if (obj_player.hasStarted){
+			showStreamlinedDebug = !showStreamlinedDebug;
+		}
+	}
 	show_debug_overlay(showStreamlinedDebug);
 }
 
 // Opening the full debug menu
 if (keyDebug && !keyDebug2){
-	if (instance_exists(obj_debug_controller)){ // Disabling Debug Mode
-		with(obj_debug_controller) {fadeDestroy = true;}
-		global.debugMode = false;
-	} else{	// Enabling Debug Mode
-		instance_create_depth(0, 0, 10, obj_debug_controller);
-		global.debugMode = true;
-	}	
+	if (obj_player.hasStarted){
+		if (instance_exists(obj_debug_controller)){ // Disabling Debug Mode
+			with(obj_debug_controller) {fadeDestroy = true;}
+			global.debugMode = false;
+		} else{	// Enabling Debug Mode
+			instance_create_depth(0, 0, 10, obj_debug_controller);
+			global.debugMode = true;
+		}
+	}
 }
 
 #endregion

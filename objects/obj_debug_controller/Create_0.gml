@@ -1,6 +1,12 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+// Call the parent's create event
+event_inherited();
+// Make the Debug controller destroy itself upon fading away
+destroyOnZero = true;
+fadeDestroy = false;
+
 // Display Game Maker's built-in debug information
 show_debug_overlay(true);
 
@@ -14,10 +20,3 @@ numEntities = defaultVal;
 numActiveEntities = defaultVal;
 numLightSources = defaultVal;
 numDrawnLights = defaultVal;
-
-// The alpha level for the debug menu
-alpha = 0;
-fadeDestroy = false;
-
-// Variable to check if all Items is enabled
-allItems = false;

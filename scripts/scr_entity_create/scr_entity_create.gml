@@ -6,6 +6,9 @@
 /// @param grav
 /// @param gravDir
 
+// Call the parent's create event
+event_inherited();
+
 // Initializing the entity variables
 hspd = 0;				// Horizontal speed
 vspd = 0;				// Vertical speed
@@ -18,7 +21,7 @@ accel = argument2;		// Horizontal acceleration
 jumpSpd = argument3;	// Vertical jump speed
 
 // Initializing the gravity variables
-grav = argument4;		// Holds the gravity intensity (0.25 is the normal)
+grav = argument4 ;		// Holds the gravity intensity (0.25 is the normal)
 gravDir = argument5;	// Holds what direction the gravity is pulling (270 is downward, 90 is upward)
 
 // The entity's health and lives variables
@@ -30,8 +33,6 @@ maxLives = 0;			// The maximum lives that the entity can have
 // The entity's total damage resitance from hazards
 damageRes = 1;			// 1 = full damage, 0.5 = half damage, etc.
 
-// The image speed penalty for various entities 
-imageSpdPen = 1;		// 1 = no penalty, 0.5 = half speed, etc.
 
 // Variables for collision with hazards
 beenHit = false;		// If true, the entity will be temporarily invulnerable

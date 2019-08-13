@@ -7084,7 +7084,7 @@
             "name": "lava"
         }
     ],
-    "tile_animation_speed": 5,
+    "tile_animation_speed": 0.05,
     "tile_count": 437,
     "tileheight": 16,
     "tilehsep": 0,

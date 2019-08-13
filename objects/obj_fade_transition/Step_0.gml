@@ -14,19 +14,15 @@ if (fadingIn){ // Fade in and count down frames before fade out
 		}
 		// Countdown until the rectangles begins fading away
 		if (canFade){
-			opaqueTime--;
+			opaqueTime = scr_update_value_delta(opaqueTime, -1);
 			if (opaqueTime <= 0){
 				fadingIn = false;
 			}
 		}
-	} else{
-		alpha += alphaIncr;	
 	}
-} else{ // Fade out and destroy self/sprite sweep object if it exists
-	alpha -= alphaIncr;
+} else{
 	if (alpha <= 0){
-		instance_destroy(self);	
 		if (effectID != noone) {instance_destroy(effectID);}
-		with(obj_hud) {isVisible = true;}
+		with(obj_hud) {isVisible = true;}	
 	}
 }

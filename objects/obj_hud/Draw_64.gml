@@ -11,8 +11,8 @@ if (alpha > 0){
 	draw_set_font(font_gui_large);
 	with(obj_player){
 		// Samus's Current Health
-		if (curHitpoints >= 10) {draw_text_outline(3, 3, curHitpoints, c_white, c_gray);}
-		else {draw_text_outline(3, 3, "0" + curHitpoints, c_white, c_gray);}
+		if (curHitpoints >= 10) {draw_text_outline(3, 3, string(curHitpoints), c_white, c_gray);}
+		else {draw_text_outline(3, 3, "0" + string(curHitpoints), c_white, c_gray);}
 		// Samus's Current and Maximum Energy Tanks
 		if (maxLives > 0){
 			var xOffset, yOffset;

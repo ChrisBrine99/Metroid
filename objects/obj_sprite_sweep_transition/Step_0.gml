@@ -19,8 +19,8 @@ if (fadeID != noone){
 				endYPos = obj_player.y - global.camY;
 			}
 		} else{ // Move toward final position
-			x += (endXPos - x) / transitionSpd;
-			y += (endYPos - y) / transitionSpd;
+			x = scr_update_value_delta(x, (endXPos - x) / transitionSpd);
+			y = scr_update_value_delta(y, (endYPos - y) / transitionSpd)
 		}
 	}
 }

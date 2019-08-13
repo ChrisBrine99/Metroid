@@ -14,21 +14,14 @@ keyAllItems = keyboard_check_pressed(ord("Q"));			// Gives Samus all of her item
 
 #region Handling the Menu Transition
 
-var isVisible;
-isVisible = obj_hud.isVisible;
-
-// Fading the Debug Menu in and out
-if (isVisible && !fadeDestroy){
-	alpha += 0.1;
-	if (alpha > 1){
-		alpha = 1;	
-	}
+var isVisible = obj_hud.isVisible;
+if (isVisible){
+	destroyOnZero = true;
+	if (!fadeDestroy) {fadingIn = true;}
+	else {fadingIn = false;}
 } else{
-	alpha -= 0.1;
-	if (alpha < 0){
-		alpha = 0;	
-		if (fadeDestroy) {instance_destroy(self);}
-	}
+	destroyOnZero = false;	
+	fadingIn = false;
 }
 
 #endregion
@@ -48,26 +41,26 @@ oCol = c_gray;
 #region Switching Music Tracks
 
 if (keySongSwitch){
-	if (keyTrigger && global.curSong != -1){ // Muting the music
-		global.curSong = -1;
+	if (keyTrigger){ // Muting/Unmuting the music
 		// Create an On Screen Prompt
 		createPrompt = true;
-		message = "Music Has Been Muted";
-		col = c_red;
-		oCol = c_maroon;
+		if (obj_controller.playMusic){
+			global.curSong = -1;
+			// Alter the Prompt's message and color
+			message = "Music Has Been Stopped";
+			col = c_red;
+			oCol = c_maroon;
+		} else{
+			global.curSong = music_save_room;
+			global.offset = 0;
+			global.loopLength = 58.124;
+			// Alter the Prompt's message and color
+			message = "Music Has Been Resumed";
+			col = c_lime;
+			oCol = c_green;	
+		}
 	} else{	// Playing the next song
-		if (global.curSong == -1){ // Default to the Save Room Theme
-			if (keyTrigger){
-				global.curSong = music_save_room;
-				global.offset = 0;
-				global.loopLength = 58.124;
-				// Create an On Screen Prompt
-				createPrompt = true;
-				message = "Music Has Been UnMuted";
-				col = c_lime;
-				oCol = c_green;
-			}
-		} else if (audio_is_playing(global.curSong)){ // Play the next track in sequential order
+		if (audio_is_playing(global.curSong)){ // Play the next track in sequential order
 			switch(global.curSong){
 				case music_surface_sr388:
 					global.curSong = music_rocky_maridia;
@@ -147,8 +140,8 @@ if (keyTrigger){
 			// Create an On Screen Prompt
 			createPrompt = true;
 			message = "Samus Has Been Given All Her Items";
-			if (!other.allItems){
-				other.allItems = true;
+			if (!global.godMode){
+				global.godMode = true;
 				// Unlock all of Samus's Generic Items (Morphball, Space Jump, Screw Attack, etc.)
 				for (var i = 0; i < 12; i++){
 					global.item[i] = true;
