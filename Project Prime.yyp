@@ -2455,6 +2455,14 @@
             }
         },
         {
+            "Key": "d5566534-39f5-4cfe-94ba-4c72ea5f6bc1",
+            "Value": {
+                "id": "68065e16-4a82-40b2-8767-82bb417d12b2",
+                "resourcePath": "objects\\obj_collider_object\\obj_collider_object.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "d5c15c8c-86d9-42ce-99ad-d9aa5e3b4886",
             "Value": {
                 "id": "4231fcfe-37ee-431e-83fc-cde2dd8b2670",

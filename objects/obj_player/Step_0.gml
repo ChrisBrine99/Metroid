@@ -502,17 +502,12 @@ if (inMorphball){
 	}
 }
 
-// Handling collisions between the Player and anything that can interact with it
-var object = instance_place(x, y, all);
+// Handling Collisions between the player and objects likes warps, hazards, enemies, and event triggers
+var object = instance_place(x, y, obj_collider_object);
 if (object != noone){
-	with(object){ 
-		// Check if the object has a parent
-		var parentObj = object_get_parent(object_index);
-		if (parentObj <= -1) {parentObj = object_index;} // Use the object's index if it doesn't have a parent
-		// Find out what object the Player actually collided with
-		switch(parentObj){
-			// The Player has come into contact with a room warp
-			case obj_warp:
+	with(object){
+		switch(colliderType){
+			case COLLIDER.WARP: // Colliding with a room warp
 				isWarping = true;
 				fadeID = instance_create_depth(0, 0, 45, obj_fade_transition);
 				// Set up the warp to create the sprite sweeping transition
@@ -537,36 +532,34 @@ if (object != noone){
 					opaqueTime = 30;
 				}
 				break;
-			// The Player has come into contact with a hazardous object (Ex. Water, Lava, Acid, Spikes)
-			case par_hazard_block:
-				if (slowPlayer){
+			case COLLIDER.LIQUID: // Colliding with Water, Lava, or Acid
+				// Only slow the player down if they do not have the gravity suit
+				if (global.item[ITEM.GRAVITY_SUIT] == false){
 					with(other){
 						// Slow down the Player and the footstep sound's speed
 						if (hspd > 1 || hspd < -1) {hspd = sign(hspd);}	
 						footstepTimerMax = 18;
+						// Make the player's jump height very low
+						if (!onGround){
+							if (vspd < 0) {vspd = scr_update_value_delta(vspd, -(vspd * 0.08));}
+							else {vspd = scr_update_value_delta(vspd, -grav / 2);}
+						}
 					}
 				}
 				// Don't take away damage if the object isn't damaging (Ex. Water)
 				if (damage > 0){
-					if (isContinuous){ // Continual Damage Dealing (Ex. Submerged in Lava)
-						dmgTimer = scr_update_value_delta(dmgTimer, -1);
-						// Deal out damage to the Player
-						if (dmgTimer <= 0){
-							var dmg = damage;
-							dmgTimer = dmgTimerMax;
-							with(other) {scr_update_hitpoints(-round(dmg * damageRes));}
-							scr_play_sound(snd_samus_drown, 0, false, true);
-						}
-					} else{ // Sudden Damage Dealing (Ex. Hitting a Spike)
-						
+					dmgTimer = scr_update_value_delta(dmgTimer, -1);
+					// Deal out damage to the Player
+					if (dmgTimer <= 0){
+						var dmg = damage;
+						dmgTimer = dmgTimerMax;
+						with(other) {scr_update_hitpoints(-round(dmg * damageRes));}
+						scr_play_sound(snd_samus_drown, 0, false, true);
 					}
 				}
 				break;
-			// TODO -- Add Collision between the Player and enemies
-			//case par_enemy:
-			//	break;
 		}
-	}
+	}	
 }
 
 // Calling the Entity Collision script

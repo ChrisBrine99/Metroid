@@ -7,7 +7,8 @@
         "c48f6ceb-d719-43e7-bcfc-b46cfafd3b81",
         "70da46f2-74a0-481e-ae72-dbab25a0b1ef",
         "4ad9b81a-bd9a-42a0-966e-633cd2b829fb",
-        "5d127687-4d44-4178-84ea-c20f956b5eaf"
+        "5d127687-4d44-4178-84ea-c20f956b5eaf",
+        "d5566534-39f5-4cfe-94ba-4c72ea5f6bc1"
     ],
     "filterType": "GMObject",
     "folderName": "Universal Objects",

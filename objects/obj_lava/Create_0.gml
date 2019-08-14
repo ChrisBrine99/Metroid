@@ -6,9 +6,8 @@ event_inherited();
 sprite_index = spr_lava_visible;
 
 // Edit some of the inherited variables
-isContinuous = true;
-damage = 2;
-dmgTimerMax = 15;
+damage = 0;
+dmgTimerMax = 10;
 
 // Variables that are unique to the Lava Hazard
 origin = image_yscale * 20;		// The maximum size the light can be

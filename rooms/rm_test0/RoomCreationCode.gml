@@ -92,6 +92,15 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		RECT_FADE = 401,
 		RECT_FULL = 402,
 	};
+	
+	// The Enumerator for the types of colliders that can be found in the game
+	enum COLLIDER{
+		LIQUID = 500,
+		GENERIC_HAZARD = 501,
+		ENEMY = 502,
+		ENEMY_PROJECTILE = 503,
+		WARP = 504,
+	};
 
 	// Some helpful global variables for identical values that are referenced in multiple places
 	global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game

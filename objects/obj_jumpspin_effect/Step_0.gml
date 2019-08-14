@@ -6,7 +6,8 @@ if (global.gameState != GAME_STATE.IN_GAME){
 }
 
 // Create another of these effects
-if (alpha == 0.2){
+if (alpha <= 0.2 && !hasSpawned){
+	hasSpawned = true;
 	with(obj_player){
 		if (!onGround && jumpspin){
 			instance_create_depth(x, y, depth + 1, obj_jumpspin_effect);

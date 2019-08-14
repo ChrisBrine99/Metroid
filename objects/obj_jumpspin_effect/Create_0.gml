@@ -13,6 +13,10 @@ scr_alpha_control_create();
 alpha = 0.5;
 fadingIn = false;
 freezeOnPause = true;
+destroyOnZero = true;
+
+// Checks if the second effect has spawned yet
+hasSpawned = false;
 
 // Stop the "Animation End" Event from Triggering
 image_speed = 0;
