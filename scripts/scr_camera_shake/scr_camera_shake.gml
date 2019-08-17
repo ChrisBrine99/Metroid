@@ -27,8 +27,4 @@ with(obj_camera){
 	scr_camera_bounds(0 - randX, 0 - randY, room_width + randX, room_height + randY);
 }
 
-// MAKE SURE TO LOCK THE CAMERA BACK ONTO THE PLAYER AFTER THE CAMERA SHAKING STOPS
-// Use this to lock the camera again:
-//			with(obj_camera){
-//				isLocked = true;
-//			}
+// MAKE SURE TO CALL THE "scr_camera_relock()" SCRIPT AFTER THE SCREEN SHAKING IS SUPPOSED TO BE OVER

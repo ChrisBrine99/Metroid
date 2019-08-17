@@ -306,43 +306,45 @@ if (keyShoot){
 	if (!inMorphball){
 		if (isWeaponUnlocked[curWeaponIndex]){
 			if (fireRateTimer <= 0){
-				var projectile;
+				var projectile, rndX, rndY;
 				projectile[0] = noone;
+				rndX = round(x);
+				rndY = round(y);
 				switch(curWeaponIndex){
 					case 0: // Power Beam
-						projectile[0] = instance_create_depth(x, y, 310, obj_powerbeam);
+						projectile[0] = instance_create_depth(rndX, rndY, 310, obj_powerbeam);
 						// Resetting the fireRateTimer variable
 						fireRateTimer = powerBeamFR;
 						break;
 					case 1: // Ice Beam
-						projectile[0] = instance_create_depth(x, y, 310, obj_icebeam);
+						projectile[0] = instance_create_depth(rndX, rndY, 310, obj_icebeam);
 						// Resetting the fireRateTimer variable
 						fireRateTimer = iceBeamFR;
 						break;
 					case 2: // Wave Beam
-						projectile[0] = instance_create_depth(x, y, 310, obj_wavebeam);
-						projectile[1] = instance_create_depth(x, y, 310, obj_wavebeam);
+						projectile[0] = instance_create_depth(rndX, rndY, 310, obj_wavebeam);
+						projectile[1] = instance_create_depth(rndX, rndY, 310, obj_wavebeam);
 						projectile[1].movingUp = true;
 						// Resetting the fireRateTimer variable
 						fireRateTimer = waveBeamFR;
 						break;
 					case 3: // Spazer Beam
-						projectile[0] = instance_create_depth(x, y, 310, obj_spazerbeam);
-						projectile[1] = instance_create_depth(x, y, 310, obj_spazerbeam);
+						projectile[0] = instance_create_depth(rndX, rndY, 310, obj_spazerbeam);
+						projectile[1] = instance_create_depth(rndX, rndY, 310, obj_spazerbeam);
 						projectile[1].increment = 0;
-						projectile[2] = instance_create_depth(x, y, 310, obj_spazerbeam);
+						projectile[2] = instance_create_depth(rndX, rndY, 310, obj_spazerbeam);
 						projectile[2].movingUp = true;
 						// Resetting the fireRateTimer variable
 						fireRateTimer = spazerBeamFR;
 						break;
 					case 4: // Plasma Beam
-						projectile[0] = instance_create_depth(x, y, 310, obj_plasmabeam);
+						projectile[0] = instance_create_depth(rndX, rndY, 310, obj_plasmabeam);
 						// Resetting the fireRateTimer variable
 						fireRateTimer = plasmaBeamFR;
 						break;
 					case 5: // Missiles
 						if (numMissiles > 0){
-							projectile[0] = instance_create_depth(x, y, 310, obj_missile);
+							projectile[0] = instance_create_depth(rndX, rndY, 310, obj_missile);
 							// Resetting the fireRateTimer variable
 							fireRateTimer = missileFR;
 							// Remove a missile from Samus's ammo reserves
@@ -352,7 +354,7 @@ if (keyShoot){
 						break;
 					case 6: // Super Missiles
 						if (numSMissiles > 0){
-							projectile[0] = instance_create_depth(x, y, 310, obj_sMissile);
+							projectile[0] = instance_create_depth(rndX, rndY, 310, obj_sMissile);
 							// Resetting the fireRateTimer variable
 							fireRateTimer = sMissileFR;
 							// Remove a missile from Samus's ammo reserves

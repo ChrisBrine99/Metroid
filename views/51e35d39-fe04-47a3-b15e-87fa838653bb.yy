@@ -9,7 +9,7 @@
         "49666807-72ae-4482-94a7-185bb270fe8a"
     ],
     "filterType": "GMScript",
-    "folderName": "Animation Scripts",
+    "folderName": "Animation",
     "isDefaultView": false,
     "localisedFolderName": ""
 }

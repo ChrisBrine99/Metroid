@@ -12,7 +12,9 @@ itemName = "";			// The name of the item being displayed
 
 displayTxt = "";		// The full unaltered sccreen
 curDisplayedStr = "";	// The text that is currently being displayed on the screen
-nextChar = 1;			// The next character to pull form the "displayTxt" variable
+nextChar = 1;			// The next character to pulled from the "displayTxt" variable
+curChar = 1;			// The current character that was added to the "curDisplayedStr" variable
+txtSpeed = 2.5;			// How fast the text scrolling is
 
 scrollingText = false;	// If true, the text will scroll out instead of being instantly visible
 

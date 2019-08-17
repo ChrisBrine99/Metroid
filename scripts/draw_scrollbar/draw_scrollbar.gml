@@ -9,7 +9,6 @@
 /// @param sBarCol1
 /// @param sBarCol2
 /// @param backCol
-/// @param alpha
 
 var xPos, yPos, height, pageNum, pageSize, pageIndex, sBarCol1, sBarCol2, backCol, alpha;
 xPos = argument0;			// The x position of the scrollbar on the screen

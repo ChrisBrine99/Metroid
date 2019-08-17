@@ -13,5 +13,5 @@ if (imgIndex >= sprite_get_number(sprite_index)){
 	// Trigger the animation end event
 	event_perform(ev_other, ev_animation_end);
 } else if (imgIndex <= 0){
-	imgIndex = 0;	
+	imgIndex = 0;
 }

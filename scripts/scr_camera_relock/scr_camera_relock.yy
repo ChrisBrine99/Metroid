@@ -1,8 +1,8 @@
 {
-    "id": "c9c02378-4717-4fac-933c-b6c228c0ce0c",
+    "id": "6ae6fabd-4bc3-41da-afb0-cdd73756d93d",
     "modelName": "GMScript",
     "mvc": "1.0",
-    "name": "draw_controls",
+    "name": "scr_camera_relock",
     "IsCompatibility": false,
     "IsDnD": false
 }

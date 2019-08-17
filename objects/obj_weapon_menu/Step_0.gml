@@ -15,12 +15,12 @@ keyCloseMenu = keyboard_check(vk_shift);			// Closes the weapon menu
 // Fading the Debug Menu in and out
 if (fullMenu){
 	if (isVisible){
-		alpha = scr_update_value_delta(explodeTime, 0.1);
+		alpha = scr_update_value_delta(alpha, 0.1);
 		if (alpha > 1){
 			alpha = 1;	
 		}
 	} else{
-		alpha = scr_update_value_delta(explodeTime, -0.1);
+		alpha = scr_update_value_delta(alpha, -0.1);
 		if (alpha < 0){
 			alpha = 0;	
 			instance_destroy(self);

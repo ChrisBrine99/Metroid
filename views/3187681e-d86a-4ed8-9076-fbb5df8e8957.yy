@@ -8,7 +8,7 @@
         "ea856b9c-168a-4b9b-a74b-4eb2c6ed122f"
     ],
     "filterType": "GMScript",
-    "folderName": "Alpha Control Scripts",
+    "folderName": "Alpha Control",
     "isDefaultView": false,
     "localisedFolderName": ""
 }

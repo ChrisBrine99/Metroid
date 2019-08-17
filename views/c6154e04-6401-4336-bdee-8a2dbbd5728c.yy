@@ -6,8 +6,7 @@
     "children": [
         "b7ea931c-f9a9-4c84-92db-e1ff15b5f7aa",
         "51e35d39-fe04-47a3-b15e-87fa838653bb",
-        "3187681e-d86a-4ed8-9076-fbb5df8e8957",
-        "5ab9c4ac-0083-47de-a405-c1e04f68df22"
+        "1db208c2-21ef-4f38-9060-433149589c48"
     ],
     "filterType": "GMScript",
     "folderName": "Object Scripts",

@@ -25,8 +25,12 @@ if (alpha > 0){
 	// Checking if the text needs to be scrolled or not
 	if (displayTxt != curDisplayedStr){
 		if (scrollingText){
-			curDisplayedStr += string_char_at(displayTxt, nextChar);
-			nextChar++;	
+			var nChar = floor(nextChar);
+			if (nChar > curChar){
+				curDisplayedStr += string_copy(displayTxt, curChar, nChar - curChar);
+				curChar = nChar;
+			}
+			nextChar = scr_update_value_delta(nextChar, txtSpeed);
 		} else{
 			curDisplayedStr	= displayTxt;
 		}

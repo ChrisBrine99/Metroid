@@ -10,7 +10,7 @@
         "58d61475-ae7f-4016-9419-7c690734d657"
     ],
     "filterType": "GMScript",
-    "folderName": "Dynamic Entity Scripts",
+    "folderName": "Dynamic Entities",
     "isDefaultView": false,
     "localisedFolderName": ""
 }

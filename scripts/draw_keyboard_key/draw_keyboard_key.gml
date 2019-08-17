@@ -1,10 +1,17 @@
-/// @description Draw a string value depending on the given key's unicode value. Returns said string value to
-///	whatever object called the script.
+/// @description Draw a string value depending on the given key's unicode value.
+/// @param posX
+/// @param posY
 /// @param key
+/// @param textCol
+/// @param outlineCol
 
-var key, str;
-key = argument0;
-str = "";
+var xPos, yPos, key, col, oCol, str;
+xPos = argument0;	// The X position on the screen to draw to
+yPos = argument1;	// The Y position on the screen to draw to
+key = argument2;	// The keyboard key to find the string value for
+col = argument3;	// The color of the text inside the lines
+oCol = argument4;	// The text's outline color
+str = "";			// The resulting keyboard key's string value
 
 switch(key){
 	case 8:
@@ -200,5 +207,5 @@ switch(key){
 		str = chr(key);
 		break;
 }
-
-return str;
+// Draw the resulting string to the screen
+draw_text_outline(xPos, yPos, str, col, oCol);
