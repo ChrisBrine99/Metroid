@@ -8,7 +8,7 @@
 /// @param stopMovement
 /// @param destroyOnCollision
 
-var hspd, vspd, onGround, gravDir, useSlopes, stopMovement, destroyOnCollision, dHspd, dVspd, lenDirY;
+var hspd, vspd, onGround, gravDir, useSlopes, stopMovement, destroyOnCollision, dHspd, dVspd;
 hspd = argument0;						// The current horizontal speed of the object
 vspd = argument1;						// The current vertical speed of the object
 onGround = argument2;					// If false, the object is currently airbourne
@@ -18,7 +18,6 @@ stopMovement = argument5;				// If true, the object will be stopped upon collisi
 destroyOnCollision = argument6;			// If true, the object will be destroyed upon collision
 dHspd = sign(hspd) * global.deltaTime;	// The exact horizontal value in pixels the object moves in a frame		
 dVspd = sign(vspd) * global.deltaTime;	// The exact vertical value in pixels the object moves in a frame
-lenDirY = lengthdir_y(1, gravDir);		// Value used for handling horizontal movement on sloped surfaces
 
 // Don't check for collisions outside of the object's step event
 if (event_type != ev_step){
@@ -27,14 +26,20 @@ if (event_type != ev_step){
 
 // Horizontal Collision
 repeat(round(abs(hspd))){
-	if (!place_meeting(x + dHspd, y + lenDirY, par_block) && onGround && useSlopes){ // Moving down a slope
+	if (onGround && useSlopes){ // Check for slopes
+		var yMove = lengthdir_y(1, gravDir);
+		if (!place_meeting(x + dHspd, y + yMove, par_block)){ // Moving down a slope
+			x += dHspd;
+			y += yMove;
+			break;
+		} else if (place_meeting(x + dHspd, y, par_block) && !place_meeting(x + dHspd, y - yMove, par_block)){ // Moving up a slope
+			x += dHspd;
+			y -= yMove;
+			break;
+		}
+	}
+	if (!place_meeting(x + dHspd, y, par_block) || (!stopMovement && !destroyOnCollision)){ // Moving horizontally
 		x += dHspd;
-		y += lenDirY;
-	} else if (!place_meeting(x + dHspd, y, par_block) || (!stopMovement && !destroyOnCollision)){ // Moving horizontally
-		x += dHspd;
-	} else if (!place_meeting(x + dHspd, y - lenDirY, par_block) && useSlopes){ // Moving up a slope
-		x += dHspd;
-		y -= lenDirY;
 	} else{
 		if (destroyOnCollision){ // Deleting the object if it is destroyed upon collision
 			var block = instance_place(x + sign(hspd), y, par_block);

@@ -4,14 +4,14 @@
 #region Keyboard Input
 
 var keyRight, keyLeft, keyJump, keyStopJump, keyUp, keyDown, keyShoot, keyQuickMenu;
-keyRight = keyboard_check(vk_right);				// When true, Samus should move to the right OR will stand up from crouching.
-keyLeft = keyboard_check(vk_left);					// When true, Samus should move to the left OR will stand up from crouching.
-keyJump = keyboard_check_pressed(ord("X"));			// When true, Samus will jump into the air. With the Space Jump, Samus will be able to jump again while airbourne
-keyStopJump = keyboard_check_released(ord("X"));	// When true, Samus's total jump height will be able to be controlled.
-keyUp = keyboard_check(vk_up);						// When true, Samus will either aim upward, exit morphball, or stand up.
-keyDown = keyboard_check(vk_down);					// When true, Samus will either aim downward, start crouching, or enter morphball.
-keyShoot = keyboard_check_pressed(ord("Z"));		// When true, Samus will fire her currently equipped weapon OR will deploy the currently equipped bomb.
-keyQuickMenu = keyboard_check(vk_shift);			// Shifts through Samus's quick menu (Where all beams and bombs are shown)
+keyRight = keyboard_check(global.gKey[KEY.GAME_RIGHT]);				
+keyLeft = keyboard_check(global.gKey[KEY.GAME_LEFT]);					
+keyJump = keyboard_check_pressed(global.gKey[KEY.JUMP]);			
+keyStopJump = keyboard_check_released(global.gKey[KEY.JUMP]);	
+keyUp = keyboard_check(global.gKey[KEY.GAME_UP]);						
+keyDown = keyboard_check(global.gKey[KEY.GAME_DOWN]);					
+keyShoot = keyboard_check_pressed(global.gKey[KEY.USE_WEAPON]);		
+keyQuickMenu = keyboard_check(global.gKey[KEY.SWAP_WEAPON]);
 
 #endregion
 
@@ -74,12 +74,12 @@ if (onGround){
 			if (footstepTimer <= 0){
 				// Play the sound, but vary its pitch and volume
 				var sound, gain, pitch;
-				sound = scr_play_sound(snd_samus_walk, 0, false, true);
+				sound = audio_play_sound(snd_samus_walk, 0, false);
 				gain = 1 - random(0.5);
 				pitch = 1 + choose(random(0.1), -random(0.1));
 				// Inject the altered pitch and volume into the sound
 				audio_sound_pitch(sound, pitch);
-				audio_sound_gain(sound, gain, 0);
+				audio_sound_gain(sound, scr_volume_type(snd_samus_walk) * gain, 0);
 				// Reset the timer
 				footstepTimer = footstepTimerMax;
 			}
@@ -132,7 +132,7 @@ if (keyJump){
 				// Somersaulting while airbourne
 				if (!jumpspin && !isShooting){
 					jumpspin = true;
-					hspd = sign(image_xscale);
+					hspd = sign(imgXScale);
 					vspd = 0;
 					// Create the jump effect object
 					instance_create_depth(x, y, depth, obj_jumpspin_effect);
@@ -169,7 +169,6 @@ if (keyStopJump){
 
 #region Horizontal Movement
 
-// Moving to the right
 if (keyRight){
 	if (!left){
 		facingRight = true;
@@ -374,7 +373,7 @@ if (keyShoot){
 				curVspd = vspd;
 				facing = facingRight;
 				isGrounded = onGround;
-				imageXScale = image_xscale;
+				imageXScale = imgXScale;
 				for (var i = 0; i < length; i++){
 					if (projectile[i] != noone){
 						with(projectile[i]){
@@ -524,11 +523,11 @@ if (object != noone){
 						startYPos = y;
 						// Set the transition speed
 						transitionSpd = 5;
-						// The sprite parameters being passed on from the PLayer to this
+						// The sprite parameters being passed on from the Player to this
 						playerSpr = obj_player.sprite_index;
-						curImg = obj_player.image_index;
-						imgXScale = sign(obj_player.image_xscale);
-						imgYScale = sign(obj_player.image_yscale);
+						curImg = obj_player.imgIndex;
+						imgXScale = sign(obj_player.imgXScale);
+						imgYScale = sign(obj_player.imgYScale);
 					}
 					// Alter the opaque time to 0.5 seconds
 					opaqueTime = 30;
@@ -561,11 +560,24 @@ if (object != noone){
 				}
 				break;
 		}
-	}	
+	}
 }
 
 // Calling the Entity Collision script
 scr_entity_collision(hspd, vspd, onGround, gravDir, true, true, false);
+
+// Colliding with a fall-through floor
+if (place_meeting(x, y + 1, obj_dblock_fall_through)){
+	var block = instance_place(x, y + 1, obj_dblock_fall_through);
+	with(block){
+		if (!isDestroyed){
+			isDestroyed = true;
+			destroyTimer = destroyTimerMax;
+			// Create the block destroying effect
+			instance_create_depth(x, y, depth, obj_dblock_destroy);
+		}
+	}
+}
 
 #endregion
 
@@ -597,9 +609,9 @@ if (ambLight != noone){
 				jmpSpin = jumpspin;
 				with(ambLight){
 					if (jmpSpin){
-						xRad = choose(75, 80, 85);
-						yRad = xRad;
 						if (fTime <= 0){
+							xRad = choose(75, 80, 85);
+							yRad = xRad;
 							lightCol = choose(c_aqua, c_lime, c_white);
 							other.flashingTime = 1;	
 						}

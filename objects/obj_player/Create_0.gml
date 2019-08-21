@@ -4,7 +4,7 @@
 #region Altering the Default Entity Variables
 
 // Call the entity create event
-scr_entity_create(2.1, 7, 0.3, -5, 0.25, 270);
+scr_entity_create(2.1, 7, 0.4, -5, 0.25, 270);
 
 // Editing the cur/maxHitpoints and cur/maxLives variables
 maxHitpoints = 99;				// The max amount of "Energy" for Samus
@@ -21,9 +21,8 @@ damageRes = 1;					// 1 = 100%, 0.5 = 50%, etc.
 
 // Some variables for currently equipped projectile and what has been unlocked yet
 curWeaponIndex = 0;
-for (var i = 0; i < 7; i++){
-	isWeaponUnlocked[i] = false;
-}
+isWeaponUnlocked = [true, false, false, false, false, false, false];
+
 // Indexes for the various projectile weapons Samus can obtain:
 //		0 = Power Beam
 //		1 = Ice Beam
@@ -33,14 +32,10 @@ for (var i = 0; i < 7; i++){
 //		5 = Missiles
 //		6 = Super Missiles
 
-// The Power Beam should be unlocked by default
-isWeaponUnlocked[0] = true;
-
 // Some variables for currently equipped bomb and what has been unlocked yet
 curBombIndex = 0;
-for (var ii = 0; ii < 2; ii++){
-	isBombUnlocked[ii] = false;	
-}
+isBombUnlocked = [false, false];
+
 // Indexes for the various bombs Samus can obtain:
 //		0 = Bombs
 //		1 = Power Bombs

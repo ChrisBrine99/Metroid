@@ -24,5 +24,6 @@ if (fadingIn){ // Fade in and count down frames before fade out
 	if (alpha <= 0){
 		if (effectID != noone) {instance_destroy(effectID);}
 		with(obj_hud) {isVisible = true;}	
+		instance_destroy(self);
 	}
 }

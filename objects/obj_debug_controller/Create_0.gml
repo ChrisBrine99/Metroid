@@ -18,5 +18,6 @@ numInstances = defaultVal;
 numActiveObjects = defaultVal;
 numEntities = defaultVal;
 numActiveEntities = defaultVal;
+numDrawnEntities = defaultVal;
 numLightSources = defaultVal;
 numDrawnLights = defaultVal;

@@ -10,7 +10,7 @@ if (!canMove){
 
 // Standing Forward (Idle)
 if (!hasStarted){
-	image_xscale = 1;
+	imgXScale = 1;
 	sprite_index = sprStand0;
 	return;
 }
@@ -20,8 +20,8 @@ if (onGround) {imgSpd = abs(hspd / maxHspd);}
 else {imgSpd = 1;}
 
 // Setting the direction that samus is facing
-if (facingRight) {image_xscale = 1;}
-else {image_xscale = -1;}
+if (facingRight) {imgXScale = 1;}
+else {imgXScale = -1;}
 
 // Morphball Sprites
 if (inMorphball){

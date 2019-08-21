@@ -19,4 +19,4 @@ isVisible = true;
 
 // The cooldown for quick swapping and opening the full menu
 fullMenu = false;
-alarm[0] = 10;
+alarm[0] = 20 / global.deltaTime;

@@ -3,7 +3,7 @@
 
 #region Enabling/Disabling the Step Event/Destroying the Object When Its Off-Screen
 
-// Check if the projectil is outside of the player's view
+// Check if the projectile is outside of the player's view
 if (x < global.camX - 32 || y < global.camY - 32 || x > global.camX + global.camWidth + 32 || y > global.camY + global.camHeight + 32){
 	destroyFX = false;
 	instance_destroy(self);
@@ -19,13 +19,13 @@ if (!canMove){
 #region  Horiontal/Vertical Movement
 
 if (right){ // Moving to the right
-	image_xscale = 1;
+	imgXScale = 1;
 	hspd += accel;
 	if (hspd > maxHspd){
 		hspd = maxHspd;	
 	}
 } else if (left){ // Moving to the left
-	image_xscale = -1;
+	imgXScale = -1;
 	hspd -= accel;
 	if (hspd < -maxHspd){
 		hspd = -maxHspd;	
@@ -46,7 +46,7 @@ if (up){ // Moving upward
 	}
 }
 // Setting the image's direction
-image_angle = direction;
+imgAngle = direction;
 
 #endregion
 

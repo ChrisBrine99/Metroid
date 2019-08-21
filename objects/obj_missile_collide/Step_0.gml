@@ -7,8 +7,15 @@ event_inherited();
 // Scaling the ambient light's size
 if (image_speed > 0){
 	if (ambLight != noone){
-		ambLight.xRad = choose(35, 40, 45);
-		ambLight.yRad = ambLight.xRad;
-		ambLight.lightCol = choose(c_orange, c_yellow, c_white);
+		flashingTime = scr_update_value_delta(flashingTime, -1);
+		var fTime = flashingTime;
+		with(ambLight){
+			if (fTime < 0){
+				xRad = choose(35, 40, 45);
+				yRad = xRad;
+				lightCol = choose(c_orange, c_yellow, c_white);
+				other.flashingTime = 1;
+			}
+		}
 	}
 }

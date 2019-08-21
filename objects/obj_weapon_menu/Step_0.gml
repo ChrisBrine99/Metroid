@@ -4,9 +4,9 @@
 #region Keyboard Inputs
 
 var keyRight, keyLeft, keyCloseMenu;
-keyRight = keyboard_check_pressed(vk_right);		// Shifts one item to the right in the weapon menu
-keyLeft = keyboard_check_pressed(vk_left);			// Shifts one item to the left in the weapon menu
-keyCloseMenu = keyboard_check(vk_shift);			// Closes the weapon menu 
+keyRight = keyboard_check_pressed(global.gKey[KEY.GAME_RIGHT]);
+keyLeft = keyboard_check_pressed(global.gKey[KEY.GAME_LEFT]);
+keyCloseMenu = keyboard_check(global.gKey[KEY.SWAP_WEAPON]);		
 
 #endregion
 
@@ -26,13 +26,12 @@ if (fullMenu){
 			instance_destroy(self);
 			// Reset the Game State
 			global.gameState = GAME_STATE.IN_GAME;
-			// TODO -- Remove the Background Menu Blur
 		}
 		return;
 	}
 } else{
 	// Transition to the full menu
-	if (obj_hud.alpha == 0){
+	if (obj_hud.alpha < 0.1){
 		fullMenu = true;
 	}
 }

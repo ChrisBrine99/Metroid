@@ -20,5 +20,5 @@ if (!place_meeting(x, y + lengthdir_y(1, gravDir), par_block)){
 	}
 }
 // Checking the image_yscale to make sure it's the same as where the gravity is pulling the player toward
-if (gravDir == 270) {image_yscale = 1;}
-else if (gravDir == 90) {image_yscale = -1;}
+if (gravDir == 270) {imgYScale = 1;}
+else if (gravDir == 90) {imgYScale = -1;}

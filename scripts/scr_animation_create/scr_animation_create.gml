@@ -10,3 +10,6 @@ if (event_type != ev_create){
 // Initialize the required variables
 imgSpd = 1;				// Determines the speed that the image animates at
 imgIndex = 0;			// The current frame of a sprite that is being displayed
+imgXScale = 1;			// The orientation on the x-axis of the image
+imgYScale = 1;			// The orientation on the y-axis of the image
+imgAngle = 0;			// The angle that the image needs to be drawn at

@@ -44,18 +44,17 @@ if (keySongSwitch){
 	if (keyTrigger){ // Muting/Unmuting the music
 		// Create an On Screen Prompt
 		createPrompt = true;
-		if (obj_controller.playMusic){
-			global.curSong = -1;
-			// Alter the Prompt's message and color
-			message = "Music Has Been Stopped";
+		if (!global.musicMuted){
+			global.oAudio[1] = 0;
+			global.musicMuted = true;
+			message = "Music Has Been Muted";
 			col = c_red;
-			oCol = c_maroon;
+			oCol = c_maroon;	
 		} else{
-			global.curSong = music_save_room;
-			global.offset = 0;
-			global.loopLength = 58.124;
+			global.oAudio[1] = 65;
+			global.musicMuted = false;
 			// Alter the Prompt's message and color
-			message = "Music Has Been Resumed";
+			message = "Music Has Been Unmuted";
 			col = c_lime;
 			oCol = c_green;	
 		}

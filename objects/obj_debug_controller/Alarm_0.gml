@@ -10,7 +10,8 @@ numActiveObjects = string(instance_number(obj_culled_object) +
 						  instance_number(par_player_effect) +
 						  instance_number(obj_hud) +
 						  instance_number(obj_camera) +
-						  instance_number(obj_controller));
+						  instance_number(obj_controller) +
+						  instance_number(obj_debug_controller));
 
 numEntities = string(ds_list_size(global.entities));
 var total = 0;
@@ -21,6 +22,7 @@ for (var i = 0; i < numEntities; i++){
 	}
 }
 numActiveEntities = string(total);
+numDrawnEntities = string(global.numDrawn);
 
 numLightSources = string(ds_list_size(global.lightSources));
 numDrawnLights = string(obj_lighting.numDrawn);

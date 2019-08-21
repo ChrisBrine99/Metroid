@@ -62,9 +62,9 @@ if (!isDestroyed){
 	mask_index = spr_dblock_destroyed;
 	// Countdown until the block regerates
 	if (destroyTimer > 0){
-		destroyTimer--;
+		destroyTimer = scr_update_value_delta(destroyTimer, -1);
 		// Regenerate the block
-		if (destroyTimer == 0){
+		if (destroyTimer < 0.1){
 			var effect = instance_create_depth(x, y, depth, obj_dblock_regen);
 			effect.spawnerId = id;
 		}

@@ -2,9 +2,9 @@
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_rocky_maridia;
-global.offset = 9.046;
-global.loopLength = 81.399;
+global.curSong = music_save_room;
+global.offset = 0;
+global.loopLength = 58.124;
 
 // Songs and their offsets/lengths:
 //
@@ -101,10 +101,31 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 		ENEMY_PROJECTILE = 503,
 		WARP = 504,
 	};
+	
+	// The Enumerator for the in-game keybindings
+	enum KEY{
+		GAME_RIGHT = 0,
+		GAME_LEFT = 1,
+		GAME_UP = 2,
+		GAME_DOWN = 3,
+		USE_WEAPON = 4,
+		JUMP = 5,
+		SWAP_WEAPON = 6,
+		PAUSE_GAME = 7,
+		MENU_RIGHT = 0,
+		MENU_LEFT = 1,
+		MENU_UP = 2,
+		MENU_DOWN = 3,
+		SELECT = 4,
+		RETURN = 5,
+	};
+	// Load in the player's preferred options
+	scr_load_options("options");
 
 	// Some helpful global variables for identical values that are referenced in multiple places
 	global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
 	global.totalLockedDoors = 50;	// The total number of locked doors (Ex. Missile/Power Bomb Doors) in the game
+	global.targetFPS = 60;			// The target updates per second for the game to run at
 
 	// Create the controller and camera objects
 	instance_create_depth(856, 316, 0, obj_camera);

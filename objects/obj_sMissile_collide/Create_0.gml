@@ -9,6 +9,9 @@ scr_play_sound(snd_sMissile_collide, 0, false, true);
 
 // Create and alter the ambient light source
 ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
-ambLight.xRad = 90;
-ambLight.yRad = 90;
-ambLight.lightCol = c_fuchsia;
+with(ambLight){
+	xRad = 90;
+	yRad = 90;
+	lightCol = c_fuchsia;
+}
+flashingTime = 1;

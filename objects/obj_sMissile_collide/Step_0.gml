@@ -10,8 +10,15 @@ scr_camera_shake(5, 5);
 // Scaling the ambient light's size
 if (image_speed > 0){
 	if (ambLight != noone){
-		ambLight.xRad = choose(80, 85, 90);
-		ambLight.yRad = ambLight.xRad;
-		ambLight.lightCol = choose(c_fuchsia, c_lime, c_white);
+		flashingTime = scr_update_value_delta(flashingTime, -1);
+		var fTime = flashingTime;
+		with(ambLight){
+			if (fTime < 0){
+				xRad = choose(80, 85, 90);
+				yRad = xRad;
+				lightCol = choose(c_fuchsia, c_lime, c_white);
+				other.flashingTime = 1;
+			}
+		}
 	}
 }

@@ -25,15 +25,8 @@ if (instance_exists(obj_player)){
 // The higher the value, the slower the camera moves toward it's current object
 camSpd = 4;
 
-// TEMPORARY CODE ///////////////////////////////////////////////////
-
-global.xScale = floor(display_get_width() / global.camWidth);
-global.yScale = floor(display_get_height() / global.camHeight);
-
-display_set_gui_maximize(global.xScale, global.yScale, 0, 0);
-window_set_fullscreen(true);
-
-/////////////////////////////////////////////////////////////////////
+// Set up the video settings
+alarm[1] = 1;
 
 // If false, the camera will temporarily be unlocked from following the player because of an effect (Ex. screen shaking)
 isLocked = true;
