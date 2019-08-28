@@ -1,22 +1,18 @@
 /// @description Initializing Variables
 // You can write your code in this editor
 
-// The current selected menu element as well as the menu's total size
-curIndex = 0;
-menuSize = 0;
+// Call the parent's create event
+event_inherited();
+// Let the Alpha Control know that it will destroy this object when transparent
+destroyOnZero = true;
+alphaChangeVal = 0;
+// Change the menu sound effects
+switchSound = snd_beam_select;
 
-// Default Value for the menu element information
-weaponInfo[0, 0] = -1;		// The weapon's icon
-weaponInfo[0, 1] = "";		// The weapon's name
-weaponInfo[0, 2] = "";		// The weapon's description
-weaponInfo[0, 3] = 0;		// The weapon's index
-weaponInfo[0, 4] = 0;		// The weapon's current ammo
-weaponInfo[0, 5] = 0;		// The weapon's maximum ammo
-
-// Variables for the menu transition
-alpha = 0;
-isVisible = true;
+// Default Value for the extra menu element information
+menuOptionExt[0, 0] = 0;	// The weapon's index
+menuOptionExt[0, 1] = 0;	// The weapon's current ammo
+menuOptionExt[0, 2] = 0;	// The weapon's meximum ammo
 
 // The cooldown for quick swapping and opening the full menu
-fullMenu = false;
-alarm[0] = 20 / global.deltaTime;
+alarm[0] = 12 / global.deltaTime;

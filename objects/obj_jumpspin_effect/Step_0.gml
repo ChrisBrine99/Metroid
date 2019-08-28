@@ -5,6 +5,9 @@ if (global.gameState != GAME_STATE.IN_GAME){
 	return;	
 }
 
+// Update the Alpha Level
+scr_alpha_control_update();
+
 // Create another of these effects
 if (alpha <= 0.2 && !hasSpawned){
 	hasSpawned = true;

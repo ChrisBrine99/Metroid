@@ -14,6 +14,8 @@ keyAllItems = keyboard_check_pressed(ord("Q"));			// Gives Samus all of her item
 
 #region Handling the Menu Transition
 
+scr_alpha_control_update();
+
 var isVisible = obj_hud.isVisible;
 if (isVisible){
 	destroyOnZero = true;
@@ -45,13 +47,11 @@ if (keySongSwitch){
 		// Create an On Screen Prompt
 		createPrompt = true;
 		if (!global.musicMuted){
-			global.oAudio[1] = 0;
 			global.musicMuted = true;
 			message = "Music Has Been Muted";
 			col = c_red;
-			oCol = c_maroon;	
+			oCol = c_maroon;
 		} else{
-			global.oAudio[1] = 65;
 			global.musicMuted = false;
 			// Alter the Prompt's message and color
 			message = "Music Has Been Unmuted";

@@ -4,7 +4,7 @@
 var soundID, masterVolume, volume;
 soundID = argument0;
 masterVolume = global.oAudio[0] / 100;
-volume = 1;
+volume = 100;
 
 switch(soundID){
 	// Sounds affected by the Music Volume level
@@ -13,9 +13,11 @@ switch(soundID){
 	case music_brinstar:
 	case music_item_room:
 	case music_save_room:
+	case music_unknown0:
 	case music_item_fanfare:
 	case music_samus_appears:
-		volume = global.oAudio[1];
+		if (!global.musicMuted) {volume = global.oAudio[1];}
+		else {volume = 0;}
 		break;
 	// Sounds affected by the Player Sounds Volume level
 	case snd_samus_walk:

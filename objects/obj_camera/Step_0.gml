@@ -8,15 +8,20 @@ viewY = global.camHeight * global.yScale;
 window_set_size(viewX, viewY);
 surface_resize(application_surface, viewX, viewY);
 
+if (keyboard_check_pressed(vk_space)){
+	global.oVideo[1] = !global.oVideo[1];
+	alarm[1] = 1;
+}
+
 // Only move the camera based on the object it is following when the camera isn't shaking
 if (isLocked){
 	if (curObject != self){
 		x += ((round(curObject.x) - x) / camSpd) * global.deltaTime;
 		y += ((round(curObject.y) - y) / camSpd) * global.deltaTime;
 	}
+	// Setting camera bounds
+	scr_camera_bounds(0, 0, room_width, room_height);
 }
-// Setting camera bounds
-scr_camera_bounds(0, 0, room_width, room_height);
 
 // Getting the x and y position of the camera
 global.camX = x - (global.camWidth / 2);

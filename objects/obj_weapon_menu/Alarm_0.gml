@@ -13,67 +13,67 @@ if (!obj_player.inMorphball){
 		if (obj_player.isWeaponUnlocked[i]){
 			switch(i){
 				case 0: // Add the Power Beam Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
-					weaponInfo[menuSize, 1] = "Power Beam";
-					weaponInfo[menuSize, 2] = "";
+					menuOption[numColumns, 0] = "Power Beam";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_powerbeam_icon;
 					// Set the ammo variables to zero
-					weaponInfo[menuSize, 4] = 0;
-					weaponInfo[menuSize, 5] = 0;
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
 					break;
 				case 1: // Add the Ice Beam Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_icebeam_icon;
-					weaponInfo[menuSize, 1] = "Ice Beam";
-					weaponInfo[menuSize, 2] = "";
+					menuOption[numColumns, 0] = "Ice Beam";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_icebeam_icon;
 					// Set the ammo variables to zero
-					weaponInfo[menuSize, 4] = 0;
-					weaponInfo[menuSize, 5] = 0;
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
 					break;
 				case 2: // Add the Wave Beam Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_wavebeam_icon;
-					weaponInfo[menuSize, 1] = "Wave Beam";
-					weaponInfo[menuSize, 2] = "";
+					menuOption[numColumns, 0] = "Wave Beam";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_wavebeam_icon;
 					// Set the ammo variables to zero
-					weaponInfo[menuSize, 4] = 0;
-					weaponInfo[menuSize, 5] = 0;
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
 					break;
 				case 3: // Add the Spazer Beam Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_spazerbeam_icon;
-					weaponInfo[menuSize, 1] = "Spazer Beam";
-					weaponInfo[menuSize, 2] = "";
+					menuOption[numColumns, 0] = "Spazer Beam";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_spazerbeam_icon;
 					// Set the ammo variables to zero
-					weaponInfo[menuSize, 4] = 0;
-					weaponInfo[menuSize, 5] = 0;
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
 					break;
 				case 4: // Add the Plasma Beam Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_plasmabeam_icon;
-					weaponInfo[menuSize, 1] = "Plasma Beam";
-					weaponInfo[menuSize, 2] = "";
+					menuOption[numColumns, 0] = "Plasma Beam";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_plasmabeam_icon;
 					// Set the ammo variables to zero
-					weaponInfo[menuSize, 4] = 0;
-					weaponInfo[menuSize, 5] = 0;
-					break;	
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
+					break;
 				case 5: // Add the Missile Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
-					weaponInfo[menuSize, 1] = "Missile Launcher";
-					weaponInfo[menuSize, 2] = "";
-					// Show the total missiles the player has in the quick menu
-					weaponInfo[menuSize, 4] = obj_player.numMissiles;
-					weaponInfo[menuSize, 5] = obj_player.maxMissiles;
+					menuOption[numColumns, 0] = "Missile Launcher";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_powerbeam_icon; // TODO -- Add missile icon
+					// Set the ammo variables to zero
+					menuOptionExt[numColumns, 1] = obj_player.numMissiles;
+					menuOptionExt[numColumns, 2] = obj_player.maxMissiles;
 					break;
 				case 6: // Add the Super Missile Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
-					weaponInfo[menuSize, 1] = "Super Missile Launcher";
-					weaponInfo[menuSize, 2] = "";
-					// Show the total super missiles the player has in the quick menu
-					weaponInfo[menuSize, 4] = obj_player.numSMissiles;
-					weaponInfo[menuSize, 5] = obj_player.maxSMissiles;
+					menuOption[numColumns, 0] = "Super Missile Launcher";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_powerbeam_icon; // TODO -- Add super missile icon
+					// Set the ammo variables to zero
+					menuOptionExt[numColumns, 1] = obj_player.numSMissiles;
+					menuOptionExt[numColumns, 2] = obj_player.maxSMissiles;
 					break;
 			}
-			weaponInfo[menuSize, 3] = i;
+			menuOptionExt[numColumns, 0] = i;
 			if (obj_player.curWeaponIndex == i){
-				curIndex = menuSize;	
+				curOption[X] = numColumns;
 			}
-			menuSize++;
+			numColumns++;
 		}
 	}
 } else{
@@ -81,33 +81,39 @@ if (!obj_player.inMorphball){
 	for (var i = 0; i < length; i++){
 		if (obj_player.isBombUnlocked[i]){
 			switch(i){
-				case 0: // Add the Bomb Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
-					weaponInfo[menuSize, 1] = "Bombs";
-					weaponInfo[menuSize, 2] = "";
+				case 0: // Add the Super Missile Icon to the Menu
+					menuOption[numColumns, 0] = "Bombs";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_powerbeam_icon; // TODO -- Add bomb icon
+					// Set the ammo variables to zero
+					menuOptionExt[numColumns, 1] = 0;
+					menuOptionExt[numColumns, 2] = 0;
 					break;
-				case 1: // Add the Power Bomb Icon to the Menu
-					weaponInfo[menuSize, 0] = spr_powerbeam_icon;
-					weaponInfo[menuSize, 1] = "Power Bombs";
-					weaponInfo[menuSize, 2] = "";
-					// Show the total power bombs the player has in the quick menu
-					weaponInfo[menuSize, 4] = obj_player.numPBombs;
-					weaponInfo[menuSize, 5] = obj_player.maxPBombs;
+				case 1: // Add the Super Missile Icon to the Menu
+					menuOption[numColumns, 0] = "Power Bombs";
+					optionDesc[numColumns, 0] = "";
+					menuSprite[numColumns, 0] = spr_powerbeam_icon; // TODO -- Add power bomb icon
+					// Set the ammo variables to zero
+					menuOptionExt[numColumns, 1] = obj_player.numPBombs;
+					menuOptionExt[numColumns, 2] = obj_player.maxPBombs;
 					break;
 			}
-			weaponInfo[menuSize, 3] = i;
+			menuOptionExt[numColumns, 0] = i;
 			if (obj_player.curBombIndex == i){
-				curIndex = menuSize;	
+				curOption[X] = numColumns;	
 			}
-			menuSize++;
+			numColumns++;
 		}
 	}
 	// If nothing has been added to the menu, delete this object
-	if (menuSize == 0){
+	if (numColumns == 0){
 		instance_destroy(self);
 		return;
 	}
 }
+// Set the number of rows in the menu to 1
+numRows = 1;
+activeMenu = true;
 
 // Make the HUD invisible
 with(obj_hud) {isVisible = false;}

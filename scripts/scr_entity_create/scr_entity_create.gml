@@ -36,7 +36,6 @@ maxLives = 0;			// The maximum lives that the entity can have
 // The entity's total damage resitance from hazards
 damageRes = 1;			// 1 = full damage, 0.5 = half damage, etc.
 
-
 // Variables for collision with hazards
 beenHit = false;		// If true, the entity will be temporarily invulnerable
 hitTimer = 0;			// The time in frames before the entity can be hit again

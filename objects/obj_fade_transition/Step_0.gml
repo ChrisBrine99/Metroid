@@ -1,6 +1,8 @@
 /// @description Handling Alpha Level
 // You can write your code in this editor
 
+scr_alpha_control_update();
+
 if (fadingIn){ // Fade in and count down frames before fade out
 	if (alpha == 1){
 		var canFade = true;

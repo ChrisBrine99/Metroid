@@ -2,9 +2,9 @@
 
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_save_room;
+global.curSong = music_brinstar;
 global.offset = 0;
-global.loopLength = 58.124;
+global.loopLength = 53.881;
 
 // Songs and their offsets/lengths:
 //
@@ -121,12 +121,7 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	};
 	// Load in the player's preferred options
 	scr_load_options("options");
-
-	// Some helpful global variables for identical values that are referenced in multiple places
-	global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
-	global.totalLockedDoors = 50;	// The total number of locked doors (Ex. Missile/Power Bomb Doors) in the game
-	global.targetFPS = 60;			// The target updates per second for the game to run at
-
+	
 	// Create the controller and camera objects
 	instance_create_depth(856, 316, 0, obj_camera);
 	instance_create_depth(0, 0, 10, obj_controller);

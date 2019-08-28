@@ -47,7 +47,7 @@ if (alpha > 0){
 	draw_text_outline(global.camWidth - 42, 50, "\n\n--\n--", c_white, c_gray);
 	// Instance Information
 	draw_text_outline(global.camWidth - 120, 90, "Unculled Objects\n     Active\nEntities\n     Active\n     Drawn\nLight Sources\n     Drawn", c_white, c_gray);	
-	draw_text_outline(global.camWidth - 42, 90, "\n--\n\n--\n\n--", c_white, c_gray);
+	draw_text_outline(global.camWidth - 42, 90, "\n--\n\n--\n--\n\n--", c_white, c_gray);
 	
 	// Delta Time Information
 	draw_text_outline(global.camWidth - 120, 150, "Delta Time", c_white, c_gray);

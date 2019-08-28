@@ -14,6 +14,10 @@ offsetY = 0;							// The offset on the y-axis from the entity's origin
 destroyFX = true;						// If true, an explosion effect will spawn
 FXobj = noone;							// The object that will be used for the destroy effect
 
+// These variables allow the projectile to move in sparatic motions (Ex. waves, diamonds, spirals)
+increment = 4;
+maxAmplitude = increment * 2;
+movingUp = false;
 
 // Unique Variables for what doors the projectile can collide with
 primaryDoor = DOOR_TYPE.NORMAL;			// The main door this projectile can unlock (Normal is a generic default)

@@ -1,7 +1,7 @@
 /// @description Quick Swapping if the menu isn't open
 // You can write your code in this editor
 
-if (!fullMenu){
+if (global.gameState == GAME_STATE.IN_GAME){
 	with(obj_player){
 		if (!inMorphball){ // Swapping Beams
 			var length, prevIndex;
@@ -38,7 +38,7 @@ if (!fullMenu){
 		}
 	}
 } else{ // Equipping the selected beam/missile/bomb
-	var index = weaponInfo[curIndex, 3];
+	var index = menuOptionExt[curOption[X], 0];
 	with(obj_player){
 		if (!inMorphball){
 			if (index != curWeaponIndex){
@@ -62,3 +62,5 @@ with(obj_hud){
 	isVisible = true;
 	alarm[0] = 1;
 }
+// Unpause the game's state
+global.gameState = GAME_STATE.IN_GAME;

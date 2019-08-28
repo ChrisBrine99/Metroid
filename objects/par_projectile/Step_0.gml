@@ -46,7 +46,7 @@ if (up){ // Moving upward
 	}
 }
 // Setting the image's direction
-imgAngle = direction;
+imgAngle = direction * sign(imgXScale);
 
 #endregion
 
@@ -54,11 +54,13 @@ imgAngle = direction;
 
 // Checking for collisions with the game's various doors
 if (instance_exists(par_door)){
-	var door, type;
-	door = instance_nearest(x + sign(hspd), y + sign(vspd), par_door);
+	var dHspd, dVspd, door, type;
+	dHspd = sign(hspd) * global.deltaTime;
+	dVspd = sign(vspd) * global.deltaTime;
+	door = instance_nearest(x + dHspd, y + dVspd, par_door);
 	type = door.doorType;
 	// Make sure the door can actually be opened by the current projectile
-	if (place_meeting(x + sign(hspd), y + sign(vspd), door)){
+	if (place_meeting(x + dHspd, y + dVspd, door)){
 		if (type == DOOR_TYPE.NORMAL || type == primaryDoor || type == secondaryDoor){
 			// Start the animation that will end with the door being destroyed
 			with(door) {unlocked = true;}
@@ -72,6 +74,6 @@ if (instance_exists(par_door)){
 }
 
 // Checking for collisions with walls
-scr_entity_collision(hspd, vspd, onGround, gravDir, false, destroyOnWallCollide, destroyOnWallCollide);
+scr_entity_collision(false, destroyOnWallCollide, destroyOnWallCollide);
 
 #endregion

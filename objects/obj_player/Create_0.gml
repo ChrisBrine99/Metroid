@@ -4,7 +4,7 @@
 #region Altering the Default Entity Variables
 
 // Call the entity create event
-scr_entity_create(2.1, 7, 0.4, -5, 0.25, 270);
+scr_entity_create(2.1, 7, 0.3, -5, 0.25, 270);
 
 // Editing the cur/maxHitpoints and cur/maxLives variables
 maxHitpoints = 99;				// The max amount of "Energy" for Samus

@@ -3,7 +3,7 @@
 
 #region Alter the GUI sccaling for accurate drawing
 
-display_set_gui_maximize(1, 1, 0, 0);
+display_set_gui_maximize(1, 1, global.xOffset, global.yOffset);
 
 #endregion
 
@@ -83,6 +83,6 @@ shader_reset();
 
 #region Return the game's GUI scaling to normal
 
-display_set_gui_maximize(global.xScale, global.yScale, 0, 0);
+display_set_gui_maximize(global.xScale, global.yScale, global.xOffset, global.yOffset);
 
 #endregion

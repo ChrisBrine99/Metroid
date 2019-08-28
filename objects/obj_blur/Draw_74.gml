@@ -1,7 +1,7 @@
 /// @description Rendering the shader
 // You can write your code in this editor
 
-display_set_gui_maximize(1, 1, 0, 0);
+display_set_gui_maximize(1, 1, global.xOffset, global.yOffset);
 
 shader_set(shader);
 
@@ -27,4 +27,4 @@ draw_surface(surfBlur, 0, 0);
 
 shader_reset();
 
-display_set_gui_maximize(global.xScale, global.yScale, 0, 0);
+display_set_gui_maximize(global.xScale, global.yScale, global.xOffset, global.yOffset);

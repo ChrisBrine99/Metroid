@@ -20,6 +20,6 @@ entityNum = array_length_1d(setObject);
 
 // Set the tile to cover the block if it is hidden
 if (hidden){
-	tileMap = layer_tilemap_get_id(layer_get_id("Midground_Tiles"));
+	tileMap = layer_tilemap_get_id("Midground_Tiles");
 	tileData = tilemap_get(tileMap, cellX, cellY);	
 }

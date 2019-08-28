@@ -30,6 +30,8 @@ if (keyClose){
 
 #region Fading the text in and out
 
+scr_alpha_control_update();
+
 fadingIn = !isClosing;
 if (isClosing){ // Delete the creator object
 	if (creatorID != noone){

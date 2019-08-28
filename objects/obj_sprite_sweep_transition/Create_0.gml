@@ -12,3 +12,6 @@ fadeID = noone;
 
 // Stop the sprite from animating
 image_speed = 0;
+
+// Make the player invisible
+with(obj_player) {visible = false;}

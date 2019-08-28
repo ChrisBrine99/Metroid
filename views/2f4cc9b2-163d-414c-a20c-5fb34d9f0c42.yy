@@ -8,7 +8,7 @@
         "bd476ca0-6735-4e8c-be83-c33d407d3396"
     ],
     "filterType": "GMObject",
-    "folderName": "Other",
+    "folderName": "Transition Effects",
     "isDefaultView": false,
     "localisedFolderName": ""
 }

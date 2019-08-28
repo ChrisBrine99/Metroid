@@ -43,8 +43,7 @@ scr_entity_gravity();
 if (onGround){
 	// Stopping Samus from getting stuck in the ground
 	if (mask_index == spr_jumping_mask){
-		if (gravDir == 270) {y -= 8;}
-		else {y += 8;}
+		y -= lengthdir_y(8, gravDir);
 		mask_index = spr_standing_mask;
 		// Make the impact more noticable by stopping Samus when she touches the ground
 		if (keyRight || keyLeft) {hspd = 0;}
@@ -154,6 +153,7 @@ if (keyJump){
 		}
 	} else{ // The Spring Ball's jump
 		if (onGround && global.item[ITEM.SPRING_BALL]){
+			scr_play_sound(snd_samus_jump, 0, false, true);
 			vspd = jumpSpd * 0.8;
 		}
 	}
@@ -161,7 +161,7 @@ if (keyJump){
 // Allows for user-control of how high the player will jump
 if (keyStopJump){
 	if ((vspd < 0 && gravDir == 270) || (vspd > 0 && gravDir == 90)){
-		vspd /= 2;	
+		vspd /= 2;
 	}
 }
 
@@ -169,41 +169,6 @@ if (keyStopJump){
 
 #region Horizontal Movement
 
-if (keyRight){
-	if (!left){
-		facingRight = true;
-		// Reset the hspd if it is positive (Only when on the ground)
-		if (hspd < 0 && onGround) {hspd = 0;}
-	}
-	// Smoothly accelerate (Half-speed while airbourne)
-	if (onGround) {hspd = scr_update_value_delta(hspd, accel);}
-	else {hspd = scr_update_value_delta(hspd, accel / 2);}
-	// Prevent the horizontal speed from becoming too large
-	if (hspd > maxHspd - hspdPenalty){
-		hspd = (maxHspd - hspdPenalty);
-	}
-	right = true;
-} else{ // The right key is no longer being pressed down
-	right = false;	
-}
-// Moving to the left
-if (keyLeft){
-	if (!right){
-		facingRight = false;
-		// Reset the hspd if it is positive (Only when on the ground)
-		if (hspd > 0 && onGround) {hspd = 0;}
-	}
-	// Smoothly accelerate (Half-speed while airbourne)
-	if (onGround) {hspd = scr_update_value_delta(hspd, -accel);} 
-	else {hspd = scr_update_value_delta(hspd, -accel / 2);}
-	// Prevent the horizontal speed from becoming too large
-	if (hspd < -(maxHspd - hspdPenalty)){
-		hspd = -(maxHspd - hspdPenalty);
-	}
-	left = true;
-} else{ // The left key is no longer being pressed down
-	left = false;	
-}
 // Stopping horizontal movement
 if ((keyRight && keyLeft) || (!keyRight && !keyLeft)){
 	if (onGround || (!onGround && !jumpspin)){
@@ -216,6 +181,42 @@ if ((keyRight && keyLeft) || (!keyRight && !keyLeft)){
 			if (!onGround) {hspdPenalty = 1;}
 			hspd = 0;
 		}
+	}
+} else{ // Check movement only if a single key is being pressed
+	if (keyRight){
+		if (!left){
+			facingRight = true;
+			// Reset the hspd if it is positive (Only when on the ground)
+			if (hspd < 0 && onGround) {hspd = 0;}
+		}
+		// Smoothly accelerate (Half-speed while airbourne)
+		if (onGround) {hspd = scr_update_value_delta(hspd, accel);}
+		else {hspd = scr_update_value_delta(hspd, accel / 2);}
+		// Prevent the horizontal speed from becoming too large
+		if (hspd > maxHspd - hspdPenalty){
+			hspd = (maxHspd - hspdPenalty);
+		}
+		right = true;
+	} else{ // The right key is no longer being pressed down
+		right = false;	
+	}
+	// Moving to the left
+	if (keyLeft){
+		if (!right){
+			facingRight = false;
+			// Reset the hspd if it is positive (Only when on the ground)
+			if (hspd > 0 && onGround) {hspd = 0;}
+		}
+		// Smoothly accelerate (Half-speed while airbourne)
+		if (onGround) {hspd = scr_update_value_delta(hspd, -accel);} 
+		else {hspd = scr_update_value_delta(hspd, -accel / 2);}
+		// Prevent the horizontal speed from becoming too large
+		if (hspd < -(maxHspd - hspdPenalty)){
+			hspd = -(maxHspd - hspdPenalty);
+		}
+		left = true;
+	} else{ // The left key is no longer being pressed down
+		left = false;	
 	}
 }
 // Stop Samus from moving while crouching
@@ -378,12 +379,12 @@ if (keyShoot){
 					if (projectile[i] != noone){
 						with(projectile[i]){
 							if (isGrounded){ // Firing on the Ground
-								if (curHspd >= 1 || curHspd <= -1){ // Shooting while moving
+								if (round(curHspd) >= 1 || round(curHspd) <= -1){ // Shooting while moving
 									if (!isUp){ // Aiming Forward
-										offsetX = 20 * sign(imageXScale);
+										offsetX = (16 + (curHspd * global.deltaTime)) * sign(imageXScale);
 										offsetY = -7;
 									} else{ // Aiming Upward
-										offsetX = 8 * sign(imageXScale);
+										offsetX = (4 + (curHspd * global.deltaTime)) * sign(imageXScale);
 										offsetY = -20;
 									}
 								} else{
@@ -391,7 +392,7 @@ if (keyShoot){
 										offsetX = 10 * sign(imageXScale);
 										offsetY = -3;
 									} else if (isUp){ // Aiming Upward
-										offsetX = 4 * sign(imageXScale);
+										offsetX = 3 * sign(imageXScale);
 										offsetY = -20;
 									} else if (isCrouching){ // Crouching
 										offsetX = 10 * sign(imageXScale);
@@ -400,14 +401,14 @@ if (keyShoot){
 								}
 							} else{ // Firing while Airbourne
 								if (!isUp && !isDown){ // Aiming Forward
-									offsetX = (12 + curHspd) * sign(imageXScale);
-									offsetY = -1 + curVspd;
+									offsetX = (12 + (curHspd * global.deltaTime)) * sign(imageXScale);
+									offsetY = -1 + (curVspd * global.deltaTime);
 								} else if (isUp){ // Aiming Upward
-									offsetX = (4 + curHspd) * sign(imageXScale);
-									offsetY = -20 + curVspd;
+									offsetX = (4 + (curHspd * global.deltaTime)) * sign(imageXScale);
+									offsetY = -20 + (curVspd * global.deltaTime);
 								} else if (isDown){ // Aiming Downward
-									offsetX = (5 + curHspd) * sign(imageXScale);
-									offsetY = 14 + curVspd;
+									offsetX = (5 + (curHspd * global.deltaTime)) * sign(imageXScale);
+									offsetY = 14 + (curVspd * global.deltaTime);
 								}
 							}
 							// Setting the direction of the projectile
@@ -418,6 +419,8 @@ if (keyShoot){
 								up = isUp;
 								down = isDown;
 							}
+							// Setting the image angle
+							imgXScale = imageXScale;
 						}
 					}
 				}
@@ -448,7 +451,7 @@ if (keyShoot){
 if (fireRateTimer > 0){
 	fireRateTimer = scr_update_value_delta(fireRateTimer, -1);
 }
-// Counting down the timer that prevents the player from 
+// Counting down the timer that prevents the player from not aiming
 if (isShooting){
 	shootStateTimer = scr_update_value_delta(shootStateTimer, -1);
 	if (shootStateTimer <= 0){
@@ -564,7 +567,7 @@ if (object != noone){
 }
 
 // Calling the Entity Collision script
-scr_entity_collision(hspd, vspd, onGround, gravDir, true, true, false);
+scr_entity_collision(true, true, false);
 
 // Colliding with a fall-through floor
 if (place_meeting(x, y + 1, obj_dblock_fall_through)){

@@ -3,8 +3,7 @@
 
 // Calling the parent's create event
 event_inherited();
-
-// Unique variables for the Wave Beam
+// Edit some variables for the Wave Beam
 increment = 4;
 maxAmplitude = increment * 2;
 movingUp = false;

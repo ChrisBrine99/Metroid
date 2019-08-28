@@ -19,7 +19,7 @@ if (playMusic){
 			audio_sound_set_track_position(song, curPos - global.loopLength);
 		}
 		// Checking if the song has been changed while in the same room
-		if (global.curSong != curSong || global.oAudio[1] <= 0){
+		if (global.curSong != curSong || global.musicMuted){
 			// Stopping the previous song
 			if (audio_sound_get_gain(curSong) == 0){
 				audio_stop_sound(curSong);
@@ -31,12 +31,12 @@ if (playMusic){
 			}
 		}
 	} else{ // Play the new song
-		if (global.curSong != -1 && global.oAudio[1] > 0){
+		if (global.curSong != -1 && !global.musicMuted){
 			curSong = global.curSong;
 			song = audio_play_sound(curSong, 1000, false);
 			// Set the sound's volume to 0 and slowly fade it in over one second
 			audio_sound_gain(curSong, 0, 0);
-			audio_sound_gain(curSong, scr_volume_type(curSong), 1000);
+			audio_sound_gain(curSong, scr_volume_type(curSong), fadeTime);
 			// Setting up the looping length variables
 			totalLength = global.loopLength + global.offset;
 		} 

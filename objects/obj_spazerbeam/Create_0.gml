@@ -3,8 +3,7 @@
 
 // Calling the parent's create event
 event_inherited();
-
-// Unique variables for the Spazer Beam
+// Edit some variables for the Spazer Beam
 increment = 2;
 maxAmplitude = increment * 3;
 movingUp = false;

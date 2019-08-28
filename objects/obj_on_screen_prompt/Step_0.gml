@@ -1,6 +1,8 @@
 /// @description Fading the Text In and Out
 // You can write your code in this editor
 
+scr_alpha_control_update();
+
 // When the text disappears
 if (displayTimer <= 0){
 	fadingIn = false;

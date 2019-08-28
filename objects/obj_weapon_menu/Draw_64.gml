@@ -12,27 +12,27 @@ if (alpha > 0){
 	draw_set_alpha(alpha);
 	
 	// Displaying the menu icons
-	for (var i = 0; i < menuSize; i++){
-		if (curIndex  == i) draw_sprite(weaponInfo[i, 0], 0, 2 + (i * 16), 164);
-		else draw_sprite(weaponInfo[i, 0], 1, 2 + (i * 16), 164);
+	for (var i = 0; i < numColumns; i++){
+		if (curOption[X]  == i) draw_sprite(menuSprite[i, 0], 0, 2 + (i * 16), 164);
+		else draw_sprite(menuSprite[i, 0], 1, 2 + (i * 16), 164);
 	}
 	
 	// Displaying the weapon's name
 	draw_set_font(font_gui_med);
-	draw_text_outline(10, 110, weaponInfo[curIndex, 1], c_lime, c_green);
+	draw_text_outline(10, 110, menuOption[curOption[X], 0], c_lime, c_green);
 	// Displaying the weapon's current ammo and maximum ammo
 	var curAmmo, totAmmo;
 	curAmmo = "---";
 	totAmmo = "---";
-	if (weaponInfo[curIndex, 5] > 0){
+	if (menuOptionExt[curOption[X], 2] > 0){
 		// Setting up the string for the weapon's cuttent ammo
-		if (weaponInfo[curIndex, 4] < 10) curAmmo = "00" + string(weaponInfo[curIndex, 4]);
-		else if (weaponInfo[curIndex, 4] < 100) curAmmo = "0" + string(weaponInfo[curIndex, 4]);
-		else curAmmo = string(weaponInfo[curIndex, 4]);
+		if (menuOptionExt[curOption[X], 1] < 10) curAmmo = "00" + string(menuOptionExt[curOption[X], 1]);
+		else if (menuOptionExt[curOption[X], 1] < 100) curAmmo = "0" + string(menuOptionExt[curOption[X], 1]);
+		else curAmmo = string(menuOptionExt[curOption[X], 1]);
 		// Setting up the string for the wepaon's maximum ammo
-		if (weaponInfo[curIndex, 5] < 10) totAmmo = "00" + string(weaponInfo[curIndex, 5]);
-		else if (weaponInfo[curIndex, 5] < 100) totAmmo = "0" + string(weaponInfo[curIndex, 5]);
-		else totAmmo = string(weaponInfo[curIndex, 5]);
+		if (menuOptionExt[curOption[X], 2] < 10) totAmmo = "00" + string(menuOptionExt[curOption[X], 2]);
+		else if (menuOptionExt[curOption[X], 2] < 100) totAmmo = "0" + string(menuOptionExt[curOption[X], 2]);
+		else totAmmo = string(menuOptionExt[curOption[X], 2]);
 	}
 	draw_set_font(font_gui_xSmall);
 	draw_set_halign(fa_center);

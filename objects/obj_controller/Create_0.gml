@@ -1,13 +1,16 @@
 /// @description Setting up all the required variables for the game.
 // You can write your code in this editor
 
-// Holds the time in seconds between each frame
+// Some helpful global variables for identical values that are referenced in multiple places
+global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
+global.totalLockedDoors = 50;	// The total number of locked doors (Ex. Missile/Power Bomb Doors) in the game
+
+// Calculate Delta Timing
+global.targetFrameRate = 60;
 global.deltaTime = get_delta_time();
 
 // The array that holds all of the main powerups in the game
-for(var i = 0; i < global.totalItems; i++){
-	global.item[i] = false;	// If true, the item at that index will delete itself
-}
+global.item = array_create(global.totalItems, false);
 
 // The total amount of items is calculated as follows:
 //		
@@ -24,9 +27,7 @@ for(var i = 0; i < global.totalItems; i++){
 //
 
 // The array that holds all of the locked doors in the game (Missile Doors, Power Bomb Doors, etc.)
-for (var d = 0; d < global.totalLockedDoors; d++){
-	global.door[d] = false;	// If true, the door will be replaced by a generic blue door
-}
+global.door = array_create(global.totalLockedDoors, false);
 
 // Variables for the current background song that is playing
 curSong = -1;
@@ -34,7 +35,7 @@ song = -1;
 fadingOut = false;
 playMusic = false;
 totalLength = 0;
-fadeTime = 300;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
+fadeTime = 600;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 // Unseen Here Are:
 //		global.curSong	--	The current song that is playing in the background.
 //		global.offset	--	The amount of time in seconds to start from when looping a song.
