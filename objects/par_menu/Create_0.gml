@@ -29,6 +29,8 @@ holdTimer = timeToAuto;		// The timer to count down the frames
 
 // Enable the alpha controller in every menu for smooth transitioning
 scr_alpha_control_create();
+// Let the Alpha Control know that it will destroy this object when transparent
+destroyOnZero = true;
 
 // The sounds that are produced by the menu
 switchSound = -1;

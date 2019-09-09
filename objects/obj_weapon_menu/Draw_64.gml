@@ -5,8 +5,8 @@
 
 if (alpha > 0){
 	// Drawing the menu's background
-	draw_rect_outline(3, 107, 180, 54, c_blue, c_black, c_black, alpha * 0.3, alpha);
-	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, 6, 120, 174, 1, 0, c_black, c_black, c_black, c_black, alpha);
+	draw_rect_outline(3, 107, 210, 54, c_blue, c_black, c_black, alpha * 0.3, alpha);
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, 6, 120, 204, 1, 0, c_black, c_black, c_black, c_black, alpha);
 	
 	// Set the alpha level
 	draw_set_alpha(alpha);
@@ -38,9 +38,24 @@ if (alpha > 0){
 	draw_set_halign(fa_center);
 	draw_text_outline(35, 123, curAmmo + "/" + totAmmo, c_gray, c_dkgray);
 	draw_set_halign(fa_left);
-	// Displaying the weapon's description
-	draw_text_outline(7, 132, "This is a test description to see how\nmuch text I can fit in these constraints.", c_white, c_gray);
-	
+	// Drawing the weapon's description onto the screen
+	if (displayTxt != optionDesc[curOption[X], 0]){
+		displayTxt = optionDesc[curOption[X], 0];
+		// Reset these variables whenever the description changes
+		curDisplayedStr = "";
+		curChar = 1;
+		nextChar = 1;
+	}
+	// Checking if the text needs to be scrolled or not
+	if (displayTxt != curDisplayedStr){
+		var nChar = floor(nextChar);
+		if (nChar > curChar){
+			curDisplayedStr += string_copy(displayTxt, curChar, nChar - curChar);
+			curChar = nChar;
+		}
+		nextChar = scr_update_value_delta(nextChar, txtSpeed);
+	}
+	draw_text_outline(7, 132, curDisplayedStr, c_white, c_gray);
 	// Reset the alpha level
 	draw_set_alpha(1);
 }
