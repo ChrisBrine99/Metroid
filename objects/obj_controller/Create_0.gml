@@ -33,7 +33,7 @@ global.door = array_create(global.totalLockedDoors, false);
 curSong = -1;
 song = -1;
 fadingOut = false;
-playMusic = false;
+playMusic = true;
 totalLength = 0;
 fadeTime = 600;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 // Unseen Here Are:
@@ -43,7 +43,6 @@ fadeTime = 600;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 // Variables for the Debug Mode
 global.debugMode = false;
 global.godMode = false;
-global.musicMuted = false;
 global.entities = ds_list_create();
 global.numDrawn = 0;
 showStreamlinedDebug = false;

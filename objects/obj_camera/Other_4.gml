@@ -1,4 +1,4 @@
-/// @description Activates and sets up the camera
+/// @description Setup the camera
 // You can write your code in this editor
 
 // Enabling the view

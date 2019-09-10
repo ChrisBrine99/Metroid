@@ -4,8 +4,7 @@
 // Enable this object to use the alpha control scripts
 scr_alpha_control_create();
 // Make the Debug controller destroy itself upon fading away
-destroyOnZero = true;
-fadeDestroy = false;
+destroyOnZero = false;
 
 // Display Game Maker's built-in debug information
 show_debug_overlay(true);

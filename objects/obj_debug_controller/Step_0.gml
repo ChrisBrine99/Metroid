@@ -16,7 +16,7 @@ keyAllItems = keyboard_check_pressed(ord("Q"));			// Gives Samus all of her item
 
 scr_alpha_control_update();
 
-var isVisible = obj_hud.isVisible;
+/*var isVisible = obj_hud.isVisible;
 if (isVisible){
 	destroyOnZero = true;
 	if (!fadeDestroy) {fadingIn = true;}
@@ -24,13 +24,18 @@ if (isVisible){
 } else{
 	destroyOnZero = false;	
 	fadingIn = false;
-}
+}*/
 
 #endregion
 
 // Preventing function of the Debug Menu when the game is paused
-if (global.gameState != GAME_STATE.IN_GAME){
+if (global.gameState == GAME_STATE.PAUSED || global.gameState == GAME_STATE.CUTSCENE){
+	fadingIn = false;
 	return;	
+}
+// Fading in the Menu
+if (alpha < 1 && !destroyOnZero){
+	fadingIn = true;
 }
 
 // Variables that are related to keyboard inputs
@@ -46,13 +51,13 @@ if (keySongSwitch){
 	if (keyTrigger){ // Muting/Unmuting the music
 		// Create an On Screen Prompt
 		createPrompt = true;
-		if (!global.musicMuted){
-			global.musicMuted = true;
+		if (obj_controller.playMusic){
+			with(obj_controller) {playMusic = false;}
 			message = "Music Has Been Muted";
 			col = c_red;
 			oCol = c_maroon;
 		} else{
-			global.musicMuted = false;
+			with(obj_controller) {playMusic = true;}
 			// Alter the Prompt's message and color
 			message = "Music Has Been Unmuted";
 			col = c_lime;
@@ -182,13 +187,3 @@ if (createPrompt){
 }
 
 #endregion
-
-
-// TEMPORARY CODE
-
-if(keyboard_check_pressed(ord("P"))){
-	with(obj_camera){
-		if (curObject != self) {curObject = self;}
-		else {curObject = obj_player;}
-	}
-}

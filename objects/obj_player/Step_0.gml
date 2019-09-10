@@ -17,18 +17,21 @@ keyQuickMenu = keyboard_check(global.gKey[KEY.SWAP_WEAPON]);
 
 #region When the Player Is Idle or Cannot Move
 
-// Stop the player from updating if they cannot move
-if (!canMove){
+// Starting the game
+if (!hasStarted){
+	if (keyRight || keyLeft){
+		if (fanfarePlayed && !audio_is_playing(music_samus_appears)){
+			hasStarted  = true;	
+			with(obj_controller) {playMusic = true;}
+			with(obj_hud) {isVisible = true;}
+			global.gameState = GAME_STATE.IN_GAME;
+		}
+	}
 	return;	
 }
 
-if (!hasStarted){
-	if (keyRight || keyLeft){
-		if (!audio_is_playing(music_samus_appears)){
-			hasStarted  = true;	
-			with(obj_controller) {playMusic = true;}
-		}
-	}
+// Stop the player from updating if they cannot move
+if (!canMove){
 	return;	
 }
 

@@ -5,7 +5,7 @@
 scr_alpha_control_create();
 
 // If false, the HUD will no longer be visible
-isVisible = true;
+isVisible = false;
 
 // Other Variables for HUD elements
 global.curAmmo = 0;

@@ -17,6 +17,7 @@ xScale = argument4;		// How stretched/compressed the image is along the x-axis
 yScale = argument5;		// How stretched/compressed the image is along the y-axis
 angle = argument6;		// The angle to display the image
 
+
 // Don't draw the sprite if it isn't being drawn in the draw event
 if (event_type != ev_draw){
 	return;	

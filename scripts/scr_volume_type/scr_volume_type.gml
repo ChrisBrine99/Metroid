@@ -16,8 +16,7 @@ switch(soundID){
 	case music_unknown0:
 	case music_item_fanfare:
 	case music_samus_appears:
-		if (!global.musicMuted) {volume = global.oAudio[1];}
-		else {volume = 0;}
+		volume = global.oAudio[1];
 		break;
 	// Sounds affected by the Player Sounds Volume level
 	case snd_samus_walk:

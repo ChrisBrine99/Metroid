@@ -4,7 +4,7 @@
 scr_alpha_control_update();
 
 if (fadingIn){ // Fade in and count down frames before fade out
-	if (alpha == 1){
+	if (alpha >= 1 - alphaChangeVal){
 		var canFade = true;
 		// Check if the transition needs to wait for the sprite sweeping object is at it's final position
 		if (effectID != noone){
@@ -21,11 +21,16 @@ if (fadingIn){ // Fade in and count down frames before fade out
 				fadingIn = false;
 			}
 		}
+		alpha = 1;
 	}
 } else{
-	if (alpha <= 0){
+	if (alpha <= alphaChangeVal){
 		if (effectID != noone) {instance_destroy(effectID);}
-		with(obj_hud) {isVisible = true;}	
+		// Unfreezing when the user is in-game (AKA the player object exists)
+		if (instance_exists(obj_player)){
+			global.gameState = GAME_STATE.IN_GAME;
+			with(obj_hud) {isVisible = false;}
+		}
 		instance_destroy(self);
 	}
 }

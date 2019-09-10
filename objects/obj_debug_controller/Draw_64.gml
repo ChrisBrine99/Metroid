@@ -14,15 +14,25 @@ if (alpha > 0){
 	
 	draw_set_halign(fa_right);
 	// Camera Position Information
-	draw_text_outline(global.camWidth - 5, 10, string(obj_camera.x) + "\n" +
-											   string(obj_camera.y) + "\n" +
-											   string(floor(global.camX)) + "\n" + 
-											   string(floor(global.camY)) + "\n", c_red, c_maroon);
+	if (instance_exists(obj_camera)){
+		draw_text_outline(global.camWidth - 5, 10, string(obj_camera.x) + "\n" +
+												   string(obj_camera.y) + "\n" +
+												   string(floor(global.camX)) + "\n" + 
+												   string(floor(global.camY)) + "\n", c_red, c_maroon);
+	} else{
+		draw_text_outline(global.camWidth - 5, 10, "0\n0\n0\n0", c_red, c_maroon);	
+	}
+	
 	// Player Position Information
-	draw_text_outline(global.camWidth - 5, 50, string(obj_player.x) + "\n" +
-											   string(obj_player.y) + "\n" +
-											   string(obj_player.hspd) + "\n" +
-											   string(obj_player.vspd), c_lime, c_green);
+	if (instance_exists(obj_player)){
+		draw_text_outline(global.camWidth - 5, 50, string(obj_player.x) + "\n" +
+												   string(obj_player.y) + "\n" +
+												   string(obj_player.hspd) + "\n" +
+												   string(obj_player.vspd), c_lime, c_green);
+	} else{
+		draw_text_outline(global.camWidth - 5, 50, "0\n0\n0\n0", c_lime, c_green);		
+	}
+	
 	// Instance Information
 	draw_text_outline(global.camWidth - 5, 90, numInstances + "\n" +
 											   numActiveObjects + "\n" +

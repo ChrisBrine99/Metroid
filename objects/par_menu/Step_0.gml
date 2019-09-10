@@ -80,13 +80,13 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 	} else{
 		autoScroll = 0;
 		holdTimer = 0;
-		return;
 	}
 }
 
 if (keySelect){ // Selecting a menu option (If it is enabled)
 	if (canUseSelect){
-		selectedOption = curOption;
+		selectedOption[X] = curOption[X];
+		selectedOption[Y] = curOption[Y];
 		// Play the menu select sound effect
 		if (selectSound != -1){
 			scr_play_sound(selectSound, 0, false, true);

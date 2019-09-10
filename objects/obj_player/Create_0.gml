@@ -83,24 +83,17 @@ footstepTimer = footstepTimerMax;
 // Allows the morphball to bounce
 vspdRecoil = 0;
 
-// Holds the instance ID for the ambient light that is around Samus
-ambLight = instance_create_depth(x, y, 15, obj_light_emitter);
-with(ambLight){
-	xRad = 35;
-	yRad = 35;
-	lightCol = c_gray;
-	persistent = true;
-}
-flashingTime = 1;
+// The variable to hold the instance of Samus's ambient light source
+ambLight = noone;
 
 // Create the in-game HUD
 instance_create_depth(0, 0, 15, obj_hud);
 
+// Play her little intro fanfare
+fanfarePlayed = false;
+
 // Set Samus's sprites
 alarm[0] = 1;
-
-// Play her little intro fanfare
-//scr_play_sound(music_samus_appears, 0, false, false);
 
 // Lock the camera onto her
 with(obj_camera) {curObject = obj_player;}
