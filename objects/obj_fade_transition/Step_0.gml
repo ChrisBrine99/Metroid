@@ -29,7 +29,7 @@ if (fadingIn){ // Fade in and count down frames before fade out
 		// Unfreezing when the user is in-game (AKA the player object exists)
 		if (instance_exists(obj_player)){
 			global.gameState = GAME_STATE.IN_GAME;
-			with(obj_hud) {isVisible = false;}
+			with(obj_hud) {isVisible = true;}
 		}
 		instance_destroy(self);
 	}

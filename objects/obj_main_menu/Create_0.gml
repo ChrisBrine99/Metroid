@@ -25,3 +25,6 @@ optionDesc[4, 0] = "Return to the desktop.";
 // Variables that are unique to the Main Menu
 exitingGame = false;
 fileToLoad = "";
+
+// Set the speed for the background stars
+alarm[0] = 1;

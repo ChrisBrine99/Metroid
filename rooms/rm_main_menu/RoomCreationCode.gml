@@ -18,7 +18,7 @@ global.loopLength = 81.399;
 // Edit the bloom and lighting system settings
 if (instance_exists(obj_lighting)){
 	with(obj_lighting){
-		curLightingCol = make_color_rgb(0, 105, 230);
+		curLightingCol = make_color_rgb(0, 0, 0);
 	}
 }
 if (instance_exists(obj_bloom)){
@@ -128,3 +128,9 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	instance_create_depth(0, 0, 15, obj_lighting);	
 	instance_create_depth(0, 0, 50, obj_bloom); 
 }
+
+// Create the Main Menu
+instance_create_depth(0, 0, 100, obj_main_menu);
+// Create the Title Screen/Main Menu's Background Gradient
+var back = instance_create_depth(0, 0, 100, obj_title_screen_back);
+with(back) {col = make_color_rgb(0, 0, 90);}
