@@ -282,7 +282,7 @@
             "Key": "152778a4-e0aa-4848-bba9-73295f32b468",
             "Value": {
                 "id": "6b949c92-0088-4a24-8f7e-c5d4a4c5410b",
-                "resourcePath": "sprites\\spr_title_screen_bg\\spr_title_screen_bg.yy",
+                "resourcePath": "sprites\\spr_star_background\\spr_star_background.yy",
                 "resourceType": "GMSprite"
             }
         },
@@ -3082,7 +3082,7 @@
             "Key": "fe746269-4218-47c6-b857-f3bc5bc07dd8",
             "Value": {
                 "id": "20329b9d-c400-4ac3-9f34-0262440e538c",
-                "resourcePath": "objects\\obj_title_screen_back\\obj_title_screen_back.yy",
+                "resourcePath": "objects\\obj_menu_background\\obj_menu_background.yy",
                 "resourceType": "GMObject"
             }
         },

@@ -2,7 +2,7 @@
     "id": "fe746269-4218-47c6-b857-f3bc5bc07dd8",
     "modelName": "GMObject",
     "mvc": "1.0",
-    "name": "obj_title_screen_back",
+    "name": "obj_menu_background",
     "eventList": [
         {
             "id": "3cea2af7-540c-476b-92e2-6b956612d841",
@@ -22,6 +22,16 @@
             "collisionObjectId": "00000000-0000-0000-0000-000000000000",
             "enumb": 0,
             "eventtype": 0,
+            "m_owner": "fe746269-4218-47c6-b857-f3bc5bc07dd8"
+        },
+        {
+            "id": "870f4c8a-c2fb-436d-b8d0-d89bc2c06797",
+            "modelName": "GMEvent",
+            "mvc": "1.0",
+            "IsDnD": false,
+            "collisionObjectId": "00000000-0000-0000-0000-000000000000",
+            "enumb": 0,
+            "eventtype": 2,
             "m_owner": "fe746269-4218-47c6-b857-f3bc5bc07dd8"
         }
     ],
