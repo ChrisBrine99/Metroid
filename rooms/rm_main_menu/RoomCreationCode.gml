@@ -108,7 +108,7 @@ if (!instance_exists(obj_controller)){
 	
 	// Create the controller and camera objects
 	instance_create_depth(0, 0, 10, obj_controller);
-	instance_create_depth(856, 316, 0, obj_camera);
+	instance_create_depth(10, 10, 0, obj_camera);
 	
 	// Create the lighting and bloom objects
 	instance_create_depth(0, 0, 15, obj_lighting);	
@@ -119,6 +119,8 @@ if (!instance_exists(obj_controller)){
 
 // Create the Main Menu
 instance_create_depth(0, 0, 100, obj_main_menu);
+// Create the Main Menu's Border
+instance_create_depth(0, 0, 200, obj_menu_border);
 // Create the Title Screen/Main Menu's Background Gradient
 var back = instance_create_depth(0, 0, 400, obj_menu_background);
 with(back) {col = make_color_rgb(0, 0, 90);}

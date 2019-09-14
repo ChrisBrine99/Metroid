@@ -31,6 +31,7 @@ global.door = array_create(global.totalLockedDoors, false);
 
 // Global variables to holds the instance IDs for ALL PERSISTENT OBJECTS
 global.cameraID = noone;		// ID for the camera
+global.hudID = noone;			// ID for the in-game Heads-Up Display
 global.playerID = noone;		// ID for the player object (Samus)
 global.bloomID = noone;			// ID for the object that handles the bloom shader calculations
 global.lightingID = noone;		// ID for the object that controls the in-game lighting system

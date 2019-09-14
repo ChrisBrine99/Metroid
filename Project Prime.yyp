@@ -191,6 +191,14 @@
             }
         },
         {
+            "Key": "0df1855f-73bc-408d-9d74-e442b5b583d2",
+            "Value": {
+                "id": "d3b0e21b-e4b0-4be1-83a8-0646a35abaa0",
+                "resourcePath": "scripts\\draw_menu_border\\draw_menu_border.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "0e062476-4eea-44d5-884a-b2908b5676dc",
             "Value": {
                 "id": "2d5a7939-7acf-401a-b9a9-3faa7dc13485",
@@ -476,6 +484,14 @@
                 "id": "c6e7a531-f007-4fe2-82a5-a512db34a74c",
                 "resourcePath": "scripts\\draw_keyboard_key\\draw_keyboard_key.yy",
                 "resourceType": "GMScript"
+            }
+        },
+        {
+            "Key": "29e73375-4418-4ac4-a26d-5fa28365a4eb",
+            "Value": {
+                "id": "8423ddea-b273-4650-a278-d435fd80a56c",
+                "resourcePath": "objects\\obj_menu_border\\obj_menu_border.yy",
+                "resourceType": "GMObject"
             }
         },
         {
@@ -3161,6 +3177,7 @@
         "ea856b9c-168a-4b9b-a74b-4eb2c6ed122f",
         "c9c02378-4717-4fac-933c-b6c228c0ce0c",
         "3729b3d8-687c-4dc5-8ae1-5f41b37e0aa2",
+        "0df1855f-73bc-408d-9d74-e442b5b583d2",
         "aa143b64-7d1f-4358-92e3-5b4e013fb9d4",
         "10cc6291-1b0b-4703-ace1-aa66667d26b9",
         "6ae6fabd-4bc3-41da-afb0-cdd73756d93d",

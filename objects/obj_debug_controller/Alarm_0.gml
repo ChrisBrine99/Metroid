@@ -4,15 +4,9 @@
 numInstances = string(instance_number(all));
 
 // Adding up all the current active objects that are in the room
-numActiveObjects = string(instance_number(obj_culled_object) + 
-						  instance_number(obj_entity_controller) + 
-						  instance_number(par_interactable_block) +
-						  instance_number(par_player_effect) +
-						  instance_number(obj_hud) +
-						  instance_number(obj_camera) +
-						  instance_number(obj_controller) +
-						  instance_number(obj_debug_controller));
+numActiveObjects = string(numInstances - instance_number(par_block));
 
+// Adding up all the current active entities (Player Objects, Enemies, Projectiles, etc) in the current room
 numEntities = string(ds_list_size(global.entities));
 var total = 0;
 for (var i = 0; i < numEntities; i++){

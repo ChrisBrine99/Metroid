@@ -36,6 +36,3 @@ layer_background_htiled(curBackID, true);
 layer_background_vtiled(curBackID, true);
 layer_background_xscale(curBackID, 3);
 layer_background_yscale(curBackID, 3);
-
-// Set up the background characteristics
-alarm[0] = 1;

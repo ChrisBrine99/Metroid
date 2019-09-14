@@ -1,4 +1,6 @@
 /// @description Destroy the Camera
 // You can write your code in this editor
 
-camera_destroy(camera);
+if (global.cameraID == id){
+	camera_destroy(camera);
+}

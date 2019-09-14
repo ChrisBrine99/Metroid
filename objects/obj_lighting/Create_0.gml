@@ -1,7 +1,7 @@
 /// @description Creating the variable to hold the lighting system
 // You can write your code in this editor
 
-// Destroy if another camera already exists
+// Destroy if another lighting system already exists already exists
 if (global.lightingID != noone){
 	if (global.lightingID.object_index == obj_lighting){
 		instance_destroy(self);	
