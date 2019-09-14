@@ -51,6 +51,9 @@ switch(soundID){
 	// Sounds affected by the GUI Volume level
 	case snd_beam_select:
 	case snd_missile_select:
+	case snd_menu_select1:
+	case snd_menu_open1:
+	case snd_menu_close1:
 		volume = global.oAudio[5];
 		break;
 }

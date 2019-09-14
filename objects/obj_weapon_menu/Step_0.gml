@@ -28,6 +28,9 @@ event_inherited();
 
 // Closing the Menu
 if (!keyCloseMenu){
+	if (activeMenu){
+		scr_play_sound(closeSound, 0, false, true);	
+	}
 	fadingIn = false;
 	activeMenu = false;
 }

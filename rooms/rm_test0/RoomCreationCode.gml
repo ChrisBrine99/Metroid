@@ -5,15 +5,19 @@ global.offset = 0;
 global.loopLength = 53.881;
 
 // Edit the bloom and lighting system settings
-if (instance_exists(obj_lighting)){
-	with(obj_lighting){
-		curLightingCol = make_color_rgb(0, 105, 230);
+if (global.lightingID != noone){
+	with(global.lightingID){
+		if (object_index == obj_lighting){
+			curLightingCol = make_color_rgb(0, 105, 230);
+		}
 	}
 }
-if (instance_exists(obj_bloom)){
-	with(obj_bloom){
-		bloomThreshold = 0.4;
-		blurSteps = 4;
-		sigma = 0.15;
+if (global.bloomID != noone){
+	with(global.bloomID){
+		if (object_index == obj_bloom){
+			bloomThreshold = 0.4;
+			blurSteps = 4;
+			sigma = 0.15;
+		}
 	}
 }

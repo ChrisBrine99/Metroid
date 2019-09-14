@@ -57,11 +57,15 @@ if (keySongSwitch){
 			col = c_red;
 			oCol = c_maroon;
 		} else{
-			with(obj_controller) {playMusic = true;}
-			// Alter the Prompt's message and color
-			message = "Music Has Been Unmuted";
-			col = c_lime;
-			oCol = c_green;	
+			if (!audio_is_playing(global.curSong)){
+				with(obj_controller) {playMusic = true;}
+				// Alter the Prompt's message and color
+				message = "Music Has Been Unmuted";
+				col = c_lime;
+				oCol = c_green;	
+			} else{
+				createPrompt = false;	
+			}
 		}
 	} else{	// Playing the next song
 		if (audio_is_playing(global.curSong)){ // Play the next track in sequential order

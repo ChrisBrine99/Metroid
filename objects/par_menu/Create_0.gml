@@ -33,9 +33,13 @@ scr_alpha_control_create();
 destroyOnZero = true;
 
 // The sounds that are produced by the menu
-switchSound = -1;
-selectSound = -1;
-closeSound = -1;
+openSound = -1;				// The sound the menu makes when first opening
+closeSound = -1;			// The sound the menu makes when closing
+switchSound = -1;			// The sound that is produced when the user switches between menu options
+selectSound = -1;			// The sound that is produced when the user selects a menu option
+
+// Trigger the opening alarm
+alarm[0] = 1;
 
 // Variables to check if a transition object is needed
 transitionObj = noone;

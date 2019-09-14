@@ -29,6 +29,12 @@ global.item = array_create(global.totalItems, false);
 // The array that holds all of the locked doors in the game (Missile Doors, Power Bomb Doors, etc.)
 global.door = array_create(global.totalLockedDoors, false);
 
+// Global variables to holds the instance IDs for ALL PERSISTENT OBJECTS
+global.cameraID = noone;		// ID for the camera
+global.playerID = noone;		// ID for the player object (Samus)
+global.bloomID = noone;			// ID for the object that handles the bloom shader calculations
+global.lightingID = noone;		// ID for the object that controls the in-game lighting system
+
 // Variables for the current background song that is playing
 curSong = -1;
 song = -1;

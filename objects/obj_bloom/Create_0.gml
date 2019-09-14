@@ -1,6 +1,14 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+// Destroy if another camera already exists
+if (global.bloomID != noone){
+	if (global.bloomID.object_index == obj_bloom){
+		instance_destroy(self);	
+	}
+}
+global.bloomID = instance_id;
+
 // Getting Shader stuff for the parts of the screen that will be blurred
 shaderBloomLuminence = shd_bloom_filter_luminence;
 

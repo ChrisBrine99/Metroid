@@ -9,7 +9,7 @@ if (alpha > 0){
 	
 	// Drawing Samus's information
 	draw_set_font(font_gui_large);
-	with(obj_player){
+	with(global.playerID){
 		// Samus's Current Health
 		if (curHitpoints >= 10) {draw_text_outline(3, 3, string(curHitpoints), c_white, c_gray);}
 		else {draw_text_outline(3, 3, "0" + string(curHitpoints), c_white, c_gray);}

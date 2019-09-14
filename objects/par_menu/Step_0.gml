@@ -81,26 +81,31 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 		autoScroll = 0;
 		holdTimer = 0;
 	}
-}
-
-if (keySelect){ // Selecting a menu option (If it is enabled)
-	if (canUseSelect){
-		selectedOption[X] = curOption[X];
-		selectedOption[Y] = curOption[Y];
-		// Play the menu select sound effect
-		if (selectSound != -1){
-			scr_play_sound(selectSound, 0, false, true);
+	
+	// Selecting a menu option (If it is enabled)
+	if (keySelect){
+		if (canUseSelect){
+			if (selectSound != -1){
+				scr_play_sound(selectSound, 0, false, true);	
+			}
+			selectedOption[X] = curOption[X];
+			selectedOption[Y] = curOption[Y];
+			// Play the menu select sound effect
+			if (selectSound != -1){
+				scr_play_sound(selectSound, 0, false, true);
+			}
 		}
 	}
-}
 
-if (keyReturn){ // Return to a previous menu/closing the menu (If it is enabled)
-	if (canUseReturn){
-		fadingIn = false;
-		isClosing = true;
-		// Play the menu return sound effect
-		if (closeSound != -1){
-			scr_play_sound(closeSound, 0, false, true);
+	// Return to a previous menu/closing the menu (If it is enabled)
+	if (keyReturn){ 
+		if (canUseReturn){
+			fadingIn = false;
+			isClosing = true;
+			// Play the menu return sound effect
+			if (closeSound != -1){
+				scr_play_sound(closeSound, 0, false, true);
+			}
 		}
 	}
 }

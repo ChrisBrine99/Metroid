@@ -1,6 +1,14 @@
 /// @description Creates the camera
 // You can write your code in this editor
 
+// Destroy if another camera already exists
+if (global.cameraID != noone){
+	if (global.cameraID.object_index == obj_camera){
+		instance_destroy(self);	
+	}
+}
+global.cameraID = id;
+
 // Setting the resolution and the scaling factor
 global.camWidth = 320;
 global.camHeight = 180;

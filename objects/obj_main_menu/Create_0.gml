@@ -5,6 +5,11 @@
 event_inherited();
 // Let this menu use the select key, but not the return key
 canUseSelect = true;
+// Assign sounds for the menu
+openSound = snd_menu_open1;
+closeSound = snd_menu_close1;
+switchSound = snd_beam_select;
+selectSound = snd_menu_select1;
 
 // Modify the menu width and height
 numRows = 5;
@@ -13,14 +18,14 @@ numColumns = 1;
 // Fill the menu up with options and descriptions
 menuOption[0, 0] = "File 01";
 optionDesc[0, 0] = "Select a file to begin the game.";
-menuOption[1, 0] = "File 02";
-optionDesc[1, 0] = "Select a file to begin the game.";
-menuOption[2, 0] = "File 03";
-optionDesc[3, 0] = "Select a file to begin the game.";
-menuOption[3, 0] = "Options";
-optionDesc[3, 0] = "Adjust various in-game settings.";
-menuOption[4, 0] = "Exit Game";
-optionDesc[4, 0] = "Return to the desktop.";
+menuOption[0, 1] = "File 02";
+optionDesc[0, 1] = "Select a file to begin the game.";
+menuOption[0, 2] = "File 03";
+optionDesc[0, 2] = "Select a file to begin the game.";
+menuOption[0, 3] = "Options";
+optionDesc[0, 3] = "Adjust various in-game settings.";
+menuOption[0, 4] = "Exit Game";
+optionDesc[0, 4] = "Return to the desktop.";
 
 // Variables that are unique to the Main Menu
 exitingGame = false;

@@ -1,6 +1,15 @@
 /// @description Creating the variable to hold the lighting system
 // You can write your code in this editor
 
+// Destroy if another camera already exists
+if (global.lightingID != noone){
+	if (global.lightingID.object_index == obj_lighting){
+		instance_destroy(self);	
+	}
+}
+global.lightingID = id;
+
+// Setting up some variables to handle how the lighting system should be drawn (default is 1080p)
 scale = floor(display_get_width() / global.camWidth);
 surfWidth = global.camWidth * scale;
 surfHeight = global.camHeight * scale;

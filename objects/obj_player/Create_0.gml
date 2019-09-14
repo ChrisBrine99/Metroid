@@ -1,6 +1,17 @@
 /// @description Initializing Samus's variables
 // You can write your code in this editor
 
+#region Setting the playerID variable to this instance's ID if no other player exists already
+
+if (global.playerID != noone){
+	if (global.playerID.object_index == obj_player){
+		instance_destroy(self);	
+	}
+}
+global.playerID = id;
+
+#endregion
+
 #region Altering the Default Entity Variables
 
 // Call the entity create event

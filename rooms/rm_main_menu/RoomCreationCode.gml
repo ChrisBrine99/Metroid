@@ -15,21 +15,8 @@ global.loopLength = 81.399;
 //
 //	These stupid fucking values are beyond tedious to figure out pls send help
 
-// Edit the bloom and lighting system settings
-if (instance_exists(obj_lighting)){
-	with(obj_lighting){
-		curLightingCol = c_black;
-	}
-}
-if (instance_exists(obj_bloom)){
-	with(obj_bloom){
-		blurSteps = 4;
-		sigma = 0.25;
-	}
-}
-
 // Only execute this code before the game actually begins
-if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
+if (!instance_exists(obj_controller)){
 	// The Enumerator to keep track of the game's current state
 	enum GAME_STATE{
 		IN_GAME = 1000,
@@ -120,12 +107,14 @@ if (!instance_exists(obj_camera) && !instance_exists(obj_controller)){
 	scr_load_options("options");
 	
 	// Create the controller and camera objects
-	instance_create_depth(856, 316, 0, obj_camera);
 	instance_create_depth(0, 0, 10, obj_controller);
+	instance_create_depth(856, 316, 0, obj_camera);
 	
 	// Create the lighting and bloom objects
 	instance_create_depth(0, 0, 15, obj_lighting);	
-	instance_create_depth(0, 0, 50, obj_bloom); 
+	if (global.oVideo[3]){ // Only create if BLOOM IS ENABLED
+		instance_create_depth(0, 0, 50, obj_bloom); 
+	}
 }
 
 // Create the Main Menu
@@ -133,3 +122,30 @@ instance_create_depth(0, 0, 100, obj_main_menu);
 // Create the Title Screen/Main Menu's Background Gradient
 var back = instance_create_depth(0, 0, 400, obj_menu_background);
 with(back) {col = make_color_rgb(0, 0, 90);}
+
+// Edit the bloom and lighting system settings
+show_debug_message(global.lightingID);
+if (global.lightingID != noone){
+	with(global.lightingID){
+		show_debug_message(object_index);
+		show_debug_message(obj_lighting);
+		if (object_index == obj_lighting){
+			curLightingCol = c_black;
+		}
+	}
+}
+if (global.bloomID != noone){
+	with(global.bloomID){
+		if (object_index == obj_bloom){
+			blurSteps = 4;
+			sigma = 0.25;
+		}
+	}
+}
+
+// Remove the player object if they exist (Ex. Going from the game back to the main menu)
+if (global.playerID != noone){
+	with(global.playerID){
+		instance_destroy(self);	
+	}
+}

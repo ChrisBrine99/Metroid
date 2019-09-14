@@ -6,6 +6,8 @@ event_inherited();
 // Freeze the alpha change value until the menu needs to be created
 alphaChangeVal = 0;
 // Change the menu sound effects
+openSound = snd_menu_open1;
+closeSound = snd_menu_close1;
 switchSound = snd_beam_select;
 
 // Default Value for the extra menu element information
