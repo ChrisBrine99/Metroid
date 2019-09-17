@@ -10,11 +10,12 @@ if (file_exists(filename)){
 	ini_open(filename);
 
 	// Load in the video options
-	global.oVideo[0] = ini_read_real("VIDEO", "res_scale", 4);			// The scale of the resolution relative to the original (320 by 180)
-	global.oVideo[1] = ini_read_real("VIDEO", "full_screen", false);	// Whether the game should load in fullscreen mode or not
-	global.oVideo[2] = ini_read_real("VIDEO", "vertical_sync", false);	// Determines if vertical syncronization is enabled or not
-	global.oVideo[3] = ini_read_real("VIDEO", "bloom", true);			// Enables and disables the game's bloom shader (Can improve performance)
-	global.oVideo[4] = ini_read_real("VIDEO", "scanlines", true);		// Enables and disables the in-game scanline filter
+	global.oVideo[0] = ini_read_real("VIDEO", "res_scale", 4);				// The scale of the resolution relative to the original (320 by 180)
+	global.oVideo[1] = ini_read_real("VIDEO", "full_screen", false);		// Whether the game should load in fullscreen mode or not
+	global.oVideo[2] = ini_read_real("VIDEO", "vertical_sync", false);		// Determines if vertical syncronization is enabled or not
+	global.oVideo[3] = ini_read_real("VIDEO", "frame_rate_limit", 99999);	// Determines how many updates per second the game will process in a single second
+	global.oVideo[4] = ini_read_real("VIDEO", "bloom", true);				// Enables and disables the game's bloom shader (Can improve performance)
+	global.oVideo[5] = ini_read_real("VIDEO", "scanlines", true);			// Enables and disables the in-game scanline filter
 
 	// Load in the audio options
 	global.oAudio[0] = ini_read_real("AUDIO", "master", 100);		// Determines the overall volume of all in-game sounds and music
@@ -46,7 +47,7 @@ if (file_exists(filename)){
 	ini_close();
 } else{
 	// Default audio and video options
-	global.oVideo = [4, false, false, true, true];
+	global.oVideo = [4, false, false, 99999, true, true];
 	global.oAudio = [100, 65, 60, 75, 75, 85];
 	
 	// Default in-game keybindings

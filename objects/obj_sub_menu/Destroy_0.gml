@@ -6,7 +6,5 @@ with(prevMenu){
 	selectedOption[X] = -1;
 	selectedOption[Y] = -1;
 	subMenu = noone;
+	return;
 }
-
-// Call the parent object's destroy event
-event_inherited();

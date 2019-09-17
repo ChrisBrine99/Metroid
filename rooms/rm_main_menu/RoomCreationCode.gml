@@ -112,7 +112,7 @@ if (!instance_exists(obj_controller)){
 	
 	// Create the lighting and bloom objects
 	instance_create_depth(0, 0, 15, obj_lighting);	
-	if (global.oVideo[3]){ // Only create if BLOOM IS ENABLED
+	if (global.oVideo[4]){ // Only create if BLOOM IS ENABLED
 		instance_create_depth(0, 0, 50, obj_bloom); 
 	}
 }

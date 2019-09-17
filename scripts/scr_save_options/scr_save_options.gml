@@ -12,8 +12,9 @@ ini_open(filename);
 ini_write_real("VIDEO", "res_scale", global.oVideo[0]);
 ini_write_real("VIDEO", "full_screen", global.oVideo[1]);
 ini_write_real("VIDEO", "vertical_sync", global.oVideo[2]);
-ini_write_real("VIDEO", "bloom", global.oVideo[3]);
-ini_write_real("VIDEO", "scanlines", global.oVideo[4]);
+ini_write_real("VIDEO", "frame_rate_limit", global.oVideo[3]);
+ini_write_real("VIDEO", "bloom", global.oVideo[4]);
+ini_write_real("VIDEO", "scanlines", global.oVideo[5]);
 
 // SAve the player's audio options
 ini_write_real("AUDIO", "master", global.oAudio[0]);

@@ -1,12 +1,28 @@
 /// @description Drawing the Settings Menu
 // You can write your code in this editor
 
+// Some helpful variables to keep the rest of the code a little cleaner looking
+var regCol, regOCol, selCol, selOCol;
+regCol = c_gray;
+regOCol = c_dkgray;
+selCol = c_lime;
+selOCol = c_green;
+
 #region Drawing the Requied Sub-Menu
 
 if (subMenu != noone){
+	var selOption = selectedOption[X] * numColumns + selectedOption[Y];
 	with(subMenu){
 		if (alpha > 0){
-				
+			draw_set_font(font_gui_xSmall);
+			switch(selOption){
+				case 0: // Drawing the Video Settings Sub-Menu
+					break;
+				case 1: // Drawing the Audio Settings Sub-Menu
+					break;
+				case 2: // Drawing the Controls Settings Sub-Menu
+					break;
+			}
 		}
 	}
 }
@@ -17,13 +33,6 @@ if (subMenu != noone){
 
 if (alpha > 0){
 	draw_set_alpha(alpha);
-	
-	// Come helpful variables to keep the rest of the code a little cleaner looking
-	var regCol, regOCol, selCol, selOCol;
-	regCol = c_gray;
-	regOCol = c_dkgray;
-	selCol = c_lime;
-	selOCol = c_green;
 	
 	// The three file select options
 	draw_set_font(font_gui_small);
