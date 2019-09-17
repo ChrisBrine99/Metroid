@@ -12,3 +12,4 @@ inheritAllSounds = false;	// If true, the sub menu will poroduce the same sounds
 xPos = 0;					// The x coordinate of the sub menu on the GUI layer
 yPos = 0;					// The y coordinate of the sub menu on the GUI layer
 font = font_gui_small;		// The font that the menu will use. Can be carried over from the previous menu
+otherIndex = -1;			// The index of the current selected option on the menu that created this one

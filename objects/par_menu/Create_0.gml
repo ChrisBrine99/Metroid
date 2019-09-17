@@ -10,6 +10,7 @@ numColumns = 0;				// The number of columns in the menu
 // NOTE -- The Menu's total Size is the number of rows multiplied by the number of columns
 curOption = [0, 0];			// The current option that is being high-lighted by the user
 selectedOption = [-1, -1];	// The item in the menu that the user selected
+prevMenuOption = [0, 0];	// The option that was selected to open this menu in the menu before it
 activeMenu = false;			// If false, the menu will be unable to function (Ex. during transitions)
 isClosing = false;			// If true, closing this menu will cause the previous menu to appear
 canUseReturn = false;		// If true, the return key will be enabled for use

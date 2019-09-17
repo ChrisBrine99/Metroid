@@ -1,9 +1,9 @@
 /// @description Drawing the Menu
 // You can write your code in this editor
 
-draw_set_alpha(alpha);
-
 if (alpha > 0){
+	draw_set_alpha(alpha);
+	
 	// Come helpful variables to keep the rest of the code a little cleaner looking
 	var regCol, regOCol, selCol, selOCol, rectCol, selRectCol, rectAlpha;
 	regCol = c_gray;
@@ -13,9 +13,6 @@ if (alpha > 0){
 	rectCol = make_color_rgb(20, 20, 20);
 	selRectCol = make_color_rgb(50, 50, 50);
 	rectAlpha = alpha * 0.3;
-	
-	// The Menu's Border
-	draw_menu_border(15, 15, c_white, c_green, c_black, 0, 0.3, 1, true, make_color_rgb(0, 60, 0));
 	
 	// The three file select options
 	draw_set_font(font_gui_xSmall);
@@ -54,7 +51,7 @@ if (alpha > 0){
 	
 	// Reset the drawing alignment back to the top left corner
 	draw_set_halign(fa_left);
+	
+	// Reset the alpha channel back to opaque
+	draw_set_alpha(1);
 }
-
-// Reset the alpha channel back to opaque
-draw_set_alpha(1);

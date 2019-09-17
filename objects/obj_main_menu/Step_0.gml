@@ -26,10 +26,11 @@ if (transitionObj != noone){
 #region Menu Option Functionality
 
 if (activeMenu){
-	if (selectedOption[Y] != -1){
+	var selOption = selectedOption[X] * numColumns + selectedOption[Y];
+	if (selOption >  -1){
 		fadingIn = false;
 		activeMenu = false;
-		switch(selectedOption[Y]){
+		switch(selOption){
 			case 0: // Loading in the files/starting a new game
 			case 1:
 			case 2:
@@ -39,26 +40,9 @@ if (activeMenu){
 				with(obj_controller) {playMusic = false;}
 				break;
 			case 3: // Opening the Options Menu
-				fadingIn = true;
 				activeMenu = false;
-				//isClosing = true;
-				//nextMenu = obj_options_menu;
-				// Creating a temporary sub menu
-				/*subMenu = instance_create_depth(0, 0, 10, obj_sub_menu);
-				with(subMenu){
-					prevMenu = other.object_index;
-					xPos = 30;
-					yPos = 30;
-					// The menu's size (X by Y)
-					numColumns = 1;
-					numRows = 5;
-					// The menu elements
-					menuOption[0, 0] = "Option 1";
-					menuOption[0, 1] = "Option 2";
-					menuOption[0, 2] = "Option 3";
-					menuOption[0, 3] = "Option 4";
-					menuOption[0, 4] = "Option 5";
-				}*/
+				isClosing = true;
+				nextMenu = obj_settings_menu;
 				break;
 			case 4: // Exiting to Desktop
 				exitingGame = true;

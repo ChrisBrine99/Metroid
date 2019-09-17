@@ -3,7 +3,6 @@
 
 #region Keyboard Input
 
-var keyRight, keyLeft, keyUp, keyDown, keySelect, keyReturn;
 keyRight = keyboard_check(global.mKey[KEY.MENU_RIGHT]);
 keyLeft = keyboard_check(global.mKey[KEY.MENU_LEFT]);
 keyUp = keyboard_check(global.mKey[KEY.MENU_UP]);
@@ -101,7 +100,7 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 	if (keyReturn){ 
 		if (canUseReturn){
 			fadingIn = false;
-			isClosing = true;
+			isClosing = false;
 			// Play the menu return sound effect
 			if (closeSound != -1){
 				scr_play_sound(closeSound, 0, false, true);

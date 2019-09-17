@@ -6,7 +6,6 @@ event_inherited();
 // Let this menu use the select key, but not the return key
 canUseSelect = true;
 // Assign sounds for the menu
-openSound = snd_menu_open1;
 closeSound = snd_menu_close1;
 switchSound = snd_beam_select;
 selectSound = snd_menu_select1;
