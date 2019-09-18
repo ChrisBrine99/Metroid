@@ -18,12 +18,13 @@ if (file_exists(filename)){
 	global.oVideo[5] = ini_read_real("VIDEO", "scanlines", true);			// Enables and disables the in-game scanline filter
 
 	// Load in the audio options
-	global.oAudio[0] = ini_read_real("AUDIO", "master", 100);		// Determines the overall volume of all in-game sounds and music
-	global.oAudio[1] = ini_read_real("AUDIO", "music", 65);			// Determines the volume of music in the game
-	global.oAudio[2] = ini_read_real("AUDIO", "player", 60);		// Determines the volume of sounds produced by the player
-	global.oAudio[3] = ini_read_real("AUDIO", "weapons", 75);		// Sets how loud the in-game weapon sounds are
-	global.oAudio[4] = ini_read_real("AUDIO", "environment", 75);	// Sets the volume for sounds produced by the environment
-	global.oAudio[5] = ini_read_real("AUDIO", "gui", 85);			// Determines the volume of the game's menus
+	global.oAudio[0] = ini_read_real("AUDIO", "master", 100);			// Determines the overall volume of all in-game sounds and music
+	global.oAudio[1] = ini_read_real("AUDIO", "music", 65);				// Determines the volume of music in the game
+	global.oAudio[2] = ini_read_real("AUDIO", "player", 60);			// Determines the volume of sounds produced by the player
+	global.oAudio[3] = ini_read_real("AUDIO", "weapons", 75);			// Sets how loud the in-game weapon sounds are
+	global.oAudio[4] = ini_read_real("AUDIO", "environment", 75);		// Sets the volume for sounds produced by the environment
+	global.oAudio[5] = ini_read_real("AUDIO", "gui", 85);				// Determines the volume of the game's menus
+	global.oAudio[6] = ini_read_real("AUDIO", "disable_bgm", false);	// Toggles the game's background music
 
 	// Load in the player's preferred in-game keybindings
 	global.gKey[KEY.GAME_RIGHT] = ini_read_real("KEYBINDINGS", "game_right", vk_right);		// The keybinding for moving the player object to the right
@@ -48,7 +49,7 @@ if (file_exists(filename)){
 } else{
 	// Default audio and video options
 	global.oVideo = [4, false, false, 99999, true, true];
-	global.oAudio = [100, 65, 60, 75, 75, 85];
+	global.oAudio = [100, 65, 60, 75, 75, 85, false];
 	
 	// Default in-game keybindings
 	global.gKey[KEY.GAME_RIGHT] = vk_right;

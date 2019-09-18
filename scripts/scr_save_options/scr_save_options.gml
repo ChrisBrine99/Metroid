@@ -23,6 +23,7 @@ ini_write_real("AUDIO", "player", global.oAudio[2]);
 ini_write_real("AUDIO", "weapons", global.oAudio[3]);
 ini_write_real("AUDIO", "environment", global.oAudio[4]);
 ini_write_real("AUDIO", "gui", global.oAudio[5]);
+ini_write_real("AUDIO", "disable_bgm", global.oAudio[6]);
 
 // Saving the player's in-game keybindings
 ini_write_real("KEYBINDINGS", "game_right", global.gKey[KEY.GAME_RIGHT]);

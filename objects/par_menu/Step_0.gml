@@ -37,10 +37,18 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 				if (curOption[Y] > numRows - 1){
 					curOption[Y] = 0;
 				}
+				// Shifting the visible portion of the menu downward
+				if (firstDrawn[Y] < numRows - numToDraw[Y]){
+					firstDrawn[Y]++;	
+				}
 			} else if (keyUp && !keyDown){ // Moving up through the menu
 				curOption[Y]--;
 				if (curOption[Y] < 0){
 					curOption[Y] = numRows - 1;	
+				}
+				// Shifting the visible portion of the menu upward
+				if (firstDrawn[Y] > 0){
+					firstDrawn[Y]--;	
 				}
 			}
 			if (keyRight && !keyLeft){ // Move to the right in the menu
@@ -48,12 +56,19 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 				if (curOption[X] > numColumns - 1){
 					curOption[X] = 0;	
 				}
+				// Shifting the visible portion of the menu to the right
+				if (firstDrawn[X] < numColumns - numToDraw[X]){
+					firstDrawn[X]++;	
+				}
 			} else if (keyLeft && !keyRight){ // Move to the left in the menu
 				curOption[X]--;
 				if (curOption[X] < 0){
 					curOption[X] = numColumns - 1;	
 				}
-				
+				// Shifting the visible portion of the menu upward
+				if (firstDrawn[X] > 0){
+					firstDrawn[X]--;	
+				}
 			}
 			// Play the menu move sound effect
 			if (switchSound != -1){

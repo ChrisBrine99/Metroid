@@ -7,6 +7,8 @@
 
 numRows = 0;				// The number of rows in the menu
 numColumns = 0;				// The number of columns in the menu
+firstDrawn = [0, 0];		// The first drawn elements (The top-left corner option)
+numToDraw = [5, 5];			// How many elements will be visible to the player at once in the menu
 // NOTE -- The Menu's total Size is the number of rows multiplied by the number of columns
 curOption = [0, 0];			// The current option that is being high-lighted by the user
 selectedOption = [-1, -1];	// The item in the menu that the user selected

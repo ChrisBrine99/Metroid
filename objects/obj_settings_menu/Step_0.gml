@@ -31,6 +31,9 @@ if (subMenu != noone){
 				}
 			}
 		}
+		// Set the position of the SubMenu
+		xPos = 130;
+		yPos = 28;
 	}
 	return;
 }
@@ -46,7 +49,6 @@ if (activeMenu){
 			case 0: // Opening the Video Setting's Menu
 				subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
 				with(subMenu){
-					prevMenu = other.object_index;
 					// Set the size of the menu
 					numRows = array_length_1d(global.oVideo);
 					numColumns = 1;
@@ -66,8 +68,35 @@ if (activeMenu){
 				}
 				break;
 			case 1: // Opening the Audio Setting's Menu
+				subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
+				with(subMenu){
+					// Set the size of the menu
+					numRows = array_length_1d(global.oAudio);
+					numColumns = 1;
+					// Sets the setting options and their descriptions
+					menuOption[0, 0] = "Master";
+					optionDesc[0, 0] = "Determines the volume of everything in the game, relative to their actual volumes.";
+					menuOption[0, 1] = "Music";
+					optionDesc[0, 1] = "The overall volume of the background music. (Note -- Doesn't Alter Ambience Volume)";
+					menuOption[0, 2] = "Player";
+					optionDesc[0, 2] = "The overall volume of the sounds produced by the player when in-game. (Ex. Footsteps, Jumping, Crouching, etc.)";
+					menuOption[0, 3] = "Weapons";
+					optionDesc[0, 3] = "The overall volume of the sounds produced by any in-game weaponry. (Ex. Player/Enemy Projectiles)";
+					menuOption[0, 4] = "Environment";
+					optionDesc[0, 4] = "The overall volume of the sounds produced by the game's environment. (Ex. Lava Bubbling, Ambience, etc.)";
+					menuOption[0, 5] = "GUI";
+					optionDesc[0, 5] = "The overall volume of the sounds made by the game's HUD and GUI elements. (Ex. Weapon Menu, Main Menu, etc.)";
+					menuOption[0, 6] = "Mute BGM";
+					optionDesc[0, 6] = "Toggle this to enable and disable the game's background music. (Note -- Doesn't Disable Ambience)";
+				}
 				break;
 			case 2: // Opening the Control Setting's Menu
+				subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
+				with(subMenu){
+					// Set the size of the menu
+					numRows = array_length_1d(global.gKey) + array_length_1d(global.mKey);
+					numColumns = 1;
+				}
 				break;
 			case 3: // Returning all options to their default settings
 				file_delete("options.ini");
@@ -80,6 +109,14 @@ if (activeMenu){
 				fadingIn = false;
 				activeMenu = false;
 				break;
+		}
+		// Code that is shared between sub menu creation on all three occurances
+		if (subMenu != noone){
+			with(subMenu){
+				prevMenu = other.object_index;
+				numToDraw[X] = 1;
+				numToDraw[Y] = 6;	
+			}
 		}
 	}
 }
