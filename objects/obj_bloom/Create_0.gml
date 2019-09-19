@@ -7,7 +7,7 @@ if (global.bloomID != noone){
 		instance_destroy(self);	
 	}
 }
-global.bloomID = instance_id;
+global.bloomID = id;
 
 // Getting Shader stuff for the parts of the screen that will be blurred
 shaderBloomLuminence = shd_bloom_filter_luminence;

@@ -29,3 +29,7 @@ optionDesc[0, 4] = "Exit the menu.";
 
 // Unique variables for the Settings menu
 subMenu = noone;
+
+// Setting up the surface for drawing the menu
+menuSurf = surface_create(global.camWidth, global.camHeight);
+xOffset = 120;

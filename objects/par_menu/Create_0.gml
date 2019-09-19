@@ -46,3 +46,10 @@ alarm[0] = 1;
 
 // Variables to check if a transition object is needed
 transitionObj = noone;
+
+// The surface to hold all of the GUI elements
+menuSurf = -1;
+xOffset = 0;	// The X-position offset for the Surface to be drawn at
+yOffset = 0;	// The Y-position offset for the Surface to be drawn at
+destX = 0;		// The destination X-position of the menu
+destY = 0;		// The destination Y-position of the menu

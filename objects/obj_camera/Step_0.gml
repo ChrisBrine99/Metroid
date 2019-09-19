@@ -6,12 +6,8 @@ var viewX, viewY;
 viewX = global.camWidth * global.xScale;
 viewY = global.camHeight * global.yScale;
 window_set_size(viewX, viewY);
+window_center();
 surface_resize(application_surface, viewX, viewY);
-
-if (keyboard_check_pressed(vk_space)){
-	global.oVideo[1] = !global.oVideo[1];
-	alarm[1] = 1;
-}
 
 // Only move the camera based on the object it is following when the camera isn't shaking
 if (isLocked){

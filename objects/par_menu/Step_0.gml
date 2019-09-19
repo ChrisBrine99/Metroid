@@ -3,6 +3,7 @@
 
 #region Keyboard Input
 
+var keyRight, keyLeft, keyUp, keyDown, keySelect, keyReturn;
 keyRight = keyboard_check(global.mKey[KEY.MENU_RIGHT]);
 keyLeft = keyboard_check(global.mKey[KEY.MENU_LEFT]);
 keyUp = keyboard_check(global.mKey[KEY.MENU_UP]);
@@ -34,40 +35,50 @@ if (selectedOption[X] == -1 && selectedOption[Y] == -1){
 		if (holdTimer <= 0){
 			if (keyDown && !keyUp){ // Moving down through the menu
 				curOption[Y]++; 
+				// Shifting the visible portion of the menu downward
+				if (curOption[Y] > firstDrawn[Y] + ceil(numToDraw[Y] / 2) && firstDrawn[Y] < numRows - numToDraw[Y]){
+					firstDrawn[Y]++;	
+				}
+				// Loop around to the top of the menu
 				if (curOption[Y] > numRows - 1){
 					curOption[Y] = 0;
-				}
-				// Shifting the visible portion of the menu downward
-				if (firstDrawn[Y] < numRows - numToDraw[Y]){
-					firstDrawn[Y]++;	
+					firstDrawn[Y] = 0;
 				}
 			} else if (keyUp && !keyDown){ // Moving up through the menu
 				curOption[Y]--;
+				// Shifting the visible portion of the menu upward
+				if (curOption[Y] < firstDrawn[Y] + floor(numToDraw[Y] / 2) - 1 && firstDrawn[Y] > 0){
+					firstDrawn[Y]--;
+				}
+				// Loop back to the bottom of the menu
 				if (curOption[Y] < 0){
 					curOption[Y] = numRows - 1;	
-				}
-				// Shifting the visible portion of the menu upward
-				if (firstDrawn[Y] > 0){
-					firstDrawn[Y]--;	
+					firstDrawn[Y] = numRows - numToDraw[Y];
+					if (firstDrawn[Y] < 0) {firstDrawn[Y] = 0;}
 				}
 			}
 			if (keyRight && !keyLeft){ // Move to the right in the menu
 				curOption[X]++;
-				if (curOption[X] > numColumns - 1){
-					curOption[X] = 0;	
-				}
 				// Shifting the visible portion of the menu to the right
-				if (firstDrawn[X] < numColumns - numToDraw[X]){
+				if (curOption[X] > firstDrawn[X] + ceil(numToDraw[X] / 2) && firstDrawn[X] < numColumns - numToDraw[X]){
 					firstDrawn[X]++;	
+				}
+				// Looping back to the leftmost element in the menu
+				if (curOption[X] > numColumns - 1){
+					curOption[X] = 0;
+					firstDrawn[X] = 0;
 				}
 			} else if (keyLeft && !keyRight){ // Move to the left in the menu
 				curOption[X]--;
+				// Shifting the visible portion of the menu upward
+				if (curOption[X] < firstDrawn[X] + floor(numToDraw[X] / 2) - 1 && firstDrawn[X] > 0){
+					firstDrawn[X]--;
+				}
+				// Looping around to the rightmost element in the menu
 				if (curOption[X] < 0){
 					curOption[X] = numColumns - 1;	
-				}
-				// Shifting the visible portion of the menu upward
-				if (firstDrawn[X] > 0){
-					firstDrawn[X]--;	
+					firstDrawn[X] = numColumns - numToDraw[X];
+					if (firstDrawn[X] < 0) {firstDrawn[X] = 0;}
 				}
 			}
 			// Play the menu move sound effect

@@ -3,7 +3,6 @@
 
 if (exitingGame){
 	game_end();	
-} else{
-	// Call the parent object's destroy event
+} else{ // Call the parent object's destroy event
 	event_inherited();
 }

@@ -32,3 +32,7 @@ fileToLoad = "";
 
 // Set the speed for the background stars
 alarm[0] = 1;
+
+// Setting up the surface for drawing the menu
+menuSurf = surface_create(global.camWidth, global.camHeight);
+xOffset = 120;
