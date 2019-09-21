@@ -118,10 +118,10 @@ if (!instance_exists(obj_controller)){
 }
 
 // Create the Main Menu
-instance_create_depth(0, 0, 100, obj_main_menu);
+instance_create_depth(0, 0, 10, obj_main_menu);
 obj_main_menu.xOffset = 0;
 // Create the Main Menu's Border
-instance_create_depth(0, 0, 200, obj_menu_border);
+instance_create_depth(0, 0, 20, obj_menu_border);
 // Create the Title Screen/Main Menu's Background Gradient
 var back = instance_create_depth(0, 0, 400, obj_menu_background);
 with(back) {col = make_color_rgb(0, 0, 90);}

@@ -23,9 +23,6 @@ if (subMenu != noone){
 	var selOption = selectedOption[X] * numColumns + selectedOption[Y];
 	with(subMenu){
 		if (alpha > 0){
-			// Drawing the background for the setting sub menu's description section
-			draw_rect_outline(xPos + xPosD - 4, yPos + yPosD - 4, global.camWidth, 33, c_gray, c_dkgray, c_black, alpha * 0.3, alpha);
-			
 			draw_set_font(font_gui_xSmall);
 			var optionVal = array_create(1, "---");
 			switch(selOption){
@@ -69,7 +66,7 @@ draw_clear_alpha(c_white, 0);
 draw_set_alpha(alpha);
 
 if (alpha > 0){
-	// The three file select options
+	// The five options for the settings menu
 	draw_set_font(font_gui_small);
 	for (var i = 0; i < numRows; i++){
 		if (i == curOption[Y]){ // Draw the highighted option as and the cursor next to it

@@ -68,7 +68,7 @@ if (keyDebug && !keyDebug2){
 		}
 		global.debugMode = false;
 	} else{	// Enabling Debug Mode
-		instance_create_depth(0, 0, 10, obj_debug_controller);
+		instance_create_depth(0, 0, 5, obj_debug_controller);
 		global.debugMode = true;
 	}
 }

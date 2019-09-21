@@ -6,7 +6,7 @@
 event_inherited();
 if (!fadingIn || xOffset > 0){
 	xOffset = scr_update_value_delta(xOffset, (destX - xOffset) / 4);	
-	if (!fadingIn) {destX = -120;}
+	if (!fadingIn) {destX = -200;}
 }
 
 #endregion
