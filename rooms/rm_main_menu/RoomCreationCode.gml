@@ -1,8 +1,8 @@
 // Code used to assign what background music is being played at the moment. The offset is what to start the song
 // on when it loops around to the beginning.
-global.curSong = music_rocky_maridia;
-global.offset = 9.046;
-global.loopLength = 81.399;
+global.curSong = music_save_room;
+global.offset = 0;
+global.loopLength = 58.124;
 
 // Songs and their offsets/lengths:
 //
@@ -96,10 +96,10 @@ if (!instance_exists(obj_controller)){
 		JUMP = 5,
 		SWAP_WEAPON = 6,
 		PAUSE_GAME = 7,
-		MENU_RIGHT = 0,
-		MENU_LEFT = 1,
-		MENU_UP = 2,
-		MENU_DOWN = 3,
+		MENU_UP = 0,
+		MENU_DOWN = 1,
+		MENU_RIGHT = 2,
+		MENU_LEFT = 3,
 		SELECT = 4,
 		RETURN = 5,
 	};

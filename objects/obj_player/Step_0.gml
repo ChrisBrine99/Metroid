@@ -22,7 +22,7 @@ if (!hasStarted){
 	if (keyRight || keyLeft){
 		if (fanfarePlayed && !audio_is_playing(music_samus_appears)){
 			hasStarted  = true;	
-			with(obj_controller) {playMusic = true;}
+			with(obj_controller){playMusic = !global.oAudio[6];}
 			with(obj_hud) {isVisible = true;}
 			global.gameState = GAME_STATE.IN_GAME;
 		}

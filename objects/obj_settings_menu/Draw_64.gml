@@ -24,10 +24,11 @@ if (subMenu != noone){
 	with(subMenu){
 		if (alpha > 0){
 			draw_set_font(font_gui_xSmall);
-			var optionVal = array_create(1, "---");
+			var optionVal, length;
+			optionVal = array_create(numRows, "---");
+			length = array_length_1d(optionVal);
 			switch(selOption){
 				case 0: // Drawing the menu options for the Video Options
-					optionVal = array_create(numRows, "---");
 					optionVal[0] = string(global.oVideo[0]) + "x (" + string(global.camWidth * global.oVideo[0]) + " x " + string(global.camHeight * global.oVideo[0]) + ")";
 					optionVal[1] = draw_bool_text(global.oVideo[1], "On", "Off");
 					optionVal[2] = draw_bool_text(global.oVideo[2], "On", "Off");
@@ -36,21 +37,32 @@ if (subMenu != noone){
 					optionVal[4] = draw_bool_text(global.oVideo[4], "On", "Off");
 					optionVal[5] = draw_bool_text(global.oVideo[5], "On", "Off");
 					break;
-				case 1:
-					optionVal = array_create(numRows, "---");
+				case 1: // Drawing the menu options for the Audio Options
 					for (var i = 0; i < numRows - 1; i++){
 						optionVal[i] = string(global.oAudio[i]) + "%";
 					}
 					optionVal[numRows - 1] = draw_bool_text(global.oAudio[numRows - 1], "True", "False");
 					break;
-				case 2:
+				case 2: // Drawing the menu options for the Control Options
+					var gKeyLength = array_length_1d(global.gKey);
+					for (var i = 0; i < length; i++){
+						if (i >= gKeyLength) {optionVal[i] = global.mKey[i - gKeyLength];} 
+						else {optionVal[i] = global.gKey[i];}
+					}
 					break;
 			}
 			
-			draw_set_halign(fa_right);
 			// Drawing the option values to the screen
-			for (var i = firstDrawn[Y]; i < firstDrawn[Y] + numToDraw[Y]; i++){
-				draw_text_outline(global.camWidth - 10, yPos + 1 + ((i - firstDrawn[Y]) * 16), optionVal[i], c_fuchsia, c_purple);
+			draw_set_halign(fa_right);
+			length = firstDrawn[Y] + numToDraw[Y];
+			if (selOption != 2){ // Drawing the options as text values
+				for (var i = firstDrawn[Y]; i < length; i++){
+					draw_text_outline(global.camWidth - 10, yPos + 1 + ((i - firstDrawn[Y]) * 16), optionVal[i], c_fuchsia, c_purple);
+				}
+			} else{ // Drawing the options as sprites
+				for (var i = firstDrawn[Y]; i < length; i++){
+					draw_control_gui_sprite(global.camWidth - 10, yPos + ((i - firstDrawn[Y]) * 16), optionVal[i], draw_get_halign());
+				}	
 			}
 			draw_set_halign(fa_left);
 		}

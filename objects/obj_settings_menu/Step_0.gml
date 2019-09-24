@@ -199,14 +199,41 @@ if (activeMenu){
 				}
 				break;
 			case 2: // Opening the Control Setting's Menu
-				//subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
-				//with(subMenu){
+				subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
+				with(subMenu){
 					// Set the size of the menu
-					//numRows = array_length_1d(global.gKey) + array_length_1d(global.mKey);
-					//numColumns = 1;
-				//}
-				selectedOption[X] = -1;
-				selectedOption[Y] = -1;
+					numRows = array_length_1d(global.gKey) + array_length_1d(global.mKey);
+					numColumns = 1;
+					// Sets the setting options and their descriptions
+					menuOption[0, 0] = "Right (In-Game)";
+					optionDesc[0, 0] = "";
+					menuOption[0, 1] = "Left (In-Game)";
+					optionDesc[0, 1] = "";
+					menuOption[0, 2] = "Up (In-Game)";
+					optionDesc[0, 2] = "";
+					menuOption[0, 3] = "Down (In-Game)";
+					optionDesc[0, 3] = "";
+					menuOption[0, 4] = "Use Weapon";
+					optionDesc[0, 4] = "";
+					menuOption[0, 5] = "Jump";
+					optionDesc[0, 5] = "";
+					menuOption[0, 6] = "Swap Weapon";
+					optionDesc[0, 6] = "";
+					menuOption[0, 7] = "Pause";
+					optionDesc[0, 7] = "";
+					menuOption[0, 8] = "Up (Menus)";
+					optionDesc[0, 8] = "";
+					menuOption[0, 9] = "Down (Menus)";
+					optionDesc[0, 9] = "";
+					menuOption[0, 10] = "Right (Menus)";
+					optionDesc[0, 10] = "";
+					menuOption[0, 11] = "Left (Menus)";
+					optionDesc[0, 11] = "";
+					menuOption[0, 12] = "Select";
+					optionDesc[0, 12] = "";
+					menuOption[0, 13] = "Return";
+					optionDesc[0, 13] = "";
+				}
 				break;
 			case 3: // Returning all options to their default settings
 				file_delete("options.ini");

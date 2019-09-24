@@ -40,7 +40,7 @@ global.lightingID = noone;		// ID for the object that controls the in-game light
 curSong = -1;
 song = -1;
 fadingOut = false;
-playMusic = true;
+playMusic = !global.oAudio[6];
 totalLength = 0;
 fadeTime = 600;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
 // Unseen Here Are:

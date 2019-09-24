@@ -36,12 +36,12 @@ ini_write_real("KEYBINDINGS", "swap_weapon", global.gKey[KEY.SWAP_WEAPON]);
 ini_write_real("KEYBINDINGS", "pause_game", global.gKey[KEY.PAUSE_GAME]);
 
 // Saving the player's menu keybindings
-ini_write_real("KEYBINDINGS", "menu_up", global.gKey[KEY.MENU_UP]);
-ini_write_real("KEYBINDINGS", "menu_down", global.gKey[KEY.MENU_DOWN]);
-ini_write_real("KEYBINDINGS", "menu_right", global.gKey[KEY.MENU_RIGHT]);
-ini_write_real("KEYBINDINGS", "menu_left", global.gKey[KEY.MENU_LEFT]);
-ini_write_real("KEYBINDINGS", "select", global.gKey[KEY.SELECT]);
-ini_write_real("KEYBINDINGS", "return", global.gKey[KEY.RETURN]);
+ini_write_real("KEYBINDINGS", "menu_up", global.mKey[KEY.MENU_UP]);
+ini_write_real("KEYBINDINGS", "menu_down", global.mKey[KEY.MENU_DOWN]);
+ini_write_real("KEYBINDINGS", "menu_right", global.mKey[KEY.MENU_RIGHT]);
+ini_write_real("KEYBINDINGS", "menu_left", global.mKey[KEY.MENU_LEFT]);
+ini_write_real("KEYBINDINGS", "select", global.mKey[KEY.SELECT]);
+ini_write_real("KEYBINDINGS", "return", global.mKey[KEY.RETURN]);
 
 // Close the options.ini file
 ini_close();

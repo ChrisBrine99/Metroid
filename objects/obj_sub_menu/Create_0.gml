@@ -8,7 +8,7 @@ canUseSelect = true;
 canUseReturn = true;
 
 // Variables that are unique to all Sub Menus
-inheritAllSounds = false;	// If true, the sub menu will poroduce the same sounds as the menu that created it
+inheritAllSounds = true;	// If true, the sub menu will poroduce the same sounds as the menu that created it
 xPos = 0;					// The x coordinate of the sub menu on the GUI layer
 yPos = 0;					// The y coordinate of the sub menu on the GUI layer
 font = font_gui_small;		// The font that the menu will use. Can be carried over from the previous menu

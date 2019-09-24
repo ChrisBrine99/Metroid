@@ -38,7 +38,7 @@ if (activeMenu){
 			case 0: // Loading in the files/starting a new game
 			case 1:
 			case 2:
-				transitionObj = instance_create_depth(0, 0, 45, obj_fade_transition);
+				transitionObj = instance_create_depth(0, 0, 5, obj_fade_transition);
 				transitionObj.alphaChangeVal = 0.02;
 				fileToLoad = "file0" + string(selectedOption[Y] + 1);
 				with(obj_controller) {playMusic = false;}

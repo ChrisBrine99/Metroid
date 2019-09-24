@@ -45,9 +45,11 @@ if (!isHidden && !global.item[index + subIndex]){
 		obj.nameOCol = nameOCol;
 		obj.creatorID = id;
 		obj.fanfare = fanfare;
-		// Play the designated fanfare
+		// Play the designated fanfare (If the user's background music is enabled)
 		audio_pause_all();
-		scr_play_sound(fanfare, 0, false, true);
+		if (!global.oAudio[6]){
+			scr_play_sound(fanfare, 0, false, true);
+		}
 	}
 }
 
