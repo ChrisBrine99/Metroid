@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Morphball";
-itemDescription = "Pressing [Down] while crouching to enter morphball mode.\nWith this mode you can access narrow passageways.";
+itemDescription = "Pressing [" + draw_keyboard_key(0, 0, global.gKey[KEY.GAME_DOWN], c_white, c_white, false) + "] while crouching to enter morphball mode.\nWith this mode you can access narrow passageways.";

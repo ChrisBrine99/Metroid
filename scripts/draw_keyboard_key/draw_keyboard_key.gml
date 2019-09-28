@@ -1,17 +1,20 @@
-/// @description Draw a string value depending on the given key's unicode value.
+/// @description Gets a string from the keyboard character's given unicode value. This string value can either be returned for adding it to a string or it
+/// can be drawn onto the screen at the given positions.
 /// @param posX
 /// @param posY
 /// @param key
 /// @param textCol
 /// @param outlineCol
+/// @param drawString
 
-var xPos, yPos, key, col, oCol, str;
-xPos = argument0;	// The X position on the screen to draw to
-yPos = argument1;	// The Y position on the screen to draw to
-key = argument2;	// The keyboard key to find the string value for
-col = argument3;	// The color of the text inside the lines
-oCol = argument4;	// The text's outline color
-str = "";			// The resulting keyboard key's string value
+var xPos, yPos, key, col, oCol, drawString, str;
+xPos = argument0;		// The X position on the screen to draw to
+yPos = argument1;		// The Y position on the screen to draw to
+key = argument2;		// The keyboard key to find the string value for
+col = argument3;		// The color of the text inside the lines
+oCol = argument4;		// The text's outline color
+drawString = argument5;	// Determines if the string will be returned or drawn onto the screen
+str = "";				// The resulting keyboard key's string value
 
 switch(key){
 	case 8:
@@ -207,5 +210,8 @@ switch(key){
 		str = chr(key);
 		break;
 }
-// Draw the resulting string to the screen
-draw_text_outline(xPos, yPos, str, col, oCol);
+if (drawString){ // Draw the resulting string to the screen if necessary
+	draw_text_outline(xPos, yPos, str, col, oCol);
+} 
+// Return the string for use in messages and/or other larger strings
+return str;

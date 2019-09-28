@@ -22,9 +22,12 @@ sBarCol2 = argument7;		// The scrollbar's outline color
 backCol = argument8;		// The color of the rectangle found behind the scrollbar
 alpha = draw_get_alpha();
 
-// Drawing the backing rectangle for the scrollbar
-draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos, 2, height, 0, backCol, backCol, backCol, backCol, alpha);
-
 // Drawing the actual scrollbar
-var h = round((height - 5) * pageSize / pageIndex);
-draw_rect_outline(xPos, yPos + round((height - h) * (pageNum / (pageIndex - pageSize))), 2, h, sBarCol1, sBarCol1, sBarCol2, alpha, alpha);
+if (pageIndex > pageSize){ // The fully dynamic scrollbar
+	// Drawing the backing rectangle for the scrollbar
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos, 2, height, 0, backCol, backCol, backCol, backCol, alpha);
+	var h = round((height - 5) * pageSize / pageIndex);
+	draw_rect_outline(xPos, yPos + round((height - h) * (pageNum / (pageIndex - pageSize))), 2, h, sBarCol1, sBarCol1, sBarCol2, alpha, alpha);
+} else{ // The static scrollbar for lists that are smaller than or equal to the page size
+	draw_rect_outline(xPos, yPos, 2, height, sBarCol1, sBarCol1, sBarCol2, alpha, alpha);
+}

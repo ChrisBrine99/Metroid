@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Bombs";
-itemDescription = "Pressing [Fire] will now deploy a bomb; allowing the\nability to damage enemies while in morphball mode.";
+itemDescription = "Pressing [" + draw_keyboard_key(0, 0, global.gKey[KEY.USE_WEAPON], c_white, c_white, false) + "] will now deploy a bomb; allowing the\nability to damage enemies while in morphball mode.";

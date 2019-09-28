@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Space Jump";
-itemDescription = "Pressing [Jump] while airbourne will allow you to\njump again, which can be done indefinitely.";
+itemDescription = "Pressing [" + draw_keyboard_key(0, 0, global.gKey[KEY.JUMP], c_white, c_white, false) + "] while airbourne will allow you to\njump again, which can be done indefinitely.";

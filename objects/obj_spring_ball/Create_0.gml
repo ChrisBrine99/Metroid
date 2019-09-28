@@ -18,4 +18,4 @@ with(ambLight){
 
 // Edit the object's name and description
 itemName = "Spring Ball";
-itemDescription = "Pressing [Jump] while in morphball mode will\nnow allow you to jump.";
+itemDescription = "Pressing [" + draw_keyboard_key(0, 0, global.gKey[KEY.JUMP], c_white, c_white, false) + "] while in morphball mode will\nnow allow you to jump.";
