@@ -23,6 +23,7 @@ if (subMenu != noone){
 	var selOption = selectedOption[X] * numColumns + selectedOption[Y];
 	with(subMenu){
 		if (alpha > 0){
+			// Setting up which options will be drawn to the screen for the sub menu
 			draw_set_font(font_gui_xSmall);
 			var optionVal, length;
 			optionVal = array_create(numRows, "---");
@@ -65,6 +66,9 @@ if (subMenu != noone){
 				}	
 			}
 			draw_set_halign(fa_left);
+			
+			// Drawing the scrollbar
+			draw_scrollbar(xPos - 12, yPos - 1, 92, firstDrawn[Y], numToDraw[Y], numRows, c_white, c_gray, c_dkgray, alpha);
 		}
 	}
 }

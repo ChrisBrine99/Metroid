@@ -9,6 +9,7 @@
 /// @param sBarCol1
 /// @param sBarCol2
 /// @param backCol
+/// @param alpha
 
 var xPos, yPos, height, pageNum, pageSize, pageIndex, sBarCol1, sBarCol2, backCol, alpha;
 xPos = argument0;			// The x position of the scrollbar on the screen
@@ -20,7 +21,7 @@ pageIndex = argument5;		// The current element number of the corresponding list
 sBarCol1 = argument6;		// The inner color of the scrollbar
 sBarCol2 = argument7;		// The scrollbar's outline color
 backCol = argument8;		// The color of the rectangle found behind the scrollbar
-alpha = draw_get_alpha();
+alpha = argument9;			// The alpha level for the scrollbar
 
 // Drawing the actual scrollbar
 if (pageIndex > pageSize){ // The fully dynamic scrollbar

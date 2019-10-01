@@ -13,7 +13,7 @@ dVspd = sign(vspd) * global.deltaTime;	// The exact vertical value in pixels the
 
 // Horizontal Collision
 repeat(round(abs(hspd))){
-	if (global.deltaTime > 1) {yMove = lengthdir_y(global.deltaTime, gravDir);}
+	if (global.deltaTime > 1.01) {yMove = lengthdir_y(global.deltaTime, gravDir);}
 	else {yMove = lengthdir_y(1, gravDir);}
 	if (onGround && useSlopes && !place_meeting(x + dHspd, y + yMove, par_block)){ // Moving down a slope
 		x += dHspd;

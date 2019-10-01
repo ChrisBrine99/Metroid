@@ -5,7 +5,5 @@ if (subMenu != noone){
 	with(subMenu){
 		// Drawing the background for the setting sub menu's description section
 		draw_rect_outline(xPos + xPosD - 4, yPos + yPosD - 4, global.camWidth, 33, c_gray, c_dkgray, c_black, alpha * 0.3, alpha);
-		// Drawing the scrollbar
-		draw_scrollbar(xPos - 12, yPos - 1, 92, firstDrawn[Y], numToDraw[Y], numRows, c_white, c_gray, c_dkgray);
 	}
 }

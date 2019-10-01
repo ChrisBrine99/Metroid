@@ -3,8 +3,7 @@
 
 #region Keyboard Input(s)
 
-var keyPause, keyDebug, keyDebug2;
-keyPause = keyboard_check_pressed(vk_escape);
+var keyDebug, keyDebug2;
 keyDebug = keyboard_check_pressed(ord("D"));
 keyDebug2 = keyboard_check(vk_lcontrol);
 
@@ -45,11 +44,7 @@ if (song != -1){
 
 #endregion
 
-#region Opening the Pause Menu/Debug Menu
-
-if (keyPause){
-	// TODO -- Create the Pause Menu here	
-}
+#region Opening the Debug Menu
 
 if (!global.debugMode){
 	// Opening a streamlined debug menu

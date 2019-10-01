@@ -35,8 +35,8 @@ if (alpha == 1){
 } else{ // Drawing an outline rectangle with a translucent center
 	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos, width, height, 0, rectCol, rectCol, rectCol2, rectCol2, alpha);	
 	// Drawing the border
-	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos - 1, yPos - 1, 1, height + 2, outlineCol, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);		// Left Outline Section
-	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos + width, yPos - 1, 1, height + 2, outlineCol, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha); // Right Outline Section
-	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos - 1, width + 1, 1, outlineCol, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);			// Upper Outline Section
-	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos + height, width + 1, 1, outlineCol, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);		// Bottom Outline Section
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos - 1, yPos - 1, 1, height + 2, 0, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);		// Left Outline Section
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos + width, yPos - 1, 1, height + 2, 0, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);	// Right Outline Section
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos - 1, width + 1, 1, 0, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);			// Upper Outline Section
+	draw_sprite_general(spr_generic_rectangle, 0, 0, 0, 1, 1, xPos, yPos + height, width + 1, 1, 0, outlineCol, outlineCol, outlineCol, outlineCol, outlineAlpha);		// Bottom Outline Section
 }

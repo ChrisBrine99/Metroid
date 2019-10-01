@@ -5,12 +5,6 @@
 scr_alpha_control_create();
 fadingIn = true;
 
-// Don't allow the Fade Transition to do its thing if the game is paused
-if (global.gameState == GAME_STATE.PAUSED){
-	instance_destroy(self);
-	return;
-}
-
 opaqueTime = 60;		// Time in frames that the fade is opaque for
 rectCol = c_black;		// The color of the fade-in rectangle
 effectID = noone;		// The instance ID of the Sprite Sweep effect

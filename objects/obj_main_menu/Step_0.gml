@@ -6,7 +6,10 @@
 event_inherited();
 if (!fadingIn || xOffset > 0){
 	xOffset = scr_update_value_delta(xOffset, (destX - xOffset) / 4);	
-	if (!fadingIn) {destX = -200;}
+	if (!fadingIn){
+		var selOption = selectedOption[X] * numColumns + selectedOption[Y];
+		if (selOption != 4 && selOption != 0) {destX = -200;}
+	}
 }
 
 #endregion
@@ -44,7 +47,6 @@ if (activeMenu){
 				with(obj_controller) {playMusic = false;}
 				break;
 			case 3: // Opening the Options Menu
-				activeMenu = false;
 				isClosing = true;
 				nextMenu = obj_settings_menu;
 				break;

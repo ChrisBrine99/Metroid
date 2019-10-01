@@ -43,5 +43,5 @@ if (oAlpha > 0){
 
 // Drawing the border's inner rectangle
 if (rectAlpha > 0){
-	draw_sprite_ext(spr_generic_rectangle, 0, 0, topBorderSize + 1, global.camWidth, global.camHeight - (topBorderSize + botBorderSize + 2), 0, oCol, oAlpha);
+	draw_sprite_ext(spr_generic_rectangle, 0, 0, topBorderSize + 1, global.camWidth, global.camHeight - (topBorderSize + botBorderSize + 2), 0, oCol, rectAlpha);
 }

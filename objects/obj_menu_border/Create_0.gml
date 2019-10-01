@@ -8,3 +8,7 @@ if (instance_number(obj_menu_border) > 1){
 
 // Enable the Alpha Control system on the menu border
 scr_alpha_control_create();
+
+// Variables that are unique to the menu border
+rectAlpha = 0;
+rectCol = c_white;

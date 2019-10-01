@@ -1183,6 +1183,14 @@
             }
         },
         {
+            "Key": "5ef24d69-0b3d-4576-bda3-b136f3fa68f5",
+            "Value": {
+                "id": "248e98de-c49b-4887-9ce1-3f367aa057a7",
+                "resourcePath": "scripts\\scr_unload_game\\scr_unload_game.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "5fae7b38-74f3-40b2-b1d0-6931dda5a49e",
             "Value": {
                 "id": "913114b6-c8c3-4687-8cdf-6c51922df58d",
@@ -3204,7 +3212,8 @@
         "2e9bd2d9-53bc-4903-81c5-fb9dac6fb733",
         "cbfbb5bd-181b-4d95-9d5e-4726a0acde8e",
         "ecfd3552-bc54-479f-a653-c5436aff3f34",
-        "5b298d14-4149-46b0-bc05-0566a11ab645"
+        "5b298d14-4149-46b0-bc05-0566a11ab645",
+        "5ef24d69-0b3d-4576-bda3-b136f3fa68f5"
     ],
     "tutorial": ""
 }

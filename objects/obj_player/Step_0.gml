@@ -3,7 +3,7 @@
 
 #region Keyboard Input
 
-var keyRight, keyLeft, keyJump, keyStopJump, keyUp, keyDown, keyShoot, keyQuickMenu;
+var keyRight, keyLeft, keyJump, keyStopJump, keyUp, keyDown, keyShoot, keyQuickMenu, keyPause;
 keyRight = keyboard_check(global.gKey[KEY.GAME_RIGHT]);				
 keyLeft = keyboard_check(global.gKey[KEY.GAME_LEFT]);					
 keyJump = keyboard_check_pressed(global.gKey[KEY.JUMP]);			
@@ -12,6 +12,7 @@ keyUp = keyboard_check(global.gKey[KEY.GAME_UP]);
 keyDown = keyboard_check(global.gKey[KEY.GAME_DOWN]);					
 keyShoot = keyboard_check_pressed(global.gKey[KEY.USE_WEAPON]);		
 keyQuickMenu = keyboard_check(global.gKey[KEY.SWAP_WEAPON]);
+keyPause = keyboard_check_pressed(global.gKey[KEY.PAUSE_GAME]);
 
 #endregion
 
@@ -33,6 +34,20 @@ if (!hasStarted){
 // Stop the player from updating if they cannot move
 if (!canMove){
 	return;	
+}
+
+#endregion
+
+#region Opening the Pause Menu
+
+if (keyPause){
+	if (!instance_exists(obj_pause_menu)){
+		global.gameState = GAME_STATE.PAUSED;
+		instance_create_depth(0, 0, 5, obj_pause_menu);
+		// Make the HUD invisible
+		with(global.hudID) {isVisible = false;}
+	}
+	return;
 }
 
 #endregion
