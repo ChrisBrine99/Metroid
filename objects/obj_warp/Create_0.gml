@@ -10,3 +10,5 @@ fadeID = noone;			// Holds the instance ID for the warp's fade object when going
 targetX	= 0;			// The X posiiton that Samus will appear at in the next room.
 targetY	= 0;			// The Y position that Samus will appear at in the next room.
 targetRoom = noone;		// The Room that Samus will be warping to.
+mapMoveX = 0;			// How many cells to move the map in the x-position
+mapMoveY = 0;			// How many cells to move the map in the y-position

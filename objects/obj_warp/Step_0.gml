@@ -21,6 +21,9 @@ if (isWarping){
 				if (ambLight != noone) {ds_list_add(global.lightSources, ambLight);}
 				ds_list_add(global.entities, id);
 			}
+			// Moving the map to the correct position
+			global.mapPosX += mapMoveX;
+			global.mapPosY += mapMoveY;
 		}
 	}
 }

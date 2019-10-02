@@ -4,6 +4,7 @@
 if (exitingMenu){
 	instance_destroy(obj_menu_border);
 	global.gameState = GAME_STATE.IN_GAME;
+	with(obj_hud) {isVisible = true;}
 }
 
 // Call the parent object's destroy event

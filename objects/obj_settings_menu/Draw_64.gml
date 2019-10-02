@@ -54,6 +54,7 @@ if (subMenu != noone){
 			}
 			
 			// Drawing the option values to the screen
+			draw_set_alpha(alpha);
 			draw_set_halign(fa_right);
 			length = firstDrawn[Y] + numToDraw[Y];
 			if (selOption != 2){ // Drawing the options as text values
@@ -66,6 +67,7 @@ if (subMenu != noone){
 				}	
 			}
 			draw_set_halign(fa_left);
+			draw_set_alpha(1);
 			
 			// Drawing the scrollbar
 			draw_scrollbar(xPos - 12, yPos - 1, 92, firstDrawn[Y], numToDraw[Y], numRows, c_white, c_gray, c_dkgray, alpha);

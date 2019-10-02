@@ -24,7 +24,7 @@ if (event_type != ev_draw){
 }
 
 // Only draw the sprite if it is visible on the screen
-if (x >= global.camX - abs(x - bbox_right) && y >= global.camY - abs(y - bbox_top) && x <= global.camX + global.camWidth + abs(x - bbox_left) && y <= global.camY + global.camHeight + abs(y - bbox_bottom)){
+if (x >= global.camX - abs(x - bbox_right) && y >= global.camY - abs(y - bbox_bottom) && x <= global.camX + global.camWidth + abs(x - bbox_left) && y <= global.camY + global.camHeight + abs(y - bbox_top)){
 	draw_sprite_ext(sprite, floor(num), round(xPos), round(yPos), xScale, yScale, angle, c_white, 1);
 	global.numDrawn++;
 }

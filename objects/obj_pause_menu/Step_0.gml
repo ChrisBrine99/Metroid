@@ -37,11 +37,11 @@ if (transitionObj != noone){
 	var selOption = selectedOption[X] * numColumns + selectedOption[Y];
 	with(transitionObj){
 		if (alpha >= 1){
-			if (selOption == 5){
+			if (selOption == 4){
 				scr_unload_game();
 				room_goto(rm_main_menu);
 				opaqueTime = 1;
-				alphaChangeVal = 0.1;
+				alphaChangeVal = 0.06;
 				break;
 			}
 			instance_destroy(other);

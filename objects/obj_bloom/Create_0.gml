@@ -1,7 +1,7 @@
 /// @description Insert description here
 // You can write your code in this editor
 
-// Destroy if another camera already exists
+// Destroy if another bloom object already exists
 if (global.bloomID != noone){
 	if (global.bloomID.object_index == obj_bloom){
 		instance_destroy(self);	
