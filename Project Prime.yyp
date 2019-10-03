@@ -103,6 +103,14 @@
             }
         },
         {
+            "Key": "048d680a-7c99-4a91-910b-7157bac54652",
+            "Value": {
+                "id": "d8731997-6a8c-4fbc-9b1b-5c092718caf3",
+                "resourcePath": "scripts\\draw_map\\draw_map.yy",
+                "resourceType": "GMScript"
+            }
+        },
+        {
             "Key": "04990c32-8a54-4ffb-a3c7-e79ed0b2c649",
             "Value": {
                 "id": "6a160975-5670-46f8-9969-02c2268606c9",
@@ -2431,14 +2439,6 @@
             }
         },
         {
-            "Key": "c244f08c-b54a-402d-b2f0-73846b5cddad",
-            "Value": {
-                "id": "a7f0537d-1365-408e-86f9-6e476896ae2a",
-                "resourcePath": "scripts\\draw_map\\draw_map.yy",
-                "resourceType": "GMScript"
-            }
-        },
-        {
             "Key": "c2c4158b-f387-49a5-8938-ae6ffe8daff2",
             "Value": {
                 "id": "03070a51-59ab-42ae-85db-dc8bd81787ef",
@@ -3055,14 +3055,6 @@
             }
         },
         {
-            "Key": "ef4c7959-52fb-4252-9a1a-fd514ede10b7",
-            "Value": {
-                "id": "8ed0bf55-3654-43ef-ae08-9d417e53034e",
-                "resourcePath": "objects\\obj_map\\obj_map.yy",
-                "resourceType": "GMObject"
-            }
-        },
-        {
             "Key": "f1ecc24d-5e72-447b-97a9-82d24b8aece8",
             "Value": {
                 "id": "233c1599-5e2d-49e5-b79c-bd75282d69ec",
@@ -3251,7 +3243,7 @@
         "5ab9c4ac-0083-47de-a405-c1e04f68df22",
         "009c21cf-3231-4816-9fc7-fa7710881e93",
         "187fd23c-9922-4735-9008-776ecd3c54d9",
-        "c244f08c-b54a-402d-b2f0-73846b5cddad",
+        "048d680a-7c99-4a91-910b-7157bac54652",
         "ca859bcb-74ce-4587-bdf8-0b19cb0beb15",
         "64f328e8-8152-4809-9c6b-49c0e4f64605",
         "29421de3-8114-4570-800f-e5581ef2690d",

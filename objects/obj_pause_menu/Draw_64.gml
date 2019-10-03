@@ -24,6 +24,9 @@ draw_clear_alpha(c_white, 0);
 draw_set_alpha(alpha);
 
 if (alpha > 0){
+	// Draw the map onto the pause menu surface
+	draw_map(150, 40, global.mapPosX - 6, global.mapPosY - 6, 13, 13);
+
 	// The five options for the settings menu
 	draw_set_font(font_gui_small);
 	for (var i = 0; i < numRows; i++){

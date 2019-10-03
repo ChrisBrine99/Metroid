@@ -11,6 +11,9 @@ length = 0;
 global.curSong = -1;
 with(obj_controller) {playMusic = false;}
 
+// Create the map
+scr_map_create(256, 256, 5, 3);
+
 if (file_exists(filename)){ // Load the file if it exists
 	map = ds_map_secure_load(filename);
 	
@@ -55,7 +58,15 @@ if (file_exists(filename)){ // Load the file if it exists
 } else{ // Start the game from the beginning if no file exists
 	room_goto(rm_test0);								// TODO -- change this to the actual starting room
 	instance_create_depth(856, 316, 305, obj_player);	// TODO -- change coordinates to new positions after the room change
+	// The starting position of the player on the map
+	global.mapPosX = 11;
+	global.mapPosY = 3;
+	global.mapUncovered[# global.mapPosX, global.mapPosY] = true;
 }
+
+// Set the player to the correct cell within the room
+global.curRoomSector = [floor(obj_player.x / global.camWidth), floor(obj_player.y / global.camHeight)];
+global.prevRoomSector = global.curRoomSector;
 
 // Destroy the ds_map to prevent memory leaks
 ds_map_destroy(map);

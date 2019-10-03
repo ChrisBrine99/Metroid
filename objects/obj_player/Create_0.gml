@@ -110,6 +110,4 @@ alarm[0] = 1;
 with(obj_camera) {curObject = obj_player;}
 scr_camera_relock();
 
-instance_create_depth(0, 0, 10, obj_map);
-
 #endregion

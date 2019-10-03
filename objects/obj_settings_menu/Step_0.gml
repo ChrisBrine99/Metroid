@@ -175,7 +175,7 @@ if (activeMenu){
 				}
 				break;
 			case 1: // Opening the Audio Setting's Menu
-				subMenu = instance_create_depth(0, 0, depth - 1, obj_sub_menu);
+				subMenu = instance_create_depth(0, 0, depth, obj_sub_menu);
 				with(subMenu){
 					// Set the size of the menu
 					numRows = array_length_1d(global.oAudio);

@@ -6,6 +6,9 @@
 if (alpha > 0){
 	// Set the alpha of the HUD
 	draw_set_alpha(alpha);
+
+	// Drawing the mini-map
+	draw_map(278, 2, global.mapPosX - 2, global.mapPosY - 1, global.miniMapWidth, global.miniMapHeight);
 	
 	// Drawing Samus's information
 	draw_set_font(font_gui_large);

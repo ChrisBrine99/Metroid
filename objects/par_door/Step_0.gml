@@ -6,7 +6,7 @@ if (global.gameState == GAME_STATE.PAUSED){
 }
 
 if (open){
-	imgSpd = -1;
+	imgSpd = -0.75;
 	if (imgIndex < 1){
 		imgSpd = 0;
 		imgIndex = 0;
@@ -20,7 +20,7 @@ if (open){
 		soundHasPlayed = true;
 	}
 } else if (unlocked){
-	imgSpd = 1;
+	imgSpd = 0.75;
 	// Play the Door sound effect
 	if (!soundHasPlayed){
 		scr_play_sound(snd_door, 0, false, true);

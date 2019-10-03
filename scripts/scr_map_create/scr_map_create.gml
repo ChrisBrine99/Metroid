@@ -58,16 +58,16 @@ global.mapColor[# 5, 3] = c_blue;
 surface_free(mapSurf);
 
 // The size of the mini-map on the in-game HUD
-miniMapWidth = argument2;
-miniMapHeight = argument3;
+global.miniMapWidth = argument2;
+global.miniMapHeight = argument3;
 
-// The position of the player on the map
-global.mapPosX = 11;
-global.mapPosY = 3;
-global.mapUncovered[# global.mapPosX, global.mapPosY] = true;
+// The timer for the blinking player position
+global.blinkTimeMax = 30;
+global.blinkTime = global.blinkTimeMax;
+global.pRectCol = make_color_rgb(248, 216, 120);
+global.isVisible = false;
 
-curRoomSector = [0, 0];
-if (instance_exists(obj_player)){
-	curRoomSector = [floor(obj_player.x / global.camWidth), floor(obj_player.y / global.camHeight)];
-}
-prevRoomSector = curRoomSector;
+// The position of the player on the map and in the current room
+global.mapPosX = 0;
+global.mapPosY = 0;
+global.curRoomSector = [0, 0];
