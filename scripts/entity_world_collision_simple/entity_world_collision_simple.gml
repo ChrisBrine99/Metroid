@@ -13,15 +13,12 @@ function entity_world_collision_simple(_destroyOnCollide){
 	var _hspd = sign(hspd);
 	if (place_meeting(x + deltaHspd, y, par_block)){
 		// Move pixel-by-pixel until the wall is reached.
-		if (place_meeting(x + deltaHspd, y, par_block)){
-			// Move pixel-by-pixel until the wall is reached.
-			while(!place_meeting(x + _hspd, y, par_block)){
-				x += _hspd;
-			}
-			isDestroyed = _destroyOnCollide;
-			deltaHspd = 0;
-			hspd = 0;
+		while(!place_meeting(x + _hspd, y, par_block)){
+			x += _hspd;
 		}
+		isDestroyed = _destroyOnCollide;
+		deltaHspd = 0;
+		hspd = 0;
 	}
 	x += deltaHspd;
 

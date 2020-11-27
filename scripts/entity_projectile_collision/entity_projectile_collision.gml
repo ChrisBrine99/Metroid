@@ -28,12 +28,14 @@ function entity_projectile_collision(){
 				timeToRecover = recoveryTimer;
 				lastHitProjectile = _id;
 				isHit = true;
+				with(other){ // Destroy the projectile if necessary
+					isDestroyed = destroyOnEntityCollide;
+					if (isDestroyed){
+						break; // If the projectile has been destroyed, ignore all other potential collisions
+					}
+				}
 			}
 		}
-	}
-	// If an entity was hit in this frame, delete the projectile if it is destroyed upon collision with entities.
-	if (_length > 0){
-		isDestroyed = destroyOnEntityCollide;
 	}
 	ds_list_destroy(_entities);
 }
