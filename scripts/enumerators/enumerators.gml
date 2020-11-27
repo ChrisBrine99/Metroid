@@ -82,6 +82,6 @@ enum Weapon{
 	SuperMissile,
 	Bomb,
 	PowerBomb,
-	// All enemy projectiles can damage Samus, so only type is needed //
+	// All enemy projectiles can damage Samus, so only one type is needed //
 	Enemy,
 }

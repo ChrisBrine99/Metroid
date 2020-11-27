@@ -1,5 +1,0 @@
-function weapon_plasmabeam() {
-
-
-
-}
