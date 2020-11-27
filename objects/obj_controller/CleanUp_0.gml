@@ -1,4 +1,6 @@
-/// @description Clear the memory allocated by the ds_list
-// You can write your code in this editor
+/// @description Clean Up Data Structures/Camera
 
-ds_list_destroy(global.entities);
+ds_map_destroy(global.fontTextures);
+
+camera_destroy(cameraID);
+game_end();

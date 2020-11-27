@@ -1,138 +1,23 @@
-/// @description Menu Input Control
-// You can write your code in this editor
+/// @description Handling Transition/State Code
 
-#region Keyboard Input
+// If the game state isn't currently set to InMenu, delete the menu(s)
+if (global.gameState == GameState.InGame){
+	instance_destroy(self, false); // Destroy event will not be performed for this case
+}
 
-var keyRight, keyLeft, keyUp, keyDown, keySelect, keyReturn;
-keyRight = keyboard_check(global.mKey[KEY.MENU_RIGHT]);
-keyLeft = keyboard_check(global.mKey[KEY.MENU_LEFT]);
-keyUp = keyboard_check(global.mKey[KEY.MENU_UP]);
-keyDown = keyboard_check(global.mKey[KEY.MENU_DOWN]);
-keySelect = keyboard_check_pressed(global.mKey[KEY.SELECT]);
-keyReturn = keyboard_check_pressed(global.mKey[KEY.RETURN]);
-
-#endregion
-
-#region Updating the Menu's Current Alpha level
-
-scr_alpha_control_update();
-
-if (alpha >= 1){activeMenu = true;}
-else {activeMenu = false;}
-
-// Don't allow the menu to function until the alpha is at 1
-if (!activeMenu){
+// Handling the existing state if one is currently being executed
+if (transition != -1){
+	// Don't perform transition if transitionArgs is no longer an array
+	if (!is_array(transitionArgs)){
+		transition = -1;
+		return;
+	}
+	// Keeps the transition executing until an end case is triggered by the script itself
+	transition = script_execute(transition, transitionArgs);
 	return;
 }
 
-#endregion
-
-#region Movings Between Menu Elements
-
-if (selectedOption[X] == -1 && selectedOption[Y] == -1){
-	if (keyRight || keyLeft || keyUp || keyDown){
-		holdTimer = scr_update_value_delta(holdTimer, -1);
-		if (holdTimer <= 0){
-			if (keyDown && !keyUp){ // Moving down through the menu
-				curOption[Y]++; 
-				// Shifting the visible portion of the menu downward
-				if (curOption[Y] > firstDrawn[Y] + ceil(numToDraw[Y] / 2) && firstDrawn[Y] < numRows - numToDraw[Y]){
-					firstDrawn[Y]++;	
-				}
-				// Loop around to the top of the menu
-				if (curOption[Y] > numRows - 1){
-					curOption[Y] = 0;
-					firstDrawn[Y] = 0;
-				}
-			} else if (keyUp && !keyDown){ // Moving up through the menu
-				curOption[Y]--;
-				// Shifting the visible portion of the menu upward
-				if (curOption[Y] < firstDrawn[Y] + floor(numToDraw[Y] / 2) - 1 && firstDrawn[Y] > 0){
-					firstDrawn[Y]--;
-				}
-				// Loop back to the bottom of the menu
-				if (curOption[Y] < 0){
-					curOption[Y] = numRows - 1;	
-					firstDrawn[Y] = numRows - numToDraw[Y];
-					if (firstDrawn[Y] < 0) {firstDrawn[Y] = 0;}
-				}
-			}
-			if (keyRight && !keyLeft){ // Move to the right in the menu
-				curOption[X]++;
-				// Shifting the visible portion of the menu to the right
-				if (curOption[X] > firstDrawn[X] + ceil(numToDraw[X] / 2) && firstDrawn[X] < numColumns - numToDraw[X]){
-					firstDrawn[X]++;	
-				}
-				// Looping back to the leftmost element in the menu
-				if (curOption[X] > numColumns - 1){
-					curOption[X] = 0;
-					firstDrawn[X] = 0;
-				}
-			} else if (keyLeft && !keyRight){ // Move to the left in the menu
-				curOption[X]--;
-				// Shifting the visible portion of the menu upward
-				if (curOption[X] < firstDrawn[X] + floor(numToDraw[X] / 2) - 1 && firstDrawn[X] > 0){
-					firstDrawn[X]--;
-				}
-				// Looping around to the rightmost element in the menu
-				if (curOption[X] < 0){
-					curOption[X] = numColumns - 1;	
-					firstDrawn[X] = numColumns - numToDraw[X];
-					if (firstDrawn[X] < 0) {firstDrawn[X] = 0;}
-				}
-			}
-			// Play the menu move sound effect
-			if (switchSound != -1){
-				var result;
-				result = keyRight - keyLeft;
-				if (result != 0){ // Play for moving left or right through a menu
-					if (numColumns > 1) {scr_play_sound(switchSound, 0, false, true);}
-				}
-				result = keyDown - keyUp;
-				if (result != 0){ // Play for moving up or down through a menu
-					if (numRows > 1) {scr_play_sound(switchSound, 0, false, true);}	
-				}
-			}
-			// Reset the timer
-			if (autoScroll == 0){
-				autoScroll = 1;
-				holdTimer = timeToAuto;
-			} else{
-				autoScroll = 2;
-				holdTimer = shiftTimer;
-			}
-		}
-	} else{
-		autoScroll = 0;
-		holdTimer = 0;
-	}
-	
-	// Selecting a menu option (If it is enabled)
-	if (keySelect){
-		if (canUseSelect){
-			if (selectSound != -1){
-				scr_play_sound(selectSound, 0, false, true);	
-			}
-			selectedOption[X] = curOption[X];
-			selectedOption[Y] = curOption[Y];
-			// Play the menu select sound effect
-			if (selectSound != -1){
-				scr_play_sound(selectSound, 0, false, true);
-			}
-		}
-	}
-
-	// Return to a previous menu/closing the menu (If it is enabled)
-	if (keyReturn){ 
-		if (canUseReturn){
-			fadingIn = false;
-			isClosing = false;
-			// Play the menu return sound effect
-			if (closeSound != -1){
-				scr_play_sound(closeSound, 0, false, true);
-			}
-		}
-	}
+// Execute the menu's given state's code if is set to a script index
+if (curState != -1){
+	script_execute(curState);
 }
-
-#endregion

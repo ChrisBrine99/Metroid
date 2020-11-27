@@ -1,55 +1,77 @@
-/// @description Setting up all the required variables for the game.
-// You can write your code in this editor
+/// @description Variable Initialization
 
-// Some helpful global variables for identical values that are referenced in multiple places
-global.totalItems = 137;		// The total number of items (Ex. Morphball/Bombs/Missile Tanks) in the game
-global.totalLockedDoors = 50;	// The total number of locked doors (Ex. Missile/Power Bomb Doors) in the game
+#region SINGLETON CHECK
 
-// Calculate Delta Timing
-global.targetFrameRate = 60;
-global.deltaTime = get_delta_time();
+if (global.controllerID != noone){
+	if (global.controllerID.object_index == object_index){
+		instance_destroy(self);
+		return;
+	}
+	instance_destroy(global.controllerID);
+}
+global.controllerID = id;
 
-// The array that holds all of the main powerups in the game
-global.item = array_create(global.totalItems, false);
+#endregion
 
-// The total amount of items is calculated as follows:
-//		
-//		Energy Tanks			--	 12	+
-//		Missile Tanks			--	 50	+
-//		Super Missile Tanks		--	 25	+
-//		Power Bomb Tanks		--	 25	+
-//		Beam Upgrades			--	  5	+		(Ice / Wave / Spazer / Plasma / Charge Beams)
-//		Suit Upgrades			--	  2 +		(Varia / Gravity Suits)
-//		Jump Upgrades			--	  3	+		(Hi-Jump / Space Jump / Screw Attack)
-//		Morphball Upgrades		--	  3 +		(Morphball / Bombs / Spring Ball)
-//									-----
-//					Total Items	--	126
-//
+#region EDITING INHERITED VARIABLES
 
-// The array that holds all of the locked doors in the game (Missile Doors, Power Bomb Doors, etc.)
-global.door = array_create(global.totalLockedDoors, false);
+image_speed = 0;
+image_index = 0;
+visible = true;
 
-// Global variables to holds the instance IDs for ALL PERSISTENT OBJECTS
-global.cameraID = noone;		// ID for the camera
-global.hudID = noone;			// ID for the in-game Heads-Up Display
-global.playerID = noone;		// ID for the player object (Samus)
-global.bloomID = noone;			// ID for the object that handles the bloom shader calculations
-global.lightingID = noone;		// ID for the object that controls the in-game lighting system
+#endregion
 
-// Variables for the current background song that is playing
-curSong = -1;
-song = -1;
-fadingOut = false;
-playMusic = !global.oAudio[6];
-totalLength = 0;
-fadeTime = 600;		// NOTE -- This time is in milliseconds AKA 1000 = 1 second
-// Unseen Here Are:
-//		global.curSong	--	The current song that is playing in the background.
-//		global.offset	--	The amount of time in seconds to start from when looping a song.
+#region UNIQUE VARIABLE INITIALIZATION
 
-// Variables for the Debug Mode
-global.debugMode = false;
-global.godMode = false;
-global.entities = ds_list_create();
-global.numDrawn = 0;
-showStreamlinedDebug = false;
+// VARIABLES FOR DRAWING TO THE IN-GAME HUD ////////////////////////////////////////
+
+// Holds the index for the shader used for outlining text/other HUD elements
+outlineShader = shd_outline;
+// Getting the uniforms for the shader; storing them in local variables
+sPixelWidth = shader_get_uniform(outlineShader, "pixelWidth");
+sPixelHeight = shader_get_uniform(outlineShader, "pixelHeight");
+sOutlineColor = shader_get_uniform(outlineShader, "outlineColor");
+sDrawOutline = shader_get_uniform(outlineShader, "drawOutline");
+
+////////////////////////////////////////////////////////////////////////////////////
+
+// VARIABLES FOR THE CAMERA ////////////////////////////////////////////////////////
+
+// Store the created camera's ID for easy reference.
+cameraID = -1;
+
+// Holds the target position to move to whenever the camera is unlocked and not following an object.
+// The fraction holds the values for the movement until it surpasses one, which will then add/subtract
+// a value of one to current camera position. The move speed determines how fast it will reach that position.
+targetPosition = [0, 0];
+targetFraction = [0, 0];
+moveSpeed = 0.25;
+
+// Holds the instance ID for the object being followed by the camera. The deadzone radius is the distance
+// from the center of the screen that the camera won't snap the the followed object's position.
+curObject = noone;
+deadZoneRadius = 8;
+
+// Variables that are involved in handling the screen's shaking effect. The first variable is a 2D vector 
+// that holds the center offset for the camera's shake. This is required due to the "dead-zone" in the center 
+// of the screen where the player can move, but the camera doesn't follow them. Moving on, the strength is 
+// the  magnitude of the shake as ssoon as it starts. The length is how much time is left in the shake. The 
+// length is how many seconds the shake will occur for. Finally, the remain holds the remaining shake relative 
+// to the initial magnitude and 0.
+shakeCenter = [0, 0];
+shakeStrength = 0;
+shakeLength = 0;
+shakeMagnitude = 0;
+
+// A flag that is set to true to move the camera to the newly set object's position without snapping.
+newObjectSet = false;
+
+// After initializing all camera variables, create the camera with default aspect ratio/scale.
+create_camera(4);
+
+////////////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+// FOR TESTING
+showDebugInfo = false;
