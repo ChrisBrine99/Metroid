@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spr_block_destru",
-    "path": "sprites/spr_block_destru/spr_block_destru.yy",
+    "name": "spr_dblock_item_ball",
+    "path": "sprites/spr_dblock_item_ball/spr_dblock_item_ball.yy",
   },
   "solid": false,
   "visible": true,
@@ -24,7 +24,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"obj_destructible_block_all","path":"objects/obj_destructible_block_all/obj_destructible_block_all.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"obj_dblock_item_ball","path":"objects/obj_dblock_item_ball/obj_dblock_item_ball.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -33,7 +33,7 @@
     "path": "folders/Objects/Collision/Walls_Floors.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_destructible_block_all",
+  "name": "obj_dblock_item_ball",
   "tags": [],
   "resourceType": "GMObject",
 }

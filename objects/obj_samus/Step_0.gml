@@ -66,7 +66,7 @@ if (keyWeapon && canUseWeapon){
 // Counting down the shooting flag reset timer
 if (isShooting){
 	shootTimer += global.deltaTime;
-	if (shootTimer > 15){
+	if (shootTimer >= 20){
 		isShooting = false;
 		shootTimer = 0;
 	}

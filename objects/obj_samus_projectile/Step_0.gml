@@ -7,7 +7,8 @@ event_inherited();
 // state-based like a normal entity.
 var _id = entity_world_collision_simple(destroyOnWallCollide);
 with(_id){ // Executes only if a valid ID is returned
-	if (object_is_ancestor(_id.object_index, par_block) && ds_list_find_index(projectileWeakness, other.projectileType) != -1){
-		mask_index = spr_empty;
+	var _isAffected = (ds_list_find_index(projectileWeakness, Weapon.All) != -1 || ds_list_find_index(projectileWeakness, other.projectileType) != -1);
+	if (object_is_ancestor(_id.object_index, par_block) && _isAffected){
+		isInactive = true;
 	}
 }

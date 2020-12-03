@@ -73,6 +73,7 @@ enum Items{
 
 enum Weapon{
 	// Weapons that can damage the enemy if found in their weakness list //
+	All,			// All means every one of Samus's weapons will damage the entity
 	PowerBeam,
 	IceBeam,
 	WaveBeam,
@@ -82,6 +83,7 @@ enum Weapon{
 	SuperMissile,
 	Bomb,
 	PowerBomb,
+	ScrewAttack,
 	// All enemy projectiles can damage Samus, so only one type is needed //
 	Enemy,
 }
