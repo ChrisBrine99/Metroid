@@ -44,6 +44,8 @@ function update_position(_inputDirection, _instantVelocity) {
 			hspd = 0;
 		}
 	}
+	// Finally, remove fractional values from the calculated delta values for horizontal and vertical velocity
+	remove_movement_fractions();
 }
 
 /// @description Updates the position of an entity that is classified as a projectile. (Ex. They are children of
@@ -73,6 +75,8 @@ function update_position_projectile(){
 			vspd = maxVspd * inputDirection[Y];
 		}
 	}
+	// Finally, remove fractional values from the calculated delta values for horizontal and vertical velocity
+	remove_movement_fractions();
 }
 
 /// @description Sets the entity's horizontal acceleration and the strength of gravity on them.

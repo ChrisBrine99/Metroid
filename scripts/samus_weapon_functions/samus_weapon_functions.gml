@@ -8,9 +8,20 @@
 /// @param yOffset
 function weapon_powerbeam(_xOffset, _yOffset){
 	var _aimDirection = aimDirection;
-	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_power_beam)){
+	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
+		sprite_index = spr_power_beam;
+		// Determines the direction and velocity for the projectile
 		image_index = (_aimDirection == AIM_UPWARD || _aimDirection == AIM_DOWNWARD);
 		inputDirection = samus_get_aim_direction(_aimDirection, other.image_xscale);
+		// Set the maximum speeds both axes
+		set_max_move_speed(9, 9, true);
+		// Set the damage of the power beam
+		damage = 1;
+		// The power beam will be destroyed by both entities and walls
+		destroyOnWallCollide = true;
+		destroyOnEntityCollide = true;
+		// Finally, this projectile was fired by Samus, so it won't hurt her
+		projectileType = Weapon.PowerBeam;
 	}
 }
 

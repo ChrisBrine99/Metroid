@@ -6,6 +6,10 @@
 /// @description Removes and stores away the decimal values for the entity's current hspd and vspd. This ensures 
 /// that the entity will never move on a sub-pixel basis, which makes collision a lot more simplified.
 function remove_movement_fractions(){
+	// Calculate the amount the entity should move relative to the current frame; store any fractional values.
+	deltaHspd = hspd * global.deltaTime;
+	deltaVspd = vspd * global.deltaTime;
+	
 	if (hspd == 0){
 		hspdFraction = 0;
 	}
@@ -43,8 +47,8 @@ function sprite_update(_spriteIndex, _resetImageIndex, _transitionSprite, _trans
 	curFrame = _resetImageIndex ? 0 : curFrame;
 	// Optional arguments for a sprite transition between two different images. Allows for smoother looking 
 	// changes in certain sprites. (Ex. entering/exiting morphball)
-	transitionSprite = !is_undefined(_transitionSprite) && sprite_exists(_transitionSprite) ? _transitionSprite : -1;
-	transitionSpeed = !is_undefined(_transitionSpeed) ? _transitionSpeed : 0;
+	transitionSprite = !argument_count >= 3 && sprite_exists(_transitionSprite) ? _transitionSprite : -1;
+	transitionSpeed = !argument_count >= 4 ? _transitionSpeed : 0;
 	transitionNumber = transitionSprite != -1 ? sprite_get_number(transitionSprite) : 0;
 }
 

@@ -1,13 +1,13 @@
 {
   "spriteId": {
-    "name": "spr_block_destructible",
-    "path": "sprites/spr_block_destructible/spr_block_destructible.yy",
+    "name": "spr_block_destru",
+    "path": "sprites/spr_block_destru/spr_block_destru.yy",
   },
   "solid": false,
   "visible": true,
   "spriteMaskId": {
-    "name": "spr_block_destructible",
-    "path": "sprites/spr_block_destructible/spr_block_destructible.yy",
+    "name": "spr_block_destru",
+    "path": "sprites/spr_block_destru/spr_block_destru.yy",
   },
   "persistent": false,
   "parentObjectId": {

@@ -7,11 +7,8 @@
 /// if that flag is set.
 /// @param destroyOnCollide
 function entity_world_collision_simple(_destroyOnCollide){
-	// Calculate the amount the entity should move relative to the current frame; store any fractional values.
-	deltaHspd = hspd * global.deltaTime;
-	deltaVspd = vspd * global.deltaTime;
-	remove_movement_fractions();
-
+	var _collidedID = noone;
+	
 	// Horizontal collision
 	var _hspd = sign(hspd);
 	if (place_meeting(x + deltaHspd, y, par_block)){
@@ -19,6 +16,7 @@ function entity_world_collision_simple(_destroyOnCollide){
 		while(!place_meeting(x + _hspd, y, par_block)){
 			x += _hspd;
 		}
+		_collidedID = instance_place(x + _hspd, y, par_block);
 		isDestroyed = _destroyOnCollide;
 		deltaHspd = 0;
 		hspd = 0;
@@ -32,22 +30,20 @@ function entity_world_collision_simple(_destroyOnCollide){
 		while(!place_meeting(x, y + _vspd, par_block)){
 			y += _vspd;
 		}
+		_collidedID = instance_place(x, y + _vspd, par_block);
 		isDestroyed = _destroyOnCollide;
 		deltaVspd = 0;
 		vspd = 0;
 	}
 	y += deltaVspd;
+	
+	return _collidedID;
 }
 
 /// @description Updates positions and checks for any collisions at said position. If there is a collision, 
 /// movement is pixel-by-pixel until there is no space between the wall and entity.
 /// @param destroyOnCollide
 function entity_world_collision_complex(_destroyOnCollide) {
-	// Calculate the amount the entity should move relative to the current frame; store any fractional values.
-	deltaHspd = hspd * global.deltaTime;
-	deltaVspd = vspd * global.deltaTime;
-	remove_movement_fractions();
-
 	// Horizontal collision
 	var _hspd = sign(hspd);
 	if (place_meeting(x + deltaHspd, y, par_block)){

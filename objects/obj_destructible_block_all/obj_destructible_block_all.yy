@@ -1,14 +1,11 @@
 {
   "spriteId": {
-    "name": "spr_block_destructible",
-    "path": "sprites/spr_block_destructible/spr_block_destructible.yy",
+    "name": "spr_block_destru",
+    "path": "sprites/spr_block_destru/spr_block_destru.yy",
   },
   "solid": false,
   "visible": true,
-  "spriteMaskId": {
-    "name": "spr_block_destructible",
-    "path": "sprites/spr_block_destructible/spr_block_destructible.yy",
-  },
+  "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
     "name": "par_block",
@@ -17,7 +14,7 @@
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
-  "physicsGroup": 0,
+  "physicsGroup": 1,
   "physicsDensity": 0.5,
   "physicsRestitution": 0.1,
   "physicsLinearDamping": 0.1,
@@ -26,7 +23,9 @@
   "physicsStartAwake": true,
   "physicsKinematic": false,
   "physicsShapePoints": [],
-  "eventList": [],
+  "eventList": [
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"obj_destructible_block_all","path":"objects/obj_destructible_block_all/obj_destructible_block_all.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+  ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
@@ -34,7 +33,7 @@
     "path": "folders/Objects/Collision/Walls_Floors.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_block_destructible",
+  "name": "obj_destructible_block_all",
   "tags": [],
   "resourceType": "GMObject",
 }
