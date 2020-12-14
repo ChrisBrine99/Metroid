@@ -13,6 +13,11 @@ if (curState != -1){
 	script_execute(curState);
 }
 
+// Ignore any collisions the flag is toggled
+if (ignoreCollision){
+	return;
+}
+
 // First, check for collision between the projectile and any entities it may hit inbetween its current position
 // and the position it will be in at the start of the next frame.
 entity_projectile_collision();

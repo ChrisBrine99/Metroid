@@ -5,7 +5,7 @@ if (isInactive){
 	if (mask_index != spr_empty){
 		if (createDestroyEffect){ // An optional destroy effect for the destructible block
 			var _effect = instance_create_depth(x, y, depth - 1, obj_dblock_destroyed);
-			_effect.imgSpeedMod = 0.5;
+			_effect.imgSpeedMod = 0.35;
 		}
 		mask_index = spr_empty;
 		visible = false;
@@ -22,7 +22,7 @@ if (isInactive){
 			with(_effect){
 				image_index = sprite_get_number(sprite_index) - 1;
 				parentBlock = other.id;
-				imgSpeedMod = -0.5;
+				imgSpeedMod = -0.35;
 			}
 		}
 	} else{ // Delete the instance of the block itself

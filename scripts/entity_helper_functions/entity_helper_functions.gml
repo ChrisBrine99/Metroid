@@ -47,8 +47,8 @@ function sprite_update(_spriteIndex, _resetImageIndex, _transitionSprite, _trans
 	curFrame = _resetImageIndex ? 0 : curFrame;
 	// Optional arguments for a sprite transition between two different images. Allows for smoother looking 
 	// changes in certain sprites. (Ex. entering/exiting morphball)
-	transitionSprite = !argument_count >= 3 && sprite_exists(_transitionSprite) ? _transitionSprite : -1;
-	transitionSpeed = !argument_count >= 4 ? _transitionSpeed : 0;
+	transitionSprite = !is_undefined(_transitionSprite) && sprite_exists(_transitionSprite) ? _transitionSprite : -1;
+	transitionSpeed = !is_undefined(_transitionSpeed) ? _transitionSpeed : 0;
 	transitionNumber = transitionSprite != -1 ? sprite_get_number(transitionSprite) : 0;
 }
 

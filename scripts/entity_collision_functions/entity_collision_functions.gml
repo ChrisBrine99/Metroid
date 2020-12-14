@@ -94,6 +94,20 @@ function entity_world_collision_complex(_destroyOnCollide) {
 	y += deltaVspd;
 }
 
+/// @descrition Handles collision between an entity (MOST LIKELY A PROJECTILE) and the world, but it doesn't
+/// actually need a pixel perfect collision. Instead, it's more like how entity_projectile_collision is handled,
+/// but with the added effect of moving the entity AND checking for collision in that way.
+function entity_world_collision_passthrough(){
+	var _blocks = ds_list_create();
+	collision_line_list(x, y, x + deltaHspd, y + deltaVspd, par_block, false, true, _blocks, false);
+	
+	// Finally, move the entity to their next position
+	x += deltaHspd;
+	y += deltaVspd;
+	
+	return _blocks;
+}
+
 /// @description Handles collision between a par_entity child object and any par_projectile child object.
 function entity_projectile_collision(){
 	var _entities, _projectileType, _damage, _id;

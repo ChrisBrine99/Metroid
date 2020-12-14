@@ -41,6 +41,11 @@ function state_samus_default() {
 			accel /= 3; // Cut Samus's acceleration while airbourne
 		}
 	}
+	
+	// Firing a projectile from Samus's arm cannon
+	if (keyWeapon){
+		samus_use_arm_cannon(canUseWeapon);
+	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
 	update_position(inputDirection, true);
@@ -104,6 +109,11 @@ function state_samus_crouch() {
 		standTimer = 0;
 		return;
 	}
+	
+	// Firing a projectile from Samus's arm cannon
+	if (keyWeapon){
+		samus_use_arm_cannon(canUseWeapon);
+	}
 
 	// Animate based on what Samus is currently doing right now, relative to this state
 	sprite_update(sprCrouchFwd, false);
@@ -132,6 +142,11 @@ function state_samus_morphball(){
 	if (keyJumpStart && isGrounded){
 		vspdFraction = 0;
 		vspd = jumpSpeedMorph;
+	}
+	
+	// Deploying a bomb/powerbomb
+	if (keyWeapon){
+		samus_deploy_bomb(canUseWeapon);
 	}
 
 	// Update Samus's position relative to her current hspd and vspd values, but keep track of her initial vspd
@@ -168,6 +183,11 @@ function state_samus_jump(){
 
 	// Set Samus's current direction based on keyboard input
 	inputDirection = keyRight - keyLeft;
+	
+	// Firing a projectile from Samus's arm cannon
+	if (keyWeapon){
+		samus_use_arm_cannon(canUseWeapon);
+	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
 	update_position(inputDirection, false); // False will make it harder to turn while spinning in the air
@@ -209,6 +229,11 @@ function state_samus_jumpspin(){
 	var _inputDirection = keyRight - keyLeft;
 	if (_inputDirection != 0){ // Only update the movement direction when a direction is being pressed
 		inputDirection = keyRight - keyLeft;
+	}
+	
+	// Firing a projectile from Samus's arm cannon
+	if (keyWeapon){
+		samus_use_arm_cannon(canUseWeapon);
 	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.

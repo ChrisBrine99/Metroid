@@ -2,6 +2,52 @@
 /// the power, wave, ice, spazer, and plasma beams; the missile and super missile launcher; the bombs and
 /// power bombs.
 
+/// @description The function that is called whenever Samus fires a projectile out of her arm cannon. This
+/// means that code for dropping a bomb is handled outside of this function.
+function samus_use_arm_cannon(_canUseWeapon){
+	// The weapon cannot be used in the current state OR an invalid script is set, exit the function early.
+	if (!_canUseWeapon || ds_list_find_value(cannonScripts, curBeam) == undefined){
+		return;
+	}
+	// Changes the animation for Samus's forward walk for the duration of this flag being set to true.
+	// Also, stops her from somersaulting in mid-air.
+	isShooting = true;
+	shootTimer = 0;
+	// Don't try creating a weapon projectile if no script exists to create it.
+	var _weaponOffset = [0, 0];
+	if (isGrounded){ // The weapon spawn offset when Samus is on the ground
+		if (curState == state_samus_crouch){
+			_weaponOffset[X] = 11;
+			_weaponOffset[Y] = 7;
+		} else{
+			if (hspd > -1 && hspd < 1){ // Samus is standing still; aiming forward or upward, respectively.
+				var _offsets = [12, -3, 3, -22];
+				_weaponOffset[X] = _offsets[aimDirection * 2];
+				_weaponOffset[Y] = _offsets[(aimDirection * 2) + 1];
+			} else{ // Samus is walking; aiming forward or upward, respectively.
+				var _offsets = [17, -7, 17, -6, 17, -7, 4, -23, 4, -22, 4, -23];
+				_weaponOffset[X] = _offsets[(aimDirection * 6) + (floor(curFrame) * 2)];
+				_weaponOffset[Y] = _offsets[(aimDirection * 6) + (floor(curFrame) * 2) + 1];
+			}
+		}
+	} else{ // The weapon spawn offset whenever Samus is airbourne
+		var _offsets = [13, -1, 4, -22, 5, 9];
+		_weaponOffset[X] = _offsets[aimDirection * 2];
+		_weaponOffset[Y] = _offsets[(aimDirection * 2) + 1];
+	}
+	// Spawn the weapon using its associated script at the given offset
+	script_execute(cannonScripts[| curBeam], _weaponOffset[X], _weaponOffset[Y]);
+}
+
+function samus_deploy_bomb(_canUseWeapon){
+	// The weapon cannot be used in the current state OR an invalid script is set, exit the function early.
+	if (!_canUseWeapon || ds_list_find_value(bombScripts, curBomb) == undefined){
+		return;
+	}
+	// No offsets are calculated for deploying bombs, just call its script
+	script_execute(bombScripts[| curBomb], 0, 12);
+}
+
 /// @description The function that calls whenever the player presses the shoot button and has the powerbeam
 /// currently equipped. It fires a single low-damage projectile out of the arm cannon.
 /// @param xOffset
@@ -11,15 +57,15 @@ function weapon_powerbeam(_xOffset, _yOffset){
 	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
 		sprite_index = spr_power_beam;
 		// Determines the direction and velocity for the projectile
-		image_index = (_aimDirection == AIM_UPWARD || _aimDirection == AIM_DOWNWARD);
+		curFrame = (_aimDirection == AIM_UPWARD || _aimDirection == AIM_DOWNWARD);
 		inputDirection = samus_get_aim_direction(_aimDirection, other.image_xscale);
 		// Set the maximum speeds both axes
 		set_max_move_speed(9, 9, true);
 		// Set the damage of the power beam
 		damage = 1;
-		// The power beam will be destroyed by both entities and walls
-		destroyOnWallCollide = true;
+		// The power beam will be destroyed by entities AND walls
 		destroyOnEntityCollide = true;
+		destroyOnWallCollide = true;
 		// Finally, this projectile was fired by Samus, so it won't hurt her
 		projectileType = Weapon.PowerBeam;
 	}
@@ -82,12 +128,35 @@ function weapon_super_missile(_xOffset, _yOffset){
 
 /// @description The function that is called whenever the player presses the shoot button while Samus is in 
 /// morphball mode AND she has the standard bombs equipped. It sets a single, low-damage bomb that explodes
-/// after around half a seonc to one second of real-time. It can be used to destroy certain destructible
+/// after around half a second to one second of real-time. It can be used to destroy certain destructible
 /// blocks AND can also launch Samus into the air while she's in her morphball mode.
 /// @param xOffset
 /// @param yOffset
 function weapon_bomb(_xOffset, _yOffset){
-	
+	// Before deploying a bomb, check if there are less than 3 currently in existence
+	var _numBombs = 0;
+	with(obj_samus_projectile){
+		_numBombs += (projectileType == Weapon.Bomb);
+		if (_numBombs >= 3){
+			return;
+		}
+	}
+	// If less than three standard bombs currently exists, spawn another one
+	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
+		sprite_index = spr_bomb;
+		// Bombs detonate after a short period of time; set their lifespan accordingly
+		lifespan = 90;
+		collideEffect = noone; // TODO -- Change to Explosion Effect for Bomb
+		// Set the damage of the bomb
+		damage = 2;
+		// Finally, enable the bomb to animate
+		projectileAnimates = true;
+		spriteSpeed = sprite_get_speed(sprite_index);
+		spriteNumber = sprite_get_number(sprite_index);
+		// Finally, set the type of the projectile to a bomb and disable any collision checks
+		projectileType = Weapon.Bomb;
+		ignoreCollision = true;
+	}
 }
 
 /// @description The function that calls whenever the player presses the shoot button while Samus is in

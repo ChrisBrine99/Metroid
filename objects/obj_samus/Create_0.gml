@@ -94,8 +94,14 @@ canUseWeapon = true;
 isShooting = false;
 shootTimer = 0;
 
-// Stores the script that will be called when the player uses their weapon (Beam, Missile, or Bomb)
-weaponScript = weapon_powerbeam;
+// Stores the scripts that will be called when the player uses their weapon (Beam, Missile, or Bomb). Below
+// that are the current indices for the equipped weapon/bomb.
+cannonScripts = ds_list_create();
+ds_list_add(cannonScripts, weapon_powerbeam);
+bombScripts = ds_list_create();
+ds_list_add(bombScripts, weapon_bomb);
+curBeam = 0;
+curBomb = 0;
 
 // A timer that keeps track of the "frames" that a directional key (keyRight or keyLeft) is held while Samus
 // is in her crouching state. After that timer hits 10, (10 = 1/6th of a second) SAmus will return to her

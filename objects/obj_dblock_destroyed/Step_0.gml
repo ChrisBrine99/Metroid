@@ -10,11 +10,15 @@ if (imgSpeedMod > 0 && floor(image_index) >= sprite_get_number(sprite_index) - 1
 			mask_index = sprite_index;
 			visible = true;
 		}
+		// After the check, always destroy the effect
+		instance_destroy(self);
 	} else{ // Resets the block's inactive timer if an entity is obstructing it's position
 		with(parentBlock){
 			isInactive = true;
+			mask_index = spr_empty;
+			visible = false;
 		}
+		image_index = 0;
+		imgSpeedMod *= -1;
 	}
-	// After the check, always destroy the effect
-	instance_destroy(self);
 }

@@ -46,6 +46,9 @@ lightPosition = [0, 0];
 // A flag that determines if the projectile is destroyed or not at the beginning of the next frame.
 isDestroyed = false;
 
+// Another flag that disables the check for collision if necessary for the projectile (Ex. Bombs)
+ignoreCollision = false;
+
 #endregion
 
 #region UNIQUE VARIABLE INITIALIZATION
@@ -65,10 +68,8 @@ inputDirection = NO_MOVEMENT;
 // Determines what happens to an entity when the projectile collides with them.
 projectileType = -1;
 
-// Two flags to determine if the projectile will be destroyed by walls or entities whenever a collision with
-// either occurs. This means that the entity/projectile collision won't take a flag to destroy itself upon
-// collision with another entity.
-destroyOnWallCollide = false;
+// A flag that determines if the projectile is destroyed upon collision with an entity.
 destroyOnEntityCollide = false;
+destroyOnWallCollide = false;
 
 #endregion
