@@ -22,8 +22,10 @@ if (destroyOnWallCollide){
 	_length = ds_list_size(_blocks);
 	for (var i = 0; i < _length; i++){
 		with(_blocks[| i]){ // Loop through all blocks that were collided with and check if they've been destroyed
-			var _isAffected = (ds_list_find_index(projectileWeakness, Weapon.All) != -1 || ds_list_find_index(projectileWeakness, other.projectileType) != -1);
-			isInactive = _isAffected;
+			if (!isInactive){
+				var _isAffected = (ds_list_find_index(projectileWeakness, Weapon.All) != -1 || ds_list_find_index(projectileWeakness, other.projectileType) != -1);
+				isInactive = _isAffected;
+			}
 		}
 	}
 	ds_list_destroy(_blocks);
