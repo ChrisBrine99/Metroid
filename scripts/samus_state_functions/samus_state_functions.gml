@@ -127,7 +127,14 @@ function state_samus_crouch() {
 /// in a place where there is room overhead; otherwise, she will not transform.
 function state_samus_morphball(){
 	// Set Samus's current direction based on keyboard input
-	inputDirection = keyRight - keyLeft;
+	if (isGrounded){ // When on the ground, instant velocity and mvoement is possible
+		inputDirection = keyRight - keyLeft;
+	} else{ // When airbourne, the morhpball will act like when Samus is somersaulting
+		var _inputDirection = keyRight - keyLeft;
+		if (_inputDirection != 0){
+			inputDirection = _inputDirection;
+		}
+	}
 
 	// Exiting from morphball mode when there is enough space
 	if (keyAuxUp && isGrounded && !place_meeting(x, y - 14, par_block)){
@@ -157,6 +164,20 @@ function state_samus_morphball(){
 	entity_world_collision_complex(false);
 	if (isGrounded && _prevVspd >= 3){
 		vspd = -_prevVspd / 2.5;
+	}
+	
+	// Checking for collision with Samus and a bomb explosion to perform a bomb jump
+	var _explosion = instance_nearest(x, y, obj_samus_projectile_explode);
+	if (_explosion != noone && y + 12 <= _explosion.y + 4){
+		if (place_meeting(x, y, _explosion)){
+			vspd = -2.5;
+			// Moving Samus to the left or right if she's offset from the center of the explosion
+			var _distance = x - _explosion.x;
+			if (_distance < -3 || _distance > 3){
+				hspd = maxHspd * sign(_distance);
+				inputDirection = sign(_distance);
+			}
+		}
 	}
 
 	// Animate based on what Samus is currently doing right now, relative to this state
@@ -215,6 +236,12 @@ function state_samus_jump(){
 /// jump item. Once Samus collides with the floor again she'll be put back into the default state. Also, the
 /// screw attack will automatically activate in this state if Samus has the item activated.
 function state_samus_jumpspin(){
+	// Set Samus's current direction based on keyboard input
+	var _inputDirection = keyRight - keyLeft;
+	if (_inputDirection != 0){ // Only update the movement direction when a direction is being pressed
+		inputDirection = keyRight - keyLeft;
+	}
+	
 	// Jumping again while airbourne and spinning (Space Jump only)
 	if (keyJumpStart && vspd >= 2.5){
 		vspd = jumpSpeed;
@@ -223,12 +250,6 @@ function state_samus_jumpspin(){
 	// Stopping a jump before its full height can be reached
 	if (keyJumpEnd && vspd < 0){
 		vspd /= 2;
-	}
-
-	// Set Samus's current direction based on keyboard input
-	var _inputDirection = keyRight - keyLeft;
-	if (_inputDirection != 0){ // Only update the movement direction when a direction is being pressed
-		inputDirection = keyRight - keyLeft;
 	}
 	
 	// Firing a projectile from Samus's arm cannon

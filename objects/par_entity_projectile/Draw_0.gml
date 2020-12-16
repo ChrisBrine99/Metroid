@@ -3,6 +3,7 @@
 if (projectileAnimates){
 	curFrame += (spriteSpeed / ANIMATION_FPS) * global.deltaTime;
 	if (curFrame >= spriteNumber){ // Looping back to the beginning of the sprite
+		event_perform(ev_other, ev_animation_end);
 		curFrame = 0;
 	}
 }

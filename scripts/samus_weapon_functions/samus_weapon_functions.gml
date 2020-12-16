@@ -56,6 +56,8 @@ function weapon_powerbeam(_xOffset, _yOffset){
 	var _aimDirection = aimDirection;
 	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
 		sprite_index = spr_power_beam;
+		// Create the ambient lighting for the power beam
+		entity_create_light(0, 0, 15, 15, 1, c_yellow);
 		// Determines the direction and velocity for the projectile
 		curFrame = (_aimDirection == AIM_UPWARD || _aimDirection == AIM_DOWNWARD);
 		inputDirection = samus_get_aim_direction(_aimDirection, other.image_xscale);
@@ -144,9 +146,12 @@ function weapon_bomb(_xOffset, _yOffset){
 	// If less than three standard bombs currently exists, spawn another one
 	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
 		sprite_index = spr_bomb;
+		// Create the ambient lighting for the bomb
+		entity_create_light(0, 0, 12, 12, 1, make_color_rgb(125, 125, 255));
 		// Bombs detonate after a short period of time; set their lifespan accordingly
-		lifespan = 90;
-		collideEffect = noone; // TODO -- Change to Explosion Effect for Bomb
+		lifespan = 60;
+		// Assign the function that is called when the bomb explodes
+		destroyScript = samus_bomb_explode;
 		// Set the damage of the bomb
 		damage = 2;
 		// Finally, enable the bomb to animate

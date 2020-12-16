@@ -85,6 +85,8 @@ inputDirection = 0;
 jumpSpeed = NORM_JUMP_SPEED;
 jumpSpeedMorph = NORM_JUMP_SPEED_MORPH;
 
+
+
 // Variables relating to aiming Samus's arm cannon in one of the three valid direction: forward, upward, and
 // downward. On top of that, a flag exists to let Samus know when she is actively shooting from her arm
 // cannon, which will set the walking/jump sprites/states accordingly. Another flag also exists to disable

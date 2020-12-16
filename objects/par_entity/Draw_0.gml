@@ -5,12 +5,14 @@ if (transitionSprite == -1){ // No transition is occuring; display the set sprit
 	sprite_index = spriteIndex;
 	curFrame += (spriteSpeed / ANIMATION_FPS) * global.deltaTime;
 	if (curFrame >= spriteNumber){ // Looping back to the beginning of the sprite
+		event_perform(ev_other, ev_animation_end);
 		curFrame = 0;
 	}
 } else{ // A transition if occuring; let it finish before changing to the standard sprite
 	sprite_index = transitionSprite;
 	curFrame += (transitionSpeed / ANIMATION_FPS) * global.deltaTime;
 	if (curFrame >= transitionNumber){ // Ending the transition
+		event_perform(ev_other, ev_animation_end);
 		transitionSprite = -1;
 		curFrame = 0;
 	}

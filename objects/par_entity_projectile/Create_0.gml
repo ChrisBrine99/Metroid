@@ -46,18 +46,23 @@ lightPosition = [0, 0];
 // A flag that determines if the projectile is destroyed or not at the beginning of the next frame.
 isDestroyed = false;
 
-// Another flag that disables the check for collision if necessary for the projectile (Ex. Bombs)
-ignoreCollision = false;
+// Variables borrowed from par_entity that are used for optionally animating the projectile. This is useful
+// for projectiles that don't have a natural orientation (Ex. perfect circles, etc.) or are bombs, for another
+// example.
+projectileAnimates = false;
+curFrame = 0;
+spriteSpeed = 0;
+spriteNumber = 0;
 
 #endregion
 
 #region UNIQUE VARIABLE INITIALIZATION
 
-// Three unique variables to all weaponry that Samus can use. The first variable is the object that is created
-// as an explosion effect whenever the wepaon collides with the world or an enemy or vice versa. Next, the
-// damage is how many hitpoints the target loses relative to their damage resistance. Finally, the lifespan
-// determines how many frames the weapon is active for before it explodes. (Ex. Bombs)
-collideEffect = noone;
+// Three unique variables to all weaponry that Samus can use. The first variable is the script that is called
+// to create an explosion effect whenever the wepaon collides with the world or an enemy or vice versa. Next, 
+// the damage is how many hitpoints the target loses relative to their damage resistance. Finally, the 
+// lifespan determines how many frames the weapon is active for before it explodes. (Ex. Bombs)
+destroyScript = noone;
 damage = 0;
 lifespan = -1;
 
@@ -71,5 +76,8 @@ projectileType = -1;
 // A flag that determines if the projectile is destroyed upon collision with an entity.
 destroyOnEntityCollide = false;
 destroyOnWallCollide = false;
+
+// Another flag that disables the check for collision if necessary for the projectile (Ex. Bombs)
+ignoreCollision = false;
 
 #endregion

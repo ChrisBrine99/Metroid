@@ -14,9 +14,7 @@ if (destroyOnWallCollide){
 	var _id = entity_world_collision_simple(true);
 	with(_id){ // Executes only if a valid ID is returned
 		var _isAffected = (ds_list_find_index(projectileWeakness, Weapon.All) != -1 || ds_list_find_index(projectileWeakness, other.projectileType) != -1);
-		if (object_is_ancestor(object_index, par_block) && _isAffected){
-			isInactive = true;
-		}
+		isInactive = _isAffected;
 	}
 } else{ // The projectile can go through the wall (Wave Beam, Spazer Beam, Plasma Beam)
 	var _blocks, _length;
@@ -25,9 +23,7 @@ if (destroyOnWallCollide){
 	for (var i = 0; i < _length; i++){
 		with(_blocks[| i]){ // Loop through all blocks that were collided with and check if they've been destroyed
 			var _isAffected = (ds_list_find_index(projectileWeakness, Weapon.All) != -1 || ds_list_find_index(projectileWeakness, other.projectileType) != -1);
-			if (object_is_ancestor(object_index, par_block) && _isAffected){
-				isInactive = true;
-			}
+			isInactive = _isAffected;
 		}
 	}
 	ds_list_destroy(_blocks);

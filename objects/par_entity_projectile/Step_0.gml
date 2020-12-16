@@ -4,7 +4,7 @@
 if (lifespan != -1){
 	lifespan -= global.deltaTime;
 	if (lifespan <= 0){
-		instance_destroy(self);
+		isDestroyed = true;
 	}
 }
 
