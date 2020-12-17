@@ -24,4 +24,9 @@ draw_text(136, 5, "[" + string(x) + ", " + string(y) + "]\n" +
 				  string(global.effectID.lightContrast) + "\n" +
 				  string(global.effectID.lightSaturation));
 
+with(global.playerID){
+	draw_set_halign(fa_left);
+	draw_text(5, 100, "recoveryTimer = " + string(recoveryTimer));
+}
+
 shader_reset();

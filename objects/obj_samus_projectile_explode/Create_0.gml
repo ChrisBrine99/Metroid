@@ -25,6 +25,7 @@ function create_explosion(_state, _damage, _type, _sprite, _lightSize, _lightStr
 	set_cur_state(_state);
 	// Set the damage of the explosion effect, a damage of 0 or less will be ignored for collisions
 	damage = _damage;
+	ignoreCollision = damage > 0 ? false : true;
 	// Set the projectile's type, which is used to determine if an enemy takes damage from the explosion or not
 	projectileType = _type;
 	// Get the sprite's data after setting it's index

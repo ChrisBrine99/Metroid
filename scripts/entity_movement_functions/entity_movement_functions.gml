@@ -10,7 +10,8 @@
 ///
 /// @param inputDirection
 /// @param instantVelocity
-function update_position(_inputDirection, _instantVelocity) {
+/// @param updateDirection
+function update_position(_inputDirection, _instantVelocity, _updateDirection) {
 	// Apply gravity to the entity if it applies to them. Entities with 0 gravity will ignore this chunk of code
 	if (grav > 0 && !place_meeting(x, y + 1, par_block)){
 		isGrounded = false;
@@ -35,8 +36,10 @@ function update_position(_inputDirection, _instantVelocity) {
 		} else if (hspd < -maxHspd){ // Maxing out leftward horizontal speed
 			hspd = -maxHspd;
 		}
-		// Flip the entity's sprite based on their current input direction
-		image_xscale = _inputDirection;
+		// Optionally, flip the entity's sprite based on their current input direction
+		if (_updateDirection){
+			image_xscale = _inputDirection;
+		}
 	} else{ // Stopping horizontal movement
 		var _accel = accel * global.deltaTime;
 		hspd -= _accel * sign(hspd);

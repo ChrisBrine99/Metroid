@@ -37,3 +37,6 @@ if (isShooting){
 		shootTimer = 0;
 	}
 }
+
+// Make Samus's sprite flicker whenever she is recoiling from a hit
+visible = (isHit && recoveryTimer > (global.deltaTime * 2)) ? choose(true, false) : true;

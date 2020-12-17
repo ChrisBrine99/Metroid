@@ -57,7 +57,7 @@ function weapon_powerbeam(_xOffset, _yOffset){
 	with(instance_create_depth(x + (image_xscale * _xOffset), y + _yOffset, ENTITY_DEPTH, obj_samus_projectile)){
 		sprite_index = spr_power_beam;
 		// Create the ambient lighting for the power beam
-		entity_create_light(0, 0, 15, 15, 1, c_yellow);
+		entity_create_light(0, 0, 15, 15, 1, c_orange);
 		// Determines the direction and velocity for the projectile
 		curFrame = (_aimDirection == AIM_UPWARD || _aimDirection == AIM_DOWNWARD);
 		inputDirection = samus_get_aim_direction(_aimDirection, other.image_xscale);

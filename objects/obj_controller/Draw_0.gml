@@ -5,5 +5,5 @@ if (!showDebugInfo){
 }
 
 with(par_entity){
-	draw_sprite(mask_index, 0, x, y);
+	draw_rect_outline(bbox_left, bbox_top, 1 + (bbox_right - bbox_left), 1 + (bbox_bottom - bbox_top), c_white, c_gray, 0.5, 1);
 }

@@ -48,7 +48,7 @@ function state_samus_default() {
 	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
-	update_position(inputDirection, true);
+	update_position(inputDirection, true, true);
 	entity_world_collision_complex(false);
 
 	// If the player is no longer grounded after the position update, set the state to the standard jump
@@ -160,7 +160,7 @@ function state_samus_morphball(){
 	// before gravity/collision is calculated. Then, if the previous vspd was high enough upon hitting the ground,
 	// the morphball will bounce as a sort of "recoil" from hitting the ground too hard.
 	var _prevVspd = vspd;
-	update_position(inputDirection, isGrounded);
+	update_position(inputDirection, isGrounded, true);
 	entity_world_collision_complex(false);
 	if (isGrounded && _prevVspd >= 3){
 		vspd = -_prevVspd / 2.5;
@@ -211,7 +211,7 @@ function state_samus_jump(){
 	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
-	update_position(inputDirection, false); // False will make it harder to turn while spinning in the air
+	update_position(inputDirection, false, true); // False will make it harder to turn while spinning in the air
 	entity_world_collision_complex(false);
 	// Instantly return to the default state once the ground has been hit
 	if (isGrounded){
@@ -258,7 +258,7 @@ function state_samus_jumpspin(){
 	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
-	update_position(inputDirection, false); // False will make it harder to turn while spinning in the air
+	update_position(inputDirection, false, true); // False will make it harder to turn while spinning in the air
 	entity_world_collision_complex(false);
 	// Instantly return to the default state once the ground has been hit
 	if (isGrounded){
@@ -285,15 +285,26 @@ function state_samus_jumpspin(){
 function state_samus_hurt(){
 	if (curState != state_samus_hurt){
 		set_cur_state(state_samus_hurt);
-		inputDirection = -image_xscale;
+		modify_move_speed(-maxHspdConst * 0.45, 0, true);
+		// Only update to the jumping sprite if Samus isn't currently in her morphball form
+		if (lastState != state_samus_morphball){
+			mask_index = spr_standing_mask;
+			sprite_update(sprJumpFwd, false);
+		}
+		inputDirection = -sign(image_xscale);
 		vspd = -3.5;
 	}
 
 	// Update Samus's current horizontal and vertical positions; apply gravity as well.
-	update_position(inputDirection, true);
+	update_position(inputDirection, true, false);
 	entity_world_collision_complex(false);
-	// If Samus is on the ground after updating her position, reset her state
-	if ((vspd >= 0 && isGrounded) || recoveryTimer <= max(1, timeToRecover - 10)){
-		set_cur_state(state_samus_default);
+	// If Samus is on the ground after updating her position, reset her state.
+	if ((vspd >= 0 && isGrounded) || recoveryTimer <= timeToRecover * 0.5){
+		if (lastState != state_samus_morphball){ // Return Samus to her default state after recoiling
+			set_cur_state(state_samus_default);
+		} else{ // If the player was in morphball, return back to morphball once the recoil state ends
+			set_cur_state(lastState);
+		}
+		modify_move_speed(maxHspdConst * 0.45, 0, true);
 	}
 }

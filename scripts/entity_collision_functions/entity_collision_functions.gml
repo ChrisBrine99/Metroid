@@ -130,18 +130,20 @@ function entity_projectile_collision(){
 			// equal to the damage the projectile deals times the damage resistance of the entity. This means the
 			// lower the value for the damage resistance, the less damage the entity will take.
 			if (lastHitProjectile != _id && !isHit){
-				if (script_exists(hitScript)){ // An optional script the entity can execute when hit
-					script_execute(hitScript);
-				}
 				update_hitpoints(floor(_damage * damageResistance));
-				timeToRecover = recoveryTimer;
+				recoveryTimer = timeToRecover;
 				lastHitProjectile = _id;
 				isHit = true;
-				with(other){ // Destroy the projectile if necessary
+				// Destroy the projectile if necessary
+				with(other){
 					isDestroyed = destroyOnEntityCollide;
 					if (isDestroyed){
 						break; // If the projectile has been destroyed, ignore all other potential collisions
 					}
+				}
+				// An optional script the entity can execute when hit
+				if (script_exists(hitScript)){
+					script_execute(hitScript);
 				}
 			}
 		}
