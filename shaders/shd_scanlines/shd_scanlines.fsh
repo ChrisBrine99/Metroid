@@ -1,16 +1,11 @@
-//
-// Simple passthrough fragment shader
-//
-varying vec2 v_vTexcoord;
-varying vec4 v_vColour;
+varying float yPosition;
 
-uniform float viewHeight;
-uniform float strength;
+uniform float opacity;
 
-void main() {
-	// Calculate which row of pixels we're currently on. Even == scanline, Odd == no scanline
-	float curPixelY = floor(v_vTexcoord.y * viewHeight);
-	if (mod(curPixelY, 2.0) == 0.0){ // Darken every other line of pixels on the screen to simulate scanlines
-		gl_FragColor = v_vColour * vec4(0.0, 0.0, 0.0, strength);
+void main(){
+	if (mod(yPosition, 2.0) < 1.0){ // Ensures every-other pixel has the effect applied to it
+		gl_FragColor = vec4(vec3(0.0), opacity);
+		return; // Exit before gl_FragColor is overwritten by the "invisible" default value.
 	}
+	gl_FragColor = vec4(0.0);
 }

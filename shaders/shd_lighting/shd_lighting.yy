@@ -1,11 +1,10 @@
 {
-  "type": 1,
-  "parent": {
-    "name": "Lighting",
-    "path": "folders/Shaders/Lighting.yy",
-  },
+  "resourceType": "GMShader",
   "resourceVersion": "1.0",
   "name": "shd_lighting",
-  "tags": [],
-  "resourceType": "GMShader",
+  "parent": {
+    "name": "Lighting",
+    "path": "folders/Resources/Graphics/Shaders/Lighting.yy",
+  },
+  "type": 1,
 }

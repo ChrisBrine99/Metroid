@@ -1,89 +1,22 @@
-/// @description Enumerators used by the game's various systems.
+/// @description Initializes all enumerators that aren't bound to any specific object, but are instead used all 
+/// throughout the code for various different tasks and reasons.
 
-// Stores the state of the game on a global scale at the given moment
+/// @description Each value in this enum represents a different state that the game can be in at any given
+/// moment. The first state (NoState) is simply a default and doesn't actually affect the game's ability to
+/// function, but the other four will alter how the game acts in a wholly unique way.
 enum GameState{
+	NoState,
 	InGame,
 	InMenu,
+	Cutscene,
 	Paused,
 }
 
-// An enumerator for storing the array indexes for each respective game setting
-enum Settings{
-	// Video Settings //
-	WindowScale,
-	FullScreen,
-	Bloom,
-	Scanlines,
-	// Audio Settings //
-	Master,
-	Sounds,
-	Music,
-	EnableMusic,
-	// Keyboard Settings //
-	GameRight,		// In-Game Keybindings
-	GameLeft,
-	GameUp,
-	GameDown,
-	Jump,
-	UseWeapon,
-	ChangeWeapon,
-	MenuDown,		// Menu Keybindings
-	MenuUp,
-	MenuLeft,
-	MenuRight,
-	Select,
-	Return,
-	FileDelete,
-	// Accessibility Settings //
-	ObjectiveHints,
-	TextSpeed,
-	// Holds Total Number of Settings //
-	Length,
-}
-
-enum Items{
-	// Morphball Items //
-	Morphball,
-	SpringBall,
-	SpiderBall,
-	Bombs,
-	// Arm Cannon Items //
-	IceBeam,
-	WaveBeam,
-	SpazerBeam,
-	PlasmaBeam,
-	ChargeBeam,
-	// Jump Upgrades //
-	HighJumpBoots,
-	SpaceJumpBoots,
-	ScrewAttack,
-	// Suit Upgrades //
-	VariaSuit,
-	GravitySuit,
-	// Other Upgrades //
-	Missiles,
-	MaxMissiles,
-	SuperMissiles,
-	MaxSuperMissiles,
-	PowerBombs,
-	MaxPowerBombs,
-	// Holds Total Number of Items //
-	Length
-}
-
-enum Weapon{
-	// Weapons that can damage the enemy if found in their weakness list //
-	All,			// All means every one of Samus's weapons will damage the entity
-	PowerBeam,
-	IceBeam,
-	WaveBeam,
-	SpazerBeam,
-	PlasmaBeam,
-	Missile,
-	SuperMissile,
-	Bomb,
-	PowerBomb,
-	ScrewAttack,
-	// All enemy projectiles can damage Samus, so only one type is needed //
-	Enemy,
+/// @description 
+enum Difficulty{
+	NotSet,
+	Forgiving,
+	Standard,
+	Punishing,
+	Nightmare,
 }

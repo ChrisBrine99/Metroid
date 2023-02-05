@@ -1,0 +1,1 @@
+object_remove_light_component();

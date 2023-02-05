@@ -1,0 +1,1 @@
+with(lightComponent) {set_properties(800, HEX_WHITE, 0.5);}

@@ -1,1 +1,0 @@
-light_create_rectangle(room_width, room_height - y, 1, c_black, c_black, c_white, c_white);

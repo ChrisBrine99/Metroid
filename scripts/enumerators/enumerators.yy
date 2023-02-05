@@ -1,12 +1,11 @@
 {
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Init",
-    "path": "folders/Scripts/Init.yy",
-  },
+  "resourceType": "GMScript",
   "resourceVersion": "1.0",
   "name": "enumerators",
-  "tags": [],
-  "resourceType": "GMScript",
+  "isCompatibility": false,
+  "isDnD": false,
+  "parent": {
+    "name": "Globals",
+    "path": "folders/Resources/Core/Globals.yy",
+  },
 }
