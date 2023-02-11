@@ -58,11 +58,14 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	entity_set_sprite(_isCharged ? spr_power_beam_charged : spr_power_beam, -1);
 	stateFlags |= (1 << TYPE_POWER_BEAM);
 	
-	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down) and
-	// also any split beam velocities that will offset the upper and lower beams properly in order to create
-	// the effect required for said split.
+	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
+	// by if the beam is charged or not charged prior to being fired.
+	if (_isCharged) {object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);}
+	else			{object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);}
+	
+	// Determine the split beam velocities that will offset the upper and lower beams properly in order to 
+	// create the effect required for the power beam's beam splitter effect.
 	if (IS_MOVING_HORIZONTAL){
-		hspd = (image_xscale == -1) ? -maxHspd : maxHspd;
 		startOffset = y; // Start offset is y since the beams will split off on that axis.
 		
 		// Upper beam will be on top of the center beam regardless of the beam being shot to the left or the
@@ -70,7 +73,6 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 		if (IS_UPPER_POWER_BEAM)		{vspd = -SPLIT_MOVEMENT_SPEED;}
 		else if (IS_LOWER_POWER_BEAM)	{vspd = SPLIT_MOVEMENT_SPEED;}
 	} else if (IS_MOVING_VERTICAL){
-		vspd = (image_angle == 90) ? -maxVspd : maxVspd;
 		startOffset = x; // Start offset is x since the beams will split off on that axis.
 		
 		// Upper beam will be to the left of the center beam regardless of the beam being fired up or down;

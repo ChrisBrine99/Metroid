@@ -4,7 +4,7 @@
 // functions and interacts with the world depending on which are set (1) and which are not (0).
 #macro	TYPE_POWER_BEAM			0
 #macro	TYPE_ICE_BEAM			1
-#macro	TYPE_TESLA_BEAM			2
+#macro	TYPE_WAVE_BEAM			2
 #macro	TYPE_PLASMA_BEAM		3
 #macro	TYPE_MISSILE			4
 #macro	TYPE_SUPER_MISSILE		5
@@ -22,7 +22,7 @@
 // player projectile's "stateFlags" variable; which vastly differ from those found in other dynamic entities.
 #macro	IS_MISSILE				(stateFlags & ((1 << TYPE_MISSILE) | (1 << TYPE_SUPER_MISSILE) | (1 << TYPE_ICE_MISSILE) | (1 << TYPE_SHOCK_MISSILE)))
 #macro	IS_COLD_BASED			(stateFlags & ((1 << TYPE_ICE_BEAM) | (1 << TYPE_ICE_MISSILE))
-#macro	IS_SHOCK_BASED			(stateFlags & ((1 << TYPE_TESLA_BEAM) | (1 << TYPE_SHOCK_MISSILE))
+#macro	IS_SHOCK_BASED			(stateFlags & ((1 << TYPE_WAVE_BEAM) | (1 << TYPE_SHOCK_MISSILE))
 #macro	IS_CHARGED				(stateFlags & (1 << PROJ_CHARGED))
 #macro	IS_MOVING_RIGHT			(stateFlags & (1 << PROJ_MOVE_RIGHT))
 #macro	IS_MOVING_LEFT			(stateFlags & (1 << PROJ_MOVE_LEFT))
@@ -66,6 +66,11 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	__initialize(_state); // Calls initialize function found in "par_dynamic_entity".
 	set_initial_position(_x, _y, _imageXScale);
 	stateFlags |= (1 << DRAW_SPRITE);
+	
+	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
+	if (IS_MOVING_HORIZONTAL) {hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
+	else if (IS_MOVING_VERTICAL) {vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
+	
 	// Damage is always quadrupled for a charged projectile and the bit flag is flipped in case the fact that 
 	// the projectile is charged needs to be referenced after creation.
 	if (_isCharged){
@@ -106,7 +111,7 @@ set_initial_position = function(_x, _y, _imageXScale){
 					if ((_stateFlags & (1 << MOVING)) != 0){
 						// Walking Offset //
 						x = _x + (17 * _imageXScale);
-						y = _y - 27;
+						y = _y - 26;
 					} else{
 						// Standing Offset //
 						x = _x + (15 * _imageXScale);

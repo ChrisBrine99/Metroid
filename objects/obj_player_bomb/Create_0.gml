@@ -9,10 +9,20 @@ event_inherited();
 // certain point.
 maxHitpoints = 60;
 hitpoints = maxHitpoints;
+// Apply a unique light source to the bomb.
+object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
 
 #endregion
 
 #region Unique variable initialization
+
+// Much like par_collectible, the bomb will have its light flicker at the rate of its animation loop; getting
+// brighter for the bright image and dimmer for the dimmer image of the bomb, repsectively. These variables
+// will store the initial radius and strength of the light so it can be increased and returned to it for said
+// flickering effect.
+baseRadius = 30;
+baseStrength = 0.7;
+
 #endregion
 
 #region Object initialization function
@@ -50,8 +60,16 @@ state_default = function(){
 		visible = false;
 	}
 	
-	// Increasing the speed of the bomb's animation to signify it's close to exploding.
+	// Increasing the speed of the bomb's animation to signify it's close to exploding. Also applying the
+	// flashing to the light sources that will link up with the two-frame animation for the bomb.
 	if (hitpoints < (maxHitpoints * 0.25) && animSpeed == 1) {animSpeed = 3;}
+	var _imageIndex = floor(imageIndex);
+	var _baseRadius = baseRadius;
+	var _baseStrength = baseStrength;
+	with(lightComponent){
+		if (_imageIndex == 1)	{set_properties(_baseRadius * 1.5, color, _baseStrength * 1.5);}
+		else					{set_properties(_baseRadius, color, _baseStrength);}
+	}
 }
 
 #endregion

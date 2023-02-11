@@ -11,7 +11,7 @@ flagID = FLAG_HIJUMP_BOOTS;
 // Set the collectible's name and information to match what this child object represents in the code.
 collectibleName = "Hi-Jump Boots";
 collectibleInfo = "Samus's maximum jumping height has been drastically increased!";
-// 
+// Setup the ambient light source to match the hi-jump boots' color scheme.
 baseRadius = 32;
 baseStrength = 0.7;
 object_add_light_component(x, y, 7, 8, baseRadius, HEX_LIGHT_RED, baseStrength);
@@ -26,8 +26,7 @@ object_add_light_component(x, y, 7, 8, baseRadius, HEX_LIGHT_RED, baseStrength);
 // Stores the parent function in another variable so it can be called through the overrided version found
 // within this child object. Otherwise, that original function's code would be unaccessible.
 __collectible_collect_self = collectible_collect_self;
-/// @description Updates Samus's somersaulting sprite to the space jump's animation for whatever suit she
-/// currently has equipped. However, the sprite isn't updated if she already has access to the screw attack.
+/// @description Updates Samus's "maxVspd" variable to reflect the new jump height allowed by this item.
 collectible_collect_self = function(){
 	__collectible_collect_self();
 	with(PLAYER) {maxVspd = HI_JUMP_HEIGHT;}

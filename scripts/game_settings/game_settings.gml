@@ -13,6 +13,7 @@
 #macro	SECTION_ACCESSIBILITY	"ACCESSIBILITY"
 #macro	SECTION_KEYBOARD		"KEYBOARD"
 #macro	SECTION_GAMEPAD			"GAMEPAD"
+#macro	SECTION_GAMEPAD_EXT		"GAMEPAD EXTRAS"
 
 // The bits that enable/disable certain features of the game's video settings. If they are set, the effects
 // will be active. If not set, none of the unset effects are applied (Bloom, aberration, etc.).
@@ -63,7 +64,15 @@
 #macro	KEY_GAME_DOWN			6
 #macro	KEY_JUMP				8		// Jumping input
 #macro	KEY_USE_WEAPON			10		// Equipped weapons inputs
-#macro	KEY_SWAP_WEAPON			12
+#macro	KEY_SWAP_WEAPON			12		
+#macro	KEY_HOTKEY_ONE			14		// Weapon hotkey inputs; order is:
+#macro	KEY_HOTKEY_TWO			16		//		Power Beam, Ice Beam, Wave Beam, Plasma Beam
+#macro	KEY_HOTKEY_THREE		18		//		Missiles, Ice Missiles, Shock Missiles
+#macro	KEY_HOTKEY_FOUR			20		
+#macro	KEY_HOTKEY_FIVE			22		
+#macro	KEY_HOTKEY_SIX			24		
+#macro	KEY_HOTKEY_SEVEN		26		
+#macro	KEY_ALT_WEAPON			28		// Activates missiles or power bombs
 
 // Macros to simply the typing required to check each respective input binding for the keyboard whenever
 // player input needs to be processed in the code.
@@ -74,6 +83,14 @@
 #macro	KEYCODE_JUMP			game_get_input_binding(KEY_JUMP)			// Jumping input
 #macro	KEYCODE_USE_WEAPON		game_get_input_binding(KEY_USE_WEAPON)		// Equipped weapon inputs
 #macro	KEYCODE_SWAP_WEAPON		game_get_input_binding(KEY_SWAP_WEAPON)
+#macro	KEYCODE_HOTKEY_ONE		game_get_input_binding(KEY_HOTKEY_ONE)		// Weapon hotkey inputs
+#macro	KEYCODE_HOTKEY_TWO		game_get_input_binding(KEY_HOTKEY_TWO)
+#macro	KEYCODE_HOTKEY_THREE	game_get_input_binding(KEY_HOTKEY_THREE)
+#macro	KEYCODE_HOTKEY_FOUR		game_get_input_binding(KEY_HOTKEY_FOUR)
+#macro	KEYCODE_HOTKEY_FIVE		game_get_input_binding(KEY_HOTKEY_FIVE)
+#macro	KEYCODE_HOTKEY_SIX		game_get_input_binding(KEY_HOTKEY_SIX)
+#macro	KEYCODE_HOTKEY_SEVEN	game_get_input_binding(KEY_HOTKEY_SEVEN)
+#macro	KEYCODE_ALT_WEAPON		game_get_input_binding(KEY_ALT_WEAPON)		// Switching over to using missiles/power bombs
 
 // The positions within the buffer for the player's current input configuration that each of these actions'
 // respective gamepad input bindings are stored. Each is a 2-byte value storing the values for Game Maker's
@@ -108,8 +125,6 @@
 // individual bits in the "difficultyFlags" variable.
 #macro	PLAYER_DAMAGE_MOD		global.gameSettings.pDamageModifier
 #macro	ENEMY_DAMAGE_MOD		global.gameSettings.eDamageModifier
-#macro	MIN_ITEM_SLOTS			global.gameSettings.minItemSlots
-#macro	MAX_ITEM_SLOTS			global.gameSettings.maxItemSlots
 
 #endregion
 
@@ -228,12 +243,21 @@ function game_load_settings(){
 		buffer_poke(inputBindings, KEY_GAME_DOWN, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "game_down",		vk_down));
 		buffer_poke(inputBindings, KEY_JUMP, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "jump",				vk_x));
 		buffer_poke(inputBindings, KEY_USE_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "use_weapon",		vk_z));
+		buffer_poke(inputBindings, KEY_SWAP_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "swap_weapon",		vk_space));
+		buffer_poke(inputBindings, KEY_HOTKEY_ONE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "power_beam",		vk_1));
+		buffer_poke(inputBindings, KEY_HOTKEY_TWO, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "ice_beam",			vk_2));
+		buffer_poke(inputBindings, KEY_HOTKEY_THREE, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "wave_beam",		vk_3));
+		buffer_poke(inputBindings, KEY_HOTKEY_FOUR, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "plasma_beam",		vk_4));
+		buffer_poke(inputBindings, KEY_HOTKEY_FIVE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "missiles",			vk_1));
+		buffer_poke(inputBindings, KEY_HOTKEY_SIX, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "ice_missiles",		vk_2));
+		buffer_poke(inputBindings, KEY_HOTKEY_SEVEN, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "shock_missiles",	vk_3));
+		buffer_poke(inputBindings, KEY_ALT_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "alt_weapon",		vk_control));
 		
 		// Loading in all the gamepad settings that aren't input constants stored in the input buffer
 		// or flags that are all loaded in at the top of this function.
-		vibrationIntensity =	ini_read_real(SECTION_GAMEPAD, "vibrate_intensity", 0.5);
-		stickDeadzone =			ini_read_real(SECTION_GAMEPAD, "stick_deadzone",	0.25);
-		triggerThreshold =		ini_read_real(SECTION_GAMEPAD, "trigger_threshold", 0.15);
+		vibrationIntensity =	ini_read_real(SECTION_GAMEPAD_EXT, "vibrate_intensity", 0.5);
+		stickDeadzone =			ini_read_real(SECTION_GAMEPAD_EXT, "stick_deadzone",	0.25);
+		triggerThreshold =		ini_read_real(SECTION_GAMEPAD_EXT, "trigger_threshold", 0.15);
 		
 		// Loading in the accessibility settings that aren't bit flags; storing them into the variables
 		// that are responsible for said values during the game's runtime.
@@ -266,6 +290,7 @@ function game_save_settings(){
 		ini_write_real(SECTION_VIDEO, "aspect_ratio",				aspectRatio);
 		ini_write_real(SECTION_VIDEO, "fullscreen",					(settingFlags & (1 << FULL_SCREEN)));
 		ini_write_real(SECTION_VIDEO, "vsync",						(settingFlags & (1 << VERTICAL_SYNC)));
+		ini_write_real(SECTION_VIDEO, "brightness",					brightness);
 		ini_write_real(SECTION_VIDEO, "gamma",						gamma);
 		ini_write_real(SECTION_VIDEO, "bloom",						(settingFlags & (1 << BLOOM_EFFECT)));
 		ini_write_real(SECTION_VIDEO, "chromatic_aberration",		(settingFlags & (1 << ABERRATION_EFFECT)));
@@ -292,12 +317,21 @@ function game_save_settings(){
 		ini_write_real(SECTION_KEYBOARD, "game_down",				buffer_peek(inputBindings, KEY_GAME_DOWN, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "jump",					buffer_peek(inputBindings, KEY_JUMP, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "use_weapon",				buffer_peek(inputBindings, KEY_USE_WEAPON, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "swap_weapon",				buffer_peek(inputBindings, KEY_SWAP_WEAPON, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "power_beam",				buffer_peek(inputBindings, KEY_HOTKEY_ONE, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "ice_beam",				buffer_peek(inputBindings, KEY_HOTKEY_TWO, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "wave_beam",				buffer_peek(inputBindings, KEY_HOTKEY_THREE, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "plasma_beam",				buffer_peek(inputBindings, KEY_HOTKEY_FOUR, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "missiles",				buffer_peek(inputBindings, KEY_HOTKEY_FIVE, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "ice_missiles",			buffer_peek(inputBindings, KEY_HOTKEY_SIX, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "shock_missiles",			buffer_peek(inputBindings, KEY_HOTKEY_SEVEN, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "alt_weapon",				buffer_peek(inputBindings, KEY_ALT_WEAPON, buffer_u16));
 		
 		// Saving the gamepad settings that aren't input constants; the vibration strength, stick 
 		// deadzone region, and trigger threshold for input activation, respectively.
-		ini_write_real(SECTION_GAMEPAD, "vibrate_intensity",		vibrationIntensity);
-		ini_write_real(SECTION_GAMEPAD, "stick_deadzone",			stickDeadzone);
-		ini_write_real(SECTION_GAMEPAD, "trigger_threshold",		triggerThreshold);
+		ini_write_real(SECTION_GAMEPAD_EXT, "vibrate_intensity",	vibrationIntensity);
+		ini_write_real(SECTION_GAMEPAD_EXT, "stick_deadzone",		stickDeadzone);
+		ini_write_real(SECTION_GAMEPAD_EXT, "trigger_threshold",	triggerThreshold);
 		
 		// Finally, write all of the values for the accessibility settings in the game to the file.
 		ini_write_real(SECTION_ACCESSIBILITY, "text_speed",			textSpeed);

@@ -4,7 +4,7 @@ draw_set_color(c_white);
 draw_text(camera_get_width() - 5, 5, 
 	"hspd: " + string(hspd) + "\n" +
 	"vspd: " + string(vspd) + "\n" +
-	"charge time: " + string(chargeTimer)
+	"anim time: " + string(jumpStartTimer)
 );	
 draw_set_halign(fa_left);
 draw_text(5, 5, 

@@ -24,7 +24,7 @@
 #macro	FLAG_SPACE_JUMP			3
 #macro	FLAG_SCREW_ATTACK		4
 #macro	FLAG_ICE_BEAM			5		// Arm cannon upgrades
-#macro	FLAG_TESLA_BEAM			6
+#macro	FLAG_WAVE_BEAM			6
 #macro	FLAG_PLASMA_BEAM		7
 #macro	FLAG_BEAM_SPLITTER		8
 #macro	FLAG_CHARGE_BEAM		9

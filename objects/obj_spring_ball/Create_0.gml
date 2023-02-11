@@ -11,10 +11,10 @@ flagID = FLAG_SPRING_BALL;
 // Set the collectible's name and information to match what this child object represents in the code.
 collectibleName = "Spring Ball";
 collectibleInfo = "Grants the ability to jump while Samus is in her \"Morph Ball\" form.";
-// 
+// Setup the ambient light source to match the spring ball's color scheme.
 baseRadius = 28;
 baseStrength = 0.6;
-object_add_light_component(x, y, 7, 8, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
+object_add_light_component(x, y, 7, 4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
 
 #endregion
 

@@ -3,12 +3,14 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
+// Apply a light to the bomb explosion.
+object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
 
 #endregion
 
 #region Unique variable initializations
 
-//
+// 
 collisionList = ds_list_create();
 
 #endregion

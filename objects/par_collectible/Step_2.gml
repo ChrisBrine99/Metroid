@@ -6,7 +6,7 @@ if (lightComponent != noone){
 	var _baseStrength = baseStrength;
 	with(lightComponent){
 		if (_imageIndex == 1) {set_properties(_baseRadius, color, _baseStrength);} 
-		else {set_properties(round(_baseRadius * 1.2), color, _baseStrength * 1.2);}
+		else {set_properties(round(_baseRadius * 1.3), color, _baseStrength * 1.3);}
 	}
 }
 
@@ -20,12 +20,13 @@ if (destructibleID == noone) {return;}
 var _stateFlags = stateFlags;
 with(destructibleID){
 	if (IS_DESTROYED){
-		if (timeToRespawn == RESPAWN_TIMER_INFINITE){
+		if (timeToRespawn == RESPAWN_TIMER_INFINITE) {other.destructibleID = noone;}
+		// Activate the light produced by the collectible and allow it to render itself once again.
+		if (_stateFlags & (1 << HIDDEN) != 0){
 			with(other.lightComponent) {isActive = true;}
-			other.destructibleID = noone;
+			_stateFlags &= ~(1 << HIDDEN);
 		}
-		_stateFlags &= ~(1 << HIDDEN);
-	} else if (_stateFlags & (1 << HIDDEN)){
+	} else if (_stateFlags & (1 << HIDDEN)){ // Hide the collectible and its light source.
 		with(other.lightComponent) {isActive = false;}
 		_stateFlags |= (1 << HIDDEN);
 	}

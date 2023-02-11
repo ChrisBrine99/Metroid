@@ -11,10 +11,10 @@ flagID = FLAG_SPACE_JUMP;
 // Set the collectible's name and information to match what this child object represents in the code.
 collectibleName = "Space Jump";
 collectibleInfo = "Allows Samus to jump again while she is somersaulting in the air.";
-// 
+// Setup the ambient light source to match the space jump's color scheme.
 baseRadius = 34;
 baseStrength = 0.8;
-object_add_light_component(x, y, 8, 8, baseRadius, HEX_LIGHT_BLUE, baseStrength);
+object_add_light_component(x, y, 8, 6, baseRadius, HEX_LIGHT_BLUE, baseStrength);
 
 #endregion
 

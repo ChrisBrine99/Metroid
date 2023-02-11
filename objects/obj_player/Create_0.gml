@@ -3,6 +3,9 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
+// Create a light source that will be user to illuminate Samus's visor and also flash rapidly during her
+// screw attack animation.
+object_add_light_component(x, y, 0, LIGHT_OFFSET_Y_GENERAL, LIGHT_DEFAULT_RADIUS, HEX_LIGHT_GREEN, LIGHT_DEFAULT_STRENGTH, true);
 
 // Samus's physics characteristics; her maximum walking speed (maxHspd), as well as her acceleration on that
 // axis, and jumping power (maxVspd), as well as her acceleration vertically (gravity).
@@ -86,18 +89,17 @@ bombExplodeID = noone;
 
 //
 armCannon = instance_create_struct(obj_arm_cannon);
-armCannon.pID = id;
 
 // 
-curWeapon = (1 << POWER_BEAM);
+curBeam = (1 << POWER_BEAM);
+curMissile = (1 << MISSILE);
+curWeapon = curBeam;
 
 // 
+tapFireRate = 1;
+holdFireRate = 1;
+fireRateTimer = 0;
 chargeTimer = 0;
-
-// 
-tapFireRate = 3;
-holdFireRate = 16;
-fireRateTimer = 16;
 
 // 
 liquidData = {
@@ -115,6 +117,10 @@ liquidData = {
 	damageInterval : 0,
 	damageTimer : 0,
 };
+
+// 
+jumpEffectID = ds_list_create();
+effectTimer = JUMP_EFFECT_INTERVAL;
 
 #endregion
 
@@ -134,7 +140,16 @@ process_input = function(){
 			(keyboard_check(KEYCODE_GAME_UP)		<<	AIM_UP) |
 			(keyboard_check(KEYCODE_GAME_DOWN)		<<	AIM_DOWN) |
 			(keyboard_check(KEYCODE_JUMP)			<<	JUMP) |
-			(keyboard_check(KEYCODE_USE_WEAPON)		<<	USE_WEAPON);
+			(keyboard_check(KEYCODE_USE_WEAPON)		<<	USE_WEAPON) |
+			(keyboard_check(KEYCODE_SWAP_WEAPON)	<<	SWAP_WEAPON) |
+			(keyboard_check(KEYCODE_HOTKEY_ONE)		<<	SWAP_POWER_BEAM) |
+			(keyboard_check(KEYCODE_HOTKEY_TWO)		<<	SWAP_ICE_BEAM) |
+			(keyboard_check(KEYCODE_HOTKEY_THREE)	<<	SWAP_WAVE_BEAM) |
+			(keyboard_check(KEYCODE_HOTKEY_FOUR)	<<	SWAP_PLASMA_BEAM) |
+			(keyboard_check(KEYCODE_HOTKEY_FIVE)	<<	SWAP_MISSILES) |
+			(keyboard_check(KEYCODE_HOTKEY_SIX)		<<	SWAP_ICE_MISSILES) |
+			(keyboard_check(KEYCODE_HOTKEY_SEVEN)	<<	SWAP_SHOCK_MISSILES) |
+			(keyboard_check(KEYCODE_ALT_WEAPON)		<<	ALT_WEAPON);
 	}
 }
 
@@ -148,6 +163,7 @@ crouch_to_standing = function(){
 		entity_set_sprite(standSpriteFw, standingMask);
 		stateFlags &= ~(1 << CROUCHING);
 		standingTimer = 0;
+		reset_light_source();
 		return; // Exit before mask can be reset by the code found below.
 	}
 	mask_index = crouchingMask; // Return to original mask if collision check returns "true".
@@ -190,20 +206,20 @@ update_arm_cannon = function(_movement){
 	// 
 	var _isCharged = false;
 	if (!IS_MISSILE_EQUIPPED){
-		var _chargeBeam = true;//event_get_flag(FLAG_CHARGE_BEAM);
+		var _chargeBeam = event_get_flag(FLAG_CHARGE_BEAM);
 		if (_useHeld && _chargeBeam){
 			chargeTimer += DELTA_TIME;
-			if (chargeTimer >= MIN_CHARGE_TIME) {chargeTimer = MIN_CHARGE_TIME;}
+			if (chargeTimer >= MAX_CHARGE_TIME) {chargeTimer = MAX_CHARGE_TIME;}
 		
 			// 
-			if (chargeTimer >= tapFireRate){
+			if (chargeTimer >= min(tapFireRate, 5)){
 				aimReturnTimer = 0;
 				return;
 			}
 		}
 		
 		// 
-		_isCharged = (_useReleased && _chargeBeam && chargeTimer == MIN_CHARGE_TIME);
+		_isCharged = (_useReleased && _chargeBeam && chargeTimer >= MIN_CHARGE_TIME);
 		if (_useReleased) {chargeTimer = 0;}
 	}
 	
@@ -213,7 +229,7 @@ update_arm_cannon = function(_movement){
 	var _chargeFire = (_useReleased && _isCharged);
 	if (_holdingFire || _tappingFire || _chargeFire){
 		create_projectile(_isCharged);
-		fireRateTimer = _holdingFire ? tapFireRate : 0;
+		fireRateTimer = 0;
 		aimReturnTimer = 0;
 	}
 	
@@ -237,6 +253,17 @@ update_arm_cannon = function(_movement){
 	}
 }
 
+/// @description 
+reset_light_source = function(){
+	var _isAimingUp = stateFlags & (1 << AIMING_UP);
+	with(lightComponent){
+		set_properties(LIGHT_DEFAULT_RADIUS, HEX_LIGHT_GREEN, LIGHT_DEFAULT_STRENGTH);
+		isActive = !_isAimingUp;
+	}
+	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
+	lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
+}
+
 #endregion
 
 #region Projectile/bomb spawning functions
@@ -252,19 +279,39 @@ create_projectile = function(_charged){
 		case (1 << POWER_BEAM):		// = 1
 			if (_splitBeam)	{create_power_beam_split(x, y, image_xscale, _charged);}
 			else			{create_power_beam(x, y, image_xscale, _charged);}
+			tapFireRate = 5;
+			holdFireRate = 20;
 			break;
 		case (1 << ICE_BEAM):		// = 2
+			if (_splitBeam)	{create_ice_beam_split(x, y, image_xscale, _charged);}
+			else			{create_ice_beam(x, y, image_xscale, _charged);}
+			tapFireRate = 36;
+			holdFireRate = 46;
 			break;
-		case (1 << TESLA_BEAM):		// = 4
+		case (1 << WAVE_BEAM):		// = 4
+			show_debug_message("WAVE BEAM");
+			tapFireRate = 18;
+			holdFireRate = 28;
 			break;
 		case (1 << PLASMA_BEAM):	// = 8
+			show_debug_message("PLASMA BEAM");
+			tapFireRate = 14;
+			holdFireRate = 26;
 			break;
 		case (1 << MISSILE):		// = 16
 			create_missile(x, y, image_xscale); // No charge flag necessary.
+			tapFireRate = 24;
+			holdFireRate = 38;
 			break;
 		case (1 << ICE_MISSILE):	// = 32
+			show_debug_message("ICE MISSILE");
+			tapFireRate = 40;
+			holdFireRate = 60;
 			break;
 		case (1 << SHOCK_MISSILE):	// = 64
+			show_debug_message("SHOCK MISSILE");
+			tapFireRate = 32;
+			holdFireRate = 46;
 			break;
 	}
 }
@@ -314,6 +361,20 @@ create_power_beam_split = function(_x, _y, _imageXScale, _charged){
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// ICE BEAM /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// @description 
+/// @param {Real}	x				Samus's current horizontal position within the room.
+/// @param {Real}	y				Samus's current vertical position within the room.
+/// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
+/// @param {Real}	charged			Determines if the power beam projectiles were "charged" before being fired.
+create_ice_beam = function(_x, _y, _imageXScale, _charged){
+	var _projectile = instance_create_object(0, 0, obj_ice_beam);
+	with(_projectile) {initialize(state_default, _x, _y, _imageXScale, _charged);}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// MISSILES (STANDARD, ICE, SHOCK) //////////////////////////////////////////////////////////////////////////////
 
 /// @description Creates the standard missile projectile, which deals heavy damage and can destroy missile
@@ -354,6 +415,48 @@ create_ice_missile = function(_x, _y, _imageXScale){
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Weapon swapping functions
+
+/// @description Swaps Samus's beam to another based on what beam hotkey was pressed by the user and what 
+/// beams they currently have available to switch to. If the only beam available is the power beam, no switch
+/// will occur. On top of that, if Samus is using her missiles, it will swap to one of her three available
+/// missile types (If she has any variants unlocked).
+check_swap_current_weapon = function(){
+	if (IS_ALT_WEAPON_HELD && maxMissiles > 0){
+		// 
+		if (IS_SWAP_MISS_PRESSED)		{curBeam = (1 << MISSILE);}
+		else if (IS_SWAP_IMISS_PRESSED)	{curBeam = (1 << ICE_MISSILE);}
+		else if (IS_SWAP_SMISS_PRESSED)	{curBeam = (1 << SHOCK_MISSILE);}
+		
+		// 
+		if (curWeapon != curMissile){
+			curWeapon = curMissile;
+			tapFireRate = MISSILE_SWAP_TIME;
+			holdFireRate = MISSILE_SWAP_TIME;
+			fireRateTimer = 0;
+			chargeTimer = 0;
+		}
+		return;
+	}
+	
+	// 
+	if (IS_SWAP_POWB_PRESSED)		{curBeam = (1 << POWER_BEAM);}
+	else if (IS_SWAP_ICEB_PRESSED)	{curBeam = (1 << ICE_BEAM);}
+	else if (IS_SWAP_WAVB_PRESSED)	{curBeam = (1 << WAVE_BEAM);}
+	else if (IS_SWAP_PLAB_PRESSED)	{curBeam = (1 << PLASMA_BEAM);}
+	
+	// 
+	if (curWeapon != curBeam){
+		curWeapon = curBeam;
+		tapFireRate = BEAM_SWAP_TIME;
+		holdFireRate = BEAM_SWAP_TIME;
+		fireRateTimer = 0;
+		chargeTimer = 0;
+	}
+}
 
 #endregion
 
@@ -504,7 +607,7 @@ state_default = function(){
 	apply_gravity(MAX_FALL_SPEED);
 	if (!IS_GROUNDED){
 		object_set_next_state(state_airbourne);
-		entity_set_sprite(jumpSpriteFw, jumpingMask);
+		entity_set_sprite(jumpSpriteFw, standingMask);
 		stateFlags &= ~(1 << MOVING);
 		jumpStartTimer = 0;
 		aimReturnTimer = 0;
@@ -515,12 +618,13 @@ state_default = function(){
 	// jumping. After that, Samus will have her vertical velocity set to whatever her jump height is (Stored
 	// as her "maxVspd") and she will either enter a standard jump (Horizontal speed lower than 1) or a
 	// somersault jump (Moving fast enough and not firing from Samus's arm cannon).
-	if (IS_JUMP_PRESSED){
+	if (IS_JUMP_PRESSED && !place_meeting(x, y - 1, par_collider)){
 		object_set_next_state(state_airbourne);
 		if (abs(hspd) >= 1 && !IS_AIMING){
 			if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= (1 << JUMP_ATTACK);}
 			stateFlags |= (1 << JUMP_SPIN);
 			jumpStartTimer = 0;
+			effectTimer = JUMP_EFFECT_INTERVAL;
 		}
 		stateFlags &= ~((1 << GROUNDED) | (1 << MOVING));
 		vspd = get_max_vspd();
@@ -580,6 +684,7 @@ state_default = function(){
 		aimReturnTimer = 0;
 		hspdFraction = 0;
 		hspd = 0;
+		lightOffsetY = LIGHT_OFFSET_Y_CROUCH;
 		return; // State changed; don't bother continuing with this state function.
 	}
 	
@@ -588,8 +693,10 @@ state_default = function(){
 	if (IS_UP_PRESSED){
 		stateFlags &= ~(1 << AIMING_FRONT);
 		stateFlags |= (1 << AIMING_UP);
+		lightComponent.isActive = false;
 	} else if (IS_UP_RELEASED){
 		stateFlags &= ~(1 << AIMING_UP);
+		lightComponent.isActive = true;
 	}
 	
 	// Another way of aiming Samus up that can only happen when she very recently exited her crouching state.
@@ -600,6 +707,7 @@ state_default = function(){
 	if ((stateFlags & (1 << AIMING_UP) == 0) && IS_UP_HELD){
 		aimSwitchTimer += DELTA_TIME;
 		if (aimSwitchTimer >= AIM_SWITCH_TIME){
+			lightComponent.isActive = false;
 			stateFlags &= ~(1 << AIMING_FRONT);
 			stateFlags |= (1 << AIMING_UP);
 			aimSwitchTimer = 0;
@@ -610,6 +718,10 @@ state_default = function(){
 	
 	// 
 	update_arm_cannon(_movement);
+	check_swap_current_weapon();
+	
+	// 
+	lightOffsetX = 4 * image_xscale;
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
@@ -660,8 +772,11 @@ state_airbourne = function(){
 	if (IS_GROUNDED){
 		object_set_next_state(state_default);
 		stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK) | (1 << AIMING_DOWN));
+		jumpStartTimer = 0;
+		aimReturnTimer = 0;
 		hspdFraction = 0;
 		hspd = 0;
+		reset_light_source();
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -684,10 +799,10 @@ state_airbourne = function(){
 				if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= (1 << JUMP_ATTACK);}
 				stateFlags |= (1 << JUMP_SPIN);
 				hspd = get_max_hspd() * image_xscale;
-				jumpStartTimer = 0;
 				aimReturnTimer = 0;
+				effectTimer = JUMP_EFFECT_INTERVAL;
 			} else if (vspd >= 2 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
-			 vspd = get_max_vspd();
+				vspd = get_max_vspd();
 			}
 		}
 	}
@@ -733,26 +848,78 @@ state_airbourne = function(){
 		if ((stateFlags & (1 << AIMING_DOWN) == 0)){ // Aiming upward until the player releases their up input.
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 			stateFlags |= (1 << AIMING_UP);
+			lightComponent.isActive = false;
 		} else{ // Exiting from aiming downward.
 			stateFlags &= ~(1 << AIMING_DOWN);
+			lightOffsetX = LIGHT_OFFSET_X_GENERAL; // Reset visor light offset.
+			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
 		}
 	} else if (_vInput == 1){
 		if (stateFlags & (1 << AIMING_DOWN) == 0){ // Entering a downward aiming state.
+			var _jumpAttack = stateFlags & (1 << JUMP_ATTACK);
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 			stateFlags |= (1 << AIMING_DOWN);
+			if (_jumpAttack) {reset_light_source();}
+			lightOffsetX = LIGHT_OFFSET_X_DOWN;
+			lightOffsetY = LIGHT_OFFSET_Y_DOWN;
 		} else if (event_get_flag(FLAG_MORPHBALL)){ // Entering morphball mode while in the air.
 			object_set_next_state(state_enter_morphball);
 			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(ballEnterSprite, morphballMask);
 			y -= bbox_bottom - _bboxBottom;
+			jumpStartTimer = 0;
 			return;
 		}
 	} else if (IS_UP_RELEASED){ // Stopping Samus from aiming upward.
 		stateFlags &= ~(1 << AIMING_UP);
+		lightComponent.isActive = true;
 	}
 	
 	// 
-	update_arm_cannon(_movement);
+	if (jumpStartTimer >= JUMP_ANIM_TIME){
+		update_arm_cannon(_movement);
+		check_swap_current_weapon();
+	}
+	
+	// 
+	var _jumpattack = IS_JUMP_ATTACK;
+	var _jumpspin = IS_JUMP_SPIN;
+	with(lightComponent){
+		if (_jumpattack){
+			set_properties(80 + irandom_range(-10, 10), 
+							choose(HEX_LIGHT_GREEN, HEX_LIGHT_BLUE, HEX_LIGHT_PURPLE, HEX_WHITE), 
+							0.9 + random_range(-0.2, 0.2));
+		}
+	}
+	if (_jumpattack){ // Position for the screw attack's flashing light effect.
+		lightOffsetX = LIGHT_OFFSET_X_ATTACK;
+		lightOffseY = LIGHT_OFFSET_Y_ATTACK;
+	}
+	
+	// 
+	var _animFinished = (jumpStartTimer >= JUMP_ANIM_TIME);
+	if (!_jumpspin){ // No changes to offset of light when not spinning
+		if (lightOffsetX == 0) {reset_light_source();}
+	} else if (_animFinished && !_jumpattack){ 
+		// Update offset of the light to match where Samus's visor is for each frame of her somersault.
+		switch(floor(imageIndex)){
+			case 0: // Visor is on top of the image.
+				lightOffsetX = 3 * image_xscale;
+				lightOffsetY = -26;
+				break;
+			case 1: // Visor is to the right of the image.
+				lightOffsetX = 6 * image_xscale;
+				lightOffsetY = -16;
+				break;
+			case 2: // Visor is on the bottom of the image.
+				lightOffsetX = -5 * image_xscale;
+				lightOffsetY = -14;
+				break;
+			case 3: // Visor is on the left of the image.
+				lightOffsetX = -7 * image_xscale;
+				lightOffsetY = -24;
+		}
+	}
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
@@ -761,25 +928,54 @@ state_airbourne = function(){
 	player_collectible_collision();
 	player_liquid_collision();
 	
+	// 
+	if (sprite_index == jumpSpriteSpin){
+		effectTimer += DELTA_TIME;
+		if (effectTimer >= JUMP_EFFECT_INTERVAL){
+			ds_list_add(jumpEffectID, create_player_jump_effect(x, y, sprite_index, floor(imageIndex), image_xscale));
+			effectTimer = 0;
+		}
+	}
+	
+	// Counting down the time that prevents Samus from somersalting or showing her jump sprites (Excluding the
+	// downward facing jump sprite) in order to display their respective intro animations, which are all based
+	// on this timer's value against specific macro values.
+	if (jumpStartTimer != JUMPSPIN_ANIM_TIME){
+		jumpStartTimer += DELTA_TIME;
+		if (jumpStartTimer >= JUMPSPIN_ANIM_TIME) {jumpStartTimer = JUMPSPIN_ANIM_TIME;}
+	}
+	
 	// Assign Samus's jumping animation, which is determined by her aiming substates, and also her "jumpspin"
 	// substate; the latter being applied based on if she was moving before the jump was entered OR if the
 	// jump button is pressed while airbourne and not somersaulting. Aside from that, the sprite will be
 	// assigned based on what her aiming direction is: upward, downward (Unique to jumping), or forward.
 	var _sState = stateFlags & ((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << AIMING_DOWN) | (1 << JUMP_SPIN));
-	switch(_sState){
-		default:					entity_set_sprite(jumpSpriteFw,		jumpingMask);	break;
-		case (1 << AIMING_UP):		entity_set_sprite(jumpSpriteUp,		jumpingMask);	break;
-		case (1 << AIMING_DOWN):	entity_set_sprite(jumpSpriteDown,	jumpingMask);	break;
-		// Jumpspin animation won't play until the "jumpStartTimer" variable hits 0; using the default jump sprite until then.
-		case (1 << JUMP_SPIN):		if (jumpStartTimer == JUMPSPIN_ANIM_TIME) {entity_set_sprite(jumpSpriteSpin, jumpingMask, maxHspdFactor, 0, 1);}
-									else									  {entity_set_sprite(jumpSpriteFw, jumpingMask);}	break;
+	if (_sState == (1 << JUMP_SPIN)){ // Set to Samus's somersault or somersault intro animation.
+		if (jumpStartTimer == JUMPSPIN_ANIM_TIME){
+			entity_set_sprite(jumpSpriteSpin, jumpingMask, 1, 0);
+		} else{ // Determine which of the two somersaulting entrance frames to set Samus to based on the timer's value.
+			if (jumpStartTimer < JUMPSPIN_ANIM_TIME / 2) {entity_set_sprite(walkSpriteFw, standingMask);}
+			else {entity_set_sprite(jumpSpriteFw, jumpingMask);}
+		}
+		return; // Don't bother checking for other animations.
 	}
-	
-	// Counting down the time that pauses the somersaulting animation in order to have a lead-in "animation" 
-	// that simply uses the default forward-facing jumping sprite during that duration.
-	if (jumpStartTimer != JUMPSPIN_ANIM_TIME){
-		jumpStartTimer += DELTA_TIME;
-		if (jumpStartTimer >= JUMPSPIN_ANIM_TIME) {jumpStartTimer = JUMPSPIN_ANIM_TIME;}
+		
+	// Applying one of Samus's non-transitional jumping sprites for the current frame; meaning she's
+	// already finished execution the jump's intro animation.
+	if (_animFinished || vspd >= 0){
+		switch(_sState){
+			default:					entity_set_sprite(jumpSpriteFw, jumpingMask);	break;
+			case (1 << AIMING_UP):		entity_set_sprite(jumpSpriteUp, jumpingMask);	break;
+			case (1 << AIMING_DOWN):	entity_set_sprite(jumpSpriteDown, jumpingMask);	break;
+		}
+		return; // No need to set an intro animation sprite, so return early.
+	}
+		
+	// Samus is in her transitional animation between standing and jumping, so apply the animation
+	// frame that matches with the direction she's aiming her arm cannon (Excluding aiming down).
+	switch(_sState){
+		default:					entity_set_sprite(walkSpriteFw, standingMask, 0, 0); break;
+		case (1 << AIMING_UP):		entity_set_sprite(walkSpriteUp, standingMask, 0, 0); break;
 	}
 }
 
@@ -823,6 +1019,10 @@ state_crouching = function(){
 	
 	// 
 	update_arm_cannon(_movement);
+	check_swap_current_weapon();
+	
+	// 
+	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 }
 
 /// @description A passing state that will play Samus's one-frame animation for entering her morphball form.
@@ -842,6 +1042,7 @@ state_enter_morphball = function(){
 			entity_set_sprite(morphballSprite, morphballMask);
 			stateFlags &= ~((1 << AIMING_DOWN) | (1 << CROUCHING));
 			stateFlags |= (1 << MORPHBALL);
+			lightComponent.isActive = false;
 			return;
 		}
 		
@@ -849,6 +1050,7 @@ state_enter_morphball = function(){
 		// She will be set to either her airbourne state if she was in the air when she exited her morphball
 		// mode, or her crouching state if she was on the ground.
 		stateFlags &= ~(1 << MORPHBALL);
+		reset_light_source();
 		if (!IS_GROUNDED){
 			object_set_next_state(state_airbourne);
 			var _bboxBottom = bbox_bottom;
@@ -862,6 +1064,10 @@ state_enter_morphball = function(){
 		standingTimer = 0;
 		hspdFraction = 0;
 		hspd = 0;
+		lightOffsetY = LIGHT_OFFSET_Y_CROUCH;
+	} else{ // Position ambient light at the visor's position in the sprite.
+		lightOffsetX = LIGHT_OFFSET_X_GENERAL;
+		lightOffsetY = LIGHT_OFFSET_Y_MBALL;
 	}
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
@@ -989,3 +1195,8 @@ state_morphball = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
+
+event_set_flag(FLAG_MORPHBALL, true);
+event_set_flag(FLAG_BOMBS, true);
+
+event_set_flag(FLAG_CHARGE_BEAM, true);
