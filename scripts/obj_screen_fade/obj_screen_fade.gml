@@ -10,6 +10,10 @@
 // in the duration variable, the fade out must be manually triggered somewhere else within the code.
 #macro	FADE_PAUSE_FOR_TOGGLE	   -250
 
+// 
+#macro	SURFACE_OFFSET_X			4
+#macro	SURFACE_OFFSET_Y			4
+
 #endregion
 
 #region Initializing enumerators that are useful/related to obj_screen_fade
@@ -20,22 +24,15 @@
 
 #region The main object code for obj_screen_fade
 
-/// @param {Id.Color}	fadeColor
-/// @param {Real}		fadeSpeed
-/// @param {Real}		fadeDuration
-function obj_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration) constructor{
-	// Much like Game Maker's own id variable for objects, this will store the unique ID value given to this
-	// singleton, which is a value that is found in the "obj_controller_data" script with all the other
-	// macros and functions for handling singleton objects.
-	id = SCREEN_FADE_ID;
-	
+/// @param {Real}	index
+function obj_screen_fade(_index) : base_struct(_index) constructor{
 	// The main variables that effect how the fade looks on the screen when it's executing its effect. The
 	// first value will determine the color of the fade, the second will determine how fast the fade will
 	// reach complete opacity and reach full transparency again, and the third will determine how long in
 	// frames (1/60th of a real-world second) the effect will be fully opaque for.
-	fadeColor =		_fadeColor;
-	fadeSpeed =		_fadeSpeed;
-	fadeDuration =	_fadeDuration;
+	fadeColor =		HEX_WHITE;
+	fadeSpeed =		0;
+	fadeDuration =	0;
 	// NOTE -- The "fadeDuration" value can be set to "FADE_PAUSE_FOR_TOGGLE" which will prevent the effect
 	// from fading out until it is signaled to by overwriting this value. Useful for things like loading 
 	// screens where the length of loading time isn't known.
@@ -44,6 +41,16 @@ function obj_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration) constructor{
 	// move towards given its current state. (This value is either 0 or 1)
 	alpha = 0;
 	alphaTarget = 1;
+	
+	// 
+	playerX = 0;
+	playerY = 0;
+	drawPlayer = true;
+	playerSurf = noone;
+	
+	// 
+	targetX = 0;
+	targetY = 0;
 
 	/// @description Code that should be placed into the "Step" event of whatever object is controlling
 	/// obj_screen_fade. In short, it will handle fading the effect into full opacity, counting down the
@@ -56,10 +63,58 @@ function obj_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration) constructor{
 			fadeDuration -= DELTA_TIME;
 			if (fadeDuration <= 0) {alphaTarget = 0;}
 		} else if (alpha == 0 && alphaTarget == 0){ // The fade has completed; clear its pointer from the singleton map.
-			if (GAME_STATE_CURRENT == GameState.Paused) {game_set_state(GAME_PREVIOUS_STATE, true);}
-			delete SCREEN_FADE;
-			SCREEN_FADE = noone;
+			if (GAME_CURRENT_STATE == GSTATE_PAUSED) {game_set_state(GAME_PREVIOUS_STATE, true);}
+			if (surface_exists(playerSurf)){
+				surface_free(playerSurf);
+				playerSurf = noone;
+				drawPlayer = false;
+				playerX = 0;
+				playerY = 0;
+			}
 		}
+	}
+	
+	/// @description Code that should be placed into the "Draw" event of whatever object is controlling
+	/// obj_screen_fade. 
+	/// @param {Real}	cameraX		The camera's x position within the current room.
+	/// @param {Real}	cameraY		The camera's y position within the current room.
+	draw_gui = function(_cameraX, _cameraY){
+		if (alpha == 0) {return;}
+		var _alpha = alpha;
+		draw_sprite_ext(spr_rectangle, 0, 0, 0, camera_get_width(), camera_get_height(), 0, fadeColor, _alpha);
+		
+		// 
+		if (drawPlayer && !surface_exists(playerSurf)){
+			// 
+			var _x = 0;
+			var _y = 0;
+			var _spriteWidth = 0;
+			var _spriteHeight = 0;
+			var _offsetX = 0;
+			var _offsetY = 0;
+			with(PLAYER){
+				_x = x;
+				_y = y;
+				_spriteWidth = sprite_get_width(sprite_index);
+				_spriteHeight = sprite_get_height(sprite_index);
+				_offsetX = sprite_get_xoffset(sprite_index) + SURFACE_OFFSET_X;
+				_offsetY = sprite_get_yoffset(sprite_index) + SURFACE_OFFSET_Y;
+			}
+			
+			// 
+			playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), _spriteHeight + (SURFACE_OFFSET_Y * 2));
+			surface_set_target(playerSurf);
+			draw_clear_alpha(c_black, 0);
+			with(PLAYER){
+				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
+				with(armCannon){
+					if (!visible){break;}
+					draw_sprite_ext(spr_samus_cannon0, imageIndex, x - _x + _offsetX, y - _y + _offsetY, image_xscale, 1, 0, c_white, 1);
+				}
+			}
+			surface_reset_target();
+		}
+		draw_surface_ext(playerSurf, playerX, playerY, 1, 1, 0, HEX_WHITE, alpha);
 	}
 }
 
@@ -73,16 +128,19 @@ function obj_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration) constructor{
 /// @param {Id.Color}	fadeColor
 /// @param {Real}		fadeSpeed
 /// @param {Real}		fadeDuration
-function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration){
-	// If another screen fade struct currently exists within the singleton variable for managing any insatnces
-	// of this effect, this function will simply exit before creating another insatnce of said struct.
-	if (SCREEN_FADE != noone) {return;}
-	
-	// Create a new instance of the screen fade with the provided characteristics found in the three 
-	// arguments values for this function; storing its unique pointer in the singleton management variable.
-	// The game state will be set to "Paused" for the duration of the screen fade.
-	SCREEN_FADE = new obj_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration);
-	if (GAME_CURRENT_STATE != GameState.Cutscene) {game_set_state(GameState.Paused);}
+/// @param {Bool}		drawPlayer
+function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration, _drawPlayer = true){
+	with(SCREEN_FADE){
+		if (alpha != 0 && alphaTarget != 0) {return;}
+		alpha = 0;
+		alphaTarget = 1;
+		
+		fadeColor =		_fadeColor;
+		fadeSpeed =		_fadeSpeed;
+		fadeDuration =	_fadeDuration;
+		drawPlayer =	_drawPlayer;
+	}
+	if (GAME_CURRENT_STATE != GSTATE_CUTSCENE) {game_set_state(GSTATE_PAUSED);}
 }
 
 #endregion

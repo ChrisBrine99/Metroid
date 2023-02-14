@@ -97,6 +97,9 @@
 //								 .
 //								145
 
+// 
+#macro	FLAG_SPECIAL_DOOR0		150
+
 #endregion
 
 #region Initializing enumerators that are useful/related to the event handler

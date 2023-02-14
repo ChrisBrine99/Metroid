@@ -1,6 +1,6 @@
 // When destroyed, the block will have its respawn timer counted up until it reaches a desired value. After that,
 // the block will play a regeneration animation and it will be reset to how it was before it was destroyed.
-if (IS_DESTROYED /*&& GAME_CURRENT_STATE == GameState.InGame*/){
+if (IS_DESTROYED && GAME_CURRENT_STATE == GSTATE_NORMAL){
 	respawnTimer += DELTA_TIME;
 	if (respawnTimer >= timeToRespawn && timeToRespawn != RESPAWN_TIMER_INFINITE && effectID == noone){
 		if (CAN_USE_EFFECTS){

@@ -58,6 +58,10 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	entity_set_sprite(_isCharged ? spr_power_beam_charged : spr_power_beam, -1);
 	stateFlags |= (1 << TYPE_POWER_BEAM);
 	
+	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
+	if (IS_MOVING_HORIZONTAL) {hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
+	else if (IS_MOVING_VERTICAL) {vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
+	
 	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
 	// by if the beam is charged or not charged prior to being fired.
 	if (_isCharged) {object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);}
@@ -90,7 +94,6 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 /// for possible collisions with any destructible objects in the current room.
 state_default = function(){
 	apply_frame_movement(projectile_world_collision);
-	collision_destructible_objects();
 }
 
 /// @description 
@@ -113,7 +116,6 @@ state_beam_splitter = function(){
 	
 	// 
 	apply_frame_movement(projectile_world_collision);
-	collision_destructible_objects();
 }
 
 #endregion

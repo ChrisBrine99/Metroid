@@ -43,7 +43,7 @@ function entity_draw(){
 	// image. Otherwise, the sprite will only render whatever image is found at the "imageIndex" number. After 
 	// that number exceeds the length of the sprite's animation, it will automatically loop, set the "animation 
 	// end" flag, and reset the value within "imageIndex".
-	if (GAME_CURRENT_STATE != GameState.Paused && spriteLength > 1){
+	if (GAME_CURRENT_STATE != GSTATE_PAUSED && spriteLength > 1){
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
 		if (imageIndex >= spriteLength){ // Flip "animation end" bit; reset animation when animation limit reached.
 			stateFlags |= (1 << ANIMATION_END);

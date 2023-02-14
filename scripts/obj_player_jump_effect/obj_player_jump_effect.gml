@@ -18,13 +18,17 @@ function obj_player_jump_effect(_index) : base_struct(_index) constructor{
 	x = 0;
 	y = 0;
 	
-	// 
+	// Borrows the naming-scheme and functionality of GameMaker's own "sprite_index" and "image_xscale" variables
+	// for drawing the effect. Using a unique alpha channel value and stores the frame of Samus's animation
+	// that will be used for the effect.
 	sprite_index = NO_SPRITE;
 	image_xscale = 1;
 	imageIndex = 0;
 	alpha = 0.5;
 	
-	/// @description 
+	/// @description Placed within the Draw event of whatever is managing this object (More than likely the
+	/// player object since it's their effect). It will simply render the image provided by its variables;
+	/// skipping that rendering entirely if there isn't a valid sprite index set.
 	draw = function(){
 		if (sprite_index == NO_SPRITE) {return;}
 		draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, 1, 0, c_white, alpha);
@@ -35,7 +39,9 @@ function obj_player_jump_effect(_index) : base_struct(_index) constructor{
 
 #region Global functions related to obj_arm_cannon
 
-/// @description 
+/// @description Creates the ghosting effect that ir produced by Samus whenever she is somersaulting in the air.
+/// These ghosts are lightweight objects that are created and have their pointers returned by this function for
+/// storage and memory management.
 /// @param {Real}			x			Samus's x position at the time of this effect's creation.
 /// @param {Real}			y			Samus's y position at the time of this effect's creation.
 /// @param {Asset.GmSprite} sprite		The jumping sprite that is copied over from Samus.

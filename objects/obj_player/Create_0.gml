@@ -192,7 +192,9 @@ morphball_to_crouch = function(){
 /// Beam, Plasma Beam, Missile, Ice Missile, and Shock Missile.
 /// @param {Real} movement	A value of 1, 0, or -1 depending on the state of Samus's horizontal movement inputs.
 update_arm_cannon = function(_movement){
-	// 
+	// Create some local boolean values that are utilized throughout this function. Switch Samus to her
+	// "aiming" substate, which will prevent her from somersaulting or walking without her beam drawn until
+	// that return timer exceeds a certain value.
 	var _isAiming = IS_AIMING;
 	var _useHeld = IS_USE_HELD;
 	var _usePressed = IS_USE_PRESSED;
@@ -203,7 +205,8 @@ update_arm_cannon = function(_movement){
 		aimReturnTimer = 0;
 	}
 	
-	// 
+	// Handling the charge beam logic, which is only factored in if the player doesn't have a missile equipped
+	// and they have the optional charge beam item collected.
 	var _isCharged = false;
 	if (!IS_MISSILE_EQUIPPED){
 		var _chargeBeam = event_get_flag(FLAG_CHARGE_BEAM);
@@ -211,14 +214,15 @@ update_arm_cannon = function(_movement){
 			chargeTimer += DELTA_TIME;
 			if (chargeTimer >= MAX_CHARGE_TIME) {chargeTimer = MAX_CHARGE_TIME;}
 		
-			// 
+			// Prevent any normal beam projectile from being created while the charge timer is increasing.
 			if (chargeTimer >= min(tapFireRate, 5)){
 				aimReturnTimer = 0;
 				return;
 			}
 		}
 		
-		// 
+		// Determine if the beam is fully charged relative to the timer's current value and if the player has
+		// released the fire button. The timer for charge is reset on this button's release.
 		_isCharged = (_useReleased && _chargeBeam && chargeTimer >= MIN_CHARGE_TIME);
 		if (_useReleased) {chargeTimer = 0;}
 	}
@@ -253,7 +257,9 @@ update_arm_cannon = function(_movement){
 	}
 }
 
-/// @description 
+/// @description Resets Samus's ambient light source to match the settings it had when it was being used to
+/// represent the light coming from her helmet's visor. It will assume Samus is standing, and will place the
+/// light at the offset that matches such a state.
 reset_light_source = function(){
 	var _isAimingUp = stateFlags & (1 << AIMING_UP);
 	with(lightComponent){
@@ -407,10 +413,10 @@ create_missile = function(_x, _y, _imageXScale){
 /// @param {Real}	y				Samus's current vertical position within the room.
 /// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
 create_ice_missile = function(_x, _y, _imageXScale){
-	if (numMissiles > 3){ // Can't use an ice missile without at least three remaining.
+	if (numMissiles > 5){ // Can't use an ice missile without at least five remaining.
 		//var _vspd = vspd;
 		//var _projectile = instance_create_object(0, 0, obj_ice_missile);
-		//numMissiles -= 3; // Subtracts three missiles from the current ammo reserve.
+		//numMissiles -= 5; // Subtracts three missiles from the current ammo reserve.
 	}
 }
 
@@ -418,7 +424,7 @@ create_ice_missile = function(_x, _y, _imageXScale){
 
 #endregion
 
-#region Weapon swapping functions
+#region Weapon swapping function
 
 /// @description Swaps Samus's beam to another based on what beam hotkey was pressed by the user and what 
 /// beams they currently have available to switch to. If the only beam available is the power beam, no switch
@@ -426,12 +432,14 @@ create_ice_missile = function(_x, _y, _imageXScale){
 /// missile types (If she has any variants unlocked).
 check_swap_current_weapon = function(){
 	if (IS_ALT_WEAPON_HELD && maxMissiles > 0){
-		// 
-		if (IS_SWAP_MISS_PRESSED)		{curBeam = (1 << MISSILE);}
-		else if (IS_SWAP_IMISS_PRESSED)	{curBeam = (1 << ICE_MISSILE);}
-		else if (IS_SWAP_SMISS_PRESSED)	{curBeam = (1 << SHOCK_MISSILE);}
+		// Swap to the next missile depending on which of the input(s) has been pressed by the player. The
+		// priority of missiles is: standard, ice, and shock, whenever multiple of these inputs are pressed
+		// at once occurs.
+		if (IS_SWAP_MISS_PRESSED)		{curMissile = (1 << MISSILE);}
+		else if (IS_SWAP_IMISS_PRESSED)	{curMissile = (1 << ICE_MISSILE);}
+		else if (IS_SWAP_SMISS_PRESSED)	{curMissile = (1 << SHOCK_MISSILE);}
 		
-		// 
+		// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 		if (curWeapon != curMissile){
 			curWeapon = curMissile;
 			tapFireRate = MISSILE_SWAP_TIME;
@@ -442,13 +450,15 @@ check_swap_current_weapon = function(){
 		return;
 	}
 	
-	// 
+	// Much like for missiles, the beam will be switched to whichever one has its hotkey pressed relative to
+	// that beam hotkey's priority if multiple happen to be pressed at the same time by the player. The priority
+	// order is as follows: power, ice, wave, and plasma, respectively.
 	if (IS_SWAP_POWB_PRESSED)		{curBeam = (1 << POWER_BEAM);}
 	else if (IS_SWAP_ICEB_PRESSED)	{curBeam = (1 << ICE_BEAM);}
 	else if (IS_SWAP_WAVB_PRESSED)	{curBeam = (1 << WAVE_BEAM);}
 	else if (IS_SWAP_PLAB_PRESSED)	{curBeam = (1 << PLASMA_BEAM);}
 	
-	// 
+	// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 	if (curWeapon != curBeam){
 		curWeapon = curBeam;
 		tapFireRate = BEAM_SWAP_TIME;
@@ -474,6 +484,7 @@ initialize = function(_state){
 	entity_set_position(128, 336);
 	entity_set_sprite(introSprite, spr_empty_mask);
 	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE);
+	game_set_state(GSTATE_NORMAL, true); // FOR TESTING
 }
 
 #endregion
@@ -577,6 +588,31 @@ player_liquid_collision = function(){
 	}
 }
 
+/// @description Handles collisions that can occur between the player and a room warp object. Touching one of
+/// these objects will result in all entities in the world briefly pausing while the screen fades in and out
+/// to hide the abrupt room change that occurs when using room_goto. The effect unique to room warps is also
+/// prepared for execution here.
+player_warp_collision = function(){
+	var _warp = instance_place(x, y, obj_room_warp);
+	if (_warp != noone){
+		_warp.isWarping = true;
+		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
+		object_set_next_state(state_room_warp);
+		animSpeed = 0;
+		
+		// Determine the position to place the surface that contains a snapshot of Samus at. This snapshot
+		// is just the last frame of animation she was in, and her arm cannon if it was being shown for said
+		// animation. The position needs the camera's value remove from it since it is drawn on the GUI layer.
+		var _camID = CAMERA.camera.ID;
+		var _x = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camID);
+		var _y = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camID);
+		with(SCREEN_FADE){
+			playerX = _x - SURFACE_OFFSET_X;
+			playerY = _y - SURFACE_OFFSET_Y;
+		}
+	}
+}
+
 #endregion
 
 #region State function initializations
@@ -594,7 +630,40 @@ state_intro = function(){
 	}
 }
 
-/// @description 
+/// @description The state Samus is in whenever a room warp transition is occurring. In this state no input is
+/// processed, and no collisions are handled either. Instead, this state is responsible for moving Samus's
+/// snapshot overlaying the screen fade towards what her new position is on the game screen. Once the positions
+/// of each match, the room transition effect is completed, and Samus will return to her previous state.
+state_room_warp = function(){
+	var _camID = CAMERA.camera.ID;
+	var _targetX = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camID) - SURFACE_OFFSET_X;
+	var _targetY = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camID) - SURFACE_OFFSET_Y;
+	with(SCREEN_FADE){
+		if (alpha == 1 && alphaTarget == 1){
+			var _closeScreenFade = false;
+			playerX += (_targetX - playerX) / 5 * DELTA_TIME;
+			playerY += (_targetY - playerY) / 5 * DELTA_TIME;
+			if (point_distance(playerX, playerY, _targetX, _targetY) <= 1){
+				_closeScreenFade = true;
+				playerY = _targetX;
+				playerY = _targetY;
+			}
+			// Once the positions match, the screen fade's alpha target is set to fully opaque to close it out.
+			if (_closeScreenFade) {alphaTarget = 0;}
+		} else if (alpha == 0 && alphaTarget == 0){
+			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
+				object_set_next_state(lastState);
+				animSpeed = 1;
+			}
+		}
+	}
+}
+
+/// @description Samus's default or "grounded, but standing" state. She can find herself in this state whenever
+/// she is on the ground, but not in her morphball form OR crouching; aiming up doesn't affect anything either
+/// than the sprite drawn for Samus while she is standing or walking. From here, she can enter her airbourne
+/// state whenever there is no longer a viable floor beneath her, and she can also enter into her crouching
+/// state if the player presses the input they've bound to her "down" action.
 state_default = function(){
 	// First, player input is processed for the frame by calling the function responsible for handling that
 	// logic within the player object. Must be done first to avoid inputs from the previous frame triggering
@@ -716,12 +785,14 @@ state_default = function(){
 		aimSwitchTimer = 0;
 	}
 	
-	// 
+	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
+	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
+	// The second function will handle weapon/beam swapping for this state.
 	update_arm_cannon(_movement);
 	check_swap_current_weapon();
 	
-	// 
-	lightOffsetX = 4 * image_xscale;
+	// Use the general offset position for the visor light's current x-position.
+	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
@@ -730,6 +801,7 @@ state_default = function(){
 	player_collectible_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_warp_collision();
 	
 	// Setting a walking sprite to use if Samus is moving (Determined by the value of the bit flag "IS_WALKING"
 	// at the end of the frame). She can have three possible animations for this substate: walking normally, 
@@ -770,13 +842,17 @@ state_airbourne = function(){
 	// her horizontal velocity is reset as well as any jumping-specific substate flags.
 	apply_gravity(MAX_FALL_SPEED);
 	if (IS_GROUNDED){
-		object_set_next_state(state_default);
+		// Reset the light if Samus was in her screw attack animation to return her ambient light sources
+		// ack to being utilized as illumination for her visor.
+		if (IS_JUMP_ATTACK) {reset_light_source();}
+		
+		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
+		// Samus's horizontal velocity to make it add to the impact of Samus landing.
 		stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK) | (1 << AIMING_DOWN));
 		jumpStartTimer = 0;
 		aimReturnTimer = 0;
 		hspdFraction = 0;
 		hspd = 0;
-		reset_light_source();
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -784,6 +860,17 @@ state_airbourne = function(){
 		var _bboxBottom = bbox_bottom;
 		mask_index = standingMask;
 		y -= (bbox_bottom - _bboxBottom);
+		
+		// Check collision to see if Samus has something above her head and directly below her. If she does, 
+		// switch over to her crouching state instead of her default.
+		if (place_meeting(x, y, par_collider) && place_meeting(x, y + 1, par_collider)){
+			object_set_next_state(state_crouching);
+			entity_set_sprite(crouchSprite, crouchingMask);
+			lightOffsetY = LIGHT_OFFSET_Y_CROUCH;
+		} else{
+			object_set_next_state(state_default);
+			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
+		}
 		return; // State has changed; exit the function prematurely.
 	}
 	
@@ -875,13 +962,15 @@ state_airbourne = function(){
 		lightComponent.isActive = true;
 	}
 	
-	// 
-	if (jumpStartTimer >= JUMP_ANIM_TIME){
-		update_arm_cannon(_movement);
-		check_swap_current_weapon();
-	}
+	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
+	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
+	// The second function will handle weapon/beam swapping for this state.
+	update_arm_cannon(_movement);
+	check_swap_current_weapon();
 	
-	// 
+	// The light effect that occurs when Samus is using her screw attack, which will vastly increase the size
+	// and brightness of the light; moving it to the center of her animation for the duration. The visor light
+	// is replaced by this light.
 	var _jumpattack = IS_JUMP_ATTACK;
 	var _jumpspin = IS_JUMP_SPIN;
 	with(lightComponent){
@@ -896,7 +985,9 @@ state_airbourne = function(){
 		lightOffseY = LIGHT_OFFSET_Y_ATTACK;
 	}
 	
-	// 
+	// When Samus isn't using her screw attack, the ambient light position is updated to match Samus's visor's
+	// position during her somersaulting jump animation depending on the current frame of the animation that
+	// is visible on-screen.
 	var _animFinished = (jumpStartTimer >= JUMP_ANIM_TIME);
 	if (!_jumpspin){ // No changes to offset of light when not spinning
 		if (lightOffsetX == 0) {reset_light_source();}
@@ -927,8 +1018,10 @@ state_airbourne = function(){
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
 	player_liquid_collision();
+	player_warp_collision();
 	
-	// 
+	// Producing the ghosting effect for Samus's somersault, which leaves an instance of Samus that quickly
+	// fades out. This effect is created at a regular interval until she is no longer somersaulting.
 	if (sprite_index == jumpSpriteSpin){
 		effectTimer += DELTA_TIME;
 		if (effectTimer >= JUMP_EFFECT_INTERVAL){
@@ -1017,11 +1110,13 @@ state_crouching = function(){
 		standingTimer = 0;
 	}
 	
-	// 
+	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
+	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
+	// The second function will handle weapon/beam swapping for this state.
 	update_arm_cannon(_movement);
 	check_swap_current_weapon();
 	
-	// 
+	// Use the general offset position for the visor light's current x-position.
 	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 }
 
@@ -1077,6 +1172,7 @@ state_enter_morphball = function(){
 	player_collectible_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_warp_collision();
 }
 
 /// @description 
@@ -1184,6 +1280,7 @@ state_morphball = function(){
 	player_collectible_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_warp_collision();
 	
 	// Assign the morphball's sprite, and update its image speed based on whatever its current horizontal
 	// movement factor is set to (Ex. A factor of 0.5 would make the morphball animate at half its normal
@@ -1200,3 +1297,4 @@ event_set_flag(FLAG_MORPHBALL, true);
 event_set_flag(FLAG_BOMBS, true);
 
 event_set_flag(FLAG_CHARGE_BEAM, true);
+event_set_flag(FLAG_ICE_BEAM, true);

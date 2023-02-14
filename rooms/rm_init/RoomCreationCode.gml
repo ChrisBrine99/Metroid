@@ -9,6 +9,7 @@ instance_create_singleton_struct(obj_effect_handler);
 instance_create_singleton_struct(obj_cutscene_manager);
 instance_create_singleton_struct(obj_textbox_handler);
 instance_create_singleton_struct(obj_control_info);
+instance_create_singleton_struct(obj_screen_fade);
 instance_create_singleton_object(0, 0, obj_controller);
 instance_create_singleton_object(0, 0, obj_player);
 instance_create_singleton_object(0, 0, obj_controller);

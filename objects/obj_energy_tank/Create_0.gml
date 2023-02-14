@@ -26,10 +26,10 @@ object_add_light_component(x, y, 8, 4, baseRadius, HEX_LIGHT_PURPLE, baseStrengt
 // Stores the parent function in another variable so it can be called through the overrided version found
 // within this child object. Otherwise, that original function's code would be unaccessible.
 __collectible_collect_self = collectible_collect_self;
-/// @description Switches Samus's currently equipped beam over to this newly collected ice beam.
+/// @description Increases Samus's current energy and its maximum possible capacity by 100 units.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER){ // Increases current hitpoints by 100 since the energy tank is full.
+	with(PLAYER){
 		maxHitpoints += 100;
 		hitpoints += 100;
 	}

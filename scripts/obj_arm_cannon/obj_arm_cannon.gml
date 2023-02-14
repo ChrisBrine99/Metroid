@@ -45,6 +45,9 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 				default: // By default the arm cannon will not be rendered.
 					_visible = false;
 					break;
+				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
+					_visible = IS_AIMING;
+					break;
 				case state_default: // Beam position for when samus is standing or walking on the floor.
 					if (stateFlags & (1 << AIMING_UP)){
 						_x = x - (1 * image_xscale);

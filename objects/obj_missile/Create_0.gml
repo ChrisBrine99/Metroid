@@ -70,7 +70,6 @@ state_default = function(){
 	// After the acceleration has been applied to the missile for the current frame, the collision and movement
 	// for the frame will be processed; and any collisions with destructible objects directly after that.
 	apply_frame_movement(projectile_world_collision);
-	collision_destructible_objects();
 	
 	// Whenever the missile is destroyed, it will create an explosion effect and optionally a camera shake to
 	// go along with that missile explosion in the super missile's case. That is done here and not the destroy

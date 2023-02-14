@@ -28,7 +28,7 @@ function obj_destructible_effect(_index) : base_struct(_index) constructor{
 	/// not in its "Paused" state much like how entities animate. The difference here is the effect struct is
 	/// destroyed once the animation has reached its start or ending, respectively.
 	draw = function(){
-		//if (GAME_CURRENT_STATE == GameState.Paused) {return;}
+		if (GAME_CURRENT_STATE == GSTATE_PAUSED) {return;}
 		
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
 		if ((imageIndex < 0 && animSpeed < 0) || (imageIndex >= spriteLength && animSpeed > 0)){
@@ -41,7 +41,6 @@ function obj_destructible_effect(_index) : base_struct(_index) constructor{
 					return; // Struct is deleted by the above function already; so this function exits early.
 				}
 				instance_destroy_struct(effectID);
-				delete effectID;
 				effectID = noone;
 			}
 			return; // Prevent the sprite from rendering once its outside its valid image index bounds.

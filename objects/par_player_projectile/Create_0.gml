@@ -49,6 +49,9 @@ event_inherited();
 // contact with. So, this parent object will be where it's initialized at a default of zero damage.
 damage = 0;
 
+// 
+collisionList = ds_list_create();
+
 #endregion
 
 #region Projectile initialization function
@@ -66,10 +69,6 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	__initialize(_state); // Calls initialize function found in "par_dynamic_entity".
 	set_initial_position(_x, _y, _imageXScale);
 	stateFlags |= (1 << DRAW_SPRITE);
-	
-	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
-	if (IS_MOVING_HORIZONTAL) {hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
-	else if (IS_MOVING_VERTICAL) {vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
 	
 	// Damage is always quadrupled for a charged projectile and the bit flag is flipped in case the fact that 
 	// the projectile is charged needs to be referenced after creation.
@@ -163,19 +162,31 @@ set_initial_position = function(_x, _y, _imageXScale){
 /// @param {Real}	deltaHspd	Movement along the X-axis in whole pixels for the current frame.
 /// @param {Real}	deltaVspd	Movement along the Y-axis in whole pixels for the current frame.
 projectile_world_collision = function(_deltaHspd, _deltaVspd){
-	// If the projectile has been flagged to ignore wall collision, the function's collision check is skipped
-	// and the movement velocities for both the horizontal and vertical axes will simply be added to the current
-	// position of the projectile.
+	// First, clear the list of the previous frame's collision data. After that, check for collisions along the
+	// line of movement for the projectile in question. After the initial collision_line check occurs, a check
+	// against any special colliders is performed.
+	ds_list_clear(collisionList);
+	var _length = collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, false, true, collisionList, true);
+	var _collider = noone;
+	for (var i = 0; i < _length; i++){
+		_collider = collisionList[| i];
+		projectile_door_collision(_collider);
+		projectile_destructible_collision(_collider);
+		if (IS_DESTROYED) {break;}
+	}
+	 
+	// The projectile doesn't collide with the walls, ceilings, and floors in the world; move it to its next
+	// position and exit the function early.
 	if (CAN_IGNORE_WALLS){
 		x += _deltaHspd;
 		y += _deltaVspd;
 		return;
 	}
 	
-	// If the projectile is set to collide with walls, perform the line collision here; including both velocities
-	// at once to create an accurate line of movement for the frame. If the function returns true, the values
-	// for movement are set to 0 and the projectile is flagged for destruction.
-	if (collision_line(x, y, x + _deltaHspd, y + _deltaVspd, obj_collider, true, true)){
+	// There was one or more collisions found along the projectile's line of movement, so it will be destroyed
+	// at the start of the next frame and its movement that should've occurred during this frame will be ignored.
+	if (_length > 0){
+		stateFlags &= ~(1 << DRAW_SPRITE);
 		stateFlags |= (1 << DESTROYED);
 		_deltaHspd = 0;
 		_deltaVspd = 0;
@@ -184,33 +195,73 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	y += _deltaVspd;
 }
 
-/// @description Handles collision between a player projectile and any potential destructible objects in the
-/// world. This function is called directly after the world collision function for the projectile has executed.
-/// As a result, the collision checks for one pixel in the relevant movement directions for a destructible.
-collision_destructible_objects = function(){
-	var _destructible = instance_place(x + sign(hspd), y + sign(vspd), par_destructible);
-	with(_destructible){
-		// Don't bother checking for collision with a block that hhas already been destroyed. If the block
-		// hasn't been destroyed, the first thing that occurs is the block will be revealed to the player.
-		if (IS_DESTROYED) {return;}
-		stateFlags &= ~(1 << HIDDEN);
+/// @description Checks the projectile against a destructible collider to see if it can be destroyed. If it
+/// can't destroy it, but the destructible was hidden, it will be revealed to the player until they leave the
+/// room. Otherwise, it will be revealed and destroyed should it be weak to the projectile.
+/// @param {Id.Instance}	instance
+projectile_destructible_collision = function(_instance){
+	var _isDestroyed = false;
+	var _isMissile = IS_MISSILE;
+	with(_instance){
+		// Check to make sure the instance that is being checked is a child of "par_destructible". Otherwise,
+		// the game will crash trying to access variables that don't exist on the object as the collision list
+		// stores children of ANY collision object and not just the group this function processes. Also, ignore
+		// the collision if the destructible is already destroyed.
+		if (!object_is_ancestor(object_index, par_destructible) || IS_DESTROYED) {return;}
 		
-		// Check while destructible block is being collided with by checking the index given to the object
-		// by GameMaker itself (Stored in the "object_index" variable). For missile blocks, the only way to
-		// destroy them is with a projectile that's considered a missile, but the generic block and item ball
-		// can be broken by any and all player projectiles.
-		var _isDestroyed = false;
+		// Check the index of this destructible against all possible destructilbe objects that can be destroyed
+		// by one of the player's many projectile weapons. If the index matchs, another check will be performed
+		// for the object to see if the projectile matches the destructible's weakness if necessary.
 		switch(object_index){
 			case obj_destructible_all:
-			case obj_destructible_collectible_ball:	_isDestroyed = true;				break;
-			case obj_destructible_missile:			_isDestroyed = IS_MISSILE;			break;
+			case obj_destructible_collectible_ball:	_isDestroyed = true;		break;
+			case obj_destructible_missile:			_isDestroyed = _isMissile;	break;
 		}
 		
-		// Only trigger the destruction of the specified block if the switch statement resulted in 
-		// "_isDestroyed" being set to true.
+		// If the destruction of the object was a success, trigger it to destroy and play the animation for that
+		// while also setting its hidden flag to false so it will be visible even after it has regenerated.
 		if (_isDestroyed) {destructible_destroy_self();}
+		stateFlags &= ~(1 << HIDDEN);
 	}
-	if (_destructible != noone && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
+	
+	// Destroy the projectile if it can't pass through walls and the collision was a success.
+	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
+}
+
+/// @description Checks the projectile against the various door types that exist within the game to see if it
+/// can destroy the door instance in question. Otherwise, it will leave the door as it is and destroy itself
+/// only (If it can collide with the environment at all).
+/// @param {Id.Instance}	instance
+projectile_door_collision = function(_instance){
+	var _isDestroyed = false;
+	var _isMissile = IS_MISSILE;
+	with(_instance){
+		// Make sure the instance that is being checked is a child of the generic door object. Otherwise, the 
+		// object will try to reference objects that don't exist in it and the game will crash due to the error.
+		if (!object_is_ancestor(object_index, obj_general_door) && object_index != obj_general_door) {break;}
+		
+		// Check the door instance against all possible door objects to see which it matches up with; performing
+		// a check against the projectile to see if it matches what is required to open the door.
+		switch(object_index){
+			case obj_general_door:			_isDestroyed = true;											break;
+			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM);			break;
+			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM);		break;
+			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM);		break;
+			case obj_missile_door:			_isDestroyed = _isMissile;										break;
+			case obj_super_missile_door:	_isDestroyed = other.stateFlags & (1 << TYPE_SUPER_MISSILE);	break;
+		}
+		
+		// If the door was successfully opened by the projectile, it will trigger the door to open by allowing
+		// it to animate at full speed. Optionally, the flag for the door is set so it won't have to be unlocked
+		// by the player again even after leaving the room.
+		if (_isDestroyed){
+			if (flagID != EVENT_FLAG_INVALID) {event_set_flag(flagID, true);}
+			animSpeed = 1;
+		}
+	}
+	
+	// Destroy the projectile if it can't pass through walls and the collision was a success.
+	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
 }
 
 #endregion
