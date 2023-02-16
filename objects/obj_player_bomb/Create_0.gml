@@ -36,7 +36,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb, spr_empty_mask);
-	stateFlags |= (1 << DRAW_SPRITE);
+	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
 }
 
 #endregion

@@ -1,3 +1,3 @@
-targetX = 912;
-targetY = 144;
+targetX = 920;
+targetY = 112;
 targetRoom = rm_test02;

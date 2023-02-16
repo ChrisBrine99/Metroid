@@ -26,7 +26,7 @@ with(destructibleID){
 			with(other.lightComponent) {isActive = true;}
 			_stateFlags &= ~(1 << HIDDEN);
 		}
-	} else if (_stateFlags & (1 << HIDDEN)){ // Hide the collectible and its light source.
+	} else{ // Hide the collectible and its light source.
 		with(other.lightComponent) {isActive = false;}
 		_stateFlags |= (1 << HIDDEN);
 	}

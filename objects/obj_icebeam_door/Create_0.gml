@@ -1,3 +1,9 @@
+#region Door light color macro
+
+#macro	ICE_LIGHT_COLOR			HEX_WHITE
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -5,7 +11,7 @@
 event_inherited();
 // Alter the ambient light source to match the ice door's color scheme, while preserving its size and strength.
 // Also swap the sprite to the one that represents the ice door instead of the default general door.
-lightComponent.set_properties(64, HEX_WHITE, 0.7);
+lightComponent.set_properties(ACTIVE_LIGHT_RADIUS, ICE_LIGHT_COLOR, ACTIVE_LIGHT_STRENGTH);
 entity_set_sprite(spr_icebeam_door, -1, 0, 0);
 
 #endregion

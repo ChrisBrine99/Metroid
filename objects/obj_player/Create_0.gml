@@ -87,7 +87,7 @@ bombDropTimer = 0;
 bombJumpVspd = -4;
 bombExplodeID = noone;
 
-//
+// 
 armCannon = instance_create_struct(obj_arm_cannon);
 
 // 
@@ -289,7 +289,7 @@ create_projectile = function(_charged){
 			holdFireRate = 20;
 			break;
 		case (1 << ICE_BEAM):		// = 2
-			if (_splitBeam)	{create_ice_beam_split(x, y, image_xscale, _charged);}
+			if (_splitBeam)	{/*create_ice_beam_split(x, y, image_xscale, _charged);*/}
 			else			{create_ice_beam(x, y, image_xscale, _charged);}
 			tapFireRate = 36;
 			holdFireRate = 46;
@@ -431,7 +431,7 @@ create_ice_missile = function(_x, _y, _imageXScale){
 /// will occur. On top of that, if Samus is using her missiles, it will swap to one of her three available
 /// missile types (If she has any variants unlocked).
 check_swap_current_weapon = function(){
-	if (IS_ALT_WEAPON_HELD && maxMissiles > 0){
+	if (IS_ALT_WEAPON_HELD && event_get_flag(FLAG_MISSILES)){
 		// Swap to the next missile depending on which of the input(s) has been pressed by the player. The
 		// priority of missiles is: standard, ice, and shock, whenever multiple of these inputs are pressed
 		// at once occurs.
@@ -481,9 +481,9 @@ __initialize = initialize;
 /// @param {Function}	state
 initialize = function(_state){
 	__initialize(_state);
-	entity_set_position(128, 336);
+	entity_set_position(304, 304);
 	entity_set_sprite(introSprite, spr_empty_mask);
-	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE);
+	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
 	game_set_state(GSTATE_NORMAL, true); // FOR TESTING
 }
 
@@ -1246,13 +1246,25 @@ state_morphball = function(){
 		return; // State potentially changed; exit the current state function prematurely.
 	}
 	
-	// Spawning in a standard morphball bomb, which is only possible if there are less than the maximum bombs
-	// currently deployed in the current room, the buffer timer is a value of zero, and the player presses the
-	// proper input for creating one.
-	if (IS_USE_PRESSED && bombDropTimer == 0 && event_get_flag(FLAG_BOMBS) && instance_number(obj_player_bomb) < MAX_STANDARD_BOMBS){
-		var _id = instance_create_object(x, y - 5, obj_player_bomb, depth - 1);
-		with(_id) {initialize(state_default);}
-		bombDropTimer = BOMB_DROP_RATE;
+	// Using the standard bombs (If the auxilliary weapon input isn't pressed OR the player doesn't have
+	// access to the power bombs yet) or power bombs if the player has access to them. Both require the
+	// timer for bomb use to be zero, and both will set the timer to different amount to differentiate
+	// how often each can be used.
+	if (IS_USE_PRESSED && bombDropTimer == 0){
+		if (IS_ALT_WEAPON_HELD && event_get_flag(FLAG_POWER_BOMBS) && numPowerBombs > 0){ // Deploying a power bomb.
+			var _id = instance_create_object(x, y - 5, obj_player_power_bomb, depth - 1);
+			var _maxHitpoints = 0;
+			with(_id){ // Copy the value for maximum hitpoints for the bomb drop timer.
+				_maxHitpoints = maxHitpoints;
+				initialize(state_default);
+			}
+			bombDropTimer = _maxHitpoints + 30; // Lasts half a second longer than the power bomb explosion's full length.
+			numPowerBombs--;
+		} else if (event_get_flag(FLAG_BOMBS) && instance_number(obj_player_bomb) < MAX_STANDARD_BOMBS){ // Deploying a standard bomb.
+			var _id = instance_create_object(x, y - 5, obj_player_bomb, depth - 1);
+			with(_id) {initialize(state_default);}
+			bombDropTimer = BOMB_DROP_RATE;
+		}
 	}
 	
 	// Counting down the timer that prevents spamming morphball bombs with each push of the "use weapon" input.
@@ -1293,8 +1305,4 @@ state_morphball = function(){
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
 
-event_set_flag(FLAG_MORPHBALL, true);
-event_set_flag(FLAG_BOMBS, true);
-
-event_set_flag(FLAG_CHARGE_BEAM, true);
-event_set_flag(FLAG_ICE_BEAM, true);
+event_set_flag(FLAG_MISSILES, true);

@@ -10,7 +10,8 @@ object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
 
 #region Unique variable initializations
 
-// 
+// Stores a list of all destructible objects that have come into contact with the bomb explosion. It's looped
+// through in the bomb explosion's main state to check if the destructible should be destroyed by it or not.
 collisionList = ds_list_create();
 
 #endregion
@@ -39,10 +40,8 @@ initialize = function(_state){
 state_default = function(){
 	// Keep checking to see if the flag for the animation's completion has been set. If so, the bomb explosion
 	// will be flagged for deletion and no longer have a collision mask until that deletion has occurred.
-	if (DID_ANIMATION_END){
+	if (imageIndex == spriteLength - 1){
 		stateFlags |= (1 << DESTROYED);
-		imageIndex = spriteLength - 1;
-		animSpeed = 0;
 		mask_index = spr_empty_mask;
 		visible = false;
 		return; // Object flagged for destruction, exit the state function prematurely.
@@ -60,6 +59,25 @@ state_default = function(){
 		}
 	}
 	if (_length > 0){ds_list_clear(collisionList);}
+	
+	// Check for collision with the general door and also the inactive door (In case it's active) to see
+	// if they should be opened by the bomb's explosion. Every other door type cannot be opened by the
+	// bomb explosion, so they aren't even considered for collision.
+	var _door = instance_place(x, y, obj_general_door);
+	with(_door){
+		var _isDestroyed = false;
+		switch(object_index){
+			case obj_general_door:	_isDestroyed = true;						break;
+			case obj_inactive_door:	_isDestroyed = inactive_door_collision();	break;
+		}
+		
+		// If the local flag is set to true after the switch statement has been processed, the door will
+		// be opened by the bomb's explosion. Otherwise, nothing will happen to the door.
+		if (_isDestroyed){
+			if (flagID != EVENT_FLAG_INVALID) {event_set_flag(flagID, true);}
+			animSpeed = 1;
+		}
+	}
 }
 
 #endregion

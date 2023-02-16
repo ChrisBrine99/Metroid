@@ -1,20 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_inactive_door",
+  "name": "obj_super_missiles",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":4,"eventType":7,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Doors",
-    "path": "folders/Resources/Core/Entities/Static/Doors.yy",
+    "name": "Collectible",
+    "path": "folders/Resources/Core/Entities/Static/Collectible.yy",
   },
   "parentObjectId": {
-    "name": "obj_general_door",
-    "path": "objects/obj_general_door/obj_general_door.yy",
+    "name": "par_collectible",
+    "path": "objects/par_collectible/par_collectible.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -32,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_inactive_door",
-    "path": "sprites/spr_inactive_door/spr_inactive_door.yy",
+    "name": "spr_super_missiles",
+    "path": "sprites/spr_super_missiles/spr_super_missiles.yy",
   },
   "spriteMaskId": null,
   "visible": false,

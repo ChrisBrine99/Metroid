@@ -6,13 +6,15 @@
 // Positions for the bit flags that allow or restrict specific functionalities of the entity, whether they be
 // a dynamic or static one. These four highest positioned bits are shared by both entity types; any others will
 // be unique to one type or the other.
-#macro	DRAW_SPRITE				28
+#macro	DRAW_SPRITE				27
+#macro	LOOP_ANIMATION			28
 #macro	ANIMATION_END			29
 #macro	INVINCIBLE				30
 #macro	DESTROYED				31
 
 // Condenses the code required to check any of the four shared bit flags' current states into macro values.
 #macro	CAN_DRAW_SPRITE			(stateFlags & (1 << DRAW_SPRITE) != 0)
+#macro	CAN_LOOP_ANIMATION		(stateFlags & (1 << LOOP_ANIMATION) != 0)
 #macro	DID_ANIMATION_END		(stateFlags & (1 << ANIMATION_END) != 0)
 #macro	IS_INVINCIBLE			(stateFlags & (1 << INVINCIBLE) != 0)
 #macro	IS_DESTROYED			(stateFlags & (1 << DESTROYED) != 0)
@@ -45,9 +47,19 @@ function entity_draw(){
 	// end" flag, and reset the value within "imageIndex".
 	if (GAME_CURRENT_STATE != GSTATE_PAUSED && spriteLength > 1){
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
-		if (imageIndex >= spriteLength){ // Flip "animation end" bit; reset animation when animation limit reached.
-			stateFlags |= (1 << ANIMATION_END);
-			imageIndex -= spriteLength - loopOffset;
+		if (imageIndex >= spriteLength && animSpeed > 0){
+			if (CAN_LOOP_ANIMATION){ // Flip "animation end" bit; reset animation when animation limit reached.
+				stateFlags |= (1 << ANIMATION_END);
+				imageIndex -= spriteLength - loopOffset;
+			} else{ // Animation cannot loop; lock it at the end of the sprite.
+				imageIndex = spriteLength - 1;
+			}
+		} else if (imageIndex <= 0 && animSpeed < 0){
+			if (CAN_LOOP_ANIMATION){ // Animation is reversed; reset back to end, which is the start in this case.
+				imageIndex += spriteLength - loopOffset;
+			} else{ // Animation does not loop; set it to the zeroth indexed frame of the animation and freeze it.
+				imageIndex = 0;
+			}
 		} else{ // Clear the "animation end" otherwise.
 			stateFlags &= ~(1 << ANIMATION_END);
 		}

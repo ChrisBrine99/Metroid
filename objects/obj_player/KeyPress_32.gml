@@ -9,6 +9,4 @@ audio_bus_apply_delay(AUDIO_BUSES[? _key].bus, 0, 0.2, 0.7, 0.6);
 audio_play_sound_on(_emitter, snd_player_step_water, false, 1);
 */
 
-effect_create_screen_fade(HEX_BLACK, 0.1, 25);
-
 //audio_play_sound(snd_player_step_tile, 100, false);

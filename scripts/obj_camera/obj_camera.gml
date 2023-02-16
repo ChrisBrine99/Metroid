@@ -85,8 +85,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		// being applied to the camera. This is the only time that the view can show areas outside of the room
 		// even if the boundary lock is applied.
 		var _camera = camera.ID;
-		var _x = x;
-		var _y = y;
+		var _x = camera_get_view_x(_camera);
+		var _y = camera_get_view_y(_camera);
 		with(shakeData){
 			if (curPower > 0){
 				curPower -= initialPower / duration * DELTA_TIME;

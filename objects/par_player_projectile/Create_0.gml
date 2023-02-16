@@ -243,12 +243,14 @@ projectile_door_collision = function(_instance){
 		// Check the door instance against all possible door objects to see which it matches up with; performing
 		// a check against the projectile to see if it matches what is required to open the door.
 		switch(object_index){
-			case obj_general_door:			_isDestroyed = true;											break;
-			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM);			break;
-			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM);		break;
-			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM);		break;
-			case obj_missile_door:			_isDestroyed = _isMissile;										break;
-			case obj_super_missile_door:	_isDestroyed = other.stateFlags & (1 << TYPE_SUPER_MISSILE);	break;
+			default:
+			case obj_general_door:			_isDestroyed = true;																			break;
+			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM);											break;
+			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM);										break;
+			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM);										break;
+			case obj_missile_door:			_isDestroyed = _isMissile || flagID == EVENT_FLAG_INVALID;										break;
+			case obj_super_missile_door:	_isDestroyed = other.stateFlags & (1 << TYPE_SUPER_MISSILE) || flagID == EVENT_FLAG_INVALID;	break;
+			case obj_inactive_door:			_isDestroyed = inactive_door_collision();														break;
 		}
 		
 		// If the door was successfully opened by the projectile, it will trigger the door to open by allowing

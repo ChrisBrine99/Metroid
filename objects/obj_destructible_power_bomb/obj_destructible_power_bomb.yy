@@ -31,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_destructible_bomb",
-    "path": "sprites/spr_destructible_bomb/spr_destructible_bomb.yy",
+    "name": "spr_destructible_power_bomb",
+    "path": "sprites/spr_destructible_power_bomb/spr_destructible_power_bomb.yy",
   },
   "spriteMaskId": null,
   "visible": true,
