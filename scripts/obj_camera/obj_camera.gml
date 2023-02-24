@@ -1,5 +1,3 @@
-/// @description A file containing all the code and logic for the game's camera. 
-
 #region	Initializing any macros that are useful/related to obj_camera
 
 // Macros that store the function pointers that can be used as states within the camera object; allowing for
@@ -67,7 +65,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// @description Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// obj_camera. In short, it will cleanup any data that needs to be freed from memory that isn't collected
 	/// by Game Maker's built-in garbage collection handler.
-	static cleanup = function(){
+	cleanup = function(){
 		camera_destroy(camera.ID);
 		delete camera;
 		delete shakeData;

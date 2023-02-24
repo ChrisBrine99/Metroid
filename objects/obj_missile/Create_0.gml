@@ -33,7 +33,7 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	// that will transform the standard missile to move faster, deal more damage, and allow damage to certain
 	// enemies that were once impervious to it.
 	if (event_get_flag(FLAG_SUPER_MISSILES)){
-		//entity_set_sprite(spr_super_missile, -1);
+		entity_set_sprite(spr_super_missile, -1);
 		stateFlags |= (1 << TYPE_SUPER_MISSILE);
 		damage = 15;	// Damage is tripled.
 		maxHspd = 12;	// Maximum speed is increased slightly.

@@ -1,7 +1,6 @@
 #region Editing default variables, initializing unique variables, and other important initializations
 
 // Edit some of the object's default variables before any initialization of unique variables occurs.
-direction = 0;
 sprite_index = NO_SPRITE;
 image_index = 0;
 image_speed = 0;

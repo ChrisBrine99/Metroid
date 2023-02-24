@@ -10,3 +10,5 @@ audio_play_sound_on(_emitter, snd_player_step_water, false, 1);
 */
 
 //audio_play_sound(snd_player_step_tile, 100, false);
+
+//entity_apply_hitstun(10);

@@ -27,15 +27,12 @@ function instance_create_menu_struct(_struct){
 	// provided to the function isn't a valid menu struct.
 	if (get_menu_struct(_struct) != undefined || !is_menu_struct(_struct)) {return noone;}
 	
-	// First, store the struct that will be created into an ID variable to allow the code to then reference
-	// the menu's default initialization function. Then, add the newly initialized menu to the list that 
-	// manages and handles all the currently created menu that are in the game at the moment.
-	ds_list_add(global.menuInstances, instance_create_struct(_struct));
-	
-	
-	// Finally, return the ID of the newly created menu in order to allow the code that called this function
-	// to manipulate the newly menu struct's data if the need arises.
-	return global.menuInstances[| (ds_list_size(global.menuInstances) - 1)];
+	// Store the new menu instance into the list that manages existing menus upon said menu's creation. Also
+	// returns that instance's "id" values, which allows reference to it specifically during runtime while it
+	// is still exists in memory.
+	var _instance = instance_create_struct(_struct);
+	ds_list_add(global.menuInstances, _instance);
+	return _instance;
 }
 
 /// @description A simple function that destroys a menu struct; clearing it from memory and also removing its
@@ -57,8 +54,9 @@ function instance_destroy_menu_struct(_struct){
 /// @param {Function}	struct
 function get_menu_struct(_struct){
 	var _length = ds_list_size(global.menuInstances);
-	for (var i = 0; i < _length; i++){
-		if (global.menuInstances[| i].object_index == _struct) {return i;}
+	for (var i = 0; i < _length / 2; i++){
+		if (global.menuInstances[| i].object_index == _struct ||
+			global.menuInstances[| _length - i - 1].object_index == _struct) {return i;}
 	}
 	return undefined;
 }
@@ -70,9 +68,10 @@ function get_menu_struct(_struct){
 /// @param {Function}	struct
 function is_menu_struct(_struct){
 	switch(_struct){
-		case par_menu:				return true;
-		case obj_main_menu:			return true;
-		default:					return false;
+		case par_menu:						return true;
+		case obj_main_menu:					return true;
+		case obj_item_collection_screen:	return true;
+		default:							return false;
 	}
 }
 

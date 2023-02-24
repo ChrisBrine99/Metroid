@@ -2,10 +2,10 @@
 
 // Positions for the bits that toggle on and off these main entity "states" stored within the "stateFlags"
 // variable found in each child of this object. These are unique to "par_dynamic_entity" and its children.
-#macro	USE_SLOPES				24
-#macro	DESTRUCTIBLE			25
-#macro	GROUNDED				26
-#macro	HIT_STUNNED				27
+#macro	USE_SLOPES				23
+#macro	DESTRUCTIBLE			24
+#macro	GROUNDED				25
+#macro	HIT_STUNNED				26
 
 // Simplified checks of each default "state" flags condensed into macros that explain what they functionally
 // do. Otherwise, there would be a bunch of the same bitwise operations all over the code, which is messy.
@@ -97,7 +97,8 @@ hitpoints = 0;
 maxHitpoints = 0;
 
 // 
-invulnerableTimer = 0;
+hitstunTimer = 0;
+hitstunLength = 0;
 
 #endregion
 
@@ -121,6 +122,32 @@ get_max_vspd = function() {return maxVspd * maxVspdFactor;}
 initialize = function(_state){
 	object_set_next_state(_state);
 	visible = true;
+}
+
+/// @description 
+/// @param {Real}	duration
+/// @param {Real}	damage
+entity_apply_hitstun = function(_duration, _damage = 0){
+	if (IS_HIT_STUNNED) {return;}
+	object_set_next_state(state_hitstun);
+	update_hitpoints(-_damage);
+	stateFlags |= (1 << HIT_STUNNED);
+	hitstunLength = _duration;
+}
+
+/// @description A simple function that applies a modifier value to the entity's current hitpoints. It will
+/// automatically prevent the value from exceeding whatever the maximum hitpoints has been set to for the
+/// entity, while also flagging their destruction if they go below zero hitpoints.
+/// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the entity's hitpoints.
+update_hitpoints = function(_modifier){
+	hitpoints += _modifier;
+	if (hitpoints > maxHitpoints){ // Prevent exceeding maximum possible hitpoints.
+		hitpoints = maxHitpoints;
+	} else if (hitpoints <= 0){ // Set the entity to "destroyed" by flipping that respective flag.
+		object_set_next_state(NO_STATE);
+		stateFlags |= (1 << DESTROYED);
+		hitpoints = 0;
+	}
 }
 
 /// @description The default gravity function, which applies downward movement to the entity's vspd value until
@@ -229,6 +256,23 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 #endregion
 
 #region States for use in all children objects of par_dynamic_entity
+
+/// @description 
+state_hitstun = function(){
+	// 
+	hitstunTimer += DELTA_TIME;
+	if (hitstunTimer >= hitstunLength){
+		stateFlags &= ~(1 << HIT_STUNNED);
+		stateFlags |= (1 << DRAW_SPRITE);
+		hitstunTimer = 0;
+		return;
+	}
+	
+	// 
+	if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
+	else					{stateFlags |= (1 << DRAW_SPRITE);}
+}
+
 #endregion
 
 // VARIABLES FOR DEBUGGING PURPOSES

@@ -1,7 +1,3 @@
-/// @description Contains the struct that manages various audio data; sounds loaded in through external files,
-/// and any custom audio buses that have been created within the code. Functions that apply unique audio effects
-/// to a specific audio bus (Can be the main audio bus or a custom one) are all found here.
-
 #region Initializing any macros that are useful/related to the audio listener
 
 // Macros for referencing the audio manager itself without having to type "global.audioManager" and another for

@@ -1,5 +1,3 @@
-/// @description 
-
 #region Initializing any macros that are useful/related to obj_player
 
 // Important values for Samus. The first value being related to her maximum falling speed and the remaining

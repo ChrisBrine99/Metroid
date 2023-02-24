@@ -1,3 +1,12 @@
+/// @description A simple function that makes use of the three state variables found within most objects that
+/// use some form of a state machine for their function and logic; updating the function that is called from
+/// the next frame onward within the object.
+/// @param {Function}	nextState
+function object_set_next_state(_nextState){
+	nextState = _nextState;
+	lastState = curState;
+}
+
 /// @description An extension of GameMaker's built-in "instance_create_depth" function that will prevent the
 /// creation of multiple singleton objects (Ex. The controller and player objects). All objects being created
 /// should use this function instead of the engine's defaults to avoid any bugs or issues.

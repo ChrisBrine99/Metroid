@@ -1,5 +1,3 @@
-/// @description Insert summary of this file here.
-
 #region Initializing any macros that are useful/related to obj_cutscene_manager
 
 // Macros that allows the cutscene functions to be referenced by objects that store the scene instructions
@@ -83,7 +81,7 @@ function obj_cutscene_manager(_index) : base_struct(_index) constructor{
 	/// @description Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// obj_cutscene_manager. In short, it will clear any allocated memory that isn't automatically cleaned
 	/// up by Game Maker during runtime. (Ex. data structures, surfaces, structs, etc.)
-	static cleanup = function(){
+	cleanup = function(){
 		ds_map_destroy(entityStates);
 		ds_list_destroy(entityTempPersistence);
 		ds_map_destroy(createdObjects);
@@ -392,9 +390,9 @@ function obj_cutscene_manager(_index) : base_struct(_index) constructor{
 	/// index of text data found within the currently loaded list of text data for the textbox. It will
 	/// instantly begin the next available instruction in the list after performing the decision data
 	/// addition to the textbox's data.
-	/// @param optionText
-	/// @param outcomeIndex
-	/// @param cutsceneOutcomeIndex
+	/// @param {String}	optionText
+	/// @param {Real}	outcomeIndex
+	/// @param {Real}	cutsceneOutcomeIndex
 	cutscene_add_textbox_decision = function(_optionText, _outcomeIndex, _cutsceneOutcomeIndex = -1){
 		textbox_add_decision_data(_optionText, _outcomeIndex, _cutsceneOutcomeIndex);
 		cutscene_end_instruction(true);

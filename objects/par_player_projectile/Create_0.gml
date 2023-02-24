@@ -20,18 +20,18 @@
 
 // Macro statements that condense the code required for checking each of the state flags found within the
 // player projectile's "stateFlags" variable; which vastly differ from those found in other dynamic entities.
-#macro	IS_MISSILE				(stateFlags & ((1 << TYPE_MISSILE) | (1 << TYPE_SUPER_MISSILE) | (1 << TYPE_ICE_MISSILE) | (1 << TYPE_SHOCK_MISSILE)))
-#macro	IS_COLD_BASED			(stateFlags & ((1 << TYPE_ICE_BEAM) | (1 << TYPE_ICE_MISSILE))
-#macro	IS_SHOCK_BASED			(stateFlags & ((1 << TYPE_WAVE_BEAM) | (1 << TYPE_SHOCK_MISSILE))
-#macro	IS_CHARGED				(stateFlags & (1 << PROJ_CHARGED))
-#macro	IS_MOVING_RIGHT			(stateFlags & (1 << PROJ_MOVE_RIGHT))
-#macro	IS_MOVING_LEFT			(stateFlags & (1 << PROJ_MOVE_LEFT))
-#macro	IS_MOVING_UP			(stateFlags & (1 << PROJ_MOVE_UP))
-#macro	IS_MOVING_DOWN			(stateFlags & (1 << PROJ_MOVE_DOWN))
-#macro	IS_MOVING_HORIZONTAL	(stateFlags & ((1 << PROJ_MOVE_RIGHT) | (1 << PROJ_MOVE_LEFT)))
-#macro	IS_MOVING_VERTICAL		(stateFlags & ((1 << PROJ_MOVE_UP) | (1 << PROJ_MOVE_DOWN)))
-#macro	CAN_IGNORE_WALLS		(stateFlags & (1 << IGNORE_WALLS))
-#macro	CAN_IGNORE_ENTITIES		(stateFlags & (1 << IGNORE_ENTITIES))
+#macro	IS_MISSILE				(stateFlags & ((1 << TYPE_MISSILE) | (1 << TYPE_SUPER_MISSILE) | (1 << TYPE_ICE_MISSILE) | (1 << TYPE_SHOCK_MISSILE)) != 0)
+#macro	IS_COLD_BASED			(stateFlags & ((1 << TYPE_ICE_BEAM) | (1 << TYPE_ICE_MISSILE)) != 0)
+#macro	IS_SHOCK_BASED			(stateFlags & ((1 << TYPE_WAVE_BEAM) | (1 << TYPE_SHOCK_MISSILE)) != 0)
+#macro	IS_CHARGED				(stateFlags & (1 << PROJ_CHARGED) != 0)
+#macro	IS_MOVING_RIGHT			(stateFlags & (1 << PROJ_MOVE_RIGHT) != 0)
+#macro	IS_MOVING_LEFT			(stateFlags & (1 << PROJ_MOVE_LEFT) != 0)
+#macro	IS_MOVING_UP			(stateFlags & (1 << PROJ_MOVE_UP) != 0)
+#macro	IS_MOVING_DOWN			(stateFlags & (1 << PROJ_MOVE_DOWN) != 0)
+#macro	IS_MOVING_HORIZONTAL	(stateFlags & ((1 << PROJ_MOVE_RIGHT) | (1 << PROJ_MOVE_LEFT)) != 0)
+#macro	IS_MOVING_VERTICAL		(stateFlags & ((1 << PROJ_MOVE_UP) | (1 << PROJ_MOVE_DOWN)) != 0)
+#macro	CAN_IGNORE_WALLS		(stateFlags & (1 << IGNORE_WALLS) != 0)
+#macro	CAN_IGNORE_ENTITIES		(stateFlags & (1 << IGNORE_ENTITIES) != 0)
 
 #endregion
 
@@ -49,7 +49,9 @@ event_inherited();
 // contact with. So, this parent object will be where it's initialized at a default of zero damage.
 damage = 0;
 
-// 
+// Stores the ids for objects the projectile came into contact with when it moved at the end of its step event.
+// Useful for determining if any of those objects were destructibles, doors, and other objects that can be
+// destroyed by projectiles.
 collisionList = ds_list_create();
 
 #endregion
@@ -243,11 +245,11 @@ projectile_door_collision = function(_instance){
 		// Check the door instance against all possible door objects to see which it matches up with; performing
 		// a check against the projectile to see if it matches what is required to open the door.
 		switch(object_index){
-			default:
+			default:						/* Play "ping" sound effect. */ break;
 			case obj_general_door:			_isDestroyed = true;																			break;
-			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM);											break;
-			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM);										break;
-			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM);										break;
+			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM) != 0;									break;
+			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM) != 0;									break;
+			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM) != 0;									break;
 			case obj_missile_door:			_isDestroyed = _isMissile || flagID == EVENT_FLAG_INVALID;										break;
 			case obj_super_missile_door:	_isDestroyed = other.stateFlags & (1 << TYPE_SUPER_MISSILE) || flagID == EVENT_FLAG_INVALID;	break;
 			case obj_inactive_door:			_isDestroyed = inactive_door_collision();														break;

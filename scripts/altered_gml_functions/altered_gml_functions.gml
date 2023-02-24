@@ -1,7 +1,3 @@
-/// @description Stores all expanded functions that work off of the same principles of a standard GML
-/// function. Things like new collision functions, text rendering functions, and so on will be found 
-/// within this script.
-
 #region Object collision functions with extended functionality
 
 /// @description An extension of the standard "place_meeting" function that allows for three-dimensional

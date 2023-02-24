@@ -1,7 +1,3 @@
-/// @description Manages the graphical effects in the game that could be classified as "post-processing"
-/// within the rendering pipeline. Effects like lighting, bloom, screen blurring, as well as filters like
-/// the scanline and coise are all handled and rendered by this object.
-
 #region	Initializing any macros that are useful/related to obj_effect_handler
 #endregion
 
@@ -112,7 +108,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// @description Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// obj_effect_handler. In short, it will cleanup any data that needs to be freed from memory that isn't 
 	/// collected by Game Maker's built-in garbage collection handler.
-	static cleanup = function(){
+	cleanup = function(){
 		// Freeing the memory that could still potentially be reserved for each of the surfaces that are
 		// used in order to achieve all of the post-processing effects that exist within the game. Otherwise,
 		// they will remain allocated in memory with no reference to clear them from memory.
@@ -187,7 +183,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		
 		// 
 		surface_set_target(surfLights);
-		draw_clear(c_black); // make the surface completely black
+		draw_clear(HEX_BLACK); // make the surface completely black
 		gpu_set_blendmode(bm_add);
 		
 		// 

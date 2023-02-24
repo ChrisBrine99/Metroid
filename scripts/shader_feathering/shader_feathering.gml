@@ -1,7 +1,3 @@
-/// @description A struct for the feathering shader, which will store the uniform locations for the two main
-/// uniform variables; allowing any object to reference them without having to create variables of their own
-/// to store those uniforms.
-
 #region Initializing any macros that are useful/related to the feathering shader
 
 // A macro to simplify the look of the code whenever the feathering shader struct needs to be referenced.

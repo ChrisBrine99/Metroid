@@ -1,8 +1,3 @@
-/// @description Stores global functions that add new functionality to GML, but aren't necessarily replacing
-/// any of the functions that already exist within the engine like the functions found within the other global
-/// functions script. Things like global shader functions, new kinds of string manipulation, game state 
-/// functions, and so on will be found within this script file.
-
 #region Additional string functions
 
 /// @description A simple function that returns a single line from a given string. An offset can be provided
@@ -62,14 +57,13 @@ function string_format_width(_string, _maxWidth, _usedFont){
 		// If no space is detected; add the character to the variable for storing the current word.
 		_curWord += _curChar;
 	}
+	// Add the last line and final character to the string before it's return from the function.
+	_newString += _curLine + _curChar;
+	
 	// After exiting the loop, reset the font back to what it was before this function was called. This
 	// prevents any errors specifically with the outline shader, since changing fonts without updating the
 	// current texel size could cause rendering errors.
 	draw_set_font(_previousFont);
-	
-	// UNIQUE CASE -- Only one line was parsed by this function, so it will be what is returned since no
-	// actually formatting was necessary from the function.
-	if (_newString == "") {return _curLine + _curChar;}
 	
 	// Finally, return the new string; formatted in such a way that there are line breaks allowing it to fit
 	// within the bounds of 0 and the "_maxWidth" argument provided by the code.
@@ -85,7 +79,7 @@ function string_format_width(_string, _maxWidth, _usedFont){
 function string_split_array(_string, _delim){
 	// A delim value cannot be more than one character long. So, if that's the case OR there isn't a single
 	// delim character found within the string; it will simply be returned in an unaltered form.
-	if (string_length(_delim) > 1 || string_count(_delim, _string) == 0) {return _string;}
+	if (string_length(_delim) > 1 || string_count(_delim, _string) == 0) {return array_create(1, _string);}
 	
 	// Loop through the entire string; parsing each character into a storage variable until a delim value
 	// is hit. When that occurs, the string will be added to the split string array and that will keep
@@ -623,65 +617,6 @@ function inventory_item_craft_default(_craftingData, _firstItemName, _secondItem
 
 #endregion
 
-#region Object/entity functions
-
-/// @description A simple function that makes use of the three state variables found within most objects that
-/// use some form of a state machine for their function and logic; updating the function that is called from
-/// the next frame onward within the object.
-/// @param {Function}	nextState
-function object_set_next_state(_nextState){
-	nextState = _nextState;
-	lastState = curState;
-}
-
-/// @description A function that performs a room switch with the warp instance that was provided within 
-/// the "warpID" argument parameter. It will take the target room index as well as the target coordinates
-/// for the player in order to properly move into said room.
-/// @param {Asset.GMInstance}	warpID
-function object_perform_room_warp(_warpID){
-	with(_warpID){
-		// First things first, Game Maker will be told to perform its room swapping logic; moving into
-		// the room index that was set for the current warp that is handling the room transition.
-		room_goto(targetRoom);
-		
-		// Next, the player's position will be snapped to the target position set by the warp object. The
-		// values are floored in order to prevent placing the player at a non-integer position. Doing so 
-		// could cause issues with the player's world collision logic and sprite rendering.
-		var _targetX = floor(targetX);
-		var _targetY = floor(targetY);
-		with(PLAYER){
-			x = _targetX;
-			y = _targetY;
-			interactableID = noone; // Set to "noone" so the on-screen prompt fades out during warp process instead of after.
-		}
-		
-		// Since the player's position is suddenly snapping to a new point within the room, the camera
-		// should also be snapped to that position; preventing any odd issues where the camera remains at
-		// its previous position despite the new position for the player and has to "catch up" to them.
-		with(CAMERA){
-			x = _targetX - CAM_HALF_WIDTH;
-			y = _targetY - CAM_HALF_HEIGHT;
-		}
-	}
-}
-
-/// @description A function that is used by both "obj_dynamic_entity" and "obj_static_entity", so it is a
-/// global function that both can easily reference instead of having two identical functions found within
-/// both of those parent objects. It allows easy adjustments to an entity's drop shadow; its size, offset,
-/// and whether or not it should actually be rendered or not.
-/// @param {Bool}	displayShadow
-/// @param {Real}	radius
-/// @param {Real}	offsetX
-/// @param {Real}	offsetY
-function object_set_shadow(_displayShadow, _radius = 0, _offsetX = 0, _offsetY = 0){
-	displayShadow = _displayShadow;
-	shadowRadius = _radius;
-	shadowOffsetX = _offsetX;
-	shadowOffsetY = _offsetY;
-}
-
-#endregion
-
 #region JSON functions
 
 /// @description Simply loads in the supplied JSON file by decrypting the data into a temporary file and then
@@ -705,24 +640,6 @@ function encrypted_json_load(_filename, _decryptKey = ""){
 		return json_decode(_bufferString);
 	} catch(_error){
 		show_debug_message(_error.message + " in Script: " + _error.script);
-	}
-}
-
-#endregion
-
-#region Debug functions
-
-/// @description A simple debugging function that allows the game state snum values to be represented by
-/// entire strings denoting what their values correspond to in the context of the state's purpose.
-/// @param {Enum.GameState}	gameState
-function game_state_get_name(_gameState){
-	switch(_gameState){
-		case GameState.NoState:		return "No State";
-		case GameState.InGame:		return "In Game";
-		case GameState.InMenu:		return "In Menu";
-		case GameState.Cutscene:	return "Cutscene";
-		case GameState.Paused:		return "Paused";
-		default:					return "Error";
 	}
 }
 

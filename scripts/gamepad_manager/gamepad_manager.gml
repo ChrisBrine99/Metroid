@@ -1,7 +1,3 @@
-/// @description Manages the gamepad if one is currently connected to the player's computer. It allows for
-/// hot-swapping between different gamepads, and the keyboard depending on which if that or the connected
-/// gamepad recieved the most recent input from the player.
-
 #region Initializing any macros that are useful/related to the gamepad manager
 
 // A macro to simplify the look of the code whenever the gamepad manager struct needs to be referenced.

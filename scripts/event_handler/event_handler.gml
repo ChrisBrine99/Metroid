@@ -1,6 +1,3 @@
-/// @description Contains all variables and functions for the game's event flag system, which will allow the
-/// enabling and disabling of things in the game like cutscene objects, item spawns, door locks, and so on.
-
 #region Initializing any macros that are useful/related to the event handler
 
 // A macro to simplify the look of the code whenever the event flag buffer needs to be referenced.

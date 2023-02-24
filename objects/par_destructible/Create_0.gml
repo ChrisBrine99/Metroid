@@ -3,8 +3,8 @@
 // Bit flags that are unique to a destructible object. The first will toggle the destruction and rebuild
 // effects for the block on and off, and the second will determine if the block is masked by a tile in the
 // world instead of being shown to the player by default.
-#macro	USE_EFFECTS				25
-#macro	HIDDEN					26
+#macro	USE_EFFECTS				24
+#macro	HIDDEN					25
 
 // Condenses the check for the state of each bit flag that is unique to a destructible object into two macros.
 #macro	CAN_USE_EFFECTS			(stateFlags & (1 << USE_EFFECTS))

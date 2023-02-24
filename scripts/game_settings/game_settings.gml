@@ -1,7 +1,3 @@
-/// @description Contains all the data that is used to assign, manipulate, store, and utilize all of
-/// the player's desired settings given their current configuration. This includes audio, video,
-/// input, and accessibility settings, as well as the difficulty configuration for the current game.
-
 #region Initializing any macros that are useful/related to the game settings struct
 
 // A macro to simplify the look of the code whenever the game settings struct needs to be referenced.
@@ -73,6 +69,16 @@
 #macro	KEY_HOTKEY_SIX			24		
 #macro	KEY_HOTKEY_SEVEN		26		
 #macro	KEY_ALT_WEAPON			28		// Activates missiles or power bombs
+#macro	KEY_MENU_RIGHT			30		// Menu cursor movement inputs
+#macro	KEY_MENU_LEFT			32
+#macro	KEY_MENU_UP				34
+#macro	KEY_MENU_DOWN			36
+#macro	KEY_SELECT				38		// Selection and deselection/menu-closing inputs
+#macro	KEY_RETURN				40
+#macro	KEY_DELETE_FILE			42		// (Save/Load Game Menu ONLY) deletes highlighted save slot
+#macro	KEY_AUX_MENU_RIGHT		44		// Auxiliary inputs for moving left and right in a menu
+#macro	KEY_AUX_MENU_LEFT		46
+#macro	KEY_PAUSE				48		// Accesses the pause menu while in-game
 
 // Macros to simply the typing required to check each respective input binding for the keyboard whenever
 // player input needs to be processed in the code.
@@ -91,7 +97,17 @@
 #macro	KEYCODE_HOTKEY_SIX		game_get_input_binding(KEY_HOTKEY_SIX)
 #macro	KEYCODE_HOTKEY_SEVEN	game_get_input_binding(KEY_HOTKEY_SEVEN)
 #macro	KEYCODE_ALT_WEAPON		game_get_input_binding(KEY_ALT_WEAPON)		// Switching over to using missiles/power bombs
-
+#macro	KEYCODE_MENU_RIGHT		game_get_input_binding(KEY_MENU_RIGHT)		// Menu cursor movement inputs
+#macro	KEYCODE_MENU_LEFT		game_get_input_binding(KEY_MENU_LEFT)
+#macro	KEYCODE_MENU_UP			game_get_input_binding(KEY_MENU_UP)
+#macro	KEYCODE_MENU_DOWN		game_get_input_binding(KEY_MENU_DOWN)
+#macro	KEYCODE_SELECT			game_get_input_binding(KEY_SELECT)			// Selection and deselection/menu-closing inputs
+#macro	KEYCODE_RETURN			game_get_input_binding(KEY_RETURN)			
+#macro	KEYCODE_DELETE_FILE		game_get_input_binding(KEY_DELETE_FILE)		// (Save/Load Game Menu ONLY) deletes highlighted save slot
+#macro	KEYCODE_AUX_MENU_RIGHT	game_get_input_binding(KEY_AUX_MENU_RIGHT)	// Auxiliary inputs for moving left and right in a menu
+#macro	KEYCODE_AUX_MENU_LEFT	game_get_input_binding(KEY_AUX_MENU_LEFT)	
+#macro	KEYCODE_PAUSE			game_get_input_binding(KEY_PAUSE)
+																			
 // The positions within the buffer for the player's current input configuration that each of these actions'
 // respective gamepad input bindings are stored. Each is a 2-byte value storing the values for Game Maker's
 // constants for gamepad input bindings that match up to what the player has configured for their gamepad

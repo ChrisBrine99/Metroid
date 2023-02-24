@@ -1,8 +1,3 @@
-/// @description Stores all constant values that are used all throughout the game's code. From values like
-/// keyboard inputs that aren't covered by the built-in vk_* constants, to unique colors, game settings, input
-/// bindings, keys for important data structures; all global constants are found here. (Object specific macros
-/// will be placed in the Create Event or script file since they are only used by that object/script)
-
 #region Additional vk_* macros for letters, numbers, and other keyboard keys
 
 // Virtual keyboard constants for all numberical keys ABOVE the letters on the keyboard
@@ -96,6 +91,7 @@
 #macro	HEX_WHITE				0xF8F8F8 // BGR = 248, 248, 248
 #macro	HEX_LIGHT_GRAY			0xBCBCBC // BGR = 188, 188, 188
 #macro	HEX_GRAY				0x7C7C7C // BGR = 124, 124, 124
+#macro	HEX_DARK_GRAY			0x404040 // BGR =  64,  64,  64
 #macro	HEX_BLACK				0x000000 // BGR =   0,   0,   0
 
 #macro	HEX_LIGHT_RED			0x0038F8 // BGR =   0,  56, 248
@@ -133,34 +129,41 @@
 
 #region Color rgb value array macros (R and B values flipped from hex values)
 
-// Each constant refers to the same shades as the hex constants above, but in an RGB array format instead.
-#macro	RGB_WHITE				[0.972, 0.972, 0.972] // RGB = 248, 248, 248
-#macro	RGB_LIGHT_GRAY			[0.75 , 0.75 , 0.75 ] // RGB = 191, 191, 191
-#macro	RGB_GRAY				[0.5  , 0.5  , 0.5  ] // RGB = 127, 127, 127
-#macro	RGB_DARK_GRAY			[0.25 , 0.25 , 0.25 ] // RGB =  64,  64,  64
-#macro	RGB_VERY_DARK_GRAY		[0.125, 0.125, 0.125] // RGB =  32,  32,  32
-#macro	RGB_BLACK				[0    , 0    , 0    ] // RGB =   0,   0,   0
+#macro	RGB_WHITE				[0.973, 0.973, 0.973] // RGB = 248, 248, 248
+#macro	RGB_LIGHT_GRAY			[0.737, 0.737, 0.737] // RGB = 188, 188, 188
+#macro	RGB_GRAY				[0.486, 0.486, 0.486] // RGB = 124, 124, 124
+#macro	RGB_DARK_GRAY			[0.251, 0.251, 0.251] // RGB =  64,  64,  64
+#macro	RGB_BLACK				[0,     0,     0    ] // RGB =   0,   0,   0
 
-// Each constant refers to the same reds as the hex constants above, but in an RGB array format instead.
-#macro	RGB_LIGHT_RED			[0.972, 0.219, 0    ] // RGB = 248,  88,   0
-#macro	RGB_RED					[0.737, 0    , 0    ] // RGB = 188,   0,   0
-#macro	RGB_DARK_RED			[0.368, 0    , 0    ] // RGB =  94,   0,   0
+#macro	RGB_LIGHT_RED			[0.973, 0.226, 0    ] // RGB = 248,  56,   0
+#macro	RGB_RED					[0.737, 0.063,      ] // RGB = 188,  16,   0
+#macro	RGB_DARK_RED			[0.345, 0,	   0	] // RGB =  88,   0,   0
 
-// Each constant refers to the same greens as the hex constants above, but in an RGB array format instead.
-#macro	RGB_LIGHT_GREEN			[0.345, 0.972, 0    ] // RGB =  88, 248,   0
-#macro	RGB_GREEN				[0    , 0.721, 0    ] // RGB =   0, 184,   0
-#macro	RGB_DARK_GREEN			[0    , 0.345, 0    ] // RGB =   0,  88,   0
+#macro	RGB_VERY_LIGHT_GREEN	[0.722, 0.973, 0.772] // RGB = 184, 248, 184
+#macro	RGB_LIGHT_GREEN			[0.345, 0.973, 0.329] // RGB =  88, 248,  84
+#macro	RGB_GREEN				[0,     0.659, 0    ] // RGB =   0, 168,   0
+#macro	RGB_DARK_GREEN			[0,     0.471, 0    ] // RGB =   0, 120,   0
+#macro	RGB_VARY_DARK_GREEN		[0,     0.345, 0    ] // RGB =   0,  88,   0
 
-// Each constant refers to the same blues as the hex constants above, but in an RGB array format instead.
-#macro	RGB_VERY_LIGHT_BLUE		[0.407, 0.533, 0.988] // RGB = 104, 136, 252
-#macro	RGB_LIGHT_BLUE			[0    , 0.345, 0.972] // RGB =   0,  88, 248
-#macro	RGB_BLUE				[0    , 0    , 0.737] // RGB =   0,   0, 188
-#macro	RGB_DARK_BLUE			[0	  , 0    , 0.368] // RGB =   0,   0,  94
-#macro	RGB_VERY_DARK_BLUE		[0    , 0    , 0.156] // RGB =   0,   0,  40
+#macro	RGB_VERY_LIGHT_BLUE		[0.643, 0.894, 0.988] // RGB = 164, 228, 252
+#macro	RGB_LIGHT_BLUE			[0.235, 0.737, 0.988] // RGB =  60, 188, 252
+#macro	RGB_BLUE				[0,     0.471, 0.973] // RGB =   0, 120, 248
+#macro	RGB_DARK_BLUE			[0,     0.345, 0.973] // RGB =   0,  88, 248
+#macro	RGB_VERY_DARK_BLUE		[0,     0,     0.737] // RGB =   0,   0, 188
 
-// Each constant refers to the same yellows as the hex constants above, but in an RGB array format instead.
-#macro	RGB_LIGHT_YELLOW		[1    , 0.913, 0.5  ] // RGB = 255, 233, 127
-#macro	RGB_YELLOW				[1    , 0.862, 0    ] // RGB = 255, 220,   0
-#macro	RGB_DARK_YELLOW			[0.498, 0.447, 0.247] // RGB = 127, 114,  63
+#macro	RGB_LIGHT_YELLOW		[0.988, 0.878, 0.659] // RGB = 252, 224, 168
+#macro	RGB_YELLOW				[0.972, 0.722, 0    ] // RGB = 248, 184,   0
+#macro	RGB_DARK_YELLOW			[0.675, 0.486, 0    ] // RGB = 172, 124,   0
+#macro	RGB_VERY_DARK_YELLOW	[0.314, 0.188, 0    ] // RGB =  80,  48,   0
+
+#macro	RGB_VERY_LIGHT_ORANGE	[0.942, 0.816, 0.690] // RGB = 240, 208, 176
+#macro	RGB_LIGHT_ORANGE		[0.973, 0.627, 0.267] // RGB = 252, 160,  68
+#macro	RGB_ORANGE				[0.894, 0.361, 0.063] // RGB = 228,  92,  16
+#macro	RGB_DARK_ORANGE			[0.533, 0.078, 0    ] // RGB = 136,  20,   0
+
+#macro	RGB_VERY_LIGHT_PURPLE	[0.847, 0.722, 0.973] // RGB = 216, 184, 248
+#macro	RGB_LIGHT_PURPLE		[0.596, 0.471, 0.973] // RGB = 248, 120, 152
+#macro	RGB_PURPLE				[0.408, 0.267, 0.988] // RGB = 104,  68, 252
+#macro	RGB_DARK_PURPLE			[0.267, 0.157, 0.737] // RGB =  68,  40, 188
 
 #endregion

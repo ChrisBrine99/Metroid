@@ -8,12 +8,12 @@ var _camWidth = 0;
 var _camHeight = 0;
 var _x = 0;
 var _y = 0;
-with(CAMERA){
-	_camera = cameraID;
+with(CAMERA.camera){
+	_camera = ID;
 	_camX = camera_get_view_x(_camera);
 	_camY = camera_get_view_y(_camera);
-	_camWidth = camWidth;
-	_camHeight = camHeight;
+	_camWidth = width;
+	_camHeight = height;
 	_x = -_camX;
 	_y = -_camY;
 }

@@ -1,5 +1,3 @@
-/// @description Insert summary of this file here.
-
 #region Initializing any macros that are useful/related to obj_arm_cannon
 #endregion
 
@@ -45,8 +43,21 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 				default: // By default the arm cannon will not be rendered.
 					_visible = false;
 					break;
+				case state_hitstun: // Handling all possible offsets for the player being in a hit stunned state.
+					_visible = true; // Arm cannon is always rendered in this state.
+					if (stateFlags & (1 << AIMING_UP)){ // Arm cannon is pointing upward.
+						_x = x - (1 * image_xscale);
+						_y = y - 40;
+					} else if (stateFlags & (1 << AIMING_DOWN)){ // Arm cannon is downward.
+						_x = x;
+						_y = y - 18;
+					} else{ // The arm cannon should face forward.
+						_x = x + (5 * image_xscale);
+						_y = y - 25;
+					}
+					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
-					_visible = IS_AIMING;
+					_visible = IS_AIMING && !IN_MORPHBALL;
 					break;
 				case state_default: // Beam position for when samus is standing or walking on the floor.
 					if (stateFlags & (1 << AIMING_UP)){
@@ -76,8 +87,13 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					break;
 				case state_airbourne: // Beam positions for whenever Samus is in the air.
 					if (stateFlags & (1 << AIMING_UP)){
-						_x = x - (1 * image_xscale);
-						_y = y - 40;
+						if (jumpStartTimer < JUMP_ANIM_TIME){ // Temporarily use the standing while aiming up coordinates for the intro animation.
+							_x = x - (1 * image_xscale);
+							_y = y - 43;
+						} else{ // Animation is finished; use standard coordinates for jumping while aiming up.
+							_x = x - (1 * image_xscale);
+							_y = y - 40;
+						}
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
 						if (curWeapon = curMissile) {_imageIndex = 5;}

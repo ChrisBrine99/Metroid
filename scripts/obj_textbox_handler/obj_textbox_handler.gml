@@ -1,5 +1,3 @@
-/// @description A script file containing all the code and logic for the game's textbox.
-
 #region Initializing any macros that are useful/related to obj_textbox_handler
 
 // Macros that store the "dimensions" of the textbox, which is actually just the width and height
@@ -370,7 +368,7 @@ function obj_textbox_handler(_index) : base_struct(_index) constructor{
 	/// obj_textbox_handler. In short, it will clear out any data structures and struct objects created
 	/// by the textbox handler before itself is removed from memory; preventing any lost pointers and
 	/// memory leaks.
-	static cleanup = function(){
+	cleanup = function(){
 		// Remove all the structs from within the list storing currently existing textbox data; deleting the
 		// structs contained within each of those structs before clearing out that main struct. After that,
 		// the list is cleared from memory.

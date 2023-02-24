@@ -12,8 +12,8 @@ function base_struct(_index) constructor{
 	id = global.singletonID;
 	object_index = _index;
 
-	static initialize = function(){}
-	static cleanup = function(){}
+	initialize = function(){}
+	cleanup = function(){}
 }
 
 /// @description Creates a new struct object in a way that mimics how GameMaker creates and handles its own

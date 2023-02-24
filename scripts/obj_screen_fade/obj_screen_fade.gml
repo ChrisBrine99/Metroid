@@ -46,7 +46,7 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	playerX = 0;
 	playerY = 0;
 	drawPlayer = true;
-	playerSurf = noone;
+	playerSurf = -1;
 	
 	// 
 	targetX = 0;

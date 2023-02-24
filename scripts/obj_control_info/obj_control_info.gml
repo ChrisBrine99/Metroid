@@ -1,5 +1,3 @@
-/// @description A script file containing all the code and logic for the game's control information display.
-
 #region Initializing any macros that are useful/related to obj_control_info
 
 // Macros that store the values for determining how an anchor's control info elements are alignment to its
@@ -189,7 +187,7 @@ function obj_control_info(_index) : base_struct(_index) constructor{
 	/// @description Cleans up any systems and variables that could potentially cause memory leaks if left
 	/// unhandled while the game is still running. (Game Maker cleans it all up at the end of runtime by
 	/// default, so it doesn't matter as much in that case)
-	static cleanup = function(){
+	cleanup = function(){
 		// Clean up all the structs that were created for each supported key on a keyboard. Then, destroy the
 		// map that stored all those struct to free it from memory as well.
 		var _key = ds_map_find_first(global.keyboardIcons);
@@ -552,7 +550,7 @@ function control_info_edit_data(_anchor, _input, _newInput, _newInfo){
 				}
 			}
 		}
-		set_icon_positions(_data)
+		set_icon_positions(_data);
 	}
 }
 

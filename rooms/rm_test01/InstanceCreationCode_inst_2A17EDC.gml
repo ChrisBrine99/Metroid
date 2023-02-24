@@ -1,0 +1,1 @@
+lightComponent.set_properties(room_width / 2, HEX_WHITE, 0.7);

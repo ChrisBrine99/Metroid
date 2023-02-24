@@ -96,9 +96,12 @@ state_default = function(){
 	apply_frame_movement(projectile_world_collision);
 }
 
-/// @description 
+/// @description The state given to the inner and outer power beams that only exist when the power beam is
+/// fired after acquiring the split beam item.
 state_beam_splitter = function(){
-	// 
+	// Continue moving the upper and lower power bomb bullets until they have hit their respective offset 
+	// limit (The offsets are increased when the power beam is charged prior to firing). Once they've hit
+	// their said limit, the split beam will be switched to its default state.
 	var _offsetLimit = IS_CHARGED ? SPLIT_CHARGE_OFFSET	: SPLIT_BEAM_OFFSET;
 	if (IS_MOVING_HORIZONTAL && abs(y - startOffset) >= _offsetLimit){
 		object_set_next_state(state_default);
@@ -114,7 +117,8 @@ state_beam_splitter = function(){
 		return; // State has changed; exit the function early.
 	}
 	
-	// 
+	// Like the default state, the frame movement function is called, which handles collision with the
+	// world along with doors, destructibles, and anything else involving the game's environment.
 	apply_frame_movement(projectile_world_collision);
 }
 

@@ -40,8 +40,8 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	stateFlags |= (1 << TYPE_ICE_BEAM);
 	
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
-	if (IS_MOVING_HORIZONTAL) {hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
-	else if (IS_MOVING_VERTICAL) {vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
+	if (IS_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
+	else if (IS_MOVING_VERTICAL)	{vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
 	
 	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
 	// by if the beam is charged or not charged prior to being fired.
@@ -49,7 +49,9 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	else			{object_add_light_component(x, y, 0, 0, 26, HEX_WHITE, 0.7);}
 	
 	// Randomize the starting angle for the sprite so each ice beam bullet looks different from the last.
-	image_angle = random(360);
+	// These angles are locked to 45 degree intervals instead of allowing all possible angles to mimick an
+	// eight-frame spinning animation for the beam.
+	image_angle = 45 * irandom(8);
 }
 
 #endregion
@@ -61,8 +63,9 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 state_default = function(){
 	apply_frame_movement(projectile_world_collision);
 	
-	// 
-	angleTimer += DELTA_TIME * 8;
+	// Causing the ice beam to spin; simulating an 8-frame rotation animation due to the actual angle of
+	// the sprite only being updated at 45 degree intervals.
+	angleTimer += 0.25 * DELTA_TIME;
 	if (angleTimer >= 1){
 		image_angle += 45;
 		angleTimer--;

@@ -1,5 +1,3 @@
-/// @description Insert summary of this file here.
-
 #region Initializing any macros that are useful/related to obj_arm_cannon
 #endregion
 

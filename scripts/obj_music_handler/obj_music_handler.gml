@@ -1,6 +1,3 @@
-/// @description Contains all the code and logic that handles the seamless and looping playback of a room or 
-/// area's given background track.
-
 #region	Initializing any macros that are useful/related to obj_music_handler
 
 // A constant that replaces the default value for the music handler to know when no song is set to be played
@@ -74,7 +71,7 @@ function obj_music_handler(_index) : base_struct(_index) constructor{
 	/// @description  Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// obj_music_handler. In short, it just cleans up all the memory that was allocated by this struct to
 	/// prevent any memory leaks during runtime.
-	static cleanup = function(){
+	cleanup = function(){
 		// Since this is the only object that references it; the music looping data that was read from file
 		// is removed from memory here. Since it was loaded in from a JSON format, only the outer data
 		// structure needs to be called for deletion in order to remove them all.

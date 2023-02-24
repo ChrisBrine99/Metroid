@@ -1,8 +1,3 @@
-/// @description The game manager, which is responsible for handling the current global game state. That state
-/// will affect all objects' current functionalities, as well as what the player is able to do (The player
-/// cannot move the in-game player character during cutscenes, for example). On top of that, the manager will
-/// calculate the delta time for the current frame, and also the total playtime.
-
 #region Initializing any macros that are useful/related to the game manager
 
 // A macro to simplify the look of the code whenever the game manager struct needs to be referenced.
@@ -95,6 +90,24 @@ function game_set_state(_state, _highPriority = false){
 function game_get_playtime(_includeMillis){
 	with(GAME_MANAGER) {return (_includeMillis ? (curPlaytime + millisTimer) : curPlaytime);}
 	return 0;
+}
+
+/// @description Returns the name and numerical value for the state value that was provided for this function's
+/// argument. Can be used to get the current or previous game state values, or just the name of a specific
+/// state that is independent of those two values for whatever reason.
+/// @param {Real}	state	The state to return the name and numerical value of.
+function game_state_get_name(_state){
+	with(GAME_MANAGER){
+		switch(_state){
+			default:
+			case GSTATE_NONE:		return "NoState (" + string(_state) + ")";
+			case GSTATE_NORMAL:		return "InGame (" + string(_state) + ")";
+			case GSTATE_MENU:		return "InMenu (" + string(_state) + ")";
+			case GSTATE_CUTSCENE:	return "Cutscene (" + string(_state) + ")";
+			case GSTATE_PAUSED:		return "Paused (" + string(_state) + ")";
+		}
+	}
+	return "";
 }
 
 #endregion

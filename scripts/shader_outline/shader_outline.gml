@@ -1,7 +1,3 @@
-/// @description Struct that handles the game's outline shader that is used to render a one-pixel wide line 
-/// of a given color around a sprite that is currently being rendered. This can also be applied to text to
-/// give any font a nice outline at a relatively small hit to rendering speed.
-
 #region Initializing any macros that are useful/related to the outline shader handler
 
 // A macro to simplify the look of the code whenever the outline shader struct needs to be referenced.

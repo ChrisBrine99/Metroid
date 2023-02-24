@@ -55,7 +55,9 @@ jumpingMask =		spr_power_jump1;
 crouchingMask =		spr_power_crouch0;
 morphballMask =		spr_power_mball0;
 
-// 
+// Variables that keep track of the various resources Samus can deplete throughout regular gameplay. The max
+// possible amount that can be stored of each can be upgrade through finding the relevant expansion tanks in
+// the game world.
 reserveHitpoints = 0;
 maxReserveHitpoints = 0;
 energyTankPieces = 0;
@@ -87,8 +89,13 @@ bombDropTimer = 0;
 bombJumpVspd = -4;
 bombExplodeID = noone;
 
-// 
+// The arm cannon is a separate object that is rendered on top of Samus's current sprite whenever it is needed.
+// So, its instance is created here and stored in a variable for easy reference and manipulation. The bottom
+// two variables store the offset position for the arm cannon at the time Samus got hit stunned since those
+// offsets do not change for the duration of the stunned state.
 armCannon = instance_create_struct(obj_arm_cannon);
+armCannonX = 0;
+armCannonY = 0;
 
 // 
 curBeam = (1 << POWER_BEAM);
@@ -470,7 +477,7 @@ check_swap_current_weapon = function(){
 
 #endregion
 
-#region Object initialization function
+#region Modified functions from parent object
 
 // Store the pointer for the inherited initialization function within another variable. Then, that variable is
 // used to call the parent function within this child object's own initialization function.
@@ -483,8 +490,54 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_position(304, 304);
 	entity_set_sprite(introSprite, spr_empty_mask);
-	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
-	game_set_state(GSTATE_NORMAL, true); // FOR TESTING
+	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
+	game_set_state(GSTATE_NORMAL, true);
+}
+
+/// @description A modification to the entity's hitpoint manipulation function; allowing the entity to be
+/// given hitpoints or have them taken away depending on the modifier value. It will autiomatically handle
+/// utilization of the reserve hitpoints should the player reach zero hitpoints while having some available
+/// in their reserve. Otherwise, the player will be flagged as "destroyed" which will signal to the game
+/// that the game over screen should be shown.
+/// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the entity's hitpoints.
+update_hitpoints = function(_modifier){
+	if (_modifier == 0) {return;}	// Don't bother with the function if the modifier value is zero.
+	hitpoints += floor(_modifier);	// Value is floored so it's always an integer.
+	if (hitpoints > maxHitpoints){ // Prevent the player's hitpoints from exceeding the maximum.
+		hitpoints = maxHitpoints;
+	} else if (hitpoints <= 0){
+		hitpoints = 0; // Always set to zero regardless of reserve hitpoints being available or not.
+		// Check for reserve hitpoints. If the player has an amount to utilize, it will be added to their
+		// hitpoints and whatever amount was put into there is remove from the reserve; reviving the player.
+		if (reserveHitpoints > 0){
+			update_hitpoints(reserveHitpoints);
+			reserveHitpoints -= hitpoints;
+			return; // Don't kill off the player.
+		}
+		// If the player has no reserve hitpoints left to utilize, they will have their state removes, and
+		// no longer show up on screen. THe destroyed flag is flipped, but since the player object is set
+		// to "invincible" they won't be deleted from the game.
+		object_set_next_state(NO_STATE);
+		stateFlags &= ~(1 << DRAW_SPRITE);
+		stateFlags |= (1 << DESTROYED);
+		
+		// TODO -- Trigger death effect here.
+	}
+}
+
+#endregion
+
+#region Aeion gauge functions
+
+/// @description A function that's very similar to "update_hitpoints" but much simpler by comparison. It
+/// will simply add the modifier's value to the player's current amount of aeion; limiting it to the range
+/// of 0 and whatever their current maximum aeion is.
+/// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the player's aeion gauge.
+update_aeion = function(_modifier){
+	if (_modifier == 0) {return;}	// Don't bother with the function if the modifier value is zero.
+	curAeion += floor(_modifier);	// Value is floored so it's always an integer.
+	if (curAeion > maxAeion)	{curAeion = maxAeion;}
+	else if (curAeion < 0)		{curAeion = 0;}
 }
 
 #endregion
@@ -517,25 +570,38 @@ player_collectible_collision = function(){
 	}
 }
 
-/// @description
+/// @description Checks for collision with a liquid and also handle exiting collision with a liquid should
+/// the player have already been colliding with a liquid. Also handles dealing damage to the player if the
+/// liquid is able to damage the player.
 player_liquid_collision = function(){
-	// 
+	// The player is already submerged into a liquid. So, they will be damaged by said liquid if it has
+	// the ability to deal damage, and a check will be performed to see if the player is no longer colliding
+	// with the liquid they were "submerged" in.
 	if (IS_SUBMERGED){
-		// 
+		// Count down the liquid's damage interval and dish out its damage if it should damage the player.
+		// Otherwise, ignore this code and just perfrom the collision check below.
 		var _id = noone;
+		var _damage = 0;
 		with(liquidData){
 			_id = liquidID;
 			if (damage == 0) {break;}
 			damageTimer += DELTA_TIME;
 			if (damageTimer >= damageInterval){
 				damageTimer -= damageInterval;
-				//show_debug_message("Damage dealt.");
+				_damage = -damage; // Damage must be negative to take away energy from the player.
 			}
 		}
+		update_hitpoints(_damage);
+		if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
+		else					{stateFlags |= (1 << DRAW_SPRITE);}
 		
-		// 
+		// Check if the player is no longer colliding with the liquid they initially entered OR that the
+		// value for "_id" wasn't updated past its initial value for some reason. If either is the case,
+		// the player will be considered to have emerged from the liquid and will no longer be hindered
+		// by it if they didn't have the gravity suit at the time.
 		if (_id == noone || !place_meeting(x, y, _id)){
-			// 
+			// Reverse the impact on the player's horizontal and vertical speed/acceleration that the
+			// liquid had, but only if they don't have access to the gravity suit currently.
 			if (!event_get_flag(FLAG_GRAVITY_SUIT)){
 				maxHspdFactor +=	liquidData.maxHspdPenalty;
 				maxVspdFactor +=	liquidData.maxVspdPenalty;
@@ -543,7 +609,8 @@ player_liquid_collision = function(){
 				vAccelFactor +=		liquidData.vAccelPenalty;
 			}
 			
-			// 
+			// Clear all of the data from the liquid data struct and reverse the bit that tells the game
+			// Samus is submerged in a liquid.
 			with(liquidData){
 				liquidID =			noone;
 				maxHspdPenalty =	0;
@@ -554,14 +621,19 @@ player_liquid_collision = function(){
 				damageInterval =	0;
 				damageTimer	=		0;
 			}
+			stateFlags |= (1 << DRAW_SPRITE);
 			stateFlags &= ~(1 << SUBMERGED);
 		}
 		return;
 	}
 	
-	// 
+	// Check for a collision with any type of liquid. Since this function takes place after the player's
+	// movement function, "instance_place" will be used as hspd and vspd don't need to be considered after
+	// the frame's movement has already occurred. If a collision was found, the player will become submerged
+	// inside of the liquid that was found by the function.
 	var _id = instance_place(x, y, par_liquid);
 	if (_id != noone){
+		// Store the liquid's parameters in order to reverse their effects once the player exits the liquid.
 		with(liquidData){
 			liquidID =			_id;
 			maxHspdPenalty =	_id.maxHspdPenalty;
@@ -572,7 +644,9 @@ player_liquid_collision = function(){
 			damageInterval =	_id.damageInterval;
 		}
 		
-		// 
+		// Only slow the player down in the liquid if they don't have access to the gravity suit. If they
+		// do have the gravity suit, the only effect the liquid will have is initial submersion that slows
+		// the player down upon impact with it.
 		if (!event_get_flag(FLAG_GRAVITY_SUIT)){
 			maxHspdFactor -=	liquidData.maxHspdPenalty;
 			maxVspdFactor -=	liquidData.maxVspdPenalty;
@@ -580,7 +654,9 @@ player_liquid_collision = function(){
 			vAccelFactor -=		liquidData.vAccelPenalty;
 		}
 		
-		// 
+		// Regardless of having access to the gravity suit, the player will still impact the water and find
+		// themselves submerged, so the relevant flag for that is flipped, and the player's hspd and vspd
+		// are drastically reduced to really sell the impact with the liquid.
 		stateFlags |= (1 << SUBMERGED);
 		vspdRecoil = 0;
 		hspd *= 0.35;
@@ -598,7 +674,7 @@ player_warp_collision = function(){
 		_warp.isWarping = true;
 		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
 		object_set_next_state(state_room_warp);
-		animSpeed = 0;
+		stateFlags |= (1 << FREEZE_ANIMATION);
 		
 		// Determine the position to place the surface that contains a snapshot of Samus at. This snapshot
 		// is just the last frame of animation she was in, and her arm cannon if it was being shown for said
@@ -610,6 +686,82 @@ player_warp_collision = function(){
 			playerX = _x - SURFACE_OFFSET_X;
 			playerY = _y - SURFACE_OFFSET_Y;
 		}
+	}
+}
+
+#endregion
+
+#region Player-specific hit stun function and state
+
+//
+__entity_apply_hitstun = entity_apply_hitstun;
+/// @description 
+/// @param {Real}	duration
+/// @param {Real}	damage
+entity_apply_hitstun = function(_duration, _damage = 0){
+	__entity_apply_hitstun(_duration, _damage);
+	curState = NO_STATE; // Implicitly set the current state to nothing in case the hitstun occurred before the player's state executed for the frame.
+	stateFlags &= ~((1 << CROUCHING) | (1 << JUMP_ATTACK) | (1 << JUMP_SPIN));
+	
+	// 
+	if (IS_JUMP_ATTACK) {reset_light_source();}
+	jumpStartTimer = JUMPSPIN_ANIM_TIME;
+	aimReturnTimer = 0;
+
+	// 
+	hspd = get_max_hspd() * 0.35 * -image_xscale;
+	vspd = -2.75;
+}
+
+// 
+__state_hitstun = state_hitstun;
+/// @description 
+state_hitstun = function(){
+	__state_hitstun();
+	if (!IS_HIT_STUNNED){
+		// Only bother changing state and manipulation of aiming direction flags when Samus isn't in her morphball
+		// form; as that form doesn't need to bother with aiming and proper state setting.
+		if (!IN_MORPHBALL){
+			object_set_next_state(state_default);
+			var _aimingDir = keyboard_check(KEYCODE_GAME_DOWN) - keyboard_check(KEYCODE_GAME_UP);
+			if (_aimingDir != 0){
+				stateFlags &= ~(1 << AIMING_FRONT);
+				if (_aimingDir == 1){ // Sets Samus to aim downward.
+					stateFlags |= (1 << AIMING_DOWN);
+				} else if (_aimingDir == -1){ // Sets Samus to aim upward; disabling her visor light as well.
+					stateFlags |= (1 << AIMING_UP);
+					lightComponent.isActive = false;
+				}
+			}
+		}
+		return; // Samus is no longer stunned; skip over the state's collision and sprite setting logic.
+	}
+	
+	// 
+	apply_gravity();
+	apply_frame_movement(entity_world_collision);
+	player_collectible_collision();
+	player_liquid_collision();
+	player_warp_collision();
+	
+	// 
+	if (IN_MORPHBALL) {return;}
+	var _sState = stateFlags & ((1 << AIMING_DOWN) | (1 << AIMING_UP));
+	switch(_sState){
+		default: // Samus was aiming forward or not aiming at all at the time of the hit.
+			entity_set_sprite(jumpSpriteFw, jumpingMask);
+			lightOffsetX = LIGHT_OFFSET_X_GENERAL;
+			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
+			break;
+		case (1 << AIMING_UP): // Samus was aiming her cannon upward when attacked.
+			entity_set_sprite(jumpSpriteUp, jumpingMask);
+			lightComponent.isActive = false;
+			break;
+		case (1 << AIMING_DOWN): // Samus was aiming downward when attacked.
+			entity_set_sprite(jumpSpriteDown, jumpingMask);
+			lightOffsetX = LIGHT_OFFSET_X_DOWN;
+			lightOffsetY = LIGHT_OFFSET_Y_DOWN;
+			break;
 	}
 }
 
@@ -653,7 +805,7 @@ state_room_warp = function(){
 		} else if (alpha == 0 && alphaTarget == 0){
 			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
 				object_set_next_state(lastState);
-				animSpeed = 1;
+				stateFlags &= ~(1 << FREEZE_ANIMATION);
 			}
 		}
 	}
@@ -678,7 +830,6 @@ state_default = function(){
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(jumpSpriteFw, standingMask);
 		stateFlags &= ~(1 << MOVING);
-		jumpStartTimer = 0;
 		aimReturnTimer = 0;
 		return; // State changed; ignore input and immediately switch over to "airbourne" state.
 	}
@@ -692,7 +843,6 @@ state_default = function(){
 		if (abs(hspd) >= 1 && !IS_AIMING){
 			if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= (1 << JUMP_ATTACK);}
 			stateFlags |= (1 << JUMP_SPIN);
-			jumpStartTimer = 0;
 			effectTimer = JUMP_EFFECT_INTERVAL;
 		}
 		stateFlags &= ~((1 << GROUNDED) | (1 << MOVING));
@@ -810,9 +960,9 @@ state_default = function(){
 	if (IS_MOVING){
 		var _animSpeed = abs(hspd) / maxHspd;
 		switch(_sState){
-			default:					entity_set_sprite(walkSpriteFw,	standingMask, _animSpeed);	break;
+			default:					entity_set_sprite(walkSpriteFw,	standingMask, _animSpeed);		break;
 			case (1 << AIMING_FRONT):	entity_set_sprite(walkSpriteFwExt, standingMask, _animSpeed);	break;
-			case (1 << AIMING_UP):		entity_set_sprite(walkSpriteUp,	standingMask, _animSpeed);	break;
+			case (1 << AIMING_UP):		entity_set_sprite(walkSpriteUp,	standingMask, _animSpeed);		break;
 		}
 		return;
 	}
@@ -982,15 +1132,16 @@ state_airbourne = function(){
 	}
 	if (_jumpattack){ // Position for the screw attack's flashing light effect.
 		lightOffsetX = LIGHT_OFFSET_X_ATTACK;
-		lightOffseY = LIGHT_OFFSET_Y_ATTACK;
+		lightOffsetY = LIGHT_OFFSET_Y_ATTACK;
 	}
 	
 	// When Samus isn't using her screw attack, the ambient light position is updated to match Samus's visor's
 	// position during her somersaulting jump animation depending on the current frame of the animation that
 	// is visible on-screen.
-	var _animFinished = (jumpStartTimer >= JUMP_ANIM_TIME);
+	var _animFinished = jumpStartTimer == JUMPSPIN_ANIM_TIME;
 	if (!_jumpspin){ // No changes to offset of light when not spinning
 		if (lightOffsetX == 0) {reset_light_source();}
+		lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 	} else if (_animFinished && !_jumpattack){ 
 		// Update offset of the light to match where Samus's visor is for each frame of her somersault.
 		switch(floor(imageIndex)){
@@ -1033,7 +1184,7 @@ state_airbourne = function(){
 	// Counting down the time that prevents Samus from somersalting or showing her jump sprites (Excluding the
 	// downward facing jump sprite) in order to display their respective intro animations, which are all based
 	// on this timer's value against specific macro values.
-	if (jumpStartTimer != JUMPSPIN_ANIM_TIME){
+	if (!_animFinished){
 		jumpStartTimer += DELTA_TIME;
 		if (jumpStartTimer >= JUMPSPIN_ANIM_TIME) {jumpStartTimer = JUMPSPIN_ANIM_TIME;}
 	}
@@ -1055,7 +1206,7 @@ state_airbourne = function(){
 		
 	// Applying one of Samus's non-transitional jumping sprites for the current frame; meaning she's
 	// already finished execution the jump's intro animation.
-	if (_animFinished || vspd >= 0){
+	if (jumpStartTimer >= JUMP_ANIM_TIME || vspd >= 0){
 		switch(_sState){
 			default:					entity_set_sprite(jumpSpriteFw, jumpingMask);	break;
 			case (1 << AIMING_UP):		entity_set_sprite(jumpSpriteUp, jumpingMask);	break;
@@ -1067,9 +1218,10 @@ state_airbourne = function(){
 	// Samus is in her transitional animation between standing and jumping, so apply the animation
 	// frame that matches with the direction she's aiming her arm cannon (Excluding aiming down).
 	switch(_sState){
-		default:					entity_set_sprite(walkSpriteFw, standingMask, 0, 0); break;
-		case (1 << AIMING_UP):		entity_set_sprite(walkSpriteUp, standingMask, 0, 0); break;
+		default:					entity_set_sprite(walkSpriteFw, standingMask, 0); break;
+		case (1 << AIMING_UP):		entity_set_sprite(walkSpriteUp, standingMask, 0); break;
 	}
+	imageIndex = 0; // Always use the first frame of animation during the transition.
 }
 
 /// @description The state that is executed whenever Samus is crouching. During said state she will be unable
@@ -1213,7 +1365,7 @@ state_morphball = function(){
 	if (_movement != 0){
 		// Instantaneous velocity reset whenever the player changes movement directions before a complete
 		// deceleration can occur (If movement inputs were even released prior to the direction switch).
-		if ((_movement == -1 && hspd > 0) || (_movement == 1 && hspd < 0)){
+		if (IS_GROUNDED && ((_movement == -1 && hspd > 0) || (_movement == 1 && hspd < 0))){
 			hspdFraction = 0;
 			hspd = 0;
 		}
@@ -1297,7 +1449,7 @@ state_morphball = function(){
 	// Assign the morphball's sprite, and update its image speed based on whatever its current horizontal
 	// movement factor is set to (Ex. A factor of 0.5 would make the morphball animate at half its normal
 	// speed, and so on).
-	entity_set_sprite(morphballSprite, morphballMask, maxHspdFactor);
+	entity_set_sprite(morphballSprite, morphballMask, animSpeed);
 }
 
 #endregion
@@ -1305,4 +1457,8 @@ state_morphball = function(){
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
 
+event_set_flag(FLAG_MORPHBALL, true);
+event_set_flag(FLAG_BOMBS, true);
 event_set_flag(FLAG_MISSILES, true);
+numMissiles = 10;
+maxMissiles = 10;
