@@ -116,7 +116,6 @@
     {"name":"par_collectible","order":15,"path":"objects/par_collectible/par_collectible.yy",},
     {"name":"par_collider","order":7,"path":"objects/par_collider/par_collider.yy",},
     {"name":"par_destructible","order":7,"path":"objects/par_destructible/par_destructible.yy",},
-    {"name":"par_dynamic_entity","order":2,"path":"objects/par_dynamic_entity/par_dynamic_entity.yy",},
     {"name":"par_enemy","order":1,"path":"objects/par_enemy/par_enemy.yy",},
     {"name":"par_liquid","order":1,"path":"objects/par_liquid/par_liquid.yy",},
     {"name":"par_player_projectile","order":4,"path":"objects/par_player_projectile/par_player_projectile.yy",},

@@ -6,7 +6,7 @@
 #macro	BASE_JUMP_HEIGHT	   -5.1		// Jump height for Samus without "Hi-jump Boots" and her spring ball upgrade.
 #macro	HI_JUMP_HEIGHT		   -7		// Samus's enhanced jumping height after she acquires the "Hi-jump Boots".
 #macro	MAX_FALL_SPEED			8		// Max speed in pixels per 1/60th of a second that Samus can fall downward.
-#macro	AIM_SWITCH_TIME			5.8		// How fast Samus's aim switches from forward to upward while holding the up input after exiting her crouch state.
+#macro	AIM_SWITCH_TIME			8		// How fast Samus's aim switches from forward to upward while holding the up input after exiting her crouch state.
 #macro	BEAM_LOWER_TIME			20		// Time in a 60FPS interval between the last beam fired OR the weapon use button being released and Samus lowering her arm cannon whilst walking.
 #macro	STAND_UP_TIME			10		// Holding the left or right inputs while crouching for this duration will have Samus automatically stand up.
 #macro	MORPHBALL_ANIM_TIME		2		// How long the one-frame morphbal enter/exit animation lasts.
@@ -42,6 +42,8 @@
 // Condenses the logic required to check if certain substate bits are set or not.
 #macro	IS_MOVING				(stateFlags & (1 << MOVING) != 0)
 #macro	IS_AIMING				(stateFlags & ((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << AIMING_DOWN)) != 0)
+#macro	IS_AIMING_UP			(stateFlags & (1 << AIMING_UP) != 0)
+#macro	IS_AIMING_DOWN			(stateFlags & (1 << AIMING_DOWN) != 0)
 #macro	IS_JUMP_SPIN			(stateFlags & (1 << JUMP_SPIN) != 0)
 #macro	IS_JUMP_ATTACK			(stateFlags & (1 << JUMP_ATTACK) != 0)
 #macro	IN_MORPHBALL			(stateFlags & (1 << MORPHBALL) != 0)

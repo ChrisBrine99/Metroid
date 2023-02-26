@@ -268,7 +268,7 @@ update_arm_cannon = function(_movement){
 /// represent the light coming from her helmet's visor. It will assume Samus is standing, and will place the
 /// light at the offset that matches such a state.
 reset_light_source = function(){
-	var _isAimingUp = stateFlags & (1 << AIMING_UP);
+	var _isAimingUp = IS_AIMING_UP;
 	with(lightComponent){
 		set_properties(LIGHT_DEFAULT_RADIUS, HEX_LIGHT_GREEN, LIGHT_DEFAULT_STRENGTH);
 		isActive = !_isAimingUp;
@@ -923,7 +923,7 @@ state_default = function(){
 	// aiming up in order to prevent Samus instantly snapping to her upward aiming substate. This creates a 
 	// very short buffer for her to aim forward before snapping upward (As long as the up key is held for the
 	// required duration of this "aim switch buffer").
-	if ((stateFlags & (1 << AIMING_UP) == 0) && IS_UP_HELD){
+	if (!IS_AIMING_UP && IS_UP_HELD){
 		aimSwitchTimer += DELTA_TIME;
 		if (aimSwitchTimer >= AIM_SWITCH_TIME){
 			lightComponent.isActive = false;
@@ -1030,10 +1030,10 @@ state_airbourne = function(){
 	// and not aiming. Finally, a check for the space jump ability will occur if she's already in that 
 	// somersaulting jump; allowing her to jump again indefinitely while in that same jump.
 	if (IS_JUMP_PRESSED){
-		if (!IS_AIMING){ // Samus cannot be aiming in any direction to enable somersaulting in the air and her space jump.
+		if (!IS_AIMING_DOWN && !IS_AIMING_UP){ // Samus cannot be aiming in any direction to enable somersaulting in the air and her space jump.
 			if (!IS_JUMP_SPIN){ // Entering a somersault jump when airbourne.
-				stateFlags &= ~((1 << AIMING_FRONT) | (1 << AIMING_DOWN) | (1 << AIMING_UP));
 				if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= (1 << JUMP_ATTACK);}
+				stateFlags &= ~(1 << AIMING_FRONT);
 				stateFlags |= (1 << JUMP_SPIN);
 				hspd = get_max_hspd() * image_xscale;
 				aimReturnTimer = 0;
@@ -1062,7 +1062,7 @@ state_airbourne = function(){
 		// This chunk of code exists to allow the player to exit the downward aiming substate by moving in
 		// either horizontal direction for a small predetermined amount of time. If they release the movement
 		// keys before this amount of time has elapsed, Samus will remain in her downward aiming substate.
-		if (stateFlags & (1 << AIMING_DOWN) != 0 && !IS_DOWN_HELD){
+		if (IS_AIMING_DOWN && !IS_DOWN_HELD){
 			aimReturnTimer += DELTA_TIME;
 			if (aimReturnTimer >= AIM_SWITCH_TIME){
 				stateFlags &= ~(1 << AIMING_DOWN);
@@ -1082,7 +1082,7 @@ state_airbourne = function(){
 	// forward.
 	var _vInput = IS_DOWN_PRESSED - IS_UP_PRESSED;
 	if (_vInput == -1){
-		if ((stateFlags & (1 << AIMING_DOWN) == 0)){ // Aiming upward until the player releases their up input.
+		if (!IS_AIMING_DOWN){ // Aiming upward until the player releases their up input.
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 			stateFlags |= (1 << AIMING_UP);
 			lightComponent.isActive = false;
@@ -1092,7 +1092,7 @@ state_airbourne = function(){
 			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
 		}
 	} else if (_vInput == 1){
-		if (stateFlags & (1 << AIMING_DOWN) == 0){ // Entering a downward aiming state.
+		if (!IS_AIMING_DOWN){ // Entering a downward aiming state.
 			var _jumpAttack = stateFlags & (1 << JUMP_ATTACK);
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 			stateFlags |= (1 << AIMING_DOWN);

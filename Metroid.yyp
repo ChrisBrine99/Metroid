@@ -160,7 +160,7 @@
     {"id":{"name":"par_collectible","path":"objects/par_collectible/par_collectible.yy",},"order":15,},
     {"id":{"name":"par_collider","path":"objects/par_collider/par_collider.yy",},"order":7,},
     {"id":{"name":"par_destructible","path":"objects/par_destructible/par_destructible.yy",},"order":7,},
-    {"id":{"name":"par_dynamic_entity","path":"objects/par_dynamic_entity/par_dynamic_entity.yy",},"order":2,},
+    {"id":{"name":"par_dynamic_entity","path":"objects/par_dynamic_entity/par_dynamic_entity.yy",},"order":0,},
     {"id":{"name":"par_enemy","path":"objects/par_enemy/par_enemy.yy",},"order":1,},
     {"id":{"name":"par_liquid","path":"objects/par_liquid/par_liquid.yy",},"order":1,},
     {"id":{"name":"par_player_projectile","path":"objects/par_player_projectile/par_player_projectile.yy",},"order":4,},
