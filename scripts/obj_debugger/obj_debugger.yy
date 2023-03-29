@@ -5,7 +5,7 @@
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "Debug Tools",
-    "path": "folders/Resources/Core/Singletons/Debug Tools.yy",
+    "name": "Debugging",
+    "path": "folders/Resources/Core/Singletons/Debugging.yy",
   },
 }

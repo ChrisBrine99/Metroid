@@ -13,6 +13,10 @@
 // each menu--in order from the oldest existing menu instance to the newest, respectively.
 global.menuInstances = ds_list_create();
 
+// 
+global.appSurfOffsetX = 0;
+global.appSurfOffsetY = 0;
+
 #endregion
 
 #region Global functions related to obj_controller

@@ -16,8 +16,8 @@ hitpoints = maxHitpoints;
 // Variables for the surface that the power bomb's explosion is rendered to. The effect darkens the application surface
 // and creates a bright yellow oval that rapidly expands for the duration of said explosion.
 pBombSurf = -1;
-surfWidth = camera_get_width();
-surfHeight = camera_get_height();
+surfWidth = camera_get_view_width(CAMERA.camera);
+surfHeight = camera_get_view_height(CAMERA.camera);
 
 // The variables that represent what the power bomb can hit (Radius), how fast its radius expands, and the
 // current opacity value of the explosion, which will fade in and out during the beginning and the end of

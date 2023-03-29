@@ -51,6 +51,9 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	// 
 	targetX = 0;
 	targetY = 0;
+	
+	// 
+	prevAnimationFlags = ds_list_create();
 
 	/// @description Code that should be placed into the "Step" event of whatever object is controlling
 	/// obj_screen_fade. In short, it will handle fading the effect into full opacity, counting down the
@@ -63,10 +66,27 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 			fadeDuration -= DELTA_TIME;
 			if (fadeDuration <= 0) {alphaTarget = 0;}
 		} else if (alpha == 0 && alphaTarget == 0){ // The fade has completed; clear its pointer from the singleton map.
-			if (GAME_CURRENT_STATE == GSTATE_PAUSED) {game_set_state(GAME_PREVIOUS_STATE, true);}
+			// Reset the game's state back to what it was prior to the screen fade. All entities will have their
+			// "freeze animation" flags returned to whatever they were before the fade as well.
+			if (GAME_CURRENT_STATE == GSTATE_PAUSED){
+				game_set_state(GAME_PREVIOUS_STATE, true);
+				var _length = ds_list_size(prevAnimationFlags);
+				var _data = [noone, false]; // All elements in the list should match the format of this default value.
+				for (var i = 0; i < _length; i++){
+					_data = prevAnimationFlags[| i];
+					with(_data[0]){ // 0th index should always be the entity's unique ID value.
+						if (_data[1] != 0) {continue;} // Ignore any entities that already had their animations frozen.
+						stateFlags &= ~(1 << FREEZE_ANIMATION);
+					}
+				}
+				ds_list_clear(prevAnimationFlags);
+			}
+			
+			// Remove the surface that stored the player graphics from memory if it hasn't already been flushed
+			// out by the GPU. All other variables related to it are reset as well.
 			if (surface_exists(playerSurf)){
 				surface_free(playerSurf);
-				playerSurf = noone;
+				playerSurf = -1;
 				drawPlayer = false;
 				playerX = 0;
 				playerY = 0;
@@ -74,17 +94,26 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 		}
 	}
 	
+	/// @description
+	cleanup = function(){
+		if (surface_exists(playerSurf)) {surface_free(playerSurf);}
+		ds_list_destroy(prevAnimationFlags);
+	}
+	
 	/// @description Code that should be placed into the "Draw" event of whatever object is controlling
-	/// obj_screen_fade. 
+	/// obj_screen_fade. It will draw a rectangle onto the screen in the color specified by the fade effect
+	/// parameters. The current opacity is determined by the alpha variable's current value. Optionally, the
+	/// player can be draw above the fade effect, which is normally only used during room transitions.
 	/// @param {Real}	cameraX		The camera's x position within the current room.
 	/// @param {Real}	cameraY		The camera's y position within the current room.
 	draw_gui = function(_cameraX, _cameraY){
 		if (alpha == 0) {return;}
 		var _alpha = alpha;
-		draw_sprite_ext(spr_rectangle, 0, 0, 0, camera_get_width(), camera_get_height(), 0, fadeColor, _alpha);
+		var _camera = CAMERA.camera;
+		draw_sprite_ext(spr_rectangle, 0, 0, 0, camera_get_view_width(_camera), camera_get_view_height(_camera), 0, fadeColor, _alpha);
 		
 		// 
-		if (drawPlayer && !surface_exists(playerSurf)){
+		if (drawPlayer){
 			// 
 			var _x = 0;
 			var _y = 0;
@@ -102,19 +131,22 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 			}
 			
 			// 
-			playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), _spriteHeight + (SURFACE_OFFSET_Y * 2));
+			if (!surface_exists(playerSurf)) {playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), _spriteHeight + (SURFACE_OFFSET_Y * 2));}
 			surface_set_target(playerSurf);
 			draw_clear_alpha(c_black, 0);
 			with(PLAYER){
 				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 				with(armCannon){
-					if (!visible){break;}
-					draw_sprite_ext(spr_samus_cannon0, imageIndex, x - _x + _offsetX, y - _y + _offsetY, image_xscale, 1, 0, c_white, 1);
+					if (!visible) {break;}
+					draw_sprite_ext(spr_samus_cannon0, imageIndex, 
+							x - _x + _offsetX,
+							y - _y + _offsetY, image_xscale, 
+					1, 0, c_white, 1);
 				}
 			}
 			surface_reset_target();
+			draw_surface_ext(playerSurf, playerX, playerY, 1, 1, 0, HEX_WHITE, alpha);
 		}
-		draw_surface_ext(playerSurf, playerX, playerY, 1, 1, 0, HEX_WHITE, alpha);
 	}
 }
 
@@ -139,6 +171,16 @@ function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration, _drawP
 		fadeSpeed =		_fadeSpeed;
 		fadeDuration =	_fadeDuration;
 		drawPlayer =	_drawPlayer;
+		
+		var _animationFlags = prevAnimationFlags;
+		with(par_dynamic_entity){ // Freezes animations for all dynamic entities (They can move around the world).
+			ds_list_add(_animationFlags, [id, IS_ANIMATION_FROZEN]);
+			stateFlags |= (1 << FREEZE_ANIMATION);
+		}
+		with(par_static_entity){ // Freezes animations of all static entities (They almost never move around the game world).
+			ds_list_add(_animationFlags, [id, IS_ANIMATION_FROZEN]);
+			stateFlags |= (1 << FREEZE_ANIMATION);
+		}
 	}
 	if (GAME_CURRENT_STATE != GSTATE_CUTSCENE) {game_set_state(GSTATE_PAUSED);}
 }

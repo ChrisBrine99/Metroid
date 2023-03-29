@@ -5,7 +5,7 @@
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "Singletons",
-    "path": "folders/Resources/Core/Singletons.yy",
+    "name": "Camera",
+    "path": "folders/Resources/Core/Singletons/Camera.yy",
   },
 }

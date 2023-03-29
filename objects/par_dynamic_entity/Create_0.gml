@@ -66,29 +66,29 @@ loopOffset = 0;
 // The current values for the horiztonal and vertical velocities of the entity, respectively. Regardless of
 // these values, they will always allow for frame-independent physics and whole-number movement when paired
 // with the "apply_frame_movement" function found in this parent object.
-hspd = 0;
-vspd = 0;
+hspd = 0.0;
+vspd = 0.0;
 
 // The current horizontal and vertical acceleration values for the entity, as well as their factors to allow
 // real-time adjustments to their values without actually overwriting those values.
-hAccel = 0;
-vAccel = 0;
-hAccelFactor = 1;
-vAccelFactor = 1;
+hAccel = 0.0;
+vAccel = 0.0;
+hAccelFactor = 1.0;
+vAccelFactor = 1.0;
 
 // The maximum possible horizontal movement speed, and the maximum falling speed OR vertical movement speed
 // (This can change depending on the entity in question). Much like acceleration, the maximum velocity values
 // allow for real-time adjustment of said values without having to overwrite those values.
-maxHspd = 0;
-maxVspd = 0;
-maxHspdFactor = 1;
-maxVspdFactor = 1;
+maxHspd = 0.0;
+maxVspd = 0.0;
+maxHspdFactor = 1.0;
+maxVspdFactor = 1.0;
 
 // Variables that are responsible for storing the decimal values of the horizontal and vertical celocities,
 // respectively. Once a whole number exists within these values, they will be parsed out and used for entity
 // movement/collision detection; leaving the decimals within the respective values.
-hspdFraction = 0;
-vspdFraction = 0;
+hspdFraction = 0.0;
+vspdFraction = 0.0;
 
 // The number of hitpoints the entity has currently, as well as the maximum possible value they can have. Once
 // the entity's hitpoints reach or go below a value of zero, they will be destroyed at the start of the next 
@@ -97,8 +97,8 @@ hitpoints = 0;
 maxHitpoints = 0;
 
 // 
-hitstunTimer = 0;
-hitstunLength = 0;
+hitstunTimer = 0.0;
+hitstunLength = 0.0;
 
 #endregion
 

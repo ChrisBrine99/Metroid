@@ -158,26 +158,26 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// application surface AND the game's GUI surface. For example, both the scanlines and noise filter are
 	/// applied here to overlap the entire image.
 	draw_gui_end = function(){
-		if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
+		//if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
 		if (game_get_setting_flag(SCANLINE_FILTER))		{apply_scanlines(0.15);}
 	}
 	
 	/// @description 
 	apply_world_lighting = function(){
 		// 
-		var _cameraID = CAMERA.camera.ID;
-		var _cameraX = camera_get_view_x(_cameraID);
-		var _cameraY = camera_get_view_y(_cameraID);
+		var _camera = CAMERA.camera;
+		var _cameraX = camera_get_view_x(_camera);
+		var _cameraY = camera_get_view_y(_camera);
 		
 		// 
-		if (!surface_exists(surfWorld))	{surfWorld = surface_create(camera_get_width(), camera_get_height());}
+		if (!surface_exists(surfWorld))	{surfWorld = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));}
 		surface_set_target(surfWorld);
 		draw_surface(application_surface, 0, 0);
 		surface_reset_target();
 		
 		// 
 		if (!surface_exists(surfLights)){
-			surfLights = surface_create(camera_get_width(), camera_get_height());
+			surfLights = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
 			texLights = surface_get_texture(surfLights);
 		}
 		
@@ -211,7 +211,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		shader_set_uniform_f(sWorldSaturation, worldSaturation);
 		shader_set_uniform_f(sWorldContrast, worldContrast);
 		texture_set_stage(sWorldLights, texLights);
-		draw_surface(surfWorld, camera_get_view_x(_cameraID), camera_get_view_y(_cameraID));
+		draw_surface(surfWorld, camera_get_view_x(_camera), camera_get_view_y(_camera));
 		shader_reset();
 	}
 	
@@ -226,7 +226,10 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		
 		// Make sure the buffer surface for the blurring effect exists within the GPU's memory before
 		// any processing of the effect has begun. It's dimensions are the same as the window's.
-		if (!surface_exists(surfBlurBuffer)) {surfBlurBuffer = surface_create(camera_get_width(), camera_get_height());}
+		if (!surface_exists(surfBlurBuffer)){
+			var _camera = CAMERA.camera;
+			surfBlurBuffer = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
+		}
 		
 		// First, the shader will be activated and the main parameters will be set; the radius of the blur,
 		// (This determines how many pixels around the current fragment will effect the final color of said
@@ -262,7 +265,8 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		// be altered by this screen blooming function. The ID given to that surface is also stored since
 		// it is required for the blending of the luminance surface and the application surface.
 		if (!surface_exists(surfBloomLum)){
-			surfBloomLum = surface_create(camera_get_width(), camera_get_height());
+			var _camera = CAMERA.camera;
+			surfBloomLum = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
 			bloomTextureID = surface_get_texture(surfBloomLum);
 		}
 		
@@ -326,8 +330,8 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		var _scale =		RESOLUTION_SCALE;
 		var _prevWidth =	display_get_gui_width();
 		var _prevHeight =	display_get_gui_height();
-		var _tempWidth =	camera_get_width() * _scale;
-		var _tempHeight =	camera_get_height() * _scale;
+		var _tempWidth =	_prevWidth * _scale;
+		var _tempHeight =	_prevHeight * _scale;
 		display_set_gui_size(_tempWidth, _tempHeight);
 		
 		// 

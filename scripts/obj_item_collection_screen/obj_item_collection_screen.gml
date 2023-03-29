@@ -16,8 +16,9 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	
 	/// @description 
 	draw_gui = function(){
-		var _width = camera_get_width();
-		var _height = camera_get_height();
+		var _cameraID = CAMERA.camera;
+		var _width = camera_get_view_width(_cameraID);
+		var _height = camera_get_view_height(_cameraID);
 		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, HEX_BLACK, alpha * 0.5);
 		
 		var _screenCenterX = _width / 2;

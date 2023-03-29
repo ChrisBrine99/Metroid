@@ -1,18 +1,24 @@
 // Check if the player is next to the door on the room's start. If so, it will be automatically assumed they
 // travelled through this door when warping into the room, and as such it will start open and play a closing
 // animation, which is just the reverse of the opening animation.
-var _x = lengthdir_x(1, direction);
-var _y = lengthdir_y(1, direction);
+var _x = lengthdir_x(1, image_angle);
+var _y = lengthdir_y(1, image_angle);
 if (place_meeting(x + (24 * _x), y + (24 * _y), PLAYER)){
 	imageIndex = spriteLength - 1;
 	animSpeed = -1;
+	
+	// The door doesn't exist in the frozen entities list within the "Screen Fade" instance, so the door must
+	// be added here if required (Allows the door to close behind Samus since she just traveled through it).
+	var _id = id;
+	with(SCREEN_FADE) {ds_list_add(prevAnimationFlags, [_id, false]);}
+	stateFlags |= (1 << FREEZE_ANIMATION);
 }
 
-// 
+// Properly offset the light such that it is always in the center of the sprite; regardless of what angle the
+// sprite is being positioned at.
 var _offsetX = x - (24 * _y) + (4 * _x);
 var _offsetY = y + (24 * _x) + (4 * _y);
 lightComponent.set_position(_offsetX, _offsetY);
-show_debug_message("Direction: {2}\nX: {0}, Y: {1}", _offsetX - x, _offsetY - y, direction);
 
 // FOR DOORS WITH LOCKS ONLY -- Check if the flag tied to the door has already been set. If so, switch this door
 // to a general door as it is now considered unlocked.

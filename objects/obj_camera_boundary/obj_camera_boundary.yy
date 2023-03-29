@@ -1,15 +1,15 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_room_warp",
+  "name": "obj_camera_boundary",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Collision",
-    "path": "folders/Resources/Core/Entities/Other/Collision.yy",
+    "name": "Camera",
+    "path": "folders/Resources/Core/Singletons/Camera.yy",
   },
   "parentObjectId": null,
   "persistent": false,
@@ -28,9 +28,9 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_warp",
-    "path": "sprites/spr_warp/spr_warp.yy",
+    "name": "spr_camera_boundary",
+    "path": "sprites/spr_camera_boundary/spr_camera_boundary.yy",
   },
   "spriteMaskId": null,
-  "visible": false,
+  "visible": true,
 }

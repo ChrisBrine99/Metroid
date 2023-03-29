@@ -10,9 +10,9 @@ draw_clear(c_black);
 draw_surface_ext(application_surface, 0, 0, 1, 1, 0, HEX_GRAY, 1);
 gpu_set_blendmode(bm_add);
 
-var _camID = CAMERA.camera.ID;
-var _x = x - camera_get_view_x(_camID);
-var _y = y - camera_get_view_y(_camID);
+var _camera = CAMERA.camera;
+var _x = x - camera_get_view_x(_camera);
+var _y = y - camera_get_view_y(_camera);
 var _radius = floor(pBombRadius);
 draw_ellipse_color(_x - _radius, _y - _radius, _x + _radius, _y + _radius, HEX_LIGHT_YELLOW, HEX_BLACK, false);
 

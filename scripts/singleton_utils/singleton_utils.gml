@@ -10,6 +10,7 @@
 #macro	SCREEN_FADE					global.sInstances[? obj_screen_fade]
 #macro	CONTROLLER					global.sInstances[? obj_controller]
 #macro	PLAYER						global.sInstances[? obj_player]
+#macro	DEBUGGER					global.sInstances[? obj_debugger]
 
 // A map that stores pointers/references to all singletons that exist within the game currently. An object being
 // in this list will prevent copies of them from being instantiated. (When used in tandem with the new functions

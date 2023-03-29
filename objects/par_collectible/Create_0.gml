@@ -60,7 +60,7 @@ collectible_collect_self = function(){
 	var _menu = instance_create_menu_struct(obj_item_collection_screen);
 	with(_menu){
 		menu_set_next_state(state_animation_alpha, [1, 0.1, state_default]);
-		set_item_data(_name, _info, camera_get_width() - 20);
+		set_item_data(_name, _info, camera_get_view_width(CAMERA.camera) - 20);
 	}
 	
 	// Set the flag that is assigned to this collectible to true within the buffer of event flags; preventing

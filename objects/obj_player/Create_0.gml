@@ -30,6 +30,9 @@ hitpoints = maxHitpoints;
 inputFlags = 0;
 prevInputFlags = 0;
 
+// 
+movement = 0;
+
 // Variables to represent each of Samus's animations based on the suit she currently has equipped. They start
 // with the Power Suit by default, and then are overwritten by the Varia Suit followed by the Gravity Suit when
 // each of those are collected by the player.
@@ -71,22 +74,22 @@ maxPowerBombs = 0;
 // Timer variables that will count upwards until a certain threshold has been met. After which, an animation
 // will conclude, Samus will lower her arm cannon, her main state will change, or her substate will change;
 // to name a few possibilities.
-standingTimer = 0;
-aimReturnTimer = 0;
-aimSwitchTimer = 0;
-mBallEnterTimer = 0;
-jumpStartTimer = 0;
+standingTimer = 0.0;
+aimReturnTimer = 0.0;
+aimSwitchTimer = 0.0;
+mBallEnterTimer = 0.0;
+jumpStartTimer = 0.0;
 
 // Keeps track of how high the morphball will bounce relative to its falling speed when it initially hits the
 // ground. A high enough value will make the morphball bounce into the air again.
-vspdRecoil = 0;
+vspdRecoil = 0.0;
 
 // Variables for Samus's strandard bombs; determining how fast she can deploy them, how many she can deploy at
 // any given time, the power of the blast that allows for bomb jumping, and a variable to track the explosion
 // that hit her so it doesn't constantly collide with it every frame; skewing the true vertical velocity if
 // this was the case.
-bombDropTimer = 0;
-bombJumpVspd = -4;
+bombDropTimer = 0.0;
+bombJumpVspd = -4.0;
 bombExplodeID = noone;
 
 // The arm cannon is a separate object that is rendered on top of Samus's current sprite whenever it is needed.
@@ -105,8 +108,8 @@ curWeapon = curBeam;
 // 
 tapFireRate = 1;
 holdFireRate = 1;
-fireRateTimer = 0;
-chargeTimer = 0;
+fireRateTimer = 0.0;
+chargeTimer = 0.0;
 
 // 
 liquidData = {
@@ -114,20 +117,23 @@ liquidData = {
 	liquidID : noone,
 	
 	// 
-	maxHspdPenalty : 0,
-	maxVspdPenalty : 0,
-	hAccelPenalty : 0,
-	vAccelPenalty : 0,
+	maxHspdPenalty : 0.0,
+	maxVspdPenalty : 0.0,
+	hAccelPenalty : 0.0,
+	vAccelPenalty : 0.0,
 	
 	// 
 	damage : 0,
-	damageInterval : 0,
-	damageTimer : 0,
+	damageInterval : 0.0,
+	damageTimer : 0.0,
 };
 
 // 
 jumpEffectID = ds_list_create();
 effectTimer = JUMP_EFFECT_INTERVAL;
+
+// 
+warpID = noone;
 
 #endregion
 
@@ -160,6 +166,63 @@ process_input = function(){
 	}
 }
 
+/// @description 
+/// @param {Real}	hspdFactor		Maximum possible hspd (Relative to Samus's current maximum) for just this function.
+/// @param {Real}	hAccelFactor	Determines horizontal acceleration rate for Samus during this iteration of the function.
+/// @param {Bool}	snapToZero		If true, Samus's horizontal velocity will be set to zero upon changing directions.
+/// @param {Bool}	canDecelerate	It true, Samus will be able to slow down after no horizontal movement inputs are pressed.
+process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, _canDecelerate){
+	// Logic for updating player's current horizontal velocity relative to the movement input pressed.
+	movement = IS_RIGHT_HELD - IS_LEFT_HELD;
+	if (movement != 0){ // Player is moving; apply acceleration in required direction.
+		// Optionally snapping Samus's current velocity to zero if she changes directions without coming to
+		// a complete stop beforehand.
+		if (_snapToZero && ((movement == -1 && hspd > 0.0) || (movement == 1 && hspd < 0.0))){
+			hspdFraction = 0.0;
+			hspd = 0.0;
+		}
+		
+		// Increase (Moving to the right) or decrease (Moving to the left) Samus's current horizontal velocity
+		// value; relative to her current horizontal acceleration speed. Samus's image is flipped to match her
+		// movement direction.
+		hspd += movement * get_hor_accel() * _hAccelFactor * DELTA_TIME;
+		image_xscale = movement;
+		
+		// Capping the maximum possible horizontal speed of Samus to whatever her current maximum is relative
+		// to her movement direction.
+		var _maxHspd = get_max_hspd() * _hspdFactor;
+		if (hspd > _maxHspd)		{hspd = _maxHspd;}
+		else if (hspd < -_maxHspd)	{hspd = -_maxHspd;}
+		
+		// Set Samus's flag for "moving" to let the rest of her code know she is currently moving.
+		stateFlags |= (1 << MOVING);
+	} else if (_canDecelerate){ // Player is no longer being moved; decelerate her horizontal velocity to zero.
+		var _deltaAccel = get_hor_accel() * _hAccelFactor * DELTA_TIME;
+		hspd -= _deltaAccel * sign(hspd);
+		if (hspd >= -_deltaAccel && hspd <= _deltaAccel){ // Set all hspd values to zero and disable any necessary flags.
+			stateFlags &= ~((1 << MOVING) | (1 << AIMING_FRONT));
+			hspdFraction = 0.0;
+			hspd = 0.0;
+		}
+	}
+	
+	// Applying a fix for Samus's horizontal velocity that can occur with this movement and collision system.
+	// In short, it will check to see that there isn't an obstacle right in front of Samus. If there is one,
+	// her hspd values are zeroed out and her flag for "moving" is set to false. If this wasn't done her
+	// hspd value would constantly increase to 1 before zeroing out at the collision check so long as the
+	// player was holding either the right or left movement inputs; making her run while against walls due
+	// to that "moving" flag never being set to false despite any actual movement being obstructed.
+	if (IS_MOVING && place_meeting(x + movement, y, par_collider)){
+		var _yOffset = 0;
+		while(IS_GROUNDED && place_meeting(x + movement, y - _yOffset, par_collider) && _yOffset < maxHspd) {_yOffset++;}
+		if (place_meeting(x + movement, y - _yOffset, par_collider)){
+			stateFlags &= ~(1 << MOVING);
+			hspdFraction = 0.0;
+			hspd = 0.0;
+		}
+	}
+}
+
 /// @description Since this piece of code needs to be utilized for two seperate scenarios in the crouching
 /// state, it's been outlined and placed into its own function to simplify the crouching state's code; 
 /// improving code readability.
@@ -169,7 +232,7 @@ crouch_to_standing = function(){
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
 		stateFlags &= ~(1 << CROUCHING);
-		standingTimer = 0;
+		standingTimer = 0.0;
 		reset_light_source();
 		return; // Exit before mask can be reset by the code found below.
 	}
@@ -184,8 +247,8 @@ morphball_to_crouch = function(){
 	if (!place_meeting(x, y, par_collider)){
 		object_set_next_state(state_enter_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
-		vspdRecoil = 0;			// Reset variables related to the morphball to default values.
-		bombDropTimer = 0;
+		vspdRecoil = 0.0;			// Reset variables related to the morphball to default values.
+		bombDropTimer = 0.0;
 		bombExplodeID = noone;
 		return; // Exit before mask can be reset by the code found below.
 	}
@@ -207,9 +270,12 @@ update_arm_cannon = function(_movement){
 	var _usePressed = IS_USE_PRESSED;
 	var _useReleased = IS_USE_RELEASED;
 	if ((_useHeld || _usePressed) && !_isAiming){
-		stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK)); // Flip flags to 0 no matter what.
+		if (IS_JUMP_SPIN || IS_JUMP_ATTACK){
+			stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
+			reset_light_source();
+		}
 		stateFlags |= (1 << AIMING_FRONT);
-		aimReturnTimer = 0;
+		aimReturnTimer = 0.0;
 	}
 	
 	// Handling the charge beam logic, which is only factored in if the player doesn't have a missile equipped
@@ -222,8 +288,8 @@ update_arm_cannon = function(_movement){
 			if (chargeTimer >= MAX_CHARGE_TIME) {chargeTimer = MAX_CHARGE_TIME;}
 		
 			// Prevent any normal beam projectile from being created while the charge timer is increasing.
-			if (chargeTimer >= min(tapFireRate, 5)){
-				aimReturnTimer = 0;
+			if (chargeTimer >= min(tapFireRate, 5.0)){
+				aimReturnTimer = 0.0;
 				return;
 			}
 		}
@@ -231,7 +297,7 @@ update_arm_cannon = function(_movement){
 		// Determine if the beam is fully charged relative to the timer's current value and if the player has
 		// released the fire button. The timer for charge is reset on this button's release.
 		_isCharged = (_useReleased && _chargeBeam && chargeTimer >= MIN_CHARGE_TIME);
-		if (_useReleased) {chargeTimer = 0;}
+		if (_useReleased) {chargeTimer = 0.0;}
 	}
 	
 	// 
@@ -240,8 +306,8 @@ update_arm_cannon = function(_movement){
 	var _chargeFire = (_useReleased && _isCharged);
 	if (_holdingFire || _tappingFire || _chargeFire){
 		create_projectile(_isCharged);
-		fireRateTimer = 0;
-		aimReturnTimer = 0;
+		fireRateTimer = 0.0;
+		aimReturnTimer = 0.0;
 	}
 	
 	// Resetting the fire rate timer whenever a projectile has been shot; preventing the player from firing 
@@ -259,7 +325,7 @@ update_arm_cannon = function(_movement){
 		aimReturnTimer += DELTA_TIME;
 		if (aimReturnTimer >= BEAM_LOWER_TIME){
 			stateFlags &= ~(1 << AIMING_FRONT);
-			aimReturnTimer = 0;
+			aimReturnTimer = 0.0;
 		}
 	}
 }
@@ -408,7 +474,7 @@ create_missile = function(_x, _y, _imageXScale){
 				hspd = other.hspd;
 			} else if (_vspd >= 0 && IS_MOVING_DOWN){
 				vspd = other.vspd;
-				vAccel *= 2; // Doubles acceleration to prevent Samus falling faster than the missile accelerates.
+				vAccel *= 2.0; // Doubles acceleration to prevent Samus falling faster than the missile accelerates.
 			}
 		}
 		numMissiles--; // Subtracts one missile from the current ammo reserve.
@@ -451,8 +517,8 @@ check_swap_current_weapon = function(){
 			curWeapon = curMissile;
 			tapFireRate = MISSILE_SWAP_TIME;
 			holdFireRate = MISSILE_SWAP_TIME;
-			fireRateTimer = 0;
-			chargeTimer = 0;
+			fireRateTimer = 0.0;
+			chargeTimer = 0.0;
 		}
 		return;
 	}
@@ -470,8 +536,8 @@ check_swap_current_weapon = function(){
 		curWeapon = curBeam;
 		tapFireRate = BEAM_SWAP_TIME;
 		holdFireRate = BEAM_SWAP_TIME;
-		fireRateTimer = 0;
-		chargeTimer = 0;
+		fireRateTimer = 0.0;
+		chargeTimer = 0.0;
 	}
 }
 
@@ -488,7 +554,7 @@ __initialize = initialize;
 /// @param {Function}	state
 initialize = function(_state){
 	__initialize(_state);
-	entity_set_position(304, 304);
+	entity_set_position(480, 320);
 	entity_set_sprite(introSprite, spr_empty_mask);
 	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
 	game_set_state(GSTATE_NORMAL, true);
@@ -551,7 +617,7 @@ fallthrough_floor_collision = function(){
 	with(instance_place(x, y + 1, obj_destructible_weight)){
 		if (!IS_DESTROYED){
 			destructible_destroy_self();
-			other.vspd = 0;
+			other.vspd = 0.0;
 		}
 	}
 }
@@ -582,6 +648,7 @@ player_liquid_collision = function(){
 		// Otherwise, ignore this code and just perfrom the collision check below.
 		var _id = noone;
 		var _damage = 0;
+		var _dealsDamage = false;
 		with(liquidData){
 			_id = liquidID;
 			if (damage == 0) {break;}
@@ -590,10 +657,16 @@ player_liquid_collision = function(){
 				damageTimer -= damageInterval;
 				_damage = -damage; // Damage must be negative to take away energy from the player.
 			}
+			_dealsDamage = true;
 		}
-		update_hitpoints(_damage);
-		if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
-		else					{stateFlags |= (1 << DRAW_SPRITE);}
+		
+		// Only bother flashing the player's sprite and dealing with current hitpoints if the liquid in
+		// question can cause damage to them. Otherwise, this small chunk of code is skipped.
+		if (_dealsDamage){
+			if (_damage != 0)		{update_hitpoints(_damage);}
+			if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
+			else					{stateFlags |= (1 << DRAW_SPRITE);}
+		}
 		
 		// Check if the player is no longer colliding with the liquid they initially entered OR that the
 		// value for "_id" wasn't updated past its initial value for some reason. If either is the case,
@@ -613,13 +686,13 @@ player_liquid_collision = function(){
 			// Samus is submerged in a liquid.
 			with(liquidData){
 				liquidID =			noone;
-				maxHspdPenalty =	0;
-				maxVspdPenalty =	0;
-				hAccelPenalty =		0;
-				vAccelPenalty =		0;
+				maxHspdPenalty =	0.0;
+				maxVspdPenalty =	0.0;
+				hAccelPenalty =		0.0;
+				vAccelPenalty =		0.0;
 				damage =			0;
-				damageInterval =	0;
-				damageTimer	=		0;
+				damageInterval =	0.0;
+				damageTimer	=		0.0;
 			}
 			stateFlags |= (1 << DRAW_SPRITE);
 			stateFlags &= ~(1 << SUBMERGED);
@@ -658,7 +731,7 @@ player_liquid_collision = function(){
 		// themselves submerged, so the relevant flag for that is flipped, and the player's hspd and vspd
 		// are drastically reduced to really sell the impact with the liquid.
 		stateFlags |= (1 << SUBMERGED);
-		vspdRecoil = 0;
+		vspdRecoil = 0.0;
 		hspd *= 0.35;
 		vspd *= 0.15;
 	}
@@ -669,19 +742,17 @@ player_liquid_collision = function(){
 /// to hide the abrupt room change that occurs when using room_goto. The effect unique to room warps is also
 /// prepared for execution here.
 player_warp_collision = function(){
-	var _warp = instance_place(x, y, obj_room_warp);
-	if (_warp != noone){
-		_warp.isWarping = true;
+	warpID = instance_place(x, y, obj_room_warp);
+	if (warpID != noone){
 		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
 		object_set_next_state(state_room_warp);
-		stateFlags |= (1 << FREEZE_ANIMATION);
 		
 		// Determine the position to place the surface that contains a snapshot of Samus at. This snapshot
 		// is just the last frame of animation she was in, and her arm cannon if it was being shown for said
 		// animation. The position needs the camera's value remove from it since it is drawn on the GUI layer.
-		var _camID = CAMERA.camera.ID;
-		var _x = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camID);
-		var _y = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camID);
+		var _camera = CAMERA.camera;
+		var _x = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camera);
+		var _y = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camera);
 		with(SCREEN_FADE){
 			playerX = _x - SURFACE_OFFSET_X;
 			playerY = _y - SURFACE_OFFSET_Y;
@@ -706,7 +777,7 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	// 
 	if (IS_JUMP_ATTACK) {reset_light_source();}
 	jumpStartTimer = JUMPSPIN_ANIM_TIME;
-	aimReturnTimer = 0;
+	aimReturnTimer = 0.0;
 
 	// 
 	hspd = get_max_hspd() * 0.35 * -image_xscale;
@@ -774,11 +845,11 @@ state_hitstun = function(){
 /// state after the previous condition is met.
 state_intro = function(){
 	process_input();
-	var _input = IS_RIGHT_HELD - IS_LEFT_HELD;
-	if (_input != 0){
+	var _movement = IS_RIGHT_HELD - IS_LEFT_HELD;
+	if (_movement != 0){
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
-		image_xscale = _input;
+		image_xscale = _movement;
 	}
 }
 
@@ -787,11 +858,46 @@ state_intro = function(){
 /// snapshot overlaying the screen fade towards what her new position is on the game screen. Once the positions
 /// of each match, the room transition effect is completed, and Samus will return to her previous state.
 state_room_warp = function(){
-	var _camID = CAMERA.camera.ID;
-	var _targetX = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camID) - SURFACE_OFFSET_X;
-	var _targetY = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camID) - SURFACE_OFFSET_Y;
+	var _warpID = warpID;
+	var _camera = CAMERA.camera;
+	var _targetX = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camera) - SURFACE_OFFSET_X;
+	var _targetY = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camera) - SURFACE_OFFSET_Y;
 	with(SCREEN_FADE){
 		if (alpha == 1 && alphaTarget == 1){
+			// Handle position and room swapping code right before any transition effect code is executed;
+			// preventing said code from completely before it even technically began.
+			with(_warpID){
+				// Prevents crashing and warping if the room provided doesn't exist.
+				if (targetRoom == ROOM_INDEX_INVALID){
+					PLAYER.warpID = noone;
+					other.alphaTarget = 0;
+					return;
+				}
+				
+				// Move the player into position, clear out the reference to the warp that is executing
+				// the current room warp, and load in the required room. Update the position of the arm
+				// cannon as well to compensate for Samus's new position.
+				var _x = targetX;
+				var _y = targetY;
+				with(PLAYER){
+					x = _x;
+					y = _y;
+					warpID = noone;
+					
+					// Since Samus is in her warping state, the previous state will be used to determine
+					// where her arm cannon ends up relative to her position. Otherwise, its position will
+					// not change between rooms alongside her.
+					var _state = curState;
+					curState = lastState;
+					armCannon.end_step();
+					curState = _state;
+				}
+				room_goto(targetRoom);
+				return; // Ensures the transition effect will begin after everything has been properly set.
+			}
+			
+			// Move the player sprite that exists above the screen fade for a nice effect until it reaches
+			// where the object itself is on the screen after the warp.
 			var _closeScreenFade = false;
 			playerX += (_targetX - playerX) / 5 * DELTA_TIME;
 			playerY += (_targetY - playerY) / 5 * DELTA_TIME;
@@ -806,6 +912,7 @@ state_room_warp = function(){
 			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
 				object_set_next_state(lastState);
 				stateFlags &= ~(1 << FREEZE_ANIMATION);
+				warpID = noone;
 			}
 		}
 	}
@@ -830,7 +937,7 @@ state_default = function(){
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(jumpSpriteFw, standingMask);
 		stateFlags &= ~(1 << MOVING);
-		aimReturnTimer = 0;
+		aimReturnTimer = 0.0;
 		return; // State changed; ignore input and immediately switch over to "airbourne" state.
 	}
 	
@@ -851,47 +958,7 @@ state_default = function(){
 	}
 	
 	// Handling horizontal movement for both directions.
-	var _movement = IS_RIGHT_HELD - IS_LEFT_HELD;
-	if (_movement != 0){
-		// Instantaneous velocity reset whenever the player changes movement directions before a complete
-		// deceleration can occur (If movement inputs were even released prior to the direction switch).
-		if ((_movement == -1 && hspd > 0) || (_movement == 1 && hspd < 0)){
-			hspdFraction = 0;
-			hspd = 0;
-		}
-		
-		// Slowly increase Samus's horizontal velocity by her acceleration until it reaches her maximum
-		// possible horizontal movement speed. After that, she'll constantly be at that maximum speed.
-		var _maxHspd = get_max_hspd();
-		hspd += _movement * get_hor_accel() * DELTA_TIME;
-		if (hspd < -_maxHspd)		{hspd = -_maxHspd;}
-		else if (hspd > _maxHspd)	{hspd = _maxHspd;}
-		
-		// Let the object know that it is "moving" (This is used for assigning the walking animation at the
-		// end of this state) and also ensure Samus is facing the proper direction that the player is moving
-		// her in.
-		stateFlags |= (1 << MOVING);
-		image_xscale = _movement;
-	} else if (hspd != 0 || IS_MOVING){
-		// Smoothly decelerate Samus until she becomes stationary again; this deceleration rate is the same
-		// value used for her acceleration whenever the left or right inputs being pressed by the user.
-		var _deltaAccel = get_hor_accel() * DELTA_TIME;
-		hspd -= _deltaAccel * sign(hspd);
-		if (hspd >= -_deltaAccel && hspd <= _deltaAccel){
-			stateFlags &= ~((1 << MOVING) | (1 << AIMING_FRONT));
-			hspdFraction = 0;
-			hspd = 0;
-		}
-	}
-	
-	// A collision check that occurs outside of the standard function in order to flip Samus's "moving" flag
-	// to 0 if the player is moving her in the direction of a wall. Otherwise, her walking animation will play
-	// in a glitchy manner despite the fact she isn't moving at all.
-	if (place_meeting(x + _movement, y, par_collider)){
-		var _yOffset = 0;
-		while(place_meeting(x + _movement, y - _yOffset, par_collider) && _yOffset < maxHspd) {_yOffset++;}
-		if (place_meeting(x + _movement, y - _yOffset, par_collider)) {stateFlags &= ~(1 << MOVING);}
-	}
+	process_horizontal_movement(1.0, 1.0, true, true);
 	
 	// Entering Samus's crouching state, which lowers her down; shrinking her hitbox a bit vertically and 
 	// moving her beam low enough to hit smaller targets. It's accessed by simply pressing the down input.
@@ -900,9 +967,9 @@ state_default = function(){
 		entity_set_sprite(crouchSprite, crouchingMask);
 		stateFlags &= ~((1 << AIMING_UP) | (1 << MOVING));
 		stateFlags |= (1 << CROUCHING);
-		aimReturnTimer = 0;
-		hspdFraction = 0;
-		hspd = 0;
+		aimReturnTimer = 0.0;
+		hspdFraction = 0.0;
+		hspd = 0.0;
 		lightOffsetY = LIGHT_OFFSET_Y_CROUCH;
 		return; // State changed; don't bother continuing with this state function.
 	}
@@ -929,16 +996,16 @@ state_default = function(){
 			lightComponent.isActive = false;
 			stateFlags &= ~(1 << AIMING_FRONT);
 			stateFlags |= (1 << AIMING_UP);
-			aimSwitchTimer = 0;
+			aimSwitchTimer = 0.0;
 		}
 	} else{
-		aimSwitchTimer = 0;
+		aimSwitchTimer = 0.0;
 	}
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
 	// The second function will handle weapon/beam swapping for this state.
-	update_arm_cannon(_movement);
+	update_arm_cannon(movement);
 	check_swap_current_weapon();
 	
 	// Use the general offset position for the visor light's current x-position.
@@ -999,10 +1066,10 @@ state_airbourne = function(){
 		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
 		// Samus's horizontal velocity to make it add to the impact of Samus landing.
 		stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK) | (1 << AIMING_DOWN));
-		jumpStartTimer = 0;
-		aimReturnTimer = 0;
-		hspdFraction = 0;
-		hspd = 0;
+		jumpStartTimer = 0.0;
+		aimReturnTimer = 0.0;
+		hspdFraction = 0.0;
+		hspd = 0.0;
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -1036,7 +1103,7 @@ state_airbourne = function(){
 				stateFlags &= ~(1 << AIMING_FRONT);
 				stateFlags |= (1 << JUMP_SPIN);
 				hspd = get_max_hspd() * image_xscale;
-				aimReturnTimer = 0;
+				aimReturnTimer = 0.0;
 				effectTimer = JUMP_EFFECT_INTERVAL;
 			} else if (vspd >= 2 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
 				vspd = get_max_vspd();
@@ -1045,32 +1112,20 @@ state_airbourne = function(){
 	}
 	if (IS_JUMP_RELEASED && vspd < 0) {vspd *= 0.5;}
 	
-	// Handling horizontal movement, which is slightly different to how it is normally handled. The biggest
-	// change is that Samus doesn't decelerate while airbourne, meaning her velocity will remain even if the
-	// player isn't holding down any horizontal movement inputs until she lands.
-	var _movement = IS_RIGHT_HELD - IS_LEFT_HELD;
-	if (_movement != 0){
-		// Moving Samus while airborune works nearly identically to how she moves while standing or in her
-		// morphball form. The main differences are her acceleration is halved and there is no instanteous
-		// velocity change when the movement direction is switched before her horizontal velocity reaches 0.
-		var _maxHspd = get_max_hspd();
-		hspd += _movement * get_hor_accel() * 0.5 * DELTA_TIME;
-		if (hspd < -_maxHspd)		{hspd = -_maxHspd;}
-		else if (hspd > _maxHspd)	{hspd = _maxHspd;}
-		image_xscale = _movement;
-		
-		// This chunk of code exists to allow the player to exit the downward aiming substate by moving in
-		// either horizontal direction for a small predetermined amount of time. If they release the movement
-		// keys before this amount of time has elapsed, Samus will remain in her downward aiming substate.
+	// 
+	var _hspdFactor = 1.0;
+	if (abs(hspd) < get_max_hspd() && !IS_JUMP_SPIN) {_hspdFactor = 0.7;}
+	process_horizontal_movement(_hspdFactor, 0.5, false, false);
+	if (movement != 0){
 		if (IS_AIMING_DOWN && !IS_DOWN_HELD){
 			aimReturnTimer += DELTA_TIME;
 			if (aimReturnTimer >= AIM_SWITCH_TIME){
 				stateFlags &= ~(1 << AIMING_DOWN);
-				aimReturnTimer = 0;
+				aimReturnTimer = 0.0;
 			}
 		}
-	} else{ // Resetting the aim return timer for exiting downward aiming through horizontal movement inputs.
-		aimReturnTimer = 0;
+	} else{
+		aimReturnTimer = 0.0;
 	}
 	
 	// Determining Samus's aiming direction as well as if she can enter morphball mode or not. For aiming, it
@@ -1104,7 +1159,7 @@ state_airbourne = function(){
 			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(ballEnterSprite, morphballMask);
 			y -= bbox_bottom - _bboxBottom;
-			jumpStartTimer = 0;
+			jumpStartTimer = 0.0;
 			return;
 		}
 	} else if (IS_UP_RELEASED){ // Stopping Samus from aiming upward.
@@ -1115,7 +1170,7 @@ state_airbourne = function(){
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
 	// The second function will handle weapon/beam swapping for this state.
-	update_arm_cannon(_movement);
+	update_arm_cannon(movement);
 	check_swap_current_weapon();
 	
 	// The light effect that occurs when Samus is using her screw attack, which will vastly increase the size
@@ -1177,7 +1232,7 @@ state_airbourne = function(){
 		effectTimer += DELTA_TIME;
 		if (effectTimer >= JUMP_EFFECT_INTERVAL){
 			ds_list_add(jumpEffectID, create_player_jump_effect(x, y, sprite_index, floor(imageIndex), image_xscale));
-			effectTimer = 0;
+			effectTimer = 0.0;
 		}
 	}
 	
@@ -1250,22 +1305,22 @@ state_crouching = function(){
 	
 	// Hitting the right or left movement keys, which will simply change Samus's facing direction when pressed.
 	// When either input is held down for a specific amount of time, Samus will exit her crouching state.
-	var _movement = IS_RIGHT_HELD - IS_LEFT_HELD;
-	if (_movement != 0){
+	movement = IS_RIGHT_HELD - IS_LEFT_HELD;
+	if (movement != 0){
 		standingTimer += DELTA_TIME;
 		if (standingTimer >= STAND_UP_TIME){
 			crouch_to_standing();
-			standingTimer = 0;
+			standingTimer = 0.0;
 		}
-		image_xscale = _movement;
+		image_xscale = movement;
 	} else{ // Reset timer for making Samus stand through left or right input when they are released early.
-		standingTimer = 0;
+		standingTimer = 0.0;
 	}
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
 	// The second function will handle weapon/beam swapping for this state.
-	update_arm_cannon(_movement);
+	update_arm_cannon(movement);
 	check_swap_current_weapon();
 	
 	// Use the general offset position for the visor light's current x-position.
@@ -1279,7 +1334,7 @@ state_crouching = function(){
 state_enter_morphball = function(){
 	mBallEnterTimer += DELTA_TIME;
 	if (mBallEnterTimer >= MORPHBALL_ANIM_TIME){
-		mBallEnterTimer = 0;
+		mBallEnterTimer = 0.0;
 		
 		// ENTERING MORPHBALL -- Occurs when Samus was previously in her crouching or airbourne states, 
 		// respectively. She will be set to her default morphball state, and her substate flags will be 
@@ -1308,9 +1363,9 @@ state_enter_morphball = function(){
 		object_set_next_state(state_crouching);
 		entity_set_sprite(crouchSprite, crouchingMask);
 		stateFlags |= (1 << CROUCHING);
-		standingTimer = 0;
-		hspdFraction = 0;
-		hspd = 0;
+		standingTimer = 0.0;
+		hspdFraction = 0.0;
+		hspd = 0.0;
 		lightOffsetY = LIGHT_OFFSET_Y_CROUCH;
 	} else{ // Position ambient light at the visor's position in the sprite.
 		lightOffsetX = LIGHT_OFFSET_X_GENERAL;
@@ -1343,7 +1398,7 @@ state_morphball = function(){
 		if (vspdRecoil > 0){ // Causes the morphball recoil bounce.
 			stateFlags &= ~(1 << GROUNDED);
 			vspd = -vspdRecoil;
-			vspdRecoil = 0;
+			vspdRecoil = 0.0;
 		} else if (hspd != 0 && vspd == 0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
 			stateFlags |= (1 << MOVING);
 		}
@@ -1361,35 +1416,7 @@ state_morphball = function(){
 	// Handling horizontal movement while in morphball mode, which functions very similar to how said movement
 	// works in Samus's default suit form. Holding left or right (But not both at once) will result in her
 	// moving in the desired direction; releasing said key will slow her down until she is no longer moving.
-	var _movement = IS_RIGHT_HELD - IS_LEFT_HELD;
-	if (_movement != 0){
-		// Instantaneous velocity reset whenever the player changes movement directions before a complete
-		// deceleration can occur (If movement inputs were even released prior to the direction switch).
-		if (IS_GROUNDED && ((_movement == -1 && hspd > 0) || (_movement == 1 && hspd < 0))){
-			hspdFraction = 0;
-			hspd = 0;
-		}
-		
-		// Accelerate Samus at a rate of 60% her standard acceleration when she's in morphball move. Other
-		// than that, the code is identical to her horizontal movement physics when moving along the ground
-		// in her non-morphball state.
-		var _maxHspd = get_max_hspd();
-		hspd += _movement * get_hor_accel() * 0.6 * DELTA_TIME;
-		if (hspd < -_maxHspd)		{hspd = -_maxHspd;}
-		else if (hspd > _maxHspd)	{hspd = _maxHspd;}
-		
-		// Finally, flip the morphball so that it faces the direction the user in moving Samus in, and set the
-		// state flag for moving to true to signify movement is now occuring.
-		stateFlags |= (1 << MOVING);
-		image_xscale = _movement;
-	} else if (hspd != 0 && IS_MOVING){
-		var _deltaAccel = get_hor_accel() * 0.6 * DELTA_TIME * sign(hspd);
-		hspd -= _deltaAccel; // Like accelerating, Samus will decelerate at 60% her normal speed.
-		if (hspd >= -_deltaAccel && hspd <= _deltaAccel){
-			stateFlags &= ~(1 << MOVING);
-			hspd = 0;
-		}
-	}
+	process_horizontal_movement(1.0, 0.6, IS_GROUNDED, IS_GROUNDED);
 	
 	// Exiting out of morphball mode, which will call the function that checks for a collision directly above
 	// Samus's head. If there's a collision, she'll be unable to transform back into her standard form.
@@ -1457,8 +1484,15 @@ state_morphball = function(){
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
 
-event_set_flag(FLAG_MORPHBALL, true);
-event_set_flag(FLAG_BOMBS, true);
-event_set_flag(FLAG_MISSILES, true);
+event_set_flag(FLAG_MORPHBALL,		true);
+event_set_flag(FLAG_BOMBS,			true);
+event_set_flag(FLAG_MISSILES,		true);
+event_set_flag(FLAG_POWER_BOMBS,	true);
+event_set_flag(FLAG_SCREW_ATTACK,	true);
+event_set_flag(FLAG_HIJUMP_BOOTS,	true);
 numMissiles = 10;
 maxMissiles = 10;
+numPowerBombs = 10;
+maxPowerBombs = 10;
+jumpSpriteSpin = spr_power_jump0b;
+maxVspd = HI_JUMP_HEIGHT;

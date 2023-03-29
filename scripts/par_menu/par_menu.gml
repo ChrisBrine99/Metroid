@@ -279,7 +279,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 	/// function does is change the entity to its next required state to avoid any mid-frame issues
 	/// regarding a potential state swap.
 	static end_step = function(){
-		if (curState != nextState && script_exists(nextState)){
+		if (curState != nextState){
 			nextState = method_get_index(nextState);
 			curState = nextState;
 		}

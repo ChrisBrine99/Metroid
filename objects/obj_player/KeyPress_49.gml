@@ -12,3 +12,5 @@ audio_play_sound_on(_emitter, snd_player_step_water, false, 1);
 //audio_play_sound(snd_player_step_tile, 100, false);
 
 //entity_apply_hitstun(10);
+
+//with(CAMERA.camera) {update_view_offset_target(640 - camera_get_view_x(ID), 0, 2, 2);}

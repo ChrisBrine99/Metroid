@@ -239,12 +239,12 @@ function value_set_linear(_value, _target, _modifier){
 	// added or subtracted from the current _value variable's value, respectively.
 	if (_value < _target){ // Increasing the value towards the target at the speed set by _modifier.
 		var _targetValue = _value + (_modifier * DELTA_TIME);
-		if (_targetValue >= _target)	{return _target;}
-		else							{return _targetValue;}
-	} else{ // Decreasing the value towards the target at the speed set by _modifier.
+		if (_targetValue >= _target - _modifier)	{return _target;}
+		else										{return _targetValue;}
+	} else if (_value > _target){ // Decreasing the value towards the target at the speed set by _modifier.
 		var _targetValue = _value - (_modifier * DELTA_TIME);
-		if (_targetValue <= _target)	{return _target;}
-		else							{return _targetValue;}
+		if (_targetValue <= _target + _modifier)	{return _target;}
+		else										{return _targetValue;}
 	}
 }
 

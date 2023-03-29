@@ -1,4 +1,7 @@
-if (!surface_exists(surfWater)) {surfWater = surface_create(camera_get_width(), camera_get_height());}
+if (!surface_exists(surfWater)){
+	var _camera = CAMERA.camera;
+	surfWater = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
+}
 
 // 
 var _camera = -1;
@@ -8,12 +11,12 @@ var _camWidth = 0;
 var _camHeight = 0;
 var _x = 0;
 var _y = 0;
-with(CAMERA.camera){
-	_camera = ID;
+with(CAMERA){
+	_camera = camera;
 	_camX = camera_get_view_x(_camera);
 	_camY = camera_get_view_y(_camera);
-	_camWidth = width;
-	_camHeight = height;
+	_camWidth = camera_get_view_width(_camera);
+	_camHeight = camera_get_view_height(_camera);
 	_x = -_camX;
 	_y = -_camY;
 }
