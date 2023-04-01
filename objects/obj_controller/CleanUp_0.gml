@@ -10,6 +10,7 @@ with(TEXTBOX_HANDLER)	{cleanup();}	delete TEXTBOX_HANDLER;
 with(CONTROL_INFO)		{cleanup();}	delete CONTROL_INFO;
 with(GAME_SETTINGS)		{cleanup();}	delete GAME_SETTINGS;
 with(AUDIO_MANAGER)		{cleanup();}	delete AUDIO_MANAGER;
+with(DEBUGGER)			{cleanup();}	delete DEBUGGER;
 										delete SCREEN_FADE;
 										delete GAME_MANAGER;
 										delete GAMEPAD_MANAGER;
@@ -17,19 +18,30 @@ with(AUDIO_MANAGER)		{cleanup();}	delete AUDIO_MANAGER;
 										delete SHADER_FEATHERING;
 buffer_delete(EVENT_HANDLER);
 
-// Destroy all existing menus and clean up their structs by calling each of their "menu_cleanup" functions.
-// After that, delete the list that held all of the pointers to all current menus to free it from memory as well.
-var _length = ds_list_size(global.menuInstances);
+// Remove the map that stored the instance pointers for all singleton objects that existed within the game.
+// Then, the main list for non-singleton structs is looped through; their cleanup functions are called if they
+// still exist, and the list is destroyed.
+ds_map_clear(global.sInstances);
+ds_map_destroy(global.sInstances);
+
+var _instance = noone;
+var _length = ds_list_size(global.structs);
 for (var i = 0; i < _length; i++){
-	with(global.menuInstances[| i]) {cleanup();}
-	delete global.menuInstances[| i];
+	_instance = global.structs[| i];
+	if (is_undefined(_instance)) {continue;}
+	with(_instance) {cleanup();}
+	delete _instance;
 }
+ds_list_destroy(global.structs);
+
+// Destroy the list that held all the currently active instances of menu structs. Their cleanup functions and
+// "pointer" values do not need to be managed because the main list for all struct instances does that already.
 ds_list_destroy(global.menuInstances);
 
 // Destroy all of the interactable components that existed within the game's data when it was set to close
 // down. After all the interact components have been freed from memory, the list is destroyed to clear it
 // from memory.
-_length = ds_list_size(global.interactables);
+/*_length = ds_list_size(global.interactables);
 for (var i = 0; i < _length; i++) {delete global.interactables[| i];}
 ds_list_destroy(global.interactables);
 

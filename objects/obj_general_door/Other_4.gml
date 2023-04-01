@@ -3,7 +3,9 @@
 // animation, which is just the reverse of the opening animation.
 var _x = lengthdir_x(1, image_angle);
 var _y = lengthdir_y(1, image_angle);
-if (place_meeting(x + (24 * _x), y + (24 * _y), PLAYER)){
+var _xx = _x * 24;
+var _yy = _y * 24;
+if (place_meeting(x + _xx, y + _yy, PLAYER)){
 	imageIndex = spriteLength - 1;
 	animSpeed = -1;
 	
@@ -15,10 +17,8 @@ if (place_meeting(x + (24 * _x), y + (24 * _y), PLAYER)){
 }
 
 // Properly offset the light such that it is always in the center of the sprite; regardless of what angle the
-// sprite is being positioned at.
-var _offsetX = x - (24 * _y) + (4 * _x);
-var _offsetY = y + (24 * _x) + (4 * _y);
-lightComponent.set_position(_offsetX, _offsetY);
+// sprite for the door is being positioned at.
+lightComponent.set_position(x - _yy + (4 * _x), y + _xx + (4 * _y));
 
 // FOR DOORS WITH LOCKS ONLY -- Check if the flag tied to the door has already been set. If so, switch this door
 // to a general door as it is now considered unlocked.

@@ -1,22 +1,20 @@
 #region	Initializing any macros that are useful/related to obj_camera
 
-// 
+// The bit flags for the camera, which allow view boundaries to be enabled or disabled along the room's bounds
+// OR at given points within the room relative to where the view and player object currently are. The "reset"
+// flags transition the view back to the player object before re-enabling standard movement.
 #macro	LOCK_CAMERA_X			27
 #macro	LOCK_CAMERA_Y			28
 #macro	RESET_TARGET_X			29
 #macro	RESET_TARGET_Y			30
 #macro	VIEW_BOUNDARY			31	// Keeps the camera's view within the confines of the current room.
 
-// 
+// Comparison marcos to check the state for a given bit flag that the camera utilizes.
 #macro	IS_CAMERA_X_LOCKED		(stateFlags & (1 << LOCK_CAMERA_X) != 0)
 #macro	IS_CAMERA_Y_LOCKED		(stateFlags & (1 << LOCK_CAMERA_Y) != 0)
 #macro	CAN_RESET_TARGET_X		(stateFlags & (1 << RESET_TARGET_X) != 0)
 #macro	CAN_RESET_TARGET_Y		(stateFlags & (1 << RESET_TARGET_Y) != 0)
 #macro	IS_VIEW_BOUND_ENABLED	(stateFlags & (1 << VIEW_BOUNDARY) != 0)
-
-// 
-#macro	VIEW_OFFSET_LIMIT_X		20
-#macro	VIEW_OFFSET_LIMIT_Y		8
 
 #endregion
 
@@ -140,12 +138,14 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		with(targetObject){ // Collision check occurs within the instance that the camera is currently following.
 			var _boundary = instance_place(x, y, obj_camera_boundary);
 			with(_boundary){
+				// 
 				if (viewTargetX != -1){
 					_stateFlags &= ~(1 << RESET_TARGET_X);
 					_stateFlags |= (1 << LOCK_CAMERA_X);
 					_targetX = viewTargetX;
 				}
 				
+				// 
 				if (viewTargetY != -1){
 					_stateFlags &= ~(1 << RESET_TARGET_Y);
 					_stateFlags |= (1 << LOCK_CAMERA_Y);
@@ -153,6 +153,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 				}
 			}
 			
+			// 
 			if (_boundary != _prevBoundaryID){
 				_prevBoundaryID = _boundary;
 				if (_stateFlags & (1 << LOCK_CAMERA_X)) {_stateFlags |= (1 << RESET_TARGET_X);}
@@ -162,17 +163,19 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		prevBoundaryID = _prevBoundaryID;
 		stateFlags = _stateFlags;
 		
+		// 
 		if (_targetX != -1 && !CAN_RESET_TARGET_X){
-			x = value_set_linear(x, _targetX, 4.0);
+			x = value_set_linear(x, _targetX, 2.5);
 		} else if (CAN_RESET_TARGET_X){
-			x = value_set_linear(x, targetObject.x, 4.0);
+			x = value_set_linear(x, targetObject.x, 2.5);
 			if (x == targetObject.x) {stateFlags &= ~((1 << RESET_TARGET_X) | (1 << LOCK_CAMERA_X));}
 		}
 		
+		// 
 		if (_targetY != -1 && !CAN_RESET_TARGET_Y){
-			y = value_set_linear(y, _targetY, 4.0);
+			y = value_set_linear(y, _targetY, 2.5);
 		} else if (CAN_RESET_TARGET_Y){
-			y = value_set_linear(y, targetObject.y, 4.0);
+			y = value_set_linear(y, targetObject.y, 2.5);
 			if (y == targetObject.y) {stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));}
 		}
 	}

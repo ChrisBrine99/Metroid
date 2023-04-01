@@ -19,4 +19,4 @@ for (var i = 0; i < _length; i++){
 }
 
 // FOR TESTING
-//with(DEBUGGER) {end_step();}
+with(DEBUGGER) {end_step();}

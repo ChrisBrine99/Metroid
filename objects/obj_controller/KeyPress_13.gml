@@ -1,5 +1,8 @@
 //instance_create_menu_struct(obj_main_menu);
 
+//var _index = instance_find_struct(1000003);
+//if (_index != noone) {show_debug_message(_index.object_index);}
+
 //game_end();
 //textbox_add_text_data("Normal, *" + YELLOW + "*yellow, *" + RED + "*red, *"
 //						+ GREEN + "*green, *" + BLUE + "*blue.");

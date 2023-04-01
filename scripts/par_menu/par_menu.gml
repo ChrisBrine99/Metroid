@@ -159,13 +159,11 @@ function par_menu(_index) : base_struct(_index) constructor{
 	// Initialize the variable that will store the states  for all dynamic entities prior to this menu's 
 	// creation. It will only become a ds_map that stores said data if there  wasn't any menus in existence 
 	// prior to this menu's instantiation.
-	entityData = -1;
+	entityStates = -1;
 	if (GAME_CURRENT_STATE != GSTATE_MENU){
 		entityStates = ds_map_create(); // Instantiate the list for the menu that is the first in the list.
+		var _curState, _nextState, _lastState;
 		var _entityStates = entityStates;
-		var _curState	= NO_STATE;
-		var _nextState	= NO_STATE;
-		var _lastState	= NO_STATE;
 		with(par_dynamic_entity){ // Store all important dynamic entity variables until the menu is closed.
 			if (curState == NO_STATE) {continue;}
 			_curState	= curState;	// Place into local variables for quick copying into entity state storage struct.
@@ -219,10 +217,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 
 		// Return all dynamic entities back to their states from before the menu was opened; cleaning up the
 		// structs and ds_map that temporarily stored those values for the duration of the menu's existence.
+		var _curState, _nextState, _lastState;
 		var _key = ds_map_find_first(entityStates);
-		var _curState	= NO_STATE;
-		var _nextState	= NO_STATE;
-		var _lastState	= NO_STATE;
 		while(!is_undefined(_key)){
 			// Grab the copy of the entity states that were stored when the menu was created. Doing this saves
 			// the program from having to jump between the entity's scope and the struct's scope multiple times
@@ -236,10 +232,11 @@ function par_menu(_index) : base_struct(_index) constructor{
 			// The key is the id for the instance that the state data belongs to, so it's what is used to jump
 			// into said entity's scope. Unfreeze the animation state for all entities alonside state reset.
 			with(_key){
+				stateFlags &= ~(1 << FREEZE_ANIMATION);
 				curState	= _curState;
 				nextState	= _nextState;
 				lastState	= _lastState;
-				stateFlags &= ~(1 << FREEZE_ANIMATION);
+
 			}
 			
 			// After copying the data back into the entity, free the struct from memory and move on.

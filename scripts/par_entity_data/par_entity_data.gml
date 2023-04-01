@@ -26,8 +26,8 @@
 /// if these weren't cleaned up during runtime. Over time, this would cause the game to crash.
 function entity_cleanup(){
 	//object_remove_audio_component();
+	//object_remove_interact_component();
 	object_remove_light_component();
-	object_remove_interact_component();
 }
 
 /// @description Renders the entity to the screen using the proper animation system for said animations to not

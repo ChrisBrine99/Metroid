@@ -120,12 +120,14 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		// Since this struct should exist for the entire duration of the game, all existing light sources
 		// will be removed from memory through this loop before the ds_list for managing and referencing
 		// those lights is cleared from memory.
-		var _length = ds_list_size(global.lightSources);
-		for (var i = 0; i < _length; i++){
-			with(global.lightSources[| i].parentID) {object_remove_light_component(true);}
-			delete global.lightSources[| i];
+		if (ds_exists(global.lightSources, ds_type_list)){
+			var _length = ds_list_size(global.lightSources);
+			for (var i = 0; i < _length; i++){
+				with(global.lightSources[| i].parentID) {object_remove_light_component(true);}
+				delete global.lightSources[| i];
+			}
+			ds_list_destroy(global.lightSources);
 		}
-		ds_list_destroy(global.lightSources);
 	}
 	
 	/// @description Code that should be placed into the "Step" event of whatever object is controlling

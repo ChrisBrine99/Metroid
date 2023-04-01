@@ -30,7 +30,7 @@ hitpoints = maxHitpoints;
 inputFlags = 0;
 prevInputFlags = 0;
 
-// 
+// Stores Samus's horizontal movement direction for a given frame (1 = moving right, -1 = left).
 movement = 0;
 
 // Variables to represent each of Samus's animations based on the suit she currently has equipped. They start
@@ -166,7 +166,10 @@ process_input = function(){
 	}
 }
 
-/// @description 
+/// @description Increments or decrements Samus's current "hspd" (Her current horizontal velocity) based on the
+/// movement direction determined by the player's inputs for the given frame (Only right = positive velocity,
+/// only left = negative velocity, both inputs = no velocity). Also checks if Samus is currently against a
+/// wall, which will instantly set her hspd to 0 and her "moving" flag to false.
 /// @param {Real}	hspdFactor		Maximum possible hspd (Relative to Samus's current maximum) for just this function.
 /// @param {Real}	hAccelFactor	Determines horizontal acceleration rate for Samus during this iteration of the function.
 /// @param {Bool}	snapToZero		If true, Samus's horizontal velocity will be set to zero upon changing directions.
@@ -212,9 +215,9 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 	// hspd value would constantly increase to 1 before zeroing out at the collision check so long as the
 	// player was holding either the right or left movement inputs; making her run while against walls due
 	// to that "moving" flag never being set to false despite any actual movement being obstructed.
-	if (IS_MOVING && place_meeting(x + movement, y, par_collider)){
+	if (IS_GROUNDED && IS_MOVING && place_meeting(x + movement, y, par_collider)){
 		var _yOffset = 0;
-		while(IS_GROUNDED && place_meeting(x + movement, y - _yOffset, par_collider) && _yOffset < maxHspd) {_yOffset++;}
+		while(place_meeting(x + movement, y - _yOffset, par_collider) && _yOffset < maxHspd) {_yOffset++;}
 		if (place_meeting(x + movement, y - _yOffset, par_collider)){
 			stateFlags &= ~(1 << MOVING);
 			hspdFraction = 0.0;
@@ -234,7 +237,7 @@ crouch_to_standing = function(){
 		stateFlags &= ~(1 << CROUCHING);
 		standingTimer = 0.0;
 		reset_light_source();
-		return; // Exit before mask can be reset by the code found below.
+		return; // Exit before mask can be reset by the line below.
 	}
 	mask_index = crouchingMask; // Return to original mask if collision check returns "true".
 }
@@ -250,7 +253,7 @@ morphball_to_crouch = function(){
 		vspdRecoil = 0.0;			// Reset variables related to the morphball to default values.
 		bombDropTimer = 0.0;
 		bombExplodeID = noone;
-		return; // Exit before mask can be reset by the code found below.
+		return; // Exit before mask can be reset by the line below.
 	}
 	mask_index = morphballMask; // Return to original mask if collision check returns "true".
 }
@@ -1483,16 +1486,3 @@ state_morphball = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
-
-event_set_flag(FLAG_MORPHBALL,		true);
-event_set_flag(FLAG_BOMBS,			true);
-event_set_flag(FLAG_MISSILES,		true);
-event_set_flag(FLAG_POWER_BOMBS,	true);
-event_set_flag(FLAG_SCREW_ATTACK,	true);
-event_set_flag(FLAG_HIJUMP_BOOTS,	true);
-numMissiles = 10;
-maxMissiles = 10;
-numPowerBombs = 10;
-maxPowerBombs = 10;
-jumpSpriteSpin = spr_power_jump0b;
-maxVspd = HI_JUMP_HEIGHT;

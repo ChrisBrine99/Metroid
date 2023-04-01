@@ -26,7 +26,7 @@
   "origin": 0,
   "parent": {
     "name": "Collision",
-    "path": "folders/Resources/Graphics/Sprites/Entities/Other/Collision.yy",
+    "path": "folders/Resources/Graphics/Sprites/Collision.yy",
   },
   "preMultiplyAlpha": false,
   "sequence": {

@@ -8,8 +8,8 @@
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Collision",
-    "path": "folders/Resources/Core/Entities/Other/Collision.yy",
+    "name": "Other",
+    "path": "folders/Resources/Core/Entities/Other.yy",
   },
   "parentObjectId": null,
   "persistent": false,

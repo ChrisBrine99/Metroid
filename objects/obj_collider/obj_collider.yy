@@ -7,7 +7,7 @@
   "overriddenProperties": [],
   "parent": {
     "name": "Collision",
-    "path": "folders/Resources/Core/Entities/Other/Collision.yy",
+    "path": "folders/Resources/Core/Collision.yy",
   },
   "parentObjectId": {
     "name": "par_collider",
