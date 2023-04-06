@@ -8,6 +8,7 @@
 #macro	TEXTBOX_HANDLER				global.sInstances[? obj_textbox_handler]
 #macro	CONTROL_INFO				global.sInstances[? obj_control_info]
 #macro	SCREEN_FADE					global.sInstances[? obj_screen_fade]
+#macro	GAME_HUD					global.sInstances[? obj_game_hud]
 #macro	CONTROLLER					global.sInstances[? obj_controller]
 #macro	PLAYER						global.sInstances[? obj_player]
 #macro	DEBUGGER					global.sInstances[? obj_debugger]

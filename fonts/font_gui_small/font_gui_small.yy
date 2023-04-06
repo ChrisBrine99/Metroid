@@ -4,7 +4,7 @@
   "name": "font_gui_small",
   "AntiAlias": 0,
   "applyKerning": 0,
-  "ascender": 0,
+  "ascender": 6,
   "ascenderOffset": 0,
   "bold": false,
   "canGenerateBitmap": true,

@@ -23,8 +23,8 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		
 		var _screenCenterX = _width / 2;
 		var _screenCenterY = _height / 2;
-		shader_set_outline(font_gui_large, RGB_DARK_GREEN);
-		draw_menu_title(font_gui_large, _screenCenterX, _screenCenterY - 10, fa_center, fa_middle, HEX_GREEN, RGB_DARK_GREEN, alpha);
+		shader_set_outline(font_gui_medium, RGB_DARK_GREEN);
+		draw_menu_title(font_gui_medium, _screenCenterX, _screenCenterY - 10, fa_center, fa_middle, HEX_GREEN, RGB_DARK_GREEN, alpha);
 		draw_item_info(font_gui_small, _screenCenterX, _screenCenterY + 10);
 		shader_reset();
 	}

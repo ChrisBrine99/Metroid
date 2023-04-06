@@ -160,7 +160,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// application surface AND the game's GUI surface. For example, both the scanlines and noise filter are
 	/// applied here to overlap the entire image.
 	draw_gui_end = function(){
-		//if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
+		if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
 		if (game_get_setting_flag(SCANLINE_FILTER))		{apply_scanlines(0.15);}
 	}
 	

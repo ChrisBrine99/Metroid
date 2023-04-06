@@ -9,6 +9,7 @@ instance_create_singleton_struct(obj_effect_handler);
 instance_create_singleton_struct(obj_cutscene_manager);
 //instance_create_singleton_struct(obj_textbox_handler);
 //instance_create_singleton_struct(obj_control_info);
+instance_create_singleton_struct(obj_game_hud);
 instance_create_singleton_struct(obj_screen_fade);
 instance_create_singleton_struct(obj_debugger);
 instance_create_singleton_object(0, 0, obj_controller);
@@ -28,7 +29,7 @@ camera_set_target_object(PLAYER, 0, -16, false);
 room_goto(rm_test01);
 
 /// FOR TESTING
-show_debug_overlay(true);
+//show_debug_overlay(true);
 //audio_debug(true);
-texture_debug_messages(true);
+//texture_debug_messages(true);
 audio_set_linked_object(PLAYER);

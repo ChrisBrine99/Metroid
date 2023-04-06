@@ -14,3 +14,11 @@ audio_play_sound_on(_emitter, snd_player_step_water, false, 1);
 //entity_apply_hitstun(10);
 
 //with(CAMERA.camera) {update_view_offset_target(640 - camera_get_view_x(ID), 0, 2, 2);}
+
+if (numMissiles == 0) {return;}
+
+temp += DELTA_TIME * 0.5;
+if (temp > 1.0){
+	temp -= 1.0;
+	numMissiles--;
+}

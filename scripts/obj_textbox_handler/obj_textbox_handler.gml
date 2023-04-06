@@ -173,7 +173,7 @@ function obj_textbox_handler(_index) : base_struct(_index) constructor{
 			if (ds_list_size(savedText) == 0){
 				draw_sprite_ext(spr_rectangle, 0, 0, 0, _cameraWidth, _cameraHeight, 0, c_black, alpha * 0.75);
 				
-				shader_set_outline(font_gui_medium, RGB_DARK_GRAY);
+				shader_set_outline(font_gui_large, RGB_DARK_GRAY);
 				draw_set_text_align(fa_center, fa_middle);
 				draw_text_outline(_cameraWidth / 2, _cameraHeight / 2, "No Logged Text", HEX_GRAY, RGB_DARK_GRAY, alpha);
 				draw_reset_text_align();

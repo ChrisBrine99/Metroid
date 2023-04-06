@@ -1486,3 +1486,5 @@ state_morphball = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
+
+temp = 0.0;

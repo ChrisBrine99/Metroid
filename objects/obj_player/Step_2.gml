@@ -11,7 +11,7 @@ var _length = ds_list_size(jumpEffectID);
 for (var i = 0; i < _length; i++){
 	with(_jumpEffect[| i]){
 		alpha -= 0.03 * DELTA_TIME;
-		if (alpha <= 0){ // Removing the effect once its alpha goes below 0.
+		if (alpha <= 0.0){ // Removing the effect once its alpha goes below 0.
 			delete _jumpEffect[| i];
 			ds_list_delete(_jumpEffect, i);
 			_length--; // Subtract one from "i" and the length to accommodate for the newly removed struct.

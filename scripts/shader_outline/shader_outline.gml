@@ -14,8 +14,8 @@
 // shader is in use. Otherwise, these IDs would need to be retrieved every frame within the code.
 global.fontTextures = ds_map_create();
 ds_map_add(global.fontTextures, font_gui_small,		font_get_texture(font_gui_small));
-ds_map_add(global.fontTextures, font_gui_medium,	font_get_texture(font_gui_medium));
-ds_map_add(global.fontTextures, font_gui_large,		font_get_texture(font_gui_large));
+ds_map_add(global.fontTextures, font_gui_large,	font_get_texture(font_gui_large));
+ds_map_add(global.fontTextures, font_gui_medium,		font_get_texture(font_gui_medium));
 
 #endregion
 
