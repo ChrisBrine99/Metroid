@@ -147,6 +147,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 				delete _stateData;
 			}
 			ds_map_clear(entityStates);
+			ds_list_clear(suggestions);
 			
 			game_set_state(GAME_PREVIOUS_STATE, true);
 			stateFlags &= ~((1 << CONSOLE_ACTIVE) | (1 << DRAW_CURSOR));
@@ -170,6 +171,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// 
 		if (keyboard_check_pressed(vk_enter)){
 			parse_current_command(command);
+			ds_list_clear(suggestions);
 			keyboard_lastchar = "";
 			cursorPos = 1;
 			command = "";
@@ -182,6 +184,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 			if (backspaceTimer <= 0.0){
 				cursorPos--;
 				command = string_delete(command, cursorPos, 1);
+				if (command == "") {ds_list_clear(suggestions);}
+				else {find_suggestions(command);}
 				if (IS_FIRST_BACKSPACE){ // First backspace; longer duration before next character is deleted. 
 					backspaceTimer = FIRST_BSPACE_INTERVAL;
 					stateFlags &= ~(1 << FIRST_BACKSPACE);
@@ -223,6 +227,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// duplication of a character when a non-character key is pressed.
 		if (keyboard_lastkey != vk_nokey && keyboard_lastkey != vk_shift && keyboard_lastchar != ""){
 			command = string_insert(keyboard_lastchar, command, cursorPos);
+			find_suggestions(command);
 			keyboard_lastkey = vk_nokey;
 			keyboard_lastchar = "";
 			cursorPos++;
@@ -261,11 +266,14 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// 
 		var _suggestionSize = ds_list_size(suggestions);
 		if (_suggestionSize > 0){
-			draw_sprite_ext(spr_rectangle, 0, 5, 0, _camWidth - 10, 163, 0, HEX_GRAY, 1);
+			draw_sprite_ext(spr_rectangle, 0, 5, 163, _camWidth - 10, -(_suggestionSize * 11) - 3, 0, HEX_GRAY, 1);
 			
+			var _yy = 152;
 			shader_set_outline(font_gui_small, RGB_DARK_YELLOW);
 			for (var i = 0; i < _suggestionSize; i++){
-				
+				if (_yy <= 0) {break;} // Exit to prevent drawing suggestions that will be drawn off of the screen's visible region.
+				draw_text_outline(10, _yy, suggestions[| i], HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
+				_yy -= 11;
 			}
 			shader_reset();
 		}
@@ -386,8 +394,24 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @description 
 	/// @param {String}	string
 	find_suggestions = function(_string){
+		// Ensures that the proper function along with its argument types won't disappear once the user 
+		// starts inputting arguments; as the suggestion will disappear as the argument data doesn't match
+		// the string data representing those argument types in the suggestion data.
+		if (string_count(" ", _string) > 0) {_string = string_copy(_string, 1, string_pos(" ", _string));}
+		
+		// Loop through the list of suggestion data that can be displayed to the user; adding everything
+		// that contains the current command that has been typed in to the list that is then displayed on
+		// screen to show the user functions they may want to use based on said command string.
 		ds_list_clear(suggestions);
-		var _length = array_length(suggestionData);
+		var _arraySize = array_length(suggestionData);
+		var _length = _arraySize * 0.5;
+		for (var i = 0; i < _length; i++){
+			if (string_count(_string, suggestionData[i]) > 0){
+				ds_list_add(suggestions, suggestionData[i]);
+			} else if (string_count(_string, suggestionData[_arraySize - i - 1]) > 0){
+				ds_list_add(suggestions, suggestionData[_arraySize - i - 1]);
+			}
+		}
 	}
 	
 	/// @description A very simple command that will execute the game's end; closing the application and 
