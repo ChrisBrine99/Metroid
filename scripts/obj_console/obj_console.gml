@@ -1,7 +1,9 @@
 #region Initializing any macros that are useful/related to obj_console
 
 // 
-#macro	CMD_TEST				"test"
+#macro	CMD_EXIT_GAME			"exit_game"
+#macro	CMD_GAME_STATE			"game_state"
+#macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 
 // 
 #macro	DRAW_CURSOR				28
@@ -9,7 +11,7 @@
 #macro	FIRST_CURSOR_MOVE		30
 #macro	CONSOLE_ACTIVE			31
 
-//
+// 
 #macro	CAN_DRAW_CURSOR			(stateFlags & (1 << DRAW_CURSOR) != 0)
 #macro	IS_FIRST_BACKSPACE		(stateFlags & (1 << FIRST_BACKSPACE) != 0)
 #macro	IS_FIRST_CURSOR_MOVE	(stateFlags & (1 << FIRST_CURSOR_MOVE) != 0)
@@ -33,6 +35,14 @@
 #macro	TYPE_BOOL				5001
 #macro	TYPE_STRING				5002
 
+// 
+#macro	STRING_REAL				"real"
+#macro	STRING_BOOL				"bool"
+#macro	STRING_STRING			"string"
+
+// 
+#macro	HISTORY_DISPLAY_LIMIT	10
+
 #endregion
 
 #region Initializing any globals that are useful/related to obj_console
@@ -47,10 +57,14 @@ function obj_console(_index) : base_struct(_index) constructor{
 	command = "";
 	
 	// 
+	stateFlags = (1 << FIRST_BACKSPACE) | (1 << FIRST_CURSOR_MOVE);
+	
+	// 
 	history = ds_list_create();
 	
 	// 
-	stateFlags = (1 << FIRST_BACKSPACE) | (1 << FIRST_CURSOR_MOVE);
+	suggestions = ds_list_create();
+	suggestionData = [];
 	
 	// 
 	cursorPos = 1;
@@ -74,6 +88,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @description
 	cleanup = function(){
 		ds_map_destroy(entityStates);
+		ds_list_destroy(history);
+		ds_list_destroy(suggestions);
 	}
 	
 	/// @description 
@@ -155,6 +171,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		if (keyboard_check_pressed(vk_enter)){
 			parse_current_command(command);
 			keyboard_lastchar = "";
+			cursorPos = 1;
 			command = "";
 			return;
 		}
@@ -216,17 +233,44 @@ function obj_console(_index) : base_struct(_index) constructor{
 	draw_gui = function(){
 		if (!IS_CONSOLE_ACTIVE) {return;}
 		
+		// 
 		var _cameraID = CAMERA.camera;
 		var _camWidth = camera_get_view_width(_cameraID);
 		var _camHeight = camera_get_view_height(_cameraID);
 		draw_sprite_ext(spr_rectangle, 0, 0, 0, _camWidth, _camHeight, 0, HEX_BLACK, 0.75);
-		draw_sprite_ext(spr_rectangle, 0, 0, 163, _camWidth, 10, 0, HEX_DARK_GRAY, 0.5);
+		draw_sprite_ext(spr_rectangle, 0, 0, 163, _camWidth, 12, 0, HEX_DARK_GRAY, 0.5);
 		
+		// 
 		shader_set_outline(font_gui_small, RGB_GRAY);
 		draw_text_outline(3, 165, "> ", HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
 		draw_text_outline(10, 165, command, HEX_WHITE, RGB_GRAY, 1);
+		
+		// 
+		var _text;
+		var _offsetY = 0;
+		var _start = ds_list_size(history) - 1;
+		for (var i = _start; i >= 0; i--){
+			if (_offsetY >= 145) {break;}
+			_text = history[| i];
+			_offsetY += string_height(_text);
+			draw_text_outline(5, 160 - _offsetY, _text, HEX_GRAY, RGB_DARK_GRAY, 1);
+			_offsetY += 2;
+		}
 		shader_reset();
 		
+		// 
+		var _suggestionSize = ds_list_size(suggestions);
+		if (_suggestionSize > 0){
+			draw_sprite_ext(spr_rectangle, 0, 5, 0, _camWidth - 10, 163, 0, HEX_GRAY, 1);
+			
+			shader_set_outline(font_gui_small, RGB_DARK_YELLOW);
+			for (var i = 0; i < _suggestionSize; i++){
+				
+			}
+			shader_reset();
+		}
+		
+		// 
 		if (CAN_DRAW_CURSOR){
 			var _cursorX = string_width(string_copy(command, 1, cursorPos - 1)) + 1;
 			draw_sprite_ext(spr_rectangle, 0, 8 + _cursorX, 164, 1, 8, 0, HEX_LIGHT_YELLOW, 1);
@@ -249,6 +293,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		var _index = get_function_from_string(string_lower(_funcString));
 		if (_index == -1){
 			show_debug_message("Function couldn't be found!");
+			history_add_line("Function couldn't be found!");
 			return;
 		}
 		
@@ -264,7 +309,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 			
 			var _arguments = get_arguments_from_string(_argString, _datatypes);
 			if (array_length(_arguments) != array_length(_datatypes)){
-				show_debug_message("Argument Error: \n" + string(_datatypes) + "\n" + string(_arguments));
+				var _errorString = "Argument Error: \n" + string(_datatypes) + "\n" + string(_arguments);
+				show_debug_message(_errorString);
+				history_add_line(_errorString);
 				return;
 			}
 			script_execute_ext(method_get_index(_data[COMMAND_FUNCTION]), _arguments);
@@ -332,7 +379,15 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @description 
 	/// @param {String}	string
 	history_add_line = function(_string){
-		
+		if (ds_list_size(history) >= HISTORY_DISPLAY_LIMIT) {ds_list_delete(history, 0);}
+		ds_list_add(history, _string);
+	}
+	
+	/// @description 
+	/// @param {String}	string
+	find_suggestions = function(_string){
+		ds_list_clear(suggestions);
+		var _length = array_length(suggestionData);
 	}
 	
 	/// @description A very simple command that will execute the game's end; closing the application and 
@@ -344,8 +399,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @description A simple function that displays the game's current state and its previous state (Whatever 
 	/// they were set to prior to the console being opened due to it setting the current state to "paused").
 	cmd_game_state = function(){
-		// TODO -- Display the game's state within the console window.
-		show_debug_message(game_state_get_name(gameCurState) + ", " + game_state_get_name(gamePrevState));
+		var _gameState = "Current State: " + game_state_get_name(gameCurState) + "\nPrevious State: " + game_state_get_name(gamePrevState);
+		show_debug_message(_gameState);
+		history_add_line(_gameState);
 	}
 	
 	/// @description Allows the setting/resetting of a desired flag to either 1 (true) or 0 (false), which will
@@ -354,18 +410,26 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @param {Real}	flagID		The ID of the flag that is being manipulated.
 	/// @param {Bool}	flagState	The state to set the flag bit to (1 = true, 0 = false).
 	cmd_set_event_flag = function(_flagID, _flagState){
-		// TODO -- Display the flag ID and state to let the user know they were successfully changed.
-		show_debug_message("Flag with ID (" + string(_flagID) + ") was set to " + string(_flagState));
+		var _flagInfo = "Flag with ID (" + string(_flagID) + ") was set to " + string(_flagState);
+		show_debug_message(_flagInfo);
+		history_add_line(_flagInfo);
 		event_set_flag(_flagID, _flagState);
 	}
+	
+	// 
+	array_push(suggestionData,
+		CMD_EXIT_GAME + " []",
+		CMD_GAME_STATE + " []",
+		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]"
+	);
 	
 	// Add all console functions to this array, which is used to parse the string data that represents the
 	// function from what was typed into the console in order to execute that function. THe size of the array
 	// is stored after all the commands are added through here.
 	array_push(validCommands,
-		["exit_game",			cmd_exit_game],
-		["game_state",			cmd_game_state],
-		["set_event_flag",		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
+		[CMD_EXIT_GAME,				cmd_exit_game],
+		[CMD_GAME_STATE,			cmd_game_state],
+		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
 	);
 	totalCommands = array_length(validCommands);
 }
