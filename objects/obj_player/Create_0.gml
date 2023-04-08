@@ -750,10 +750,19 @@ player_warp_collision = function(){
 		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
 		object_set_next_state(state_room_warp);
 		
+		// 
+		var _camera = -1;
+		with(CAMERA){
+			_camera = camera;
+			prevBoundaryID = noone;
+			stateFlags &= ~((1 << LOCK_CAMERA_X) | (1 << LOCK_CAMERA_Y) |
+							(1 << RESET_TARGET_X) | (1 << RESET_TARGET_Y));
+			
+		}
+		
 		// Determine the position to place the surface that contains a snapshot of Samus at. This snapshot
 		// is just the last frame of animation she was in, and her arm cannon if it was being shown for said
 		// animation. The position needs the camera's value remove from it since it is drawn on the GUI layer.
-		var _camera = CAMERA.camera;
 		var _x = x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camera);
 		var _y = y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camera);
 		with(SCREEN_FADE){
@@ -1348,6 +1357,7 @@ state_enter_morphball = function(){
 			stateFlags &= ~((1 << AIMING_DOWN) | (1 << CROUCHING));
 			stateFlags |= (1 << MORPHBALL);
 			lightComponent.isActive = false;
+			curWeapon = curBeam;
 			return;
 		}
 		
@@ -1486,5 +1496,8 @@ state_morphball = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
+
+event_set_flag(FLAG_POWER_BOMBS, true);
+maxPowerBombs = 3;
 
 temp = 0.0;

@@ -1,10 +1,10 @@
 {
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
-  "name": "spr_super_missiles",
-  "bbox_bottom": 15,
-  "bbox_left": 0,
-  "bbox_right": 15,
+  "name": "spr_missile_launcher",
+  "bbox_bottom": 13,
+  "bbox_left": 2,
+  "bbox_right": 13,
   "bbox_top": 2,
   "bboxMode": 0,
   "collisionKind": 1,
@@ -13,8 +13,7 @@
   "edgeFiltering": false,
   "For3D": false,
   "frames": [
-    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"aecd3777-d5ea-4877-9127-e3d8d531e497",},
-    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"f6ad8ddb-7d6c-462d-b34a-c077236fc5f1",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"69fdc777-56fa-4c5b-a134-20c77d6ee4af",},
   ],
   "gridX": 0,
   "gridY": 0,
@@ -33,7 +32,7 @@
   "sequence": {
     "resourceType": "GMSequence",
     "resourceVersion": "1.4",
-    "name": "spr_super_missiles",
+    "name": "spr_missile_launcher",
     "autoRecord": true,
     "backdropHeight": 768,
     "backdropImageOpacity": 0.5,
@@ -44,7 +43,7 @@
     "events": {"resourceType":"KeyframeStore<MessageEventKeyframe>","resourceVersion":"1.0","Keyframes":[],},
     "eventStubScript": null,
     "eventToFunction": {},
-    "length": 2.0,
+    "length": 1.0,
     "lockOrigin": false,
     "moments": {"resourceType":"KeyframeStore<MomentsEventKeyframe>","resourceVersion":"1.0","Keyframes":[],},
     "playback": 1,
@@ -55,8 +54,7 @@
     "timeUnits": 1,
     "tracks": [
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"aecd3777-d5ea-4877-9127-e3d8d531e497","path":"sprites/spr_super_missiles/spr_super_missiles.yy",},},},"Disabled":false,"id":"b5828f03-c72e-433d-a6a4-7167310e906f","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"f6ad8ddb-7d6c-462d-b34a-c077236fc5f1","path":"sprites/spr_super_missiles/spr_super_missiles.yy",},},},"Disabled":false,"id":"5b932fb5-eca4-42f9-bf93-4d207c5685fe","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"69fdc777-56fa-4c5b-a134-20c77d6ee4af","path":"sprites/spr_missile_launcher/spr_missile_launcher.yy",},},},"Disabled":false,"id":"72ecdc14-c201-41a6-94e0-9f175d2442fc","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange": null,

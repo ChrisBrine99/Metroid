@@ -1,19 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_player_power_bomb",
+  "name": "obj_missile_launcher",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Bombs",
-    "path": "folders/Resources/Core/Entities/Dynamic/Player Weapons/Bombs.yy",
+    "name": "Collectible",
+    "path": "folders/Resources/Core/Entities/Static/Collectible.yy",
   },
   "parentObjectId": {
-    "name": "par_dynamic_entity",
-    "path": "objects/par_dynamic_entity/par_dynamic_entity.yy",
+    "name": "par_collectible",
+    "path": "objects/par_collectible/par_collectible.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -30,7 +30,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_missile_launcher",
+    "path": "sprites/spr_missile_launcher/spr_missile_launcher.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }

@@ -1,15 +1,17 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_player_power_bomb",
+  "name": "obj_player_power_bomb_explode",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":74,"eventType":8,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Bombs",
-    "path": "folders/Resources/Core/Entities/Dynamic/Player Weapons/Bombs.yy",
+    "name": "Effects",
+    "path": "folders/Resources/Core/Entities/Dynamic/Player Weapons/Effects.yy",
   },
   "parentObjectId": {
     "name": "par_dynamic_entity",

@@ -1,4 +1,4 @@
 if (maxMissiles >= 250) {return;}
 
-maxMissiles += 2;
-numMissiles += 2;
+maxMissiles += 10;
+numMissiles += 10;

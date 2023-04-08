@@ -47,10 +47,11 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 			// 
 			var _xOffset = (_maxEnergyTanks < 6) ? _xx + (_maxEnergyTanks * 6) + 2 : _xx + 38;
 			var _yOffset = _yPos + 2;
-			if (maxMissiles > 0){
+			if (event_get_flag(FLAG_MISSILES) && maxMissiles > 0){
 				// 
 				var _color = c_white;
-				if (numMissiles == 0) {_color = HEX_DARK_RED;}
+				if (curWeapon == curMissile)	{_color = HEX_LIGHT_GREEN;}	// Highlight when missiles are being utilized.
+				if (numMissiles == 0)			{_color = HEX_DARK_RED;}	// Highlight when no ammo remains.
 				
 				// 
 				draw_sprite_ext(spr_missile_icon, 0, _xOffset, _yOffset - 1, 1, 1, 0, _color, _alpha);
@@ -58,17 +59,28 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 				
 				// 
 				var _strWidth = sprite_get_width(spr_ammo_numbers);
-				draw_sprite_ext(spr_ammo_numbers, 10, _xOffset + (_strWidth * 3), _yOffset, 1, 1, 0, _color, _alpha);
-				
-				// 
 				draw_sprite_ext(spr_ammo_numbers, floor(numMissiles * 0.01),		_xOffset,					_yOffset, 1, 1, 0, _color, _alpha); // 100s column
 				draw_sprite_ext(spr_ammo_numbers, floor((numMissiles % 100) * 0.1), _xOffset + _strWidth,		_yOffset, 1, 1, 0, _color, _alpha);	// 10s column
 				draw_sprite_ext(spr_ammo_numbers, numMissiles % 10,					_xOffset + (_strWidth * 2), _yOffset, 1, 1, 0, _color, _alpha); // 1s column
 				
 				// 
-				draw_sprite_ext(spr_ammo_numbers, floor(maxMissiles * 0.01),		_xOffset + (_strWidth * 4), _yOffset, 1, 1, 0, _color, _alpha); // 100s column
-				draw_sprite_ext(spr_ammo_numbers, floor((maxMissiles % 100) * 0.1), _xOffset + (_strWidth * 5), _yOffset, 1, 1, 0, _color, _alpha); // 10s column
-				draw_sprite_ext(spr_ammo_numbers, maxMissiles % 10,					_xOffset + (_strWidth * 6), _yOffset, 1, 1, 0, _color, _alpha); // 1s column
+				_xOffset += (_strWidth * 3) + 2;
+			}
+			
+			// 
+			if (event_get_flag(FLAG_POWER_BOMBS) && maxPowerBombs > 0){
+				// 
+				var _color = c_white;
+				if (IS_ALT_WEAPON_HELD && IN_MORPHBALL)	{_color = HEX_LIGHT_GREEN;}	// Highlight whenever power bombs are being utilized.
+				if (numPowerBombs == 0)					{_color = HEX_DARK_RED;}	// Highlight when there are no power bombs remaining.
+				
+				// 
+				draw_sprite_ext(spr_power_bomb_icon, 0, _xOffset, _yOffset - 1, 1, 1, 0, _color, _alpha);
+				_xOffset += sprite_get_width(spr_power_bomb_icon);
+				
+				// 
+				draw_sprite_ext(spr_ammo_numbers, numPowerBombs* 0.1, _xOffset,											_yOffset, 1, 1, 0, _color, _alpha);	// 10s column
+				draw_sprite_ext(spr_ammo_numbers, numPowerBombs % 10, _xOffset + sprite_get_width(spr_ammo_numbers),	_yOffset, 1, 1, 0, _color, _alpha); // 1s column
 			}
 		}
 	}

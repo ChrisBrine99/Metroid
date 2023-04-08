@@ -1,2 +1,2 @@
-if (event_get_flag(FLAG_MORPHBALL)) {instance_destroy(self);}
-viewTargetX = 384;
+if (!event_get_flag(FLAG_MORPHBALL)) {viewTargetX = 384;}
+viewTargetY = 90;

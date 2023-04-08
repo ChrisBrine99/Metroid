@@ -16,6 +16,10 @@
 #macro	CAN_RESET_TARGET_Y		(stateFlags & (1 << RESET_TARGET_Y) != 0)
 #macro	IS_VIEW_BOUND_ENABLED	(stateFlags & (1 << VIEW_BOUNDARY) != 0)
 
+// 
+#macro	DEADZONE_WIDTH			4
+#macro	DEADZONE_HEIGHT			3
+
 #endregion
 
 #region Initializing enumerators that are useful/related to obj_camera
@@ -41,8 +45,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	
 	// 
 	camera = camera_create();
-	
-	// 
 	targetObject = noone;
 	targetOffsetX = 0;
 	targetOffsetY = 0;
@@ -58,7 +60,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// @description 
 	end_step = function(){
 		// 
-		follow_target_object(4, 3);
+		follow_target_object();
 		process_camera_boundaries();
 		
 		// 
@@ -103,9 +105,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	}
 	
 	/// @description 
-	/// @param {Real}	deadzoneWidth
-	/// @param {Real}	deadzoneHeight
-	follow_target_object = function(_deadzoneWidth, _deadzoneHeight){
+	follow_target_object = function(){
 		// 
 		var _targetX = 0;
 		var _targetY = 0;
@@ -118,19 +118,21 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		
 		// 
 		if (!IS_CAMERA_X_LOCKED){
-			if (_targetX < x - _deadzoneWidth)		{x = _targetX + _deadzoneWidth;}
-			else if (_targetX > x + _deadzoneWidth)	{x = _targetX - _deadzoneWidth;}
+			if (_targetX < x - DEADZONE_WIDTH)		{x = _targetX + DEADZONE_WIDTH;}
+			else if (_targetX > x + DEADZONE_WIDTH)	{x = _targetX - DEADZONE_WIDTH;}
 		}
 		
 		// 
 		if (!IS_CAMERA_Y_LOCKED){
-			if (_targetY < y - _deadzoneHeight)			{y = _targetY + _deadzoneHeight;}
-			else if (_targetY > y + _deadzoneHeight)	{y = _targetY - _deadzoneHeight;}
+			if (_targetY < y - DEADZONE_HEIGHT)			{y = _targetY + DEADZONE_HEIGHT;}
+			else if (_targetY > y + DEADZONE_HEIGHT)	{y = _targetY - DEADZONE_HEIGHT;}
 		}
 	}
 	
 	/// @description 
 	process_camera_boundaries = function(){
+		if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
+		
 		var _targetX = -1;
 		var _targetY = -1;
 		var _stateFlags = stateFlags;
@@ -165,18 +167,20 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		
 		// 
 		if (_targetX != -1 && !CAN_RESET_TARGET_X){
-			x = value_set_linear(x, _targetX, 2.5);
+			x = value_set_relative(x, _targetX, 0.25);
 		} else if (CAN_RESET_TARGET_X){
-			x = value_set_linear(x, targetObject.x, 2.5);
-			if (x == targetObject.x) {stateFlags &= ~((1 << RESET_TARGET_X) | (1 << LOCK_CAMERA_X));}
+			var _oTargetX = targetObject.x + targetOffsetX;
+			x = value_set_relative(x, _oTargetX, 0.25);
+			if (abs(x - _oTargetX) <= DEADZONE_WIDTH) {stateFlags &= ~((1 << RESET_TARGET_X) | (1 << LOCK_CAMERA_X));}
 		}
 		
 		// 
 		if (_targetY != -1 && !CAN_RESET_TARGET_Y){
-			y = value_set_linear(y, _targetY, 2.5);
+			y = value_set_relative(y, _targetY, 0.25);
 		} else if (CAN_RESET_TARGET_Y){
-			y = value_set_linear(y, targetObject.y, 2.5);
-			if (y == targetObject.y) {stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));}
+			var _oTargetY = targetObject.y + targetOffsetY;
+			y = value_set_relative(y, _oTargetY, 0.25);
+			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT) {stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));}
 		}
 	}
 }
@@ -226,23 +230,26 @@ function camera_initialize(_x, _y, _width, _height, _scale, _flags){
 	}
 }
 
-/// @description 
-/// @param {Id.Instance}	object
-/// @param {Real}			offsetX
-/// @param {Real}			offsetY
-/// @param {Real}			snapToPosition
-function camera_set_target_object(_object, _offsetX, _offsetY, _snapToPosition){
+/// @description Sets the camera to follow a specific instance that exists within the room. If no object with
+/// the given ID exists within the room, the camera will not attempt to target them.
+/// @param {Id.Instance}	object			The unique ID value for the instance that the camera will follow.
+/// @param {Real}			offsetX			Positional offset relative to the followed object's X origin value.
+/// @param {Real}			offsetY			Positional offset relative to the followed object's Y origin value.
+function camera_set_target_object(_object, _offsetX, _offsetY){
 	with(CAMERA){
-		targetObject	= _object;
-		// Snap the camera's position to the player's instantaneously if the function requires it.
-		if (_snapToPosition && instance_exists(_object)){
-			x = _object.x;
-			y = _object.y;
+		if (instance_exists(_object)){
+			targetObject =		_object;	// Stores ID and offset paramters.
+			targetOffsetX =		_offsetX;
+			targetOffsetY =		_offsetY;
+			x = _object.x + _offsetX;		// Snaps camera to proper position.
+			y = _object.y + _offsetY;
 		}
 	}
 }
 
-/// @description 
+/// @description Applies a shaking effect to the camera of variable duration and intendity. If the strength
+/// for the shaking is higher than what is currently applied to the camera (If any shake at all), the new
+/// shake effect's parameters will overwrite the previous. Otherwise, the previous will continue on as normal.
 /// @param {Real}	strength	Determines the starting intensity of the effect.
 /// @param {Real}	duration	The total length of the shake effect.
 function camera_set_shake(_strength, _duration){

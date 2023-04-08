@@ -1,14 +1,4 @@
 #region Initializing any macros that are useful/related to obj_debugger
-
-// Condenses the functions calls required for these debugging tools into simply and easy to use macros, as
-// opposed to constantly having to type "DEBUGGER.*" for whatever function is needed when testing.
-#macro	DEBUG_ADD_LINE				DEBUGGER.debug_add_line
-#macro	DEBUG_ADD_MESSAGE			DEBUGGER.debug_add_message
-
-// The constant for the maximum number of debugging messages that can be displayed at the same time by the
-// debugger's built-in message system.
-#macro	MAX_DEBUG_MESSAGES			5
-
 #endregion
 
 #region Initializing any globals that are useful/related to obj_debugger

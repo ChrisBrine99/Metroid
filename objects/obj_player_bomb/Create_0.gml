@@ -1,3 +1,12 @@
+#region Macro initialization
+
+// Macro for the timer in frames (60 = 1 real-world second) that it takes for a bomb to detonate whenever
+// deployed by Samus and for the value that timer must ge below in order to speed up the blinking animation.
+#macro	BOMB_EXPLOSION_TIME		50
+#macro	ANIM_SPEEDUP_TIME		15
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -7,7 +16,7 @@ event_inherited();
 // value reaches or goes below 0. The "maxHitpoints" variable stores the total time it takes for the bomb to
 // detonate; used for comparing against the time remaining in order to speed up the bomb animation after a
 // certain point.
-maxHitpoints = 60;
+maxHitpoints = BOMB_EXPLOSION_TIME;
 hitpoints = maxHitpoints;
 // Apply a unique light source to the bomb.
 object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
@@ -62,7 +71,7 @@ state_default = function(){
 	
 	// Increasing the speed of the bomb's animation to signify it's close to exploding. Also applying the
 	// flashing to the light sources that will link up with the two-frame animation for the bomb.
-	if (hitpoints < (maxHitpoints * 0.25) && animSpeed == 1) {animSpeed = 3;}
+	if (hitpoints < ANIM_SPEEDUP_TIME && animSpeed == 1) {animSpeed = 3;}
 	var _imageIndex = floor(imageIndex);
 	var _baseRadius = baseRadius;
 	var _baseStrength = baseStrength;

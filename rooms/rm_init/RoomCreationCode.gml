@@ -19,7 +19,7 @@ with(PLAYER) {initialize(state_intro);}
 
 // 
 game_load_settings();
-camera_set_target_object(PLAYER, 0, -16, false);
+camera_set_target_object(PLAYER, 0, -16);
 
 // By default, all keyboard icons are set to keyboard. (Since this is the PC version...) This function will
 // initialize the control info icons to that control method.
@@ -29,7 +29,7 @@ camera_set_target_object(PLAYER, 0, -16, false);
 room_goto(rm_test01);
 
 /// FOR TESTING
-//show_debug_overlay(true);
+show_debug_overlay(true);
 //audio_debug(true);
-//texture_debug_messages(true);
+texture_debug_messages(true);
 audio_set_linked_object(PLAYER);

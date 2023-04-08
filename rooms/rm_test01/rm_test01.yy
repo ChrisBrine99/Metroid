@@ -190,6 +190,7 @@
     {"name":"inst_3262CD86","path":"rooms/rm_test01/rm_test01.yy",},
     {"name":"inst_4EBD5D3C","path":"rooms/rm_test01/rm_test01.yy",},
     {"name":"inst_394D2849","path":"rooms/rm_test01/rm_test01.yy",},
+    {"name":"inst_3BF59B49","path":"rooms/rm_test01/rm_test01.yy",},
   ],
   "isDnd": false,
   "layers": [
@@ -400,6 +401,7 @@
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_6218AAA4","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_destructible_all","path":"objects/obj_destructible_all/obj_destructible_all.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":688.0,"y":80.0,},
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_5475F9BC","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_destructible_all","path":"objects/obj_destructible_all/obj_destructible_all.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":704.0,"y":128.0,},
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_7BDB97FB","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_destructible_all","path":"objects/obj_destructible_all/obj_destructible_all.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":688.0,"y":128.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_3BF59B49","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_missile_launcher","path":"objects/obj_missile_launcher/obj_missile_launcher.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":720.0,"y":272.0,},
       ],"layers":[],"properties":[],"userdefinedDepth":true,"visible":true,},
     {"resourceType":"GMRTileLayer","resourceVersion":"1.1","name":"Background_Tiles","depth":40,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"properties":[],"tiles":{"SerialiseHeight":0,"SerialiseWidth":0,"TileSerialiseData":[
 ],},"tilesetId":null,"userdefinedDepth":true,"visible":true,"x":0,"y":0,},
