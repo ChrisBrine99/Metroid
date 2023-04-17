@@ -1,1 +1,0 @@
-viewTargetY = 270;

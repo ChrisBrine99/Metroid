@@ -4,6 +4,7 @@
 #macro	CMD_EXIT_GAME			"exit_game"
 #macro	CMD_GAME_STATE			"game_state"
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
+#macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
 
 // 
 #macro	DRAW_CURSOR				28
@@ -41,7 +42,7 @@
 #macro	STRING_STRING			"string"
 
 // 
-#macro	HISTORY_DISPLAY_LIMIT	10
+#macro	HISTORY_DISPLAY_LIMIT	250
 
 #endregion
 
@@ -61,6 +62,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 	
 	// 
 	history = ds_list_create();
+	historySurf = -1;
+	historyDisplayOffset = 0;
 	
 	// 
 	suggestions = ds_list_create();
@@ -85,11 +88,13 @@ function obj_console(_index) : base_struct(_index) constructor{
 	gameCurState = GSTATE_NONE;
 	gamePrevState = GSTATE_NONE;
 	
-	/// @description
+	/// @description 
 	cleanup = function(){
 		ds_map_destroy(entityStates);
 		ds_list_destroy(history);
 		ds_list_destroy(suggestions);
+		
+		if (surface_exists(historySurf)) {surface_free(historySurf);}
 	}
 	
 	/// @description 
@@ -118,8 +123,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 				
 				gameCurState = GAME_CURRENT_STATE;
 				gamePrevState = GAME_PREVIOUS_STATE;
-				game_set_state(GSTATE_PAUSED, true);
 				stateFlags |= (1 << CONSOLE_ACTIVE);
+				game_set_state(GSTATE_PAUSED, true);
+				window_set_cursor(cr_default);
 				keyboard_lastchar = "";
 			}
 			return;
@@ -150,6 +156,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			ds_list_clear(suggestions);
 			
 			game_set_state(GAME_PREVIOUS_STATE, true);
+			window_set_cursor(cr_none);
 			stateFlags &= ~((1 << CONSOLE_ACTIVE) | (1 << DRAW_CURSOR));
 			stateFlags |= ((1 << FIRST_BACKSPACE) | (1 << FIRST_CURSOR_MOVE));
 			backspaceTimer = 0.0;
@@ -169,9 +176,18 @@ function obj_console(_index) : base_struct(_index) constructor{
 		}
 		
 		// 
+		var _mouseMiddle = mouse_wheel_down() - mouse_wheel_up();
+		if (_mouseMiddle != 0){
+			historyDisplayOffset += _mouseMiddle * 5;
+			if (historyDisplayOffset < 0) {historyDisplayOffset = 0;}
+		}
+		
+		// 
 		if (keyboard_check_pressed(vk_enter)){
-			parse_current_command(command);
-			ds_list_clear(suggestions);
+			if (command != ""){ // Don't bother processing empty strings
+				parse_current_command(command);
+				ds_list_clear(suggestions);
+			}
 			keyboard_lastchar = "";
 			cursorPos = 1;
 			command = "";
@@ -249,19 +265,40 @@ function obj_console(_index) : base_struct(_index) constructor{
 		shader_set_outline(font_gui_small, RGB_GRAY);
 		draw_text_outline(3, 165, "> ", HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
 		draw_text_outline(10, 165, command, HEX_WHITE, RGB_GRAY, 1);
+		shader_reset();
 		
 		// 
-		var _text;
-		var _offsetY = 0;
-		var _start = ds_list_size(history) - 1;
-		for (var i = _start; i >= 0; i--){
-			if (_offsetY >= 145) {break;}
-			_text = history[| i];
-			_offsetY += string_height(_text);
-			draw_text_outline(5, 160 - _offsetY, _text, HEX_GRAY, RGB_DARK_GRAY, 1);
-			_offsetY += 2;
+		if (CAN_DRAW_CURSOR){
+			var _cursorX = string_width(string_copy(command, 1, cursorPos - 1)) + 1;
+			draw_sprite_ext(spr_rectangle, 0, 8 + _cursorX, 164, 1, 8, 0, HEX_LIGHT_YELLOW, 1);
 		}
-		shader_reset();
+		
+		// 
+		var _start = ds_list_size(history) - 1;
+		if (_start >= 0){
+			if (!surface_exists(historySurf)){
+				var _camera = CAMERA.camera;
+				historySurf = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera) - 20);
+			}
+			
+			// 
+			shader_set_outline(font_gui_small, RGB_DARK_GRAY);
+			surface_set_target(historySurf);
+			draw_clear_alpha(c_black, 0);
+			var _text;
+			var _yOffset = -historyDisplayOffset;
+			for (var i = _start; i >= 0; i--){
+				if (_yOffset >= 145) {break;} // Don't bother drawing anything that is above the currently visible history region.
+				_text = history[| i];
+				_yOffset += string_height(_text);
+				if (_yOffset < 0) {continue;} // Skips over text that would be rendered below the history region.
+				draw_text_outline(5, 160 - _yOffset, _text, HEX_GRAY, RGB_DARK_GRAY, 1);
+				_yOffset += 2;
+			}
+			surface_reset_target();
+			shader_reset();
+			draw_surface(historySurf, 0, 0);
+		}
 		
 		// 
 		var _suggestionSize = ds_list_size(suggestions);
@@ -277,12 +314,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 			}
 			shader_reset();
 		}
-		
-		// 
-		if (CAN_DRAW_CURSOR){
-			var _cursorX = string_width(string_copy(command, 1, cursorPos - 1)) + 1;
-			draw_sprite_ext(spr_rectangle, 0, 8 + _cursorX, 164, 1, 8, 0, HEX_LIGHT_YELLOW, 1);
-		}
 	}
 	
 	/// @description Attempts to parse out the command data that was typed in by the user. It will find the
@@ -293,6 +324,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		var _funcString = _command;
 		var _firstSpace = string_pos(CHAR_SPACE, _funcString);
 		if (_firstSpace > 0) {_funcString = string_copy(_command, 1, _firstSpace - 1);}
+		history_add_line("> " +_command); // Display the command that was typed into the console's history.
 		
 		// Attempt to get a valid function's data out of the first chunk of the string, which is used as the
 		// name of the function to retrieve the data of. Any data after a space (If there was one used for the
@@ -300,8 +332,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// the user an error message within the console's history window.
 		var _index = get_function_from_string(string_lower(_funcString));
 		if (_index == -1){
-			show_debug_message("Function couldn't be found!");
-			history_add_line("Function couldn't be found!");
+			show_debug_message("ERROR -- Function \"" + _funcString + "\" does not exist.");
+			history_add_line("ERROR -- Function \"" + _funcString + "\" does not exist.");
 			return;
 		}
 		
@@ -440,11 +472,17 @@ function obj_console(_index) : base_struct(_index) constructor{
 		event_set_flag(_flagID, _flagState);
 	}
 	
+	/// @description 
+	cmd_show_event_flags = function(){
+		
+	}
+	
 	// 
 	array_push(suggestionData,
 		CMD_EXIT_GAME + " []",
 		CMD_GAME_STATE + " []",
-		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]"
+		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]",
+		CMD_SHOW_EVENT_FLAGS + "[]",
 	);
 	
 	// Add all console functions to this array, which is used to parse the string data that represents the
@@ -454,6 +492,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		[CMD_EXIT_GAME,				cmd_exit_game],
 		[CMD_GAME_STATE,			cmd_game_state],
 		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
+		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags],
 	);
 	totalCommands = array_length(validCommands);
 }

@@ -1,7 +1,3 @@
-/// @description A struct object that contains all the necessary information for a light source within the
-/// game. This object can be attached to a main entity object in order for it to be used within the actual
-/// game world, since they require a controller object in order to actually be utilized.
-
 #region Initializing any macros that are useful/related to obj_light_component
 
 // A macro constant that prevents the deletion of a light source due to its lifespan value being at or going

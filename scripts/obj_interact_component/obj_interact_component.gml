@@ -1,7 +1,3 @@
-/// @description The interaction component, which allows the player to interact with whatever object(s) have
-/// this component attached to them. The result of the interaction is unique and based on the function that
-/// is supplied to the component and stored within its "interactFunction" variable.
-
 #region Initializing any macros that are useful/related to obj_interact_component
 #endregion
 
