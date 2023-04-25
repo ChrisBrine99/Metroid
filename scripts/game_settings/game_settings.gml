@@ -269,6 +269,16 @@ function game_load_settings(){
 		buffer_poke(inputBindings, KEY_HOTKEY_SEVEN, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "shock_missiles",	vk_3));
 		buffer_poke(inputBindings, KEY_ALT_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "alt_weapon",		vk_control));
 		
+		// Next, the menu input beindings for the keyboard are read into the buffer. If no valid entry 
+		// exists for a given input, the default found as the last argument in "ini_read_real" is used.
+		buffer_poke(inputBindings, KEY_MENU_RIGHT, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "menu_right",		vk_right));
+		buffer_poke(inputBindings, KEY_MENU_LEFT, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "menu_left",		vk_left));
+		buffer_poke(inputBindings, KEY_MENU_UP, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "menu_up",			vk_up));
+		buffer_poke(inputBindings, KEY_MENU_DOWN, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "menu_down",		vk_down));
+		buffer_poke(inputBindings, KEY_SELECT, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "select",			vk_z));
+		buffer_poke(inputBindings, KEY_ALT_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "return",			vk_x));
+		buffer_poke(inputBindings, KEY_DELETE_FILE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "delete_file",		vk_d));
+		
 		// Loading in all the gamepad settings that aren't input constants stored in the input buffer
 		// or flags that are all loaded in at the top of this function.
 		vibrationIntensity =	ini_read_real(SECTION_GAMEPAD_EXT, "vibrate_intensity", 0.5);

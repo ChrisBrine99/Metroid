@@ -59,7 +59,7 @@ function instance_destroy_struct(_instance){
 /// @description Finds the struct instance with the designated ID given as the function's argument; returning
 /// the reference to that struct so the variables and method within can be referenced if required. If a struct
 /// with that ID cannot be found, the function will return "noone" to signify an invalid instance.
-/// @param {Real}	id
+/// @param {Id.Instance}	id
 function instance_find_struct(_id){
 	var _struct = noone;
 	var _length = ds_list_size(global.structs);
@@ -75,7 +75,7 @@ function instance_find_struct(_id){
 /// @description Finds where the desire struct instance is placed within the management list for all currently
 /// existing instances of structs within the game. If no instance is found, the function will return a -1 to
 /// signify no valid index was found.
-/// @param {Real}	id
+/// @param {Id.Instance}	id
 function instance_find_struct_index(_id){
 	var _struct = noone;
 	var _length = ds_list_size(global.structs);

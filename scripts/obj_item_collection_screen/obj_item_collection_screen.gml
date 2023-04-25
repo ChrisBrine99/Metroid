@@ -1,4 +1,7 @@
 #region Initializing any macros that are useful/related to obj_item_collection_screen
+
+#macro ITEM_SCREEN_DEFAULT		obj_item_collection_screen.state_default
+
 #endregion
 
 #region Initializing enumerators that are useful/related to obj_item_collection_screen
@@ -13,6 +16,11 @@
 function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	// 
 	info = "";
+	flag = -1;
+	
+	// Stores whatever the in-game HUD's opacity level target was prior to the item collection screen 
+	// opening. It will reset the HUD's target back to this value once the menu is closed.
+	hudAlphaTarget = 0.0;
 	
 	/// @description 
 	draw_gui = function(){
@@ -26,6 +34,7 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		shader_set_outline(font_gui_medium, RGB_DARK_GREEN);
 		draw_menu_title(font_gui_medium, _screenCenterX, _screenCenterY - 10, fa_center, fa_middle, HEX_GREEN, RGB_DARK_GREEN, alpha);
 		draw_item_info(font_gui_small, _screenCenterX, _screenCenterY + 10);
+		draw_text_outline(_screenCenterX, _height - 12, "Press [Z] to continue.", HEX_WHITE, RGB_GRAY, alpha);
 		shader_reset();
 	}
 	
@@ -40,24 +49,44 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		draw_reset_text_align();
 	}
 	
-	/// @description
+	/// @description The default state for the item collection screen, which will poll the only valid
+	/// input for the menu. It will close out the menu when that input is pressed under the proper
+	/// conditions; doing nothing otherwise.
 	state_default = function(){
-		if (keyboard_check_pressed(vk_z)){
-			stateFlags |= (1 << DESTROYED);
+		// Only one input is required for this "menu" so it'll be checked here instead of calling the
+		// generic menu input polling function that is available by default.
+		prevInputFlags = inputFlags;
+		if (GAMEPAD_IS_ACTIVE) {}
+		else {inputFlags = (keyboard_check(KEYCODE_SELECT) << SELECT);}
+		
+		// Close out the menu once the collection theme has finished playing; fading it out until its
+		// opacity reaches zero and pinging its destruction after that condition has been met.
+		if (IS_SELECT_PRESSED){
+			// TODO -- Check if song has finished before allowing item collection screen to close
+			menu_set_next_state(state_animation_alpha, [0.0, 0.1, state_destroy_menu]);
 		}
 	}
 	
-	/// @description
+	/// @description Triggers the menu to destroy itself at the end of the frame and sets the flag for
+	/// the item that created the screen in the first place. On top of that, the game's HUD alpha target
+	/// is reset to its value prior to this screen being opened.
+	state_destroy_menu = function(){
+		event_set_flag(flag, true);
+		GAME_HUD.alphaTarget = hudAlphaTarget;
+		stateFlags |= (1 << DESTROYED);
+	}
+	
+	/// @description 
 	/// @param {String}	item		The name of the item that was collected.
 	/// @param {String}	info		The text that explains what the collectible gives to Samus.
+	/// @param {Real}	flag		The bit that represents this item's collected state in the code.
 	/// @param {Real}	maxWidth	The maximum possible width that a single line of the info text can be.
-	set_item_data = function(_item, _info, _maxWidth){
+	set_item_data = function(_item, _info, _flag, _maxWidth){
 		title = _item;
 		info = string_format_width(_info, _maxWidth, font_gui_small);
+		flag = _flag;
 	}
 }
-
-#macro ITEM_SCREEN_DEFAULT		obj_item_collection_screen.state_default
 
 #endregion
 

@@ -10,8 +10,8 @@
 #macro	BEAM_LOWER_TIME			20		// Time in a 60FPS interval between the last beam fired OR the weapon use button being released and Samus lowering her arm cannon whilst walking.
 #macro	STAND_UP_TIME			10		// Holding the left or right inputs while crouching for this duration will have Samus automatically stand up.
 #macro	MORPHBALL_ANIM_TIME		2		// How long the one-frame morphbal enter/exit animation lasts.
-#macro	JUMPSPIN_ANIM_TIME		9		// Time equal to 60 units per second that before starting the jumpspin animation.
-#macro	JUMP_ANIM_TIME			6		// Same as above, but for all of the other jump intro animations Samus has.
+#macro	JUMPSPIN_ANIM_TIME		7		// Time equal to 60 units per second that before starting the jumpspin animation.
+#macro	JUMP_ANIM_TIME			4		// Same as above, but for all of the other jump intro animations Samus has.
 #macro	MIN_CHARGE_TIME			55		// Holding the fire button for this or longer will allow the beam fired to be charged.
 #macro	MAX_CHARGE_TIME			80		// Time until the end of the charge animation (Where it begins to loop).
 #macro	BEAM_SWAP_TIME			15		// How long the player will have to wait between beam swaps before firing again.

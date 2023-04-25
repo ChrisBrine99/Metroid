@@ -198,16 +198,18 @@ function par_menu(_index) : base_struct(_index) constructor{
 	/// all dynamic entities back to their previous states.
 	cleanup = function(){
 		// Loop through all options and delete their contents from memory before deleting the list itself.
-		var _length = ds_list_size(optionData);
-		for (var i = 0; i < _length; i++){
-			with(optionData[| i]){ // Removes inner structs before the main struct is freed from memory.
-				if (!is_undefined(optionInfo)) {delete optionInfo;}
-				delete iconData;
+		if (ds_exists(optionData, ds_type_list)){
+			var _length = ds_list_size(optionData);
+			for (var i = 0; i < _length; i++){
+				with(optionData[| i]){ // Removes inner structs before the main struct is freed from memory.
+					if (!is_undefined(optionInfo)) {delete optionInfo;}
+					delete iconData;
+				}
+				delete optionData[| i];
 			}
-			delete optionData[| i];
+			ds_list_clear(optionData);
+			ds_list_destroy(optionData);
 		}
-		ds_list_clear(optionData);
-		ds_list_destroy(optionData);
 		
 		// Since the entity state storage map is only utilized by the first menu that was created, the rest
 		// of the cleanup event's code can be skipped if the menu doesn't have a valid data structure within

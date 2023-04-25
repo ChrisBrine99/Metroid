@@ -39,6 +39,9 @@ ds_list_destroy(global.structs);
 // "pointer" values do not need to be managed because the main list for all struct instances does that already.
 ds_list_destroy(global.menuInstances);
 
+// 
+ds_list_destroy(global.lightSources);
+
 // Destroy all of the interactable components that existed within the game's data when it was set to close
 // down. After all the interact components have been freed from memory, the list is destroyed to clear it
 // from memory.

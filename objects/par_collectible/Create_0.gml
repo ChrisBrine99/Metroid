@@ -48,25 +48,25 @@ baseStrength = 0;
 /// close once the collection theme being completed. Sets the event flag tied to the object. A collectible
 /// can override this function to have its own unique effects outside of the general tasks performed here.
 collectible_collect_self = function(){
-	// Copy the values stored for the colelctible's name and functionality/information into local variables
-	// so they can be copied over into the menu without having to jump between the menu struct's scope and
-	// the collectible's scope twice.
+	// Copy the data that tells the collection screen what item this is (name), its functionality (info)
+	// and the value that enables the use of the item (flag) after the collection screen is closed.
 	var _name = collectibleName;
 	var _info = collectibleInfo;
+	var _flag = flagID;
 	
 	// Create the instance for the "menu" that displays the item's name and functionality to the player.
 	// Apply a simple fade-in animation that ends with the menu being assigned its default state. Copy
 	// over the item information; the being automatically by the "set_item_data" function call.
 	var _menu = instance_create_menu_struct(obj_item_collection_screen);
 	with(_menu){
-		menu_set_next_state(state_animation_alpha, [1, 0.1, state_default]);
-		set_item_data(_name, _info, camera_get_view_width(CAMERA.camera) - 20);
+		menu_set_next_state(state_animation_alpha, [1.0, 0.1, state_default]);
+		set_item_data(_name, _info, _flag, camera_get_view_width(CAMERA.camera) - 20);
+		hudAlphaTarget = GAME_HUD.alphaTarget;
+		GAME_HUD.alphaTarget = 0.0;
 	}
 	
-	// Set the flag that is assigned to this collectible to true within the buffer of event flags; preventing
-	// the item from respawning despite the game's rooms not being considered persistent. Flag the collectible
-	// for destruction after that.
-	event_set_flag(flagID, true);
+	// Triggers the collectible to delete itself once it's collected by the player. Its visibility is
+	// set to false to prevent the object from being drawn after it's technically been "destroyed".
 	stateFlags |= (1 << DESTROYED);
 	visible = false;
 }

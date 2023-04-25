@@ -1,4 +1,7 @@
-if (maxPowerBombs >= 15) {return;}
+//if (maxPowerBombs >= 15) {return;}
+//
+//maxPowerBombs++;
+//numPowerBombs++;
 
-maxPowerBombs++;
-numPowerBombs++;
+if (curAeion <= 0) {return;}
+curAeion--;

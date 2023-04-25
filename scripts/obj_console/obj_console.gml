@@ -2,6 +2,7 @@
 
 // 
 #macro	CMD_EXIT_GAME			"exit_game"
+#macro	CMD_RESET_GAME			"reset_game"
 #macro	CMD_GAME_STATE			"game_state"
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 #macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
@@ -452,6 +453,12 @@ function obj_console(_index) : base_struct(_index) constructor{
 		game_end();
 	}
 	
+	/// @description Another very simple command that will reset the game using Game Maker's built-in command
+	/// for doing so; allowing quick resets during debugging.
+	cmd_reset_game = function(){
+		game_restart();
+	}
+	
 	/// @description A simple function that displays the game's current state and its previous state (Whatever 
 	/// they were set to prior to the console being opened due to it setting the current state to "paused").
 	cmd_game_state = function(){
@@ -480,6 +487,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 	// 
 	array_push(suggestionData,
 		CMD_EXIT_GAME + " []",
+		CMD_RESET_GAME + "[]",
 		CMD_GAME_STATE + " []",
 		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]",
 		CMD_SHOW_EVENT_FLAGS + "[]",
@@ -490,6 +498,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 	// is stored after all the commands are added through here.
 	array_push(validCommands,
 		[CMD_EXIT_GAME,				cmd_exit_game],
+		[CMD_RESET_GAME,			cmd_reset_game],
 		[CMD_GAME_STATE,			cmd_game_state],
 		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
 		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags],

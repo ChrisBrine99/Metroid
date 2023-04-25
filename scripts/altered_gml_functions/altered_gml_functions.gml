@@ -79,7 +79,7 @@ function draw_text_outline(_x, _y, _string, _innerColor, _outerColor, _alpha, _x
 /// @param {Real}			separation
 /// @param {String}			string
 /// @param {Constant.Color}	innerColor
-/// @param {Array<Real>}	outerColor[r/g/b]
+/// @param {Array<Real>}	outerColor
 /// @param {Real}			alpha
 /// @param {Real}			xScale
 /// @param {Real}			yScale
@@ -150,6 +150,37 @@ function draw_text_outline_monospaced(_x, _y, _separation, _string, _innerColor,
 	// Finally, reset the text alignment to what it prviously was in order to preserve proper text alignment
 	// after this function has completed since it temporarily alters the values.
 	draw_set_text_align(_curHAlign, _curVAlign);
+}
+
+/// @description Displays a numerical value to the screen, but using a sprite instead of the game's generic fonts.
+/// The sprite must be formatted in to the of 0-9 to match the frame numbers. Otherwise, the values shown for the
+/// numerical value will be wrong.
+/// @param {Real}			x			Horizontal position to display the value at on screen.
+/// @param {Real}			y			Vertical position to display the value at on screen.
+/// @param {Real}			value		The value taht will be converted into a graphical representation based on the chosen sprite.
+/// @param {Asset.GMSprite}	sprite		The sprite images that will use to represent the number drawn onto the screen.
+/// @param {Real}			color		Color blending to apply to the text.
+/// @param {Real}			totalPVs	The total number of place values within the number (0s are rendered for place values above the current value).
+/// @param {Real}			spacing		Amount in pixels between each place value required for the number. 
+/// @param {Real}			scale		Scaling of the text on screen along both axes.
+/// @param {Real}			alpha		Overall opacity of the sprites drawn onto the screen.
+function draw_number_as_sprite(_x, _y, _value, _sprite, _color = HEX_WHITE, _totalPVs = 0, _spacing = 1, _scale = 1, _alpha = 1){
+	var _spriteWidth = sprite_get_width(_sprite);
+	var _totalWidth = (_spriteWidth + _spacing) * _scale * _totalPVs;
+	var _offset = _totalWidth;
+	var _remainder = 0;
+	
+	var _limit = power(10, _totalPVs) - 1; // Returns a value that will be 9s repeating for the total number of place values.
+	if (_value > _limit) {_value = _limit;}
+	
+	for (var i = 0; i < _totalPVs; i++){
+		_remainder = _value % 10;
+		_offset	-= (_spriteWidth + _spacing) * _scale; // Calculate number's positional offset on screen before it's drawn (It starts at the 1/10ths place value position, which is the "total width").
+		draw_sprite_ext(_sprite, _remainder, _x + _offset, _y, _scale, _scale, 0, _color, _alpha);
+		if (_value > 0) {_value = floor(_value * 0.1);}
+	}
+	
+	return _totalWidth; // Return the width in pixels of the drawn value if required by the GUI element using the function.
 }
 
 #endregion
