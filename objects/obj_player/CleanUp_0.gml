@@ -1,2 +1,2 @@
-ds_list_destroy(jumpEffectID);
+ds_list_destroy(ghostEffectID);
 delete liquidData;

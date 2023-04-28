@@ -7,7 +7,7 @@ event_inherited();
 // the game's room without causing confusion due to the sprite actually being set in code) and also set the bit
 // that the collectible will use.
 entity_set_sprite(spr_missile_launcher, spr_empty_mask);
-flagID = SMALL_MISSILE_TANK0;
+flagID = FLAG_MISSILES;
 // Set the collectible's name and information to match what this child object represents in the code.
 collectibleName = "Missile Launcher";
 collectibleInfo = "Enables Samus to fire missiles from her arm cannon; consuming ammunition whenever shot. They can break doors covered by red locks.";

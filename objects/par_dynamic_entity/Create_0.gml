@@ -50,15 +50,15 @@ lightComponent = noone;
 lightOffsetX = 0;
 lightOffsetY = 0;
 
-// 
-interactComponent = noone;
+// Unused variables that's a holdover from Project Dread since both projects use the same base functionalities.
+// interactComponent = noone;
 
 // Variables for animating the current sprite appliex to an entity. They replace the standard built-in animation
 // variables like "image_speed" and "image_index" to allow for frame-independent animations. The speed of the
 // animation can be manipulated further by changing the value of "animSpeed". Finally, the loop offset determines
 // which frame of animation will be the start of the animation; allowing for introduction frames if necessary.
 imageIndex = 0;
-animSpeed = 0;
+animSpeed = 0.0;
 spriteLength = 0;
 spriteSpeed = 0;
 loopOffset = 0;

@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "obj_player_jump_effect",
+  "name": "obj_player_ghost_effect",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {

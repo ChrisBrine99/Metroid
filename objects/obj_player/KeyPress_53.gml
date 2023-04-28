@@ -2,6 +2,3 @@
 //
 //maxPowerBombs++;
 //numPowerBombs++;
-
-if (curAeion <= 0) {return;}
-curAeion--;

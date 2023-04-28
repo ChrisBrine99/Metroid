@@ -69,16 +69,19 @@
 #macro	KEY_HOTKEY_SIX			24		
 #macro	KEY_HOTKEY_SEVEN		26		
 #macro	KEY_ALT_WEAPON			28		// Activates missiles or power bombs
-#macro	KEY_MENU_RIGHT			30		// Menu cursor movement inputs
-#macro	KEY_MENU_LEFT			32
-#macro	KEY_MENU_UP				34
-#macro	KEY_MENU_DOWN			36
-#macro	KEY_SELECT				38		// Selection and deselection/menu-closing inputs
-#macro	KEY_RETURN				40
-#macro	KEY_DELETE_FILE			42		// (Save/Load Game Menu ONLY) deletes highlighted save slot
-#macro	KEY_AUX_MENU_RIGHT		44		// Auxiliary inputs for moving left and right in a menu
-#macro	KEY_AUX_MENU_LEFT		46
-#macro	KEY_PAUSE				48		// Accesses the pause menu while in-game
+#macro	KEY_ENERGY_SHIELD		30		// Toggles for all aeion abilities
+#macro	KEY_PHASE_SHIFT			32		
+#macro	KEY_SCAN_PULSE			34
+#macro	KEY_MENU_RIGHT			40		// Menu cursor movement inputs
+#macro	KEY_MENU_LEFT			42
+#macro	KEY_MENU_UP				44
+#macro	KEY_MENU_DOWN			46
+#macro	KEY_SELECT				48		// Selection and deselection/menu-closing inputs
+#macro	KEY_RETURN				50
+#macro	KEY_DELETE_FILE			52		// (Save/Load Game Menu ONLY) deletes highlighted save slot
+#macro	KEY_AUX_MENU_RIGHT		54		// Auxiliary inputs for moving left and right in a menu
+#macro	KEY_AUX_MENU_LEFT		56
+#macro	KEY_PAUSE				58		// Accesses the pause menu while in-game
 
 // Macros to simply the typing required to check each respective input binding for the keyboard whenever
 // player input needs to be processed in the code.
@@ -97,6 +100,9 @@
 #macro	KEYCODE_HOTKEY_SIX		game_get_input_binding(KEY_HOTKEY_SIX)
 #macro	KEYCODE_HOTKEY_SEVEN	game_get_input_binding(KEY_HOTKEY_SEVEN)
 #macro	KEYCODE_ALT_WEAPON		game_get_input_binding(KEY_ALT_WEAPON)		// Switching over to using missiles/power bombs
+#macro	KEYCODE_ENERGY_SHIELD	game_get_input_binding(KEY_ENERGY_SHIELD)	// Aeion ability toggles
+#macro	KEYCODE_PHASE_SHIFT		game_get_input_binding(KEY_PHASE_SHIFT)
+#macro	KEYCODE_SCAN_PULSE		game_get_input_binding(KEY_SCAN_PULSE)
 #macro	KEYCODE_MENU_RIGHT		game_get_input_binding(KEY_MENU_RIGHT)		// Menu cursor movement inputs
 #macro	KEYCODE_MENU_LEFT		game_get_input_binding(KEY_MENU_LEFT)
 #macro	KEYCODE_MENU_UP			game_get_input_binding(KEY_MENU_UP)
@@ -182,7 +188,7 @@ global.gameSettings = {
 	// 2-byte value in order to store the values for the gamepad input constants that GML uses (These are
 	// values of somwhere around 32700, I believe). The last three variables will store values that can be
 	// adjusted by the user so that they fit their gamepad well.
-	inputBindings :			buffer_create(120, buffer_fixed, 2),
+	inputBindings :			buffer_create(128, buffer_fixed, 2),
 	vibrationIntensity :	0,
 	stickDeadzone :			0,
 	triggerThreshold :		0,
@@ -259,7 +265,7 @@ function game_load_settings(){
 		buffer_poke(inputBindings, KEY_GAME_DOWN, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "game_down",		vk_down));
 		buffer_poke(inputBindings, KEY_JUMP, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "jump",				vk_x));
 		buffer_poke(inputBindings, KEY_USE_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "use_weapon",		vk_z));
-		buffer_poke(inputBindings, KEY_SWAP_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "swap_weapon",		vk_space));
+		buffer_poke(inputBindings, KEY_SWAP_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "swap_weapon",		vk_alt));
 		buffer_poke(inputBindings, KEY_HOTKEY_ONE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "power_beam",		vk_1));
 		buffer_poke(inputBindings, KEY_HOTKEY_TWO, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "ice_beam",			vk_2));
 		buffer_poke(inputBindings, KEY_HOTKEY_THREE, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "wave_beam",		vk_3));
@@ -268,6 +274,9 @@ function game_load_settings(){
 		buffer_poke(inputBindings, KEY_HOTKEY_SIX, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "ice_missiles",		vk_2));
 		buffer_poke(inputBindings, KEY_HOTKEY_SEVEN, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "shock_missiles",	vk_3));
 		buffer_poke(inputBindings, KEY_ALT_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "alt_weapon",		vk_control));
+		buffer_poke(inputBindings, KEY_ENERGY_SHIELD, buffer_u16,	ini_read_real(SECTION_KEYBOARD, "energy_shield",	vk_a));
+		buffer_poke(inputBindings, KEY_PHASE_SHIFT, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "phase_shift",		vk_space));
+		buffer_poke(inputBindings, KEY_SCAN_PULSE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "scan_pulse",		vk_tab));
 		
 		// Next, the menu input beindings for the keyboard are read into the buffer. If no valid entry 
 		// exists for a given input, the default found as the last argument in "ini_read_real" is used.
@@ -276,7 +285,7 @@ function game_load_settings(){
 		buffer_poke(inputBindings, KEY_MENU_UP, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "menu_up",			vk_up));
 		buffer_poke(inputBindings, KEY_MENU_DOWN, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "menu_down",		vk_down));
 		buffer_poke(inputBindings, KEY_SELECT, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "select",			vk_z));
-		buffer_poke(inputBindings, KEY_ALT_WEAPON, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "return",			vk_x));
+		buffer_poke(inputBindings, KEY_RETURN, buffer_u16,			ini_read_real(SECTION_KEYBOARD, "return",			vk_x));
 		buffer_poke(inputBindings, KEY_DELETE_FILE, buffer_u16,		ini_read_real(SECTION_KEYBOARD, "delete_file",		vk_d));
 		
 		// Loading in all the gamepad settings that aren't input constants stored in the input buffer
@@ -336,7 +345,7 @@ function game_save_settings(){
 		
 		// Writes all of the keyboard constants used by the player in their input configuation for
 		// the game's various actions that can be triggered when the game allows it and the player
-		// presses/holds the necessary input(s).
+		// presses/holds the necessary input(s) to the settings file.
 		ini_write_real(SECTION_KEYBOARD, "game_right",				buffer_peek(inputBindings, KEY_GAME_RIGHT, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "game_left",				buffer_peek(inputBindings, KEY_GAME_LEFT, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "game_up",					buffer_peek(inputBindings, KEY_GAME_UP, buffer_u16));
@@ -351,7 +360,19 @@ function game_save_settings(){
 		ini_write_real(SECTION_KEYBOARD, "missiles",				buffer_peek(inputBindings, KEY_HOTKEY_FIVE, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "ice_missiles",			buffer_peek(inputBindings, KEY_HOTKEY_SIX, buffer_u16));
 		ini_write_real(SECTION_KEYBOARD, "shock_missiles",			buffer_peek(inputBindings, KEY_HOTKEY_SEVEN, buffer_u16));
-		ini_write_real(SECTION_KEYBOARD, "alt_weapon",				buffer_peek(inputBindings, KEY_ALT_WEAPON, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "energy_shield",			buffer_peek(inputBindings, KEY_ENERGY_SHIELD, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "phase_shift",				buffer_peek(inputBindings, KEY_PHASE_SHIFT, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "scan_pulse",				buffer_peek(inputBindings, KEY_SCAN_PULSE, buffer_u16));
+		
+		// Writes the keyboard inputs utilized by the player for the game's various menus to the
+		// settings file so those same inputs can be reloaded again; preventing loss of custom inputs.
+		ini_write_real(SECTION_KEYBOARD, "menu_right",				buffer_peek(inputBindings, KEY_MENU_RIGHT, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "menu_left",				buffer_peek(inputBindings, KEY_MENU_LEFT, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "menu_up",					buffer_peek(inputBindings, KEY_MENU_UP, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "menu_down",				buffer_peek(inputBindings, KEY_MENU_DOWN, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "select",					buffer_peek(inputBindings, KEY_SELECT, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "return",					buffer_peek(inputBindings, KEY_RETURN, buffer_u16));
+		ini_write_real(SECTION_KEYBOARD, "delete_file",				buffer_peek(inputBindings, KEY_DELETE_FILE, buffer_u16));
 		
 		// Saving the gamepad settings that aren't input constants; the vibration strength, stick 
 		// deadzone region, and trigger threshold for input activation, respectively.

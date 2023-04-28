@@ -1,3 +1,149 @@
+#region Macros that are useful/related to obj_player
+
+// Important values for Samus. The first value being related to her maximum falling speed and the remaining
+// values being timer-related values for entering/manipulating/exiting certain substates or performing certain
+// actions during gameplay.
+#macro	BASE_JUMP_HEIGHT	   -5.1		// Jump height for Samus without "Hi-jump Boots" and her spring ball upgrade.
+#macro	HI_JUMP_HEIGHT		   -7		// Samus's enhanced jumping height after she acquires the "Hi-jump Boots".
+#macro	MAX_FALL_SPEED			8		// Max speed in pixels per 1/60th of a second that Samus can fall downward.
+#macro	AIM_SWITCH_TIME			8		// How fast Samus's aim switches from forward to upward while holding the up input after exiting her crouch state.
+#macro	BEAM_LOWER_TIME			20		// Time in a 60FPS interval between the last beam fired OR the weapon use button being released and Samus lowering her arm cannon whilst walking.
+#macro	STAND_UP_TIME			10		// Holding the left or right inputs while crouching for this duration will have Samus automatically stand up.
+#macro	MORPHBALL_ANIM_TIME		2		// How long the one-frame morphbal enter/exit animation lasts.
+#macro	JUMPSPIN_ANIM_TIME		7		// Time equal to 60 units per second that before starting the jumpspin animation.
+#macro	JUMP_ANIM_TIME			5.5		// Same as above, but for all of the other jump intro animations Samus has.
+#macro	MIN_CHARGE_TIME			55		// Holding the fire button for this or longer will allow the beam fired to be charged.
+#macro	MAX_CHARGE_TIME			80		// Time until the end of the charge animation (Where it begins to loop).
+#macro	BEAM_SWAP_TIME			15		// How long the player will have to wait between beam swaps before firing again.
+#macro	MISSILE_SWAP_TIME		10		// How long the player will have to wait between missile swaps before firing again.
+#macro	JUMP_EFFECT_INTERVAL	2.5		// How often the phantom effect while somersaulting occurs.
+#macro	PSHIFT_EFFECT_INTERVAL	3.25	// Interval between ghost images of Samus during her phase shift.
+
+// Variables for Samus's morphball bombs; the top value being how fast she can deploy them (Calculated as 60
+// being one second of real-worl time) and the lower value being the max number of bombs Samus can actively
+// deploy at any given time.
+#macro	BOMB_DROP_RATE			5
+#macro	MAX_STANDARD_BOMBS		3
+
+// Stores the amount needed for Samus's energy tank pieces to be converted into a full energy tank.
+#macro	NEEDED_ETANK_PIECES		4
+
+// The distance in pixels that Samus will move from her x position at the activation of the phase shift, as
+// well as the speed Samus will move because of the ability. Finally, the cooldown from using another aeion
+// ability after this one (60 units = 1 second) and its cost are initialized here.
+#macro	PHASE_SHIFT_DISTANCE	80
+#macro	PHASE_SHIFT_SPEED		12
+#macro	PHASE_SHIFT_COOLDOWN	30
+#macro	PHASE_SHIFT_COST		50
+
+// Bit flags that are unique to Samus. Each one can be flipped on (A value of 1) or off (A value of 0) to have
+// certain things occur during gameplay, alter animations, or alter Samus' movement/attacking capabilities.
+#macro	MOVING					0
+#macro	CROUCHING				1
+#macro	JUMP_SPIN				2
+#macro	JUMP_ATTACK				3		// Screw Attack's damaging/invincibility effect
+#macro	AIMING_UP				4
+#macro	AIMING_DOWN				5
+#macro	AIMING_FRONT			6
+#macro	MORPHBALL				7
+#macro	SUBMERGED				8
+#macro	ENERGY_SHIELD			9
+#macro	PHASE_SHIFT				10
+
+// Condenses the logic required to check if certain substate bits are set or not.
+#macro	IS_MOVING				(stateFlags & (1 << MOVING) != 0)
+#macro	IS_AIMING				(stateFlags & ((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << AIMING_DOWN)) != 0)
+#macro	IS_AIMING_UP			(stateFlags & (1 << AIMING_UP) != 0)
+#macro	IS_AIMING_DOWN			(stateFlags & (1 << AIMING_DOWN) != 0)
+#macro	IS_JUMP_SPIN			(stateFlags & (1 << JUMP_SPIN) != 0)
+#macro	IS_JUMP_ATTACK			(stateFlags & (1 << JUMP_ATTACK) != 0)
+#macro	IN_MORPHBALL			(stateFlags & (1 << MORPHBALL) != 0)
+#macro	IS_SUBMERGED			(stateFlags & (1 << SUBMERGED) != 0)
+#macro	USING_ENERGY_SHIELD		(stateFlags & (1 << ENERGY_SHIELD) != 0)
+#macro	USING_PHASE_SHIFT		(stateFlags & (1 << PHASE_SHIFT) != 0)
+
+// Input bit flags for Samus. Each corresponding to an action that the user can make Samus perform within the
+// game (The said action depending on what state and substate(s) Samus is currently in).
+#macro	MOVE_RIGHT				0
+#macro	MOVE_LEFT				1
+#macro	AIM_UP					2
+#macro	AIM_DOWN				3
+#macro	JUMP					4
+#macro	USE_WEAPON				5
+#macro	SWAP_WEAPON				6
+#macro	SWAP_POWER_BEAM			7	// The inputs that correspond to each of Samus's beams.
+#macro	SWAP_ICE_BEAM			8
+#macro	SWAP_WAVE_BEAM			9
+#macro	SWAP_PLASMA_BEAM		10
+#macro	SWAP_MISSILES			11
+#macro	SWAP_ICE_MISSILES		12
+#macro	SWAP_SHOCK_MISSILES		13
+#macro	ALT_WEAPON				14	// Makes Samus user her missiles or power bombs if she's in her morphball form.
+#macro	USE_ENERGY_SHIELD		15
+#macro	USE_PHASE_SHIFT			16
+
+// These macros condense all the code required to check if a valid input is being pressed or held by the player.
+#macro	IS_RIGHT_HELD			(inputFlags & (1 << MOVE_RIGHT) != 0)
+#macro	IS_LEFT_HELD			(inputFlags & (1 << MOVE_LEFT) != 0)
+#macro	IS_UP_HELD				(inputFlags & (1 << AIM_UP) != 0)
+#macro	IS_UP_PRESSED			((inputFlags & (1 << AIM_UP) != 0) && (prevInputFlags & (1 << AIM_UP) == 0))
+#macro	IS_UP_RELEASED			((inputFlags & (1 << AIM_UP) == 0) && (prevInputFlags & (1 << AIM_UP) != 0))
+#macro	IS_DOWN_HELD			(inputFlags & (1 << AIM_DOWN) != 0)
+#macro	IS_DOWN_PRESSED			((inputFlags & (1 << AIM_DOWN) != 0) && (prevInputFlags & (1 << AIM_DOWN) == 0))
+#macro	IS_DOWN_RELEASED		((inputFlags & (1 << AIM_DOWN) == 0) && (prevInputFlags & (1 << AIM_DOWN) != 0))
+#macro	IS_JUMP_PRESSED			((inputFlags & (1 << JUMP) != 0) && (prevInputFlags & (1 << JUMP) == 0))
+#macro	IS_JUMP_RELEASED		((inputFlags & (1 << JUMP) == 0) && (prevInputFlags & (1 << JUMP) != 0))
+#macro	IS_USE_HELD				(inputFlags & (1 << USE_WEAPON) != 0)
+#macro	IS_USE_PRESSED			((inputFlags & (1 << USE_WEAPON) != 0) && (prevInputFlags & (1 << USE_WEAPON) == 0))
+#macro	IS_USE_RELEASED			((inputFlags & (1 << USE_WEAPON) == 0) && (prevInputFlags & (1 << USE_WEAPON) != 0))
+#macro	IS_SWAP_HELD			(inputFlags & (1 << SWAP_WEAPON) != 0)
+#macro	IS_SWAP_POWB_PRESSED	((inputFlags & (1 << SWAP_POWER_BEAM) != 0) && (prevInputFlags & (1 << SWAP_POWER_BEAM) == 0))
+#macro	IS_SWAP_ICEB_PRESSED	((inputFlags & (1 << SWAP_ICE_BEAM) != 0) && (prevInputFlags & (1 << SWAP_ICE_BEAM) == 0) && event_get_flag(FLAG_ICE_BEAM))
+#macro	IS_SWAP_WAVB_PRESSED	((inputFlags & (1 << SWAP_WAVE_BEAM) != 0) && (prevInputFlags & (1 << SWAP_WAVE_BEAM) == 0) && event_get_flag(FLAG_WAVE_BEAM))
+#macro	IS_SWAP_PLAB_PRESSED	((inputFlags & (1 << SWAP_PLASMA_BEAM) != 0) && (prevInputFlags & (1 << SWAP_PLASMA_BEAM) == 0) && event_get_flag(FLAG_PLASMA_BEAM))
+#macro	IS_SWAP_MISS_PRESSED	((inputFlags & (1 << SWAP_MISSILES) != 0) && (prevInputFlags & (1 << SWAP_MISSILES) == 0))
+#macro	IS_SWAP_IMISS_PRESSED	((inputFlags & (1 << SWAP_ICE_MISSILES) != 0) && (prevInputFlags & (1 << SWAP_ICE_MISSILES) == 0))
+#macro	IS_SWAP_SMISS_PRESSED	((inputFlags & (1 << SWAP_SHOCK_MISSILES) != 0) && (prevInputFlags & (1 << SWAP_SHOCK_MISSILES) == 0))
+#macro	IS_ALT_WEAPON_HELD		(inputFlags & (1 << ALT_WEAPON) != 0)
+#macro	IS_ESHIELD_PRESSED		((inputFlags & (1 << USE_ENERGY_SHIELD) != 0) && (prevInputFlags & (1 << USE_ENERGY_SHIELD) == 0))
+#macro	IS_PSHIFT_PRESSED		((inputFlags & (1 << USE_PHASE_SHIFT) != 0) && (prevInputFlags & (1 << USE_PHASE_SHIFT) == 0))
+
+// Each value corresponds to a bit found within the "curWeapon" variable, which determines what weapon Samus
+// currently has equipped to her arm cannon. "Equipped" means firing her arm cannon will result in that beam
+// or missile being shot from it.
+#macro	POWER_BEAM				0
+#macro	ICE_BEAM				1
+#macro	WAVE_BEAM				2
+#macro	PLASMA_BEAM				3
+#macro	MISSILE					4
+#macro	ICE_MISSILE				5
+#macro	SHOCK_MISSILE			6
+
+// A simple macro to condesne the code that is required to check if the currently equipped weapon within the
+// arm cannon is a missile or not; of which there are three possible missile to have equipped.
+#macro	IS_MISSILE_EQUIPPED		(curWeapon & ((1 << MISSILE) | (1 << ICE_MISSILE) | (1 << SHOCK_MISSILE)))
+
+// Default values for Samus's ambient light source when it's acting as her visor's light and the values that
+// the randomization of that light's radius and strength are based on whenever she's using her screw attack.
+#macro	LIGHT_DEFAULT_RADIUS	8
+#macro	LIGHT_DEFAULT_STRENGTH	0.5
+#macro	LIGHT_SATTACK_RADIUS	80
+#macro	LIGHT_SATTACK_STRENGTH	0.9
+
+// Positional values for the light source when it's being used to represent Samus's visor light. Each will
+// represent an X or Y position to place the light at during Samus's actions, which can alter where it is
+// depending on an animation or sprite.
+#macro	LIGHT_OFFSET_X_GENERAL	4 * image_xscale
+#macro	LIGHT_OFFSET_Y_GENERAL	-33
+#macro	LIGHT_OFFSET_X_DOWN		7 * image_xscale
+#macro	LIGHT_OFFSET_Y_DOWN		-28
+#macro	LIGHT_OFFSET_X_ATTACK	0
+#macro	LIGHT_OFFSET_Y_ATTACK	-20
+#macro	LIGHT_OFFSET_Y_CROUCH	-23
+#macro	LIGHT_OFFSET_Y_MBALL	-18
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -79,6 +225,7 @@ aimReturnTimer = 0.0;
 aimSwitchTimer = 0.0;
 mBallEnterTimer = 0.0;
 jumpStartTimer = 0.0;
+aeionCooldownTimer = 0.0;
 
 // Keeps track of how high the morphball will bounce relative to its falling speed when it initially hits the
 // ground. A high enough value will make the morphball bounce into the air again.
@@ -129,11 +276,15 @@ liquidData = {
 };
 
 // 
-jumpEffectID = ds_list_create();
-effectTimer = JUMP_EFFECT_INTERVAL;
+ghostEffectID = ds_list_create();
+effectTimer = 0.0;
 
 // 
 warpID = noone;
+
+// 
+curShiftDist = 0.0;
+prevAnimSpeed = 0.0;
 
 #endregion
 
@@ -162,7 +313,9 @@ process_input = function(){
 			(keyboard_check(KEYCODE_HOTKEY_FIVE)	<<	SWAP_MISSILES) |
 			(keyboard_check(KEYCODE_HOTKEY_SIX)		<<	SWAP_ICE_MISSILES) |
 			(keyboard_check(KEYCODE_HOTKEY_SEVEN)	<<	SWAP_SHOCK_MISSILES) |
-			(keyboard_check(KEYCODE_ALT_WEAPON)		<<	ALT_WEAPON);
+			(keyboard_check(KEYCODE_ALT_WEAPON)		<<	ALT_WEAPON) |
+			(keyboard_check(KEYCODE_ENERGY_SHIELD)	<<	USE_ENERGY_SHIELD) |
+			(keyboard_check(KEYCODE_PHASE_SHIFT)	<<	USE_PHASE_SHIFT);
 	}
 }
 
@@ -344,6 +497,45 @@ reset_light_source = function(){
 	}
 	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 	lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
+}
+
+#endregion
+
+#region Aeion ability activation functions
+
+/// @description 
+activate_energy_shield = function(){
+	
+}
+
+/// @description 
+/// @param {Real}	movement
+activate_phase_shift = function(_movement){
+	if (curAeion < PHASE_SHIFT_COST || aeionCooldownTimer > 0) {return;}
+	curAeion -= PHASE_SHIFT_COST; // Remove the cost of the ability's use from Samus's current aeion amount.
+	
+	if (IS_JUMP_SPIN) {entity_set_sprite(jumpSpriteFw, -1);}
+	prevAnimSpeed = animSpeed;
+	animSpeed = 0;
+	
+	// Apply the correct state and flags to Samus to signify to other objects she's executing her phase shift.
+	object_set_next_state(state_phase_shift);
+	stateFlags &= ~((1 << DRAW_SPRITE) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
+	stateFlags |= (1 << PHASE_SHIFT);
+	effectTimer = PSHIFT_EFFECT_INTERVAL;
+	aeionCooldownTimer = PHASE_SHIFT_COOLDOWN;
+	
+	// By default, Samus will be shifted backwards, but this can be controlled by pressing either the left
+	// or right movement inputs to control the direction of the phase shift upon activating it. Samus's
+	// vertical velocity is completely cancelled out by the use of this ability.
+	if (_movement == 0) {hspd = (PHASE_SHIFT_SPEED * -image_xscale);}
+	else				{hspd = (PHASE_SHIFT_SPEED * _movement);}
+	vspd = 0;
+}
+
+/// @description 
+activate_scan_pulse = function(){
+	
 }
 
 #endregion
@@ -949,6 +1141,7 @@ state_default = function(){
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(jumpSpriteFw, standingMask);
 		stateFlags &= ~(1 << MOVING);
+		jumpStartTimer = JUMPSPIN_ANIM_TIME;
 		aimReturnTimer = 0.0;
 		return; // State changed; ignore input and immediately switch over to "airbourne" state.
 	}
@@ -1012,6 +1205,12 @@ state_default = function(){
 		}
 	} else{
 		aimSwitchTimer = 0.0;
+	}
+	
+	// 
+	if (IS_PSHIFT_PRESSED){
+		activate_phase_shift(movement);
+		return;
 	}
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
@@ -1179,6 +1378,12 @@ state_airbourne = function(){
 		lightComponent.isActive = true;
 	}
 	
+	// 
+	if (IS_PSHIFT_PRESSED){
+		activate_phase_shift(movement);
+		return;
+	}
+	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
 	// The second function will handle weapon/beam swapping for this state.
@@ -1243,7 +1448,7 @@ state_airbourne = function(){
 	if (sprite_index == jumpSpriteSpin){
 		effectTimer += DELTA_TIME;
 		if (effectTimer >= JUMP_EFFECT_INTERVAL){
-			ds_list_add(jumpEffectID, create_player_jump_effect(x, y, sprite_index, floor(imageIndex), image_xscale));
+			ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 0.5));
 			effectTimer = 0.0;
 		}
 	}
@@ -1490,6 +1695,48 @@ state_morphball = function(){
 	// movement factor is set to (Ex. A factor of 0.5 would make the morphball animate at half its normal
 	// speed, and so on).
 	entity_set_sprite(morphballSprite, morphballMask, animSpeed);
+}
+
+/// @description 
+state_phase_shift = function(){
+	// 
+	var _lastX = x;
+	apply_frame_movement(entity_world_collision);
+	curShiftDist += abs(_lastX - x);
+	
+	// 
+	if (curAeion >= PHASE_SHIFT_COST && curShiftDist >= PHASE_SHIFT_DISTANCE - 60){
+		if (keyboard_check_pressed(KEYCODE_PHASE_SHIFT)){
+			show_debug_message("TEST");
+			curAeion -= PHASE_SHIFT_COST;
+			curShiftDist = 0;
+		}
+	}
+	
+	// 
+	player_collectible_collision();
+	fallthrough_floor_collision();
+	player_liquid_collision();
+	player_warp_collision();
+	
+	// 
+	if (curShiftDist >= PHASE_SHIFT_DISTANCE || hspd == 0.0){
+		object_set_next_state(lastState);
+		reset_light_source();
+		stateFlags &= ~(1 << PHASE_SHIFT);
+		stateFlags |= (1 << DRAW_SPRITE);
+		curShiftDist = 0;
+		hspd = 0.0;
+		animSpeed = prevAnimSpeed;
+		return;
+	}
+	
+	// 
+	effectTimer += DELTA_TIME;
+	if (effectTimer >= PSHIFT_EFFECT_INTERVAL){
+		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 1.0));
+		effectTimer -= PSHIFT_EFFECT_INTERVAL;
+	}
 }
 
 #endregion

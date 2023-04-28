@@ -25,9 +25,9 @@
 #macro	FLAG_PLASMA_BEAM		7
 #macro	FLAG_BEAM_SPLITTER		8
 #macro	FLAG_CHARGE_BEAM		9
-#macro	FLAG_SCAN_PULSE			10		// Aeion abilities
+#macro	FLAG_ENERGY_SHIELD		10		// Aeion abilities
 #macro	FLAG_PHASE_SHIFT		11
-#macro	FLAG_ENERGY_SHIELD		12
+#macro	FLAG_SCAN_PULSE			12
 #macro	FLAG_MORPHBALL			13		// Morphball and its abilities
 #macro	FLAG_SPRING_BALL		14
 #macro	FLAG_SPIDER_BALL		15
@@ -142,6 +142,22 @@ function event_get_flag(_flagID){
 	// have the desired bit set to 1 and all other bits set to zero. This way all other bits in the byte that
 	// is being used for the comparison are ignored in the result of this get_flag function.
 	return (buffer_peek(EVENT_HANDLER, _offset, buffer_u8) & (1 << (_flagID & 7)) != 0);
+}
+
+/// @description Gets the total percentage of items that have been collected by the player throught their
+/// current playthrough. It does this by checking each item's bit and taking the total number of 1s found
+/// and dividing that by the total sum of bits; returning it as a rounded value between 0 and 100.
+function event_get_item_percentage(){
+	var _totalItems = AEION_TANK0 + 3; // 145th bit is the final item ("AEION_TANK0" represents bit 142)
+	var _collectedItems = 0;
+	for (var i = 0; i < _totalItems; i++){
+		if (i > FLAG_LOCK_ON_MISSILES && i < SMALL_MISSILE_TANK0) {continue;} // Skip over unused bits
+		_collectedItems += event_get_flag(i);
+	}
+	// Remove the unnecessary bits after the loop to avoid missing the last few bits if done before.
+	// Then, return the ratio between this value and the calculated amount of collected items.
+	_totalItems -= (SMALL_MISSILE_TANK0 - FLAG_LOCK_ON_MISSILES);
+	return round(_collectedItems / _totalItems) * 100;
 }
 
 #endregion

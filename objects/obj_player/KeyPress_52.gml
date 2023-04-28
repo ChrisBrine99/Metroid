@@ -3,5 +3,5 @@
 maxMissiles += 10;
 numMissiles += 10;*/
 
-if (curAeion >= maxAeion) {return;}
-curAeion++;
+curAeion = 100;
+maxAeion = 100;
