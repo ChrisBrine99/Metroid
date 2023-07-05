@@ -127,6 +127,7 @@
     {"amount":-1,"first":121,"second":1112,},
   ],
   "last": 0,
+  "lineHeight": 0,
   "maintainGms1Font": false,
   "parent": {
     "name": "Fonts",
@@ -140,6 +141,7 @@
   ],
   "regenerateBitmap": false,
   "sampleText": "abcdef ABCDEF\nthe quick brown fox jumps over the lazy dog\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG",
+  "sdfSpread": 8,
   "size": 8.0,
   "styleName": "Monospace",
   "textureGroupId": {
@@ -147,4 +149,5 @@
     "path": "texturegroups/Default",
   },
   "TTFName": "",
+  "usesSDF": false,
 }

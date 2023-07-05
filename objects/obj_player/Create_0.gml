@@ -17,7 +17,7 @@
 #macro	BEAM_SWAP_TIME			15		// How long the player will have to wait between beam swaps before firing again.
 #macro	MISSILE_SWAP_TIME		10		// How long the player will have to wait between missile swaps before firing again.
 #macro	JUMP_EFFECT_INTERVAL	2.5		// How often the phantom effect while somersaulting occurs.
-#macro	PSHIFT_EFFECT_INTERVAL	3.25	// Interval between ghost images of Samus during her phase shift.
+#macro	PSHIFT_EFFECT_INTERVAL	1.75	// Interval between ghost images of Samus during her phase shift.
 
 // Variables for Samus's morphball bombs; the top value being how fast she can deploy them (Calculated as 60
 // being one second of real-worl time) and the lower value being the max number of bombs Samus can actively
@@ -226,6 +226,7 @@ aimSwitchTimer = 0.0;
 mBallEnterTimer = 0.0;
 jumpStartTimer = 0.0;
 aeionCooldownTimer = 0.0;
+aeionFillTimer = 0.0;
 
 // Keeps track of how high the morphball will bounce relative to its falling speed when it initially hits the
 // ground. A high enough value will make the morphball bounce into the air again.
@@ -284,6 +285,7 @@ warpID = noone;
 
 // 
 curShiftDist = 0.0;
+prevMaxHspd = 0.0;
 prevAnimSpeed = 0.0;
 
 #endregion
@@ -511,12 +513,22 @@ activate_energy_shield = function(){
 /// @description 
 /// @param {Real}	movement
 activate_phase_shift = function(_movement){
-	if (curAeion < PHASE_SHIFT_COST || aeionCooldownTimer > 0) {return;}
+	if (curAeion < PHASE_SHIFT_COST || aeionCooldownTimer > 0.0) {return;}
 	curAeion -= PHASE_SHIFT_COST; // Remove the cost of the ability's use from Samus's current aeion amount.
 	
-	if (IS_JUMP_SPIN) {entity_set_sprite(jumpSpriteFw, -1);}
-	prevAnimSpeed = animSpeed;
-	animSpeed = 0;
+	if (IS_JUMP_SPIN){ // Exit Samus from her somersault should she be in one upon the phase shift's activation.
+		entity_set_sprite(jumpSpriteFw, -1);
+	} else{ // Use the first frame of animation for the walking sprite that isn't aiming Samus's arm cannon when on the floor.
+		if (sprite_index == standSpriteFw || sprite_index == standSpriteUp) {entity_set_sprite(walkSpriteFw, -1);}
+		imageIndex = 0;
+	}
+	prevAnimSpeed = animSpeed; // Store animation speed before it's zeroed out.
+	animSpeed = 0.0;
+	
+	// 
+	lightComponent.set_properties(128, HEX_LIGHT_BLUE, 1.0);
+	lightOffsetX = 0;
+	lightOffsetY = -20;
 	
 	// Apply the correct state and flags to Samus to signify to other objects she's executing her phase shift.
 	object_set_next_state(state_phase_shift);
@@ -528,9 +540,16 @@ activate_phase_shift = function(_movement){
 	// By default, Samus will be shifted backwards, but this can be controlled by pressing either the left
 	// or right movement inputs to control the direction of the phase shift upon activating it. Samus's
 	// vertical velocity is completely cancelled out by the use of this ability.
-	if (_movement == 0) {hspd = (PHASE_SHIFT_SPEED * -image_xscale);}
-	else				{hspd = (PHASE_SHIFT_SPEED * _movement);}
-	vspd = 0;
+	prevMaxHspd = maxHspd; // Store previous maxHspd in case it's overwritten for the fix detailed below.
+	if (_movement == 0){
+		hspd = (PHASE_SHIFT_SPEED * -image_xscale);
+		// Bugfix for error on slopes when no horizontal movement input from player. Without this, Samus will
+		// get stuck on the slope and instantly exit out of phase shifting.
+		maxHspd = abs(hspd);
+	} else{
+		hspd = (PHASE_SHIFT_SPEED * _movement);
+	}
+	vspd = 0.0;
 }
 
 /// @description 
@@ -637,7 +656,8 @@ create_power_beam_split = function(_x, _y, _imageXScale, _charged){
 
 /// ICE BEAM /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// @description 
+/// @description Creates the projectile for Samus's Ice Beam, which functions nearly identically to her Power
+/// Beam with a single difference: the ability to freeze weaker enemies that it hits to use them as platforms.
 /// @param {Real}	x				Samus's current horizontal position within the room.
 /// @param {Real}	y				Samus's current vertical position within the room.
 /// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
@@ -1699,44 +1719,53 @@ state_morphball = function(){
 
 /// @description 
 state_phase_shift = function(){
-	// 
+	// Increment the total distance Samus has moved since the activation of the phase shift by comparing the
+	// difference between her x position before and after the frame's horizontal movement has been applied.
 	var _lastX = x;
 	apply_frame_movement(entity_world_collision);
 	curShiftDist += abs(_lastX - x);
 	
-	// 
-	if (curAeion >= PHASE_SHIFT_COST && curShiftDist >= PHASE_SHIFT_DISTANCE - 60){
+	// Doubles the distance of the phase shift if the player manages to press its activation input while Samus
+	// is between 30 and 80 pixels from her initial position prior to the phase shift. She also needs to have
+	// at least 50 aeion remaining to activate a double phase shift.
+	if (curAeion >= PHASE_SHIFT_COST && curShiftDist >= PHASE_SHIFT_DISTANCE - 50){
 		if (keyboard_check_pressed(KEYCODE_PHASE_SHIFT)){
-			show_debug_message("TEST");
 			curAeion -= PHASE_SHIFT_COST;
-			curShiftDist = 0;
+			curShiftDist -= PHASE_SHIFT_DISTANCE;
 		}
 	}
 	
-	// 
+	// Go through all of the standard collision functions.
 	player_collectible_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_warp_collision();
 	
-	// 
+	// Check if Samus has moved the required distance for a phase shift (Or she was stopped by a collision that
+	// set her horizontal velocity to 0). If so, she'll return to her previous state.
 	if (curShiftDist >= PHASE_SHIFT_DISTANCE || hspd == 0.0){
 		object_set_next_state(lastState);
 		reset_light_source();
-		stateFlags &= ~(1 << PHASE_SHIFT);
-		stateFlags |= (1 << DRAW_SPRITE);
-		curShiftDist = 0;
-		hspd = 0.0;
-		animSpeed = prevAnimSpeed;
-		return;
+		stateFlags	   &= ~(1 << PHASE_SHIFT);
+		stateFlags	   |= (1 << DRAW_SPRITE);
+		curShiftDist	= 0;
+		hspd			= 0.0;
+		maxHspd			= prevMaxHspd;
+		animSpeed		= prevAnimSpeed;
+		return; 
 	}
 	
-	// 
+	// Increment the timer by delta time until the effect interval's value has been reached or exceeded. If so,
+	// a "ghost" of Samus will be created as part of the phase shift's animation.
 	effectTimer += DELTA_TIME;
 	if (effectTimer >= PSHIFT_EFFECT_INTERVAL){
-		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 1.0));
+		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 1.0, armCannon.visible));
 		effectTimer -= PSHIFT_EFFECT_INTERVAL;
 	}
+	
+	// Samus's ambient light will slowly dim over the duration of the phase shift.
+	var _distance = curShiftDist;
+	with(lightComponent) {strength = 1.0 - ((_distance / PHASE_SHIFT_DISTANCE) * 0.85);}
 }
 
 #endregion

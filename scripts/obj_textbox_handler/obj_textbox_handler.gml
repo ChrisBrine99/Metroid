@@ -205,7 +205,7 @@ function obj_textbox_handler(_index) : base_struct(_index) constructor{
 			var _length = ds_list_size(savedText);
 			for (var i = 0; i < _length; i++) {buffer_delete(savedText[| i]);}
 			ds_list_destroy(savedText);
-			ds_list_destroy(actorData);
+			ds_map_destroy(actorData);
 			
 			// Free the surfaces if they still exist within VRAM. If they happened to have already been
 			// flushed from memory before this code is executed, the non-existent surface(s) are skipped.
@@ -294,7 +294,7 @@ function obj_textbox_handler(_index) : base_struct(_index) constructor{
 			// Insert the most recently logged text into the 0th index of the list; pushing 
 			// the rest of the data back by one index until whatever was in the 49th element
 			// is discarded from memory.
-			ds_list_insert(actorData, 0, _actor);
+			ds_map_add(actorData, 0, _actor);
 			ds_list_insert(savedText, 0, buffer_create(TEXTBOX_WIDTH * TEXTBOX_HEIGHT * 4, buffer_fixed, 4));
 			buffer_copy(_buffer, 0, TEXTBOX_WIDTH * TEXTBOX_HEIGHT * 4, savedText[| 0], 0);
 			

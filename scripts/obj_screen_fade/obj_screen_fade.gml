@@ -139,8 +139,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 				with(armCannon){
 					if (!visible) {break;}
 					draw_sprite_ext(spr_samus_cannon0, imageIndex, 
-							x - _x + _offsetX,
-							y - _y + _offsetY, image_xscale, 
+							x + _offsetX,
+							y + _offsetY, image_xscale, 
 					1, 0, c_white, 1);
 				}
 			}

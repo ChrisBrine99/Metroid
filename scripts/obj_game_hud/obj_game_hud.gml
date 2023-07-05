@@ -1,6 +1,8 @@
 #region	Initializing any macros that are useful/related to obj_player_hud
 
+// 
 #macro	AEION_GUAGE_WIDTH		46
+#macro	AEION_GAUGE_FILL_SPEED	0.3
 
 #endregion
 
@@ -25,6 +27,10 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	glowStrength = 0.0;
 	glowTarget = 1.0;
 	
+	// 
+	pCurAeion = 0;
+	pCurAeionFraction = 0.0;
+	
 	/// @description Functions identically to how the "Draw GUI" event works within a GML object, so it should
 	/// be called in such event of the object that manages the game hud insteance. In short, it calls functions 
 	/// that will draw each part of the HUD; the player information, equipped and available beam information, 
@@ -45,6 +51,8 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	draw_player_info = function(_xPos, _yPos, _alpha){
 		var _glowStrength = glowStrength;
 		var _glowTarget = glowTarget;
+		var _pCurAeion = pCurAeion;
+		var _curAeion = 0;
 		with(PLAYER){
 			// Display the total energy the player currently has; ignoring any additions added by energy tanks
 			// they may have picked up. Instead of using a font, two images are drawn for each numbers place; the
@@ -99,24 +107,40 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 			// drawn to the left of the bar; pulsing faster or slower depending on the amount of aeion left relative
 			// to the guage's current maximum. When no aeion is left, the circle will be greyed out and static.
 			if (maxAeion > 0){
-				var _aeionRatio = (curAeion / maxAeion);
-				var _aeionGuageSize = floor(_aeionRatio * AEION_GUAGE_WIDTH);
+				var _aeionRatio = (_pCurAeion / maxAeion);
+				var _aeionGuageSize = _aeionRatio * AEION_GUAGE_WIDTH;
 				draw_sprite_ext(spr_rectangle, 0, _xPos + 9, _yPos + 15, AEION_GUAGE_WIDTH,	2, 0, HEX_BLACK, _alpha);
 				draw_sprite_general(spr_rectangle, 0, 1, 1, 1, 1, _xPos + 9, _yPos + 15, _aeionGuageSize, 2, 0, 
 					HEX_DARK_YELLOW, HEX_LIGHT_YELLOW, HEX_LIGHT_YELLOW, HEX_DARK_YELLOW, _alpha);
 				
-				if (curAeion == 0){
+				if (_pCurAeion == 0){
 					draw_sprite_ext(spr_aeion_icon, 0, _xPos + 2, _yPos + 16, 1, 1, 0, HEX_DARK_GRAY, _alpha);
 				} else{
 					_glowStrength = value_set_linear(_glowStrength, _glowTarget, (_aeionRatio * 0.04) + 0.01);
 					if (_glowStrength == _glowTarget) {_glowTarget = (_glowTarget == 1.0) ? 0.0 : 1.0;}
-					draw_sprite_ext(spr_aeion_icon, 0, _xPos + 2, _yPos + 16, 1, 1, 0, c_white, _alpha);
-					draw_sprite_ext(spr_aeion_icon_glow, 0, _xPos + 2, _yPos + 16, 1, 1, 0, c_white, _glowStrength * _alpha);
+					
+					if (aeionCooldownTimer > 0.0){ // Display Aeion Icon in red to signify the use of aeion abilities is on cooldown. 
+						draw_sprite_ext(spr_aeion_icon, 0, _xPos + 2, _yPos + 16, 1, 1, 0, HEX_DARK_RED, _alpha);
+					} else{ // When aeion is ready to use, the icon is shown normally alongside a pulsating glow surrounding it.
+						draw_sprite_ext(spr_aeion_icon, 0, _xPos + 2, _yPos + 16, 1, 1, 0, c_white, _alpha);
+						draw_sprite_ext(spr_aeion_icon_glow, 0, _xPos + 2, _yPos + 16, 1, 1, 0, c_white, _glowStrength * _alpha);
+					}
 				}
+				_curAeion = curAeion;
 			}
 		}
 		glowStrength = _glowStrength;
 		glowTarget = _glowTarget;
+		
+		// 
+		if (pCurAeion != _curAeion){
+			pCurAeionFraction += abs(pCurAeion - _curAeion) * DELTA_TIME * AEION_GAUGE_FILL_SPEED;
+			if (pCurAeionFraction >= 1.0){
+				pCurAeionFraction -= 1.0;
+				if (_curAeion > pCurAeion)	{pCurAeion++;}
+				else						{pCurAeion--;}
+			}
+		}
 	}
 }
 

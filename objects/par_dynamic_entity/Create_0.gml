@@ -2,10 +2,10 @@
 
 // Positions for the bits that toggle on and off these main entity "states" stored within the "stateFlags"
 // variable found in each child of this object. These are unique to "par_dynamic_entity" and its children.
-#macro	USE_SLOPES				23
-#macro	DESTRUCTIBLE			24
-#macro	GROUNDED				25
-#macro	HIT_STUNNED				26
+#macro	USE_SLOPES				22
+#macro	DESTRUCTIBLE			23
+#macro	GROUNDED				24
+#macro	HIT_STUNNED				25
 
 // Simplified checks of each default "state" flags condensed into macros that explain what they functionally
 // do. Otherwise, there would be a bunch of the same bitwise operations all over the code, which is messy.
@@ -264,9 +264,11 @@ state_hitstun = function(){
 	if (hitstunTimer >= hitstunLength){
 		stateFlags &= ~(1 << HIT_STUNNED);
 		stateFlags |= (1 << DRAW_SPRITE);
-		hitstunTimer = 0;
+		hitstunTimer = 0.0;
 		return;
 	}
+	
+	show_debug_message("TEST");
 	
 	// 
 	if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}

@@ -2,7 +2,6 @@
 
 // 
 #macro	CMD_EXIT_GAME			"exit_game"
-#macro	CMD_RESET_GAME			"reset_game"
 #macro	CMD_GAME_STATE			"game_state"
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 #macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
@@ -453,12 +452,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 		game_end();
 	}
 	
-	/// @description Another very simple command that will reset the game using Game Maker's built-in command
-	/// for doing so; allowing quick resets during debugging.
-	cmd_reset_game = function(){
-		game_restart();
-	}
-	
 	/// @description A simple function that displays the game's current state and its previous state (Whatever 
 	/// they were set to prior to the console being opened due to it setting the current state to "paused").
 	cmd_game_state = function(){
@@ -480,17 +473,35 @@ function obj_console(_index) : base_struct(_index) constructor{
 	}
 	
 	/// @description 
-	cmd_show_event_flags = function(){
+	/// @param {Real}	startBit	The bit that will be the first bit displayed to the console.
+	/// @param {Real}	range		The total number of bits to display relative to the starting bit.	
+	cmd_show_event_flags = function(_startBit, _range){
+		if (_range <= 0){ // The range provided is an invalid number; no bits can be shown as a result.
+			history_add_line("ERROR -- Invalid value for range specified (Must be > 0).");
+			return; // Command will not be executed due to error.
+		} else if (_startBit < 0 || _startBit >= TOTAL_EVENT_FLAG_BYTES * 8){ // Chosen start bit is outside the range of valid bit indexes.
+			history_add_line("ERROR -- Starting bit is outside the valid range of event flags (Valid indexes: 0 to " + string((TOTAL_EVENT_FLAG_BYTES * 8) - 1) + ").");
+			return; // Command will not be executed due to error.
+		}
 		
+		var _eventFlags = "";
+		for (var i = _startBit; i < _startBit + _range; i++) {
+			if (i > _startBit){ // Conditions to format the bits shown by the console for readability.
+				var _iValue = i - _startBit;
+				if ((_iValue % 8) == 0)		{_eventFlags += " ";}
+				if ((_iValue % 32) == 0)	{_eventFlags += "\n";}
+			}
+			_eventFlags += string(event_get_flag(i));
+		}
+		history_add_line(_eventFlags);
 	}
 	
 	// 
 	array_push(suggestionData,
 		CMD_EXIT_GAME + " []",
-		CMD_RESET_GAME + "[]",
 		CMD_GAME_STATE + " []",
 		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]",
-		CMD_SHOW_EVENT_FLAGS + "[]",
+		CMD_SHOW_EVENT_FLAGS + "[" + STRING_REAL + ", " + STRING_REAL + "]",
 	);
 	
 	// Add all console functions to this array, which is used to parse the string data that represents the
@@ -498,10 +509,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 	// is stored after all the commands are added through here.
 	array_push(validCommands,
 		[CMD_EXIT_GAME,				cmd_exit_game],
-		[CMD_RESET_GAME,			cmd_reset_game],
 		[CMD_GAME_STATE,			cmd_game_state],
 		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
-		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags],
+		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags, TYPE_REAL, TYPE_REAL],
 	);
 	totalCommands = array_length(validCommands);
 }

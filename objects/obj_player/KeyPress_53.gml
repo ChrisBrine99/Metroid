@@ -2,3 +2,5 @@
 //
 //maxPowerBombs++;
 //numPowerBombs++;
+
+entity_apply_hitstun(10);

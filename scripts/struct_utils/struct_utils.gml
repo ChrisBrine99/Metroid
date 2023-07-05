@@ -24,7 +24,7 @@ function base_struct(_index) constructor{
 /// object instances; storing a unique id indentifier value to a struct upon creation for easy reference of
 /// a single instance or instances of that struct. Singleton structs will not be able to be created by this
 /// function if an instance of them already exists in the game.
-/// @param {Function}	struct	The struct object to be instantiated by GameMaker.
+/// @param {Struct}	struct	The struct object to be instantiated by GameMaker.
 function instance_create_struct(_struct){
 	if (!singleton_instance_exists(_struct)){
 		var _instance = new _struct(_struct);
@@ -39,7 +39,7 @@ function instance_create_struct(_struct){
 /// @description Creates a struct that is deemed a singleton, which means calling this function again in an
 /// attempt to intialize another instance of this struct will cause it to create nothing; the same applying
 /// to "instance_create_struct" if used instead.
-/// @param {Function}	struct	The struct object that will be created and assigned as a singleton to prevent its duplication.
+/// @param {Struct}	struct	The struct object that will be created and assigned as a singleton to prevent its duplication.
 function instance_create_singleton_struct(_struct){
 	var _instance = instance_create_struct(_struct);
 	if (_instance != noone) {ds_map_add(global.sInstances, _struct, _instance);}
@@ -48,7 +48,7 @@ function instance_create_singleton_struct(_struct){
 /// @description A function that mimics how GameMaker's own "instance_destroy" function works, but focuses on
 /// the deletion of structs that exist within the game currently. Singleton structs are not allowed to be
 /// deleted by this function; as they generally exist for the entire duration of the game's runtime.
-/// @param {Function}	instance	The struct instance that will be marked for deletion by GameMaker's garbage collector.
+/// @param {Struct}	instance	The struct instance that will be marked for deletion by GameMaker's garbage collector.
 function instance_destroy_struct(_instance){
 	if (ds_list_find_index(global.structs, _instance) == -1 || 
 		singleton_instance_exists(_instance.object_index)) {return;}

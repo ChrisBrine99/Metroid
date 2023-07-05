@@ -22,7 +22,14 @@ for (var i = 0; i < _length; i++){
 
 // 
 aeionCooldownTimer -= DELTA_TIME;
-if (aeionCooldownTimer < 0.0) {aeionCooldownTimer = 0.0;}
+if (aeionCooldownTimer < -60.0 && curAeion < maxAeion){
+	aeionFillTimer += DELTA_TIME * 0.4;
+	if (aeionFillTimer >= 1.0){
+		aeionFillTimer -= 1.0;
+		curAeion++;
+	}
+	aeionCooldownTimer = -60.0;
+}
 
 // Finally, update the arm cannon's offset position and visibility depending on Samus's actions in the frame.
 with(armCannon) {end_step();}

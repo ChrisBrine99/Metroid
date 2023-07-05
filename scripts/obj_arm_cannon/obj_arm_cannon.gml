@@ -28,32 +28,40 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	// so this variable allows that to be applied to the final image that is drawn.
 	imageIndex = 0;
 	
+	// 
+	playerX = 0;
+	playerY = 0;
+	
 	/// @description Called in the "End Step" event of whatever (The player most likely) is controlling this
 	/// lightweight object. It will update the characteristics of the arm cannon depending on the actions
 	/// Samus is performing, and the state she currently finds herself in.
 	end_step = function(){
 		var _x = x;
 		var _y = y;
+		var _playerX = 0;
+		var _playerY = 0;
 		var _visible = true;
 		var _imageXScale = image_xscale;
 		var _imageIndex = imageIndex;
 		with(PLAYER){
+			_playerX = x;
+			_playerY = y;
 			var _state = curState;
 			switch(_state){
-				default: // By default the arm cannon will not be rendered.
-					_visible = false;
+				case state_phase_shift: // Determining visibility of arm cannon during a phase shift.
+					_visible = !IS_GROUNDED;
 					break;
 				case state_hitstun: // Handling all possible offsets for the player being in a hit stunned state.
 					_visible = true; // Arm cannon is always rendered in this state.
 					if (stateFlags & (1 << AIMING_UP)){ // Arm cannon is pointing upward.
-						_x = x - (1 * image_xscale);
-						_y = y - 40;
+						_x = -(1 * image_xscale);
+						_y = -40;
 					} else if (stateFlags & (1 << AIMING_DOWN)){ // Arm cannon is downward.
-						_x = x;
-						_y = y - 18;
+						_x = 0;
+						_y = -18;
 					} else{ // The arm cannon should face forward.
-						_x = x + (5 * image_xscale);
-						_y = y - 25;
+						_x = (5 * image_xscale);
+						_y = -25;
 					}
 					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
@@ -61,77 +69,82 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					break;
 				case state_default: // Beam position for when samus is standing or walking on the floor.
 					if (stateFlags & (1 << AIMING_UP)){
-						_x = x - (1 * image_xscale);
-						_y = y - 43;
+						_x = -(1 * image_xscale);
+						_y = -43;
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
-						if (curWeapon = curMissile) {_imageIndex = 5;}
-						else						{_imageIndex = 4;}
+						if (curWeapon == curMissile) {_imageIndex = 5;}
+						else						 {_imageIndex = 4;}
 						break;
 					} else if (IS_MOVING){
 						if (!IS_AIMING) {_visible = false;}
-						_x = x + (9 * image_xscale);
-						_y = y - 30;
+						_x = (9 * image_xscale);
+						_y = -30;
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon (Index zero and two have no cutout).
-						if (curWeapon = curMissile) {_imageIndex = 2;}
-						else						{_imageIndex = 0;}
+						if (curWeapon == curMissile) {_imageIndex = 2;}
+						else						 {_imageIndex = 0;}
 						break;
 					}
-					_x = x + (5 * image_xscale);
-					_y = y - 27;
+					_x = (5 * image_xscale);
+					_y = -27;
 					// Determines if the player's missiles are active, which will change the image that is 
 					// used to respresent the arm cannon (Index one and three have the cutout for her hand).
-					if (curWeapon = curMissile) {_imageIndex = 3;}
-					else						{_imageIndex = 1;}
+					if (curWeapon == curMissile) {_imageIndex = 3;}
+					else						 {_imageIndex = 1;}
 					break;
 				case state_airbourne: // Beam positions for whenever Samus is in the air.
 					if (stateFlags & (1 << AIMING_UP)){
 						if (jumpStartTimer < JUMP_ANIM_TIME){ // Temporarily use the standing while aiming up coordinates for the intro animation.
-							_x = x - (1 * image_xscale);
-							_y = y - 43;
+							_x = -(1 * image_xscale);
+							_y = -43;
 						} else{ // Animation is finished; use standard coordinates for jumping while aiming up.
-							_x = x - (1 * image_xscale);
-							_y = y - 40;
+							_x = -(1 * image_xscale);
+							_y = -40;
 						}
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
-						if (curWeapon = curMissile) {_imageIndex = 5;}
-						else						{_imageIndex = 4;}
+						if (curWeapon == curMissile) {_imageIndex = 5;}
+						else						 {_imageIndex = 4;}
 						break;
 					} else if (stateFlags & (1 << AIMING_DOWN)){
-						_x = x;
-						_y = y - 18;
+						_x = 0;
+						_y = -18;
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
-						if (curWeapon = curMissile) {_imageIndex = 7;}
-						else						{_imageIndex = 6;}
+						if (curWeapon == curMissile) {_imageIndex = 7;}
+						else						 {_imageIndex = 6;}
 						break;
 					}
 					// Make the arm cannon invisible while somersaulting OR during the first frame of animation
 					// for all possible jump "intro" animations. The only exception to this is the second frame of
 					// the somersaulting intro where the arm cannon must be drawn to complete the sprite that is used.
 					if ((IS_JUMP_SPIN && sprite_index != jumpSpriteFw) || (jumpStartTimer < JUMP_ANIM_TIME && vspd <= 0)) {_visible = false;}
-					_x = x + (5 * image_xscale);
-					_y = y - 25;
+					_x = (5 * image_xscale);
+					_y = -25;
 					// Determines if the player's missiles are active, which will change the image that is 
 					// used to respresent the arm cannon (Index one and three have the cutout for her hand).
-					if (curWeapon = curMissile) {_imageIndex = 3;}
-					else						{_imageIndex = 1;}
+					if (curWeapon == curMissile) {_imageIndex = 3;}
+					else						 {_imageIndex = 1;}
 					break;
 				case state_crouching: // Arm cannon's single position for when Samus is crouched.
-					_x = x + (4 * image_xscale);
-					_y = y - 17;
+					_x = (4 * image_xscale);
+					_y = -17;
 					// Determines if the player's missiles are active, which will change the image that is 
 					// used to respresent the arm cannon (Index one and three have the cutout for her hand).
-					if (curWeapon = curMissile) {_imageIndex = 3;}
-					else						{_imageIndex = 1;}
+					if (curWeapon == curMissile) {_imageIndex = 3;}
+					else						 {_imageIndex = 1;}
+					break;
+				default: // By default the arm cannon will not be rendered.
+					_visible = false;
 					break;
 			}
 			_imageXScale = image_xscale;
 		}
 		x = _x;
 		y = _y;
+		playerX = _playerX;
+		playerY = _playerY;
 		visible = _visible;
 		image_xscale = _imageXScale;
 		imageIndex = _imageIndex;
@@ -142,7 +155,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	/// its visibility flag being true.
 	draw = function(){
 		if (!visible) {return;}
-		draw_sprite_ext(spr_samus_cannon0, imageIndex, x, y, image_xscale, 1, 0, c_white, 1);
+		draw_sprite_ext(spr_samus_cannon0, imageIndex, playerX + x, playerY + y, image_xscale, 1, 0, c_white, 1);
 	}
 }
 
