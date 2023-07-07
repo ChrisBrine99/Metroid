@@ -6,8 +6,8 @@
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Dynamic",
-    "path": "folders/Resources/Core/Entities/Dynamic.yy",
+    "name": "Enemies",
+    "path": "folders/Resources/Core/Entities/Dynamic/Enemies.yy",
   },
   "parentObjectId": {
     "name": "par_dynamic_entity",

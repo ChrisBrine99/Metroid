@@ -52,7 +52,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					_visible = !IS_GROUNDED;
 					break;
 				case state_hitstun: // Handling all possible offsets for the player being in a hit stunned state.
-					_visible = true; // Arm cannon is always rendered in this state.
+					_visible = (stateFlags & (1 << WAS_BEAM_VISIBLE));
 					if (stateFlags & (1 << AIMING_UP)){ // Arm cannon is pointing upward.
 						_x = -(1 * image_xscale);
 						_y = -40;

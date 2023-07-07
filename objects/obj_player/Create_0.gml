@@ -81,6 +81,7 @@
 #macro	ALT_WEAPON				14	// Makes Samus user her missiles or power bombs if she's in her morphball form.
 #macro	USE_ENERGY_SHIELD		15
 #macro	USE_PHASE_SHIFT			16
+#macro	WAS_BEAM_VISIBLE		17	// Determines if the arm cannon was visible so it can flicker during a hitstun.
 
 // These macros condense all the code required to check if a valid input is being pressed or held by the player.
 #macro	IS_RIGHT_HELD			(inputFlags & (1 << MOVE_RIGHT) != 0)
@@ -510,10 +511,12 @@ activate_energy_shield = function(){
 	
 }
 
-/// @description 
+/// @description Activates the Phase Shift ability if Samus has access to it. Doing so will transition Samus
+/// into her state for the ability, which prevents all inputs until Samus has collided with a wall or has 
+/// reached her phase shift's total distance.
 /// @param {Real}	movement
 activate_phase_shift = function(_movement){
-	if (curAeion < PHASE_SHIFT_COST || aeionCooldownTimer > 0.0) {return;}
+	if ((curAeion < PHASE_SHIFT_COST || aeionCooldownTimer > 0.0) && !event_get_flag(FLAG_PHASE_SHIFT)) {return false;}
 	curAeion -= PHASE_SHIFT_COST; // Remove the cost of the ability's use from Samus's current aeion amount.
 	
 	if (IS_JUMP_SPIN){ // Exit Samus from her somersault should she be in one upon the phase shift's activation.
@@ -525,17 +528,17 @@ activate_phase_shift = function(_movement){
 	prevAnimSpeed = animSpeed; // Store animation speed before it's zeroed out.
 	animSpeed = 0.0;
 	
-	// 
+	// Turn Samus's ambient visor light into a bright blue flash for the duration of the ability.
 	lightComponent.set_properties(128, HEX_LIGHT_BLUE, 1.0);
 	lightOffsetX = 0;
 	lightOffsetY = -20;
 	
 	// Apply the correct state and flags to Samus to signify to other objects she's executing her phase shift.
 	object_set_next_state(state_phase_shift);
-	stateFlags &= ~((1 << DRAW_SPRITE) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
-	stateFlags |= (1 << PHASE_SHIFT);
-	effectTimer = PSHIFT_EFFECT_INTERVAL;
-	aeionCooldownTimer = PHASE_SHIFT_COOLDOWN;
+	stateFlags		   &= ~((1 << DRAW_SPRITE) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
+	stateFlags		   |= (1 << PHASE_SHIFT);
+	effectTimer			= PSHIFT_EFFECT_INTERVAL;
+	aeionCooldownTimer	= PHASE_SHIFT_COOLDOWN;
 	
 	// By default, Samus will be shifted backwards, but this can be controlled by pressing either the left
 	// or right movement inputs to control the direction of the phase shift upon activating it. Samus's
@@ -550,6 +553,9 @@ activate_phase_shift = function(_movement){
 		hspd = (PHASE_SHIFT_SPEED * _movement);
 	}
 	vspd = 0.0;
+	
+	// Aeion ability activated; return true to let the state that called this function know.
+	return true;
 }
 
 /// @description 
@@ -997,6 +1003,8 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	__entity_apply_hitstun(_duration, _damage);
 	curState = NO_STATE; // Implicitly set the current state to nothing in case the hitstun occurred before the player's state executed for the frame.
 	stateFlags &= ~((1 << CROUCHING) | (1 << JUMP_ATTACK) | (1 << JUMP_SPIN));
+	if (!IN_MORPHBALL) {stateFlags |= (1 << WAS_BEAM_VISIBLE);}
+	show_debug_message(stateFlags & (1 << WAS_BEAM_VISIBLE));
 	
 	// 
 	if (IS_JUMP_ATTACK) {reset_light_source();}
@@ -1029,6 +1037,7 @@ state_hitstun = function(){
 				}
 			}
 		}
+		stateFlags &= ~(1 << WAS_BEAM_VISIBLE);
 		return; // Samus is no longer stunned; skip over the state's collision and sprite setting logic.
 	}
 	
@@ -1227,11 +1236,9 @@ state_default = function(){
 		aimSwitchTimer = 0.0;
 	}
 	
-	// 
-	if (IS_PSHIFT_PRESSED){
-		activate_phase_shift(movement);
-		return;
-	}
+	// Activating the Phase Shift ability, which instantly exists the current state if the function returned
+	// true. Otherwise, the ability cannot be activated and won't cause the current state to prematurely end.
+	if (IS_PSHIFT_PRESSED && activate_phase_shift(movement)) {return;}
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
@@ -1398,11 +1405,9 @@ state_airbourne = function(){
 		lightComponent.isActive = true;
 	}
 	
-	// 
-	if (IS_PSHIFT_PRESSED){
-		activate_phase_shift(movement);
-		return;
-	}
+	// Activating the Phase Shift ability, which instantly exists the current state if the function returned
+	// true. Otherwise, the ability cannot be activated and won't cause the current state to prematurely end.
+	if (IS_PSHIFT_PRESSED && activate_phase_shift(movement)) {return;}
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
 	// weapon's as well as the timer for charging the current beam (If the charge beam has been unlocked).
@@ -1620,7 +1625,9 @@ state_enter_morphball = function(){
 	player_warp_collision();
 }
 
-/// @description 
+/// @description The state Samus exists in whenever she's inside her morphball. It functions somewhat like 
+/// how her standard state does--with the main exceptions being her aiming direction and arm cannon cannot
+/// be interacted with and manipulated. Instead, she can utilize bombs if she has access to them.
 state_morphball = function(){
 	// First, player input is processed for the frame by calling the function responsible for handling that
 	// logic within the player object. Must be done first to avoid inputs from the previous frame triggering
@@ -1717,7 +1724,10 @@ state_morphball = function(){
 	entity_set_sprite(morphballSprite, morphballMask, animSpeed);
 }
 
-/// @description 
+/// @description Samus's state for phase shifting, which only ends its execution once one of two conditions
+/// have been met: the range of the shift has been reached, or a wall has been hit. Until then, the only 
+/// thing the player can do is time another press of the phase shift input to potentially trigger a quick
+/// shift, which doubles the distance of the shift at twice the cost; ignoring the aeion cooldown.
 state_phase_shift = function(){
 	// Increment the total distance Samus has moved since the activation of the phase shift by comparing the
 	// difference between her x position before and after the frame's horizontal movement has been applied.

@@ -5,6 +5,7 @@
 #macro	CMD_GAME_STATE			"game_state"
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 #macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
+#macro	CMD_SHOW_ALL_FLAGS		"show_all_event_flags"
 
 // 
 #macro	DRAW_CURSOR				28
@@ -288,7 +289,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			var _text;
 			var _yOffset = -historyDisplayOffset;
 			for (var i = _start; i >= 0; i--){
-				if (_yOffset >= 145) {break;} // Don't bother drawing anything that is above the currently visible history region.
+				if (_yOffset >= 180) {break;} // Don't bother drawing anything that is above the currently visible history region.
 				_text = history[| i];
 				_yOffset += string_height(_text);
 				if (_yOffset < 0) {continue;} // Skips over text that would be rendered below the history region.
@@ -496,12 +497,79 @@ function obj_console(_index) : base_struct(_index) constructor{
 		history_add_line(_eventFlags);
 	}
 	
+	/// @description A simplified version of the above function that will display ALL event flag bits; both used
+	/// and unused. The main difference between this and the "show_event_flags" function is the bits here will
+	/// be grouped based on what they represent: items, doorways, other, etc..
+	cmd_show_all_event_flags = function(){
+		history_add_line("Suit Upgrades:\n" // Displaying flags that alter Samus's suit.
+			+ string(event_get_flag(FLAG_VARIA_SUIT)) 
+			+ string(event_get_flag(FLAG_GRAVITY_SUIT))
+		);
+		
+		history_add_line("Jump Upgrades:\n" // Displaying all upgrades to Samus's jumping capabilities.
+			+ string(event_get_flag(FLAG_HIJUMP_BOOTS))
+			+ string(event_get_flag(FLAG_SPACE_JUMP))
+			+ string(event_get_flag(FLAG_SCREW_ATTACK))
+		);
+		
+		var _eventFlags = ""; // Displaying all upgrade flags for Samus's arm cannon.
+		for (var i = FLAG_ICE_BEAM; i < FLAG_ENERGY_SHIELD; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Beam Upgrades:\n" + _eventFlags);
+		
+		history_add_line("Aeion Upgrades:\n" // Displaying acquired aeion abilities that Samus has access to.
+			+ string(event_get_flag(FLAG_ENERGY_SHIELD))
+			+ string(event_get_flag(FLAG_PHASE_SHIFT))
+			+ string(event_get_flag(FLAG_SCAN_PULSE))
+		);
+		
+		_eventFlags = ""; // Displaying all currently active morphball upgrades.
+		for (var i = FLAG_MORPHBALL; i < FLAG_MISSILES; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Morphball Upgrades:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all acquired missile upgrades.
+		for (var i = FLAG_MISSILES; i < FLAG_LOCK_ON_MISSILES + 1; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Missile Upgrades:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all small missile tanks Samus has collected.
+		for (var i = SMALL_MISSILE_TANK0; i < LARGE_MISSILE_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Missile Tanks (Small):\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all large missile tanks Samus has collected.
+		for (var i = LARGE_MISSILE_TANK0; i < POWER_BOMB_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Missile Tanks (Large):\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all power bombs Samus has collected.
+		for (var i = POWER_BOMB_TANK0; i < ENERGY_TANK_PIECE0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Power Bomb Tanks:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all energy tanks Samus has collected.
+		for (var i = ENERGY_TANK0; i < ENERGY_TANK_PIECE0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Energy Tanks:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all energy tank pieces Samus has collected.
+		for (var i = ENERGY_TANK_PIECE0; i < RESERVE_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Energy Tank Pieces:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all reserve tanks Samus has collected.
+		for (var i = RESERVE_TANK0; i < AEION_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Reserve Tanks:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all aeion tanks Samus has collected.
+		for (var i = AEION_TANK0; i < 146; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Collected Aeion Tanks:\n" + _eventFlags);
+		
+		_eventFlags = ""; // Displaying all "special" door flags.
+		for (var i = FLAG_SPECIAL_DOOR0; i < FLAG_SPECIAL_DOOR0 + 1; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Unlocked Doors:\n" + _eventFlags);
+	}
+	
 	// 
 	array_push(suggestionData,
 		CMD_EXIT_GAME + " []",
 		CMD_GAME_STATE + " []",
 		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]",
-		CMD_SHOW_EVENT_FLAGS + "[" + STRING_REAL + ", " + STRING_REAL + "]",
+		CMD_SHOW_EVENT_FLAGS + " [" + STRING_REAL + ", " + STRING_REAL + "]",
+		CMD_SHOW_ALL_FLAGS + " []",
 	);
 	
 	// Add all console functions to this array, which is used to parse the string data that represents the
@@ -512,6 +580,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		[CMD_GAME_STATE,			cmd_game_state],
 		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
 		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags, TYPE_REAL, TYPE_REAL],
+		[CMD_SHOW_ALL_FLAGS,		cmd_show_all_event_flags],
 	);
 	totalCommands = array_length(validCommands);
 }

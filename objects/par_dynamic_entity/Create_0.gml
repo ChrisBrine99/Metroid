@@ -96,7 +96,8 @@ vspdFraction = 0.0;
 hitpoints = 0;
 maxHitpoints = 0;
 
-// 
+// Variables for tracking the current duration of a hitstun and the total length required for the hitstun to
+// end its effects, repsectively.
 hitstunTimer = 0.0;
 hitstunLength = 0.0;
 
@@ -124,7 +125,10 @@ initialize = function(_state){
 	visible = true;
 }
 
-/// @description 
+/// @description Default function for apply damage and a hitstun to the entity. This basic form of the function
+/// will simply reduce the hitpoints of the entity by whatever the "_damage" amount is (A positive number here
+/// will reduce their health; a negative value increasing it, respectively). The default flag for "hitstun" will
+/// be flipped to true until the duration of the stun has ended.
 /// @param {Real}	duration
 /// @param {Real}	damage
 entity_apply_hitstun = function(_duration, _damage = 0){
@@ -257,20 +261,20 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 
 #region States for use in all children objects of par_dynamic_entity
 
-/// @description 
+/// @description A default state for an entity's hitstun, which simply increments the timer for the hitstun's
+/// duration; flickering the entity's sprite throughout the entire hitstun. After the timer has reached the
+/// length of the hitstun, the entity will return to its previous state.
 state_hitstun = function(){
-	// 
 	hitstunTimer += DELTA_TIME;
 	if (hitstunTimer >= hitstunLength){
+		object_set_next_state(lastState);
 		stateFlags &= ~(1 << HIT_STUNNED);
 		stateFlags |= (1 << DRAW_SPRITE);
 		hitstunTimer = 0.0;
 		return;
 	}
 	
-	show_debug_message("TEST");
-	
-	// 
+	// Altering the visibility of the entity's sprite every frame to produce the flickering effect.
 	if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
 	else					{stateFlags |= (1 << DRAW_SPRITE);}
 }
