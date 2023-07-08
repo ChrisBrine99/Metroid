@@ -849,10 +849,7 @@ fallthrough_floor_collision = function(){
 player_collectible_collision = function(){
 	with(instance_nearest(x, y, par_collectible)){
 		mask_index = -1; // Temporarily enable the collectible's collision box to check again the player's.
-		if (!IS_HIDDEN && place_meeting(x, y, obj_player)){
-			// TODO -- Add additional code that opens a menu to display the upgrade's information //
-			collectible_collect_self();
-		}
+		if (!IS_HIDDEN && place_meeting(x, y, PLAYER)) {collectible_collect_self();}
 		mask_index = spr_empty_mask;
 	}
 }
@@ -897,23 +894,23 @@ player_liquid_collision = function(){
 			// Reverse the impact on the player's horizontal and vertical speed/acceleration that the
 			// liquid had, but only if they don't have access to the gravity suit currently.
 			if (!event_get_flag(FLAG_GRAVITY_SUIT)){
-				maxHspdFactor +=	liquidData.maxHspdPenalty;
-				maxVspdFactor +=	liquidData.maxVspdPenalty;
-				hAccelFactor +=		liquidData.hAccelPenalty;
-				vAccelFactor +=		liquidData.vAccelPenalty;
+				maxHspdFactor	+= liquidData.maxHspdPenalty;
+				maxVspdFactor	+= liquidData.maxVspdPenalty;
+				hAccelFactor	+= liquidData.hAccelPenalty;
+				vAccelFactor	+= liquidData.vAccelPenalty;
 			}
 			
 			// Clear all of the data from the liquid data struct and reverse the bit that tells the game
 			// Samus is submerged in a liquid.
 			with(liquidData){
-				liquidID =			noone;
-				maxHspdPenalty =	0.0;
-				maxVspdPenalty =	0.0;
-				hAccelPenalty =		0.0;
-				vAccelPenalty =		0.0;
-				damage =			0;
-				damageInterval =	0.0;
-				damageTimer	=		0.0;
+				liquidID		= noone;
+				maxHspdPenalty	= 0.0;
+				maxVspdPenalty	= 0.0;
+				hAccelPenalty	= 0.0;
+				vAccelPenalty	= 0.0;
+				damage			= 0;
+				damageInterval	= 0.0;
+				damageTimer		= 0.0;
 			}
 			stateFlags |= (1 << DRAW_SPRITE);
 			stateFlags &= ~(1 << SUBMERGED);
@@ -929,23 +926,23 @@ player_liquid_collision = function(){
 	if (_id != noone){
 		// Store the liquid's parameters in order to reverse their effects once the player exits the liquid.
 		with(liquidData){
-			liquidID =			_id;
-			maxHspdPenalty =	_id.maxHspdPenalty;
-			maxVspdPenalty =	_id.maxVspdPenalty;
-			hAccelPenalty =		_id.hAccelPenalty;
-			vAccelPenalty =		_id.vAccelPenalty;
-			damage =			_id.damage;
-			damageInterval =	_id.damageInterval;
+			liquidID		= _id;
+			maxHspdPenalty	= _id.maxHspdPenalty;
+			maxVspdPenalty	= _id.maxVspdPenalty;
+			hAccelPenalty	= _id.hAccelPenalty;
+			vAccelPenalty	= _id.vAccelPenalty;
+			damage			= _id.damage;
+			damageInterval	= _id.damageInterval;
 		}
 		
 		// Only slow the player down in the liquid if they don't have access to the gravity suit. If they
 		// do have the gravity suit, the only effect the liquid will have is initial submersion that slows
 		// the player down upon impact with it.
 		if (!event_get_flag(FLAG_GRAVITY_SUIT)){
-			maxHspdFactor -=	liquidData.maxHspdPenalty;
-			maxVspdFactor -=	liquidData.maxVspdPenalty;
-			hAccelFactor -=		liquidData.hAccelPenalty;
-			vAccelFactor -=		liquidData.vAccelPenalty;
+			maxHspdFactor	-= liquidData.maxHspdPenalty;
+			maxVspdFactor	-= liquidData.maxVspdPenalty;
+			hAccelFactor	-= liquidData.hAccelPenalty;
+			vAccelFactor	-= liquidData.vAccelPenalty;
 		}
 		
 		// Regardless of having access to the gravity suit, the player will still impact the water and find
@@ -987,6 +984,17 @@ player_warp_collision = function(){
 			playerX = _x - SURFACE_OFFSET_X;
 			playerY = _y - SURFACE_OFFSET_Y;
 		}
+	}
+}
+
+/// @description Processes collisions between the player and an item drop, which
+/// includes energy restoration, ammunition, and aeion energy drops. All of these
+/// objects can be dropped by enemies upon death.
+player_item_drop_collision = function(){
+	with(instance_nearest(x, y, par_item_drop)){
+		mask_index = -1; // Temporarily enable the collision mask for the item drop.
+		if (place_meeting(x, y, PLAYER)) {item_drop_collect_self();}
+		mask_index = spr_empty_mask;
 	}
 }
 
@@ -1045,6 +1053,7 @@ state_hitstun = function(){
 	apply_gravity();
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
+	player_item_drop_collision();
 	player_liquid_collision();
 	player_warp_collision();
 	
@@ -1254,6 +1263,7 @@ state_default = function(){
 	// throughout the state.
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
+	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_warp_collision();
@@ -1465,6 +1475,7 @@ state_airbourne = function(){
 	// throughout the state.
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
+	player_item_drop_collision();
 	player_liquid_collision();
 	player_warp_collision();
 	
@@ -1620,6 +1631,7 @@ state_enter_morphball = function(){
 	// throughout the state.
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
+	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_warp_collision();
@@ -1714,6 +1726,7 @@ state_morphball = function(){
 	// throughout the state.
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
+	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_warp_collision();
@@ -1747,6 +1760,7 @@ state_phase_shift = function(){
 	
 	// Go through all of the standard collision functions.
 	player_collectible_collision();
+	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_warp_collision();

@@ -14,9 +14,9 @@ event_inherited();
 // Set the collectibles up so that can draw their sprites to the screen for the player to see. Reset the value
 // within "sprite_index" to its default so the function "entity_set_sprite" can be properly used to initialize
 // the sprite within code.
-stateFlags = (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
-sprite_index = NO_SPRITE;
-visible = true;
+stateFlags		= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+sprite_index	= NO_SPRITE;
+visible			= true;
 
 #endregion
 
@@ -27,17 +27,21 @@ visible = true;
 // exist. Otherwise, it will be available for the player to collect.
 flagID = 0;
 
-// 
+// Contains the name of the collectible item, as well as a description that describes the usage
+// and functionality of what was just collected (There are some exception to this normal item
+// collection screen showing up).
 collectibleName = "";
 collectibleInfo = "";
 
-// 
+// Keeps track of the destructible object that is nearest to the collectible. If that desctructible
+// is on top of the item, it will be set to invisible until the destructible above it has been
+// destroyed.
 destructibleID = noone;
 
 // Stores the base size and strength of the ambient light source that is tied to the object. Allows the flashing
 // effect to return to those original values after being changed by the "bright" iteration of the flash.
-baseRadius = 0;
-baseStrength = 0;
+baseRadius		= 0.0;
+baseStrength	= 0.0;
 
 #endregion
 

@@ -1,20 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "par_enemy",
+  "name": "obj_gullug",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":1,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Enemies",
-    "path": "folders/Resources/Core/Entities/Dynamic/Enemies.yy",
+    "name": "General",
+    "path": "folders/Resources/Core/Entities/Dynamic/Enemies/General.yy",
   },
   "parentObjectId": {
-    "name": "par_dynamic_entity",
-    "path": "objects/par_dynamic_entity/par_dynamic_entity.yy",
+    "name": "par_enemy",
+    "path": "objects/par_enemy/par_enemy.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -31,7 +30,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_enemy",
+    "path": "sprites/spr_enemy/spr_enemy.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }

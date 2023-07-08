@@ -3,4 +3,4 @@
 //maxPowerBombs++;
 //numPowerBombs++;
 
-entity_apply_hitstun(10);
+hitpoints = 10;

@@ -1,20 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "par_enemy",
+  "name": "obj_missile_drop",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":1,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Enemies",
-    "path": "folders/Resources/Core/Entities/Dynamic/Enemies.yy",
+    "name": "Drops",
+    "path": "folders/Resources/Core/Entities/Static/Drops.yy",
   },
   "parentObjectId": {
-    "name": "par_dynamic_entity",
-    "path": "objects/par_dynamic_entity/par_dynamic_entity.yy",
+    "name": "par_item_drop",
+    "path": "objects/par_item_drop/par_item_drop.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -31,7 +30,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_missile_drop",
+    "path": "sprites/spr_missile_drop/spr_missile_drop.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }
