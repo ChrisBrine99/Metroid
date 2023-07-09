@@ -161,6 +161,10 @@ maxVspd = BASE_JUMP_HEIGHT;
 hAccel = 0.3;
 vAccel = 0.25;
 
+// Set Samus's recovery time to one second after she's been hit. This means that she'll get that second of
+// invincibility plus whatever the hitstun timer was from the attack she sustained.
+recoveryLength = 60.0;
+
 // Samus's ability to take damage (Known as her "energy" in all official games) from hazards. The higher the
 // value, the more she will be able to endure before dying. Starts at a value of 99 and expands by 100 points
 // for every "Energy Tank" she collects in the game world.
@@ -183,27 +187,27 @@ movement = 0;
 // Variables to represent each of Samus's animations based on the suit she currently has equipped. They start
 // with the Power Suit by default, and then are overwritten by the Varia Suit followed by the Gravity Suit when
 // each of those are collected by the player.
-introSprite =		spr_power_stand0;	// Intro sprite (Facing forward)
-standSpriteFw =		spr_power_stand1;	// Standing sprites
-standSpriteUp =		spr_power_stand2;
-walkSpriteFw =		spr_power_walk0;	// Walking sprites
-walkSpriteFwExt =	spr_power_walk1;
-walkSpriteUp =		spr_power_walk2;
-jumpSpriteFw =		spr_power_jump1;	// Jumping sprites
-jumpSpriteUp =		spr_power_jump2;
-jumpSpriteDown =	spr_power_jump3;
-jumpSpriteSpin =	spr_power_jump0;
-crouchSprite =		spr_power_crouch0;	// Crouching sprite
-morphballSprite =	spr_power_mball0;	// Morphball sprites
-ballEnterSprite =	spr_power_mball1;
+introSprite		= spr_power_stand0;		// Intro sprite (Facing forward)
+standSpriteFw	= spr_power_stand1;		// Standing sprites
+standSpriteUp	= spr_power_stand2;
+walkSpriteFw	= spr_power_walk0;		// Walking sprites
+walkSpriteFwExt = spr_power_walk1;
+walkSpriteUp	= spr_power_walk2;
+jumpSpriteFw	= spr_power_jump1;		// Jumping sprites
+jumpSpriteUp	= spr_power_jump2;
+jumpSpriteDown	= spr_power_jump3;
+jumpSpriteSpin	= spr_power_jump0;
+crouchSprite	= spr_power_crouch0;	// Crouching sprite
+morphballSprite = spr_power_mball0;		// Morphball sprites
+ballEnterSprite = spr_power_mball1;
 
 // Collision masks for some of Samus's states and substates. They determine that area that will be used to
 // handle collisions between her, the world, hazards, and other entities. Their heights and vertical positions
 // may differ, but their widths are always the same at 10 pixels to avoid bugged collisions.
-standingMask =		spr_power_stand1;
-jumpingMask =		spr_power_jump1;
-crouchingMask =		spr_power_crouch0;
-morphballMask =		spr_power_mball0;
+standingMask	= spr_power_stand1;
+jumpingMask		= spr_power_jump1;
+crouchingMask	= spr_power_crouch0;
+morphballMask	= spr_power_mball0;
 
 // Variables that keep track of the various resources Samus can deplete throughout regular gameplay. The max
 // possible amount that can be stored of each can be upgrade through finding the relevant expansion tanks in
@@ -297,6 +301,11 @@ prevAnimSpeed = 0.0;
 /// to the gamepad is analog stick movement, which uses unique variables since they can't feasibly be stored 
 /// in the "inputFlags" variable.
 process_input = function(){
+	if (hitstunTimer != -1.0){ // Ignore all player input during the initial hitstun.
+		inputFlags = 0;
+		return;
+	}
+	
 	prevInputFlags = inputFlags;
 	if (GAMEPAD_IS_ACTIVE){ // Getting input from the connected gamepad
 		
@@ -987,9 +996,16 @@ player_warp_collision = function(){
 	}
 }
 
-/// @description Processes collisions between the player and an item drop, which
-/// includes energy restoration, ammunition, and aeion energy drops. All of these
-/// objects can be dropped by enemies upon death.
+/// @descripiton 
+player_enemy_collision = function(){
+	if (IS_HIT_STUNNED) {return;}
+	
+	var _enemy = instance_place(x, y, par_enemy);
+	if (_enemy != noone) {entity_apply_hitstun(_enemy.stunDuration, _enemy.damage);}
+}
+
+/// @description Processes collisions between the player and an item drop, which includes energy restoration,
+/// ammunition, and aeion energy drops. All of these objects can be dropped by enemies upon death.
 player_item_drop_collision = function(){
 	with(instance_nearest(x, y, par_item_drop)){
 		mask_index = -1; // Temporarily enable the collision mask for the item drop.
@@ -1002,80 +1018,30 @@ player_item_drop_collision = function(){
 
 #region Player-specific hit stun function and state
 
-//
+// 
 __entity_apply_hitstun = entity_apply_hitstun;
 /// @description 
 /// @param {Real}	duration
 /// @param {Real}	damage
 entity_apply_hitstun = function(_duration, _damage = 0){
 	__entity_apply_hitstun(_duration, _damage);
-	curState = NO_STATE; // Implicitly set the current state to nothing in case the hitstun occurred before the player's state executed for the frame.
-	stateFlags &= ~((1 << CROUCHING) | (1 << JUMP_ATTACK) | (1 << JUMP_SPIN));
-	if (!IN_MORPHBALL) {stateFlags |= (1 << WAS_BEAM_VISIBLE);}
-	show_debug_message(stateFlags & (1 << WAS_BEAM_VISIBLE));
-	
-	// 
-	if (IS_JUMP_ATTACK) {reset_light_source();}
-	jumpStartTimer = JUMPSPIN_ANIM_TIME;
-	aimReturnTimer = 0.0;
+	if (!IN_MORPHBALL){ // Make Samus airbourne if she isn't in her morphball at the time of the hitstun.
+		object_set_next_state(state_airbourne);
+		
+		// 
+		if (IS_JUMP_SPIN || IS_JUMP_ATTACK) {reset_light_source();}
+		jumpStartTimer = JUMPSPIN_ANIM_TIME;
+		aimReturnTimer = 0.0;
+		
+		// 
+		stateFlags &= ~((1 << CROUCHING) | (1 << JUMP_ATTACK) | (1 << JUMP_SPIN));
+		stateFlags |= (1 << WAS_BEAM_VISIBLE);
+	}
 
 	// 
-	hspd = get_max_hspd() * 0.35 * -image_xscale;
+	stateFlags &= ~(1 << GROUNDED);
+	hspd = get_max_hspd() * 0.5 * -image_xscale;
 	vspd = -2.75;
-}
-
-// 
-__state_hitstun = state_hitstun;
-/// @description 
-state_hitstun = function(){
-	__state_hitstun();
-	if (!IS_HIT_STUNNED){
-		// Only bother changing state and manipulation of aiming direction flags when Samus isn't in her morphball
-		// form; as that form doesn't need to bother with aiming and proper state setting.
-		if (!IN_MORPHBALL){
-			object_set_next_state(state_default);
-			var _aimingDir = keyboard_check(KEYCODE_GAME_DOWN) - keyboard_check(KEYCODE_GAME_UP);
-			if (_aimingDir != 0){
-				stateFlags &= ~(1 << AIMING_FRONT);
-				if (_aimingDir == 1){ // Sets Samus to aim downward.
-					stateFlags |= (1 << AIMING_DOWN);
-				} else if (_aimingDir == -1){ // Sets Samus to aim upward; disabling her visor light as well.
-					stateFlags |= (1 << AIMING_UP);
-					lightComponent.isActive = false;
-				}
-			}
-		}
-		stateFlags &= ~(1 << WAS_BEAM_VISIBLE);
-		return; // Samus is no longer stunned; skip over the state's collision and sprite setting logic.
-	}
-	
-	// 
-	apply_gravity();
-	apply_frame_movement(entity_world_collision);
-	player_collectible_collision();
-	player_item_drop_collision();
-	player_liquid_collision();
-	player_warp_collision();
-	
-	// 
-	if (IN_MORPHBALL) {return;}
-	var _sState = stateFlags & ((1 << AIMING_DOWN) | (1 << AIMING_UP));
-	switch(_sState){
-		default: // Samus was aiming forward or not aiming at all at the time of the hit.
-			entity_set_sprite(jumpSpriteFw, jumpingMask);
-			lightOffsetX = LIGHT_OFFSET_X_GENERAL;
-			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
-			break;
-		case (1 << AIMING_UP): // Samus was aiming her cannon upward when attacked.
-			entity_set_sprite(jumpSpriteUp, jumpingMask);
-			lightComponent.isActive = false;
-			break;
-		case (1 << AIMING_DOWN): // Samus was aiming downward when attacked.
-			entity_set_sprite(jumpSpriteDown, jumpingMask);
-			lightOffsetX = LIGHT_OFFSET_X_DOWN;
-			lightOffsetY = LIGHT_OFFSET_Y_DOWN;
-			break;
-	}
 }
 
 #endregion
@@ -1266,6 +1232,7 @@ state_default = function(){
 	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_enemy_collision();
 	player_warp_collision();
 	
 	// Setting a walking sprite to use if Samus is moving (Determined by the value of the bit flag "IS_WALKING"
@@ -1477,6 +1444,7 @@ state_airbourne = function(){
 	player_collectible_collision();
 	player_item_drop_collision();
 	player_liquid_collision();
+	player_enemy_collision();
 	player_warp_collision();
 	
 	// Producing the ghosting effect for Samus's somersault, which leaves an instance of Samus that quickly
@@ -1484,7 +1452,7 @@ state_airbourne = function(){
 	if (sprite_index == jumpSpriteSpin){
 		effectTimer += DELTA_TIME;
 		if (effectTimer >= JUMP_EFFECT_INTERVAL){
-			ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 0.5));
+			ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, c_white, 0.5));
 			effectTimer = 0.0;
 		}
 	}
@@ -1634,6 +1602,7 @@ state_enter_morphball = function(){
 	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_enemy_collision();
 	player_warp_collision();
 }
 
@@ -1729,6 +1698,7 @@ state_morphball = function(){
 	player_item_drop_collision();
 	fallthrough_floor_collision();
 	player_liquid_collision();
+	player_enemy_collision();
 	player_warp_collision();
 	
 	// Assign the morphball's sprite, and update its image speed based on whatever its current horizontal
@@ -1783,7 +1753,7 @@ state_phase_shift = function(){
 	// a "ghost" of Samus will be created as part of the phase shift's animation.
 	effectTimer += DELTA_TIME;
 	if (effectTimer >= PSHIFT_EFFECT_INTERVAL){
-		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, 1.0, armCannon.visible));
+		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, HEX_LIGHT_BLUE, 0.75, armCannon.visible));
 		effectTimer -= PSHIFT_EFFECT_INTERVAL;
 	}
 	

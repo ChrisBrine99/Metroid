@@ -51,19 +51,6 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 				case state_phase_shift: // Determining visibility of arm cannon during a phase shift.
 					_visible = !IS_GROUNDED;
 					break;
-				case state_hitstun: // Handling all possible offsets for the player being in a hit stunned state.
-					_visible = (stateFlags & (1 << WAS_BEAM_VISIBLE));
-					if (stateFlags & (1 << AIMING_UP)){ // Arm cannon is pointing upward.
-						_x = -(1 * image_xscale);
-						_y = -40;
-					} else if (stateFlags & (1 << AIMING_DOWN)){ // Arm cannon is downward.
-						_x = 0;
-						_y = -18;
-					} else{ // The arm cannon should face forward.
-						_x = (5 * image_xscale);
-						_y = -25;
-					}
-					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
 					_visible = IS_AIMING && !IN_MORPHBALL;
 					break;

@@ -20,15 +20,18 @@ for (var i = 0; i < _length; i++){
 	}
 }
 
-// 
-aeionCooldownTimer -= DELTA_TIME;
-if (aeionCooldownTimer < -60.0 && curAeion < maxAeion){
-	aeionFillTimer += DELTA_TIME * 0.4;
-	if (aeionFillTimer >= 1.0){
-		aeionFillTimer -= 1.0;
-		curAeion++;
+// Decrement the cooldown timer, which will begin filling the aeion gauge once the value goes below -60. After
+// that, the aeion will slowly restore itself until the gauge is full again.
+if (curAeion < maxAeion){
+	aeionCooldownTimer -= DELTA_TIME;
+	if (aeionCooldownTimer < -60.0){
+		aeionFillTimer += DELTA_TIME * 0.3;
+		if (aeionFillTimer >= 1.0){
+			aeionFillTimer -= 1.0;
+			curAeion++;
+		}
+		aeionCooldownTimer = -60.0;
 	}
-	aeionCooldownTimer = -60.0;
 }
 
 // Finally, update the arm cannon's offset position and visibility depending on Samus's actions in the frame.

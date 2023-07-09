@@ -28,9 +28,9 @@ visible = false;
 // The three state variables, which will store the currently execution state function, the previous state
 // state function that was in use, and the next available state function to swap too at the beginning of the
 // next frame (The state won't change whenever "curState" and "nextState" store the same function pointer).
-curState = NO_STATE;
-lastState = NO_STATE;
-nextState = NO_STATE;
+curState	= NO_STATE;
+lastState	= NO_STATE;
+nextState	= NO_STATE;
 
 // 32-bits that can each represent their own functionality within any children of this object. However, the 
 // top eight bits are reserved for generic flags that are required for an entity to function properly.
@@ -57,11 +57,11 @@ lightOffsetY = 0;
 // variables like "image_speed" and "image_index" to allow for frame-independent animations. The speed of the
 // animation can be manipulated further by changing the value of "animSpeed". Finally, the loop offset determines
 // which frame of animation will be the start of the animation; allowing for introduction frames if necessary.
-imageIndex = 0;
-animSpeed = 0.0;
-spriteLength = 0;
-spriteSpeed = 0;
-loopOffset = 0;
+imageIndex		= 0;
+animSpeed		= 0.0;
+spriteLength	= 0;
+spriteSpeed		= 0;
+loopOffset		= 0;
 
 // The current values for the horiztonal and vertical velocities of the entity, respectively. Regardless of
 // these values, they will always allow for frame-independent physics and whole-number movement when paired
@@ -97,9 +97,12 @@ hitpoints = 0;
 maxHitpoints = 0;
 
 // Variables for tracking the current duration of a hitstun and the total length required for the hitstun to
-// end its effects, repsectively.
-hitstunTimer = 0.0;
-hitstunLength = 0.0;
+// end its effects, repsectively. The final variables determine how long AFTER the hitstun that the entity will
+// remain immune to attacks for.
+hitstunTimer	= -1.0;
+hitstunLength	=  0.0;
+recoveryTimer	= -1.0;
+recoveryLength	=  0.0;
 
 #endregion
 
@@ -132,11 +135,11 @@ initialize = function(_state){
 /// @param {Real}	duration
 /// @param {Real}	damage
 entity_apply_hitstun = function(_duration, _damage = 0){
-	if (IS_HIT_STUNNED) {return;}
-	object_set_next_state(state_hitstun);
 	update_hitpoints(-_damage);
-	stateFlags |= (1 << HIT_STUNNED);
-	hitstunLength = _duration;
+	stateFlags	  |= (1 << HIT_STUNNED);
+	hitstunLength	= _duration;
+	hitstunTimer	= 0.0;
+	recoveryTimer	= 0.0;
 }
 
 /// @description A simple function that applies a modifier value to the entity's current hitpoints. It will
@@ -255,28 +258,6 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 		vspd = 0;
 	}
 	y += _deltaVspd;
-}
-
-#endregion
-
-#region States for use in all children objects of par_dynamic_entity
-
-/// @description A default state for an entity's hitstun, which simply increments the timer for the hitstun's
-/// duration; flickering the entity's sprite throughout the entire hitstun. After the timer has reached the
-/// length of the hitstun, the entity will return to its previous state.
-state_hitstun = function(){
-	hitstunTimer += DELTA_TIME;
-	if (hitstunTimer >= hitstunLength){
-		object_set_next_state(lastState);
-		stateFlags &= ~(1 << HIT_STUNNED);
-		stateFlags |= (1 << DRAW_SPRITE);
-		hitstunTimer = 0.0;
-		return;
-	}
-	
-	// Altering the visibility of the entity's sprite every frame to produce the flickering effect.
-	if (CAN_DRAW_SPRITE)	{stateFlags &= ~(1 << DRAW_SPRITE);}
-	else					{stateFlags |= (1 << DRAW_SPRITE);}
 }
 
 #endregion

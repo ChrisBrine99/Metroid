@@ -6,3 +6,8 @@ for (var i = 0; i < _length; i++) {ghostEffectID[| i].draw();}
 // cannon, but only if her main sprite is allowed to be drawn; overriding the cannon's own visibility flag.
 entity_draw();
 if (CAN_DRAW_SPRITE) {armCannon.draw();}
+
+// Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase. If she is, her sprite visibility
+// with be toggled on and off on a per-frame basis.
+if (!IS_HIT_STUNNED) {return;}
+stateFlags = CAN_DRAW_SPRITE ? stateFlags & ~(1 << DRAW_SPRITE) : stateFlags | (1 << DRAW_SPRITE);

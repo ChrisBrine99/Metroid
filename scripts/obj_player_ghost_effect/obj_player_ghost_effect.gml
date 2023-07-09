@@ -21,8 +21,8 @@ function obj_player_ghost_effect(_index) : base_struct(_index) constructor{
 	// that will be used for the effect.
 	sprite_index = NO_SPRITE;
 	image_xscale = 1;
-	imageIndex = 0;
-	alpha = 0.0;
+	imageIndex	 = 0;
+	alpha		 = 0.0;
 	
 	// 
 	drawArmCannon = false;
@@ -43,13 +43,14 @@ function obj_player_ghost_effect(_index) : base_struct(_index) constructor{
 	/// skipping that rendering entirely if there isn't a valid sprite index set.
 	draw = function(){
 		if (sprite_index == NO_SPRITE) {return;}
-		draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, 1, 0, HEX_LIGHT_BLUE, alpha);
+		draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, 1, 0, image_blend, alpha);
 		
 		if (!drawArmCannon) {return;} // Skip drawing the arm cannon if is isn't set to visible
-		var _xx = x;
-		var _yy = y;
-		var _alpha = alpha;
-		with(armCannon) {draw_sprite_ext(spr_samus_cannon0, imageIndex, _xx + x, _yy + y, image_xscale, 1, 0, HEX_LIGHT_BLUE, _alpha);}
+		var _xx		= x;
+		var _yy		= y;
+		var _alpha	= alpha;
+		var _color	= image_blend;
+		with(armCannon) {draw_sprite_ext(spr_samus_cannon0, imageIndex, _xx + x, _yy + y, image_xscale, 1, 0, _color, _alpha);}
 	}
 }
 
@@ -65,17 +66,19 @@ function obj_player_ghost_effect(_index) : base_struct(_index) constructor{
 /// @param {Asset.GMSprite} sprite		The jumping sprite that is copied over from Samus.
 /// @param {Real}			imageIndex	The image of the copied over jumping sprite to draw. 
 /// @param {Real}			imageXScale The direction Samus is currently facing (1 == Right, -1 == Left).
+/// @param {Real}			color		Blending color to apply to the ghost sprite.
 /// @param {Real}			alpha		Starting opacity for the ghost sprite.
 /// @param {Bool}			drawCannon	Toggles the rendering of the arm cannon on or off for the ghost sprite.
-function create_player_ghost_effect(_x, _y, _sprite, _imageIndex, _imageXScale, _alpha, _drawCannon = false){
+function create_player_ghost_effect(_x, _y, _sprite, _imageIndex, _imageXScale, _color, _alpha, _drawCannon = false){
 	var _struct = instance_create_struct(obj_player_ghost_effect);
 	with(_struct){ // Apply all the properties to the newly created jump effect.
-		x =				_x;
-		y =				_y;
-		sprite_index =	_sprite;
-		image_xscale =	_imageXScale;
-		imageIndex =	_imageIndex;
-		alpha =			_alpha;
+		x				= _x;
+		y				= _y;
+		sprite_index	= _sprite;
+		image_xscale	= _imageXScale;
+		image_blend		= _color;
+		imageIndex		= _imageIndex;
+		alpha			= _alpha;
 		
 		// Skip accessing the arm cannon struct that exists within this effect object instance if it doesn't
 		// need to be drawn for the given sprite. Otherwise, copy all required sprite flipping and position
@@ -86,15 +89,14 @@ function create_player_ghost_effect(_x, _y, _sprite, _imageIndex, _imageXScale, 
 			var _xx = 0;
 			var _yy = 0;
 			with(PLAYER.armCannon){
-				_xx = x;
-				_yy = y;
+				_xx			= x;
+				_yy			= y;
 				_imageIndex = imageIndex;
 			}
-			x =				_xx;
-			y =				_yy;
-			image_xscale =	_imageXScale;
-			imageIndex =	_imageIndex;
-			show_debug_message("X: {0}, Y: {1}", x, y);
+			x			 = _xx;
+			y			 = _yy;
+			image_xscale = _imageXScale;
+			imageIndex	 = _imageIndex;
 		}
 	}
 	return _struct;
