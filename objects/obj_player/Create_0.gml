@@ -52,11 +52,12 @@
 
 // Condenses the logic required to check if certain substate bits are set or not.
 #macro	IS_MOVING				(stateFlags & (1 << MOVING) != 0)
+#macro	IS_CROUCHING			(stateFlags & (1 << CROUCHING) != 0)
+#macro	IS_JUMP_SPIN			(stateFlags & (1 << JUMP_SPIN) != 0)
+#macro	IS_JUMP_ATTACK			(stateFlags & (1 << JUMP_ATTACK) != 0)
 #macro	IS_AIMING				(stateFlags & ((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << AIMING_DOWN)) != 0)
 #macro	IS_AIMING_UP			(stateFlags & (1 << AIMING_UP) != 0)
 #macro	IS_AIMING_DOWN			(stateFlags & (1 << AIMING_DOWN) != 0)
-#macro	IS_JUMP_SPIN			(stateFlags & (1 << JUMP_SPIN) != 0)
-#macro	IS_JUMP_ATTACK			(stateFlags & (1 << JUMP_ATTACK) != 0)
 #macro	IN_MORPHBALL			(stateFlags & (1 << MORPHBALL) != 0)
 #macro	IS_SUBMERGED			(stateFlags & (1 << SUBMERGED) != 0)
 #macro	USING_ENERGY_SHIELD		(stateFlags & (1 << ENERGY_SHIELD) != 0)
@@ -270,15 +271,15 @@ liquidData = {
 	liquidID : noone,
 	
 	// 
-	maxHspdPenalty : 0.0,
-	maxVspdPenalty : 0.0,
-	hAccelPenalty : 0.0,
-	vAccelPenalty : 0.0,
+	maxHspdPenalty	: 0.0,
+	maxVspdPenalty	: 0.0,
+	hAccelPenalty	: 0.0,
+	vAccelPenalty	: 0.0,
 	
 	// 
-	damage : 0,
-	damageInterval : 0.0,
-	damageTimer : 0.0,
+	damage			: 0,
+	damageInterval	: 0.0,
+	damageTimer		: 0.0,
 };
 
 // 
@@ -289,9 +290,9 @@ effectTimer = 0.0;
 warpID = noone;
 
 // 
-curShiftDist = 0.0;
-prevMaxHspd = 0.0;
-prevAnimSpeed = 0.0;
+curShiftDist	= 0.0;
+prevMaxHspd		= 0.0;
+prevAnimSpeed	= 0.0;
 
 #endregion
 
@@ -587,39 +588,39 @@ create_projectile = function(_charged){
 		case (1 << POWER_BEAM):		// = 1
 			if (_splitBeam)	{create_power_beam_split(x, y, image_xscale, _charged);}
 			else			{create_power_beam(x, y, image_xscale, _charged);}
-			tapFireRate = 5;
-			holdFireRate = 20;
+			tapFireRate		= 5;
+			holdFireRate	= 20;
 			break;
 		case (1 << ICE_BEAM):		// = 2
 			if (_splitBeam)	{/*create_ice_beam_split(x, y, image_xscale, _charged);*/}
 			else			{create_ice_beam(x, y, image_xscale, _charged);}
-			tapFireRate = 36;
-			holdFireRate = 46;
+			tapFireRate		= 36;
+			holdFireRate	= 46;
 			break;
 		case (1 << WAVE_BEAM):		// = 4
 			show_debug_message("WAVE BEAM");
-			tapFireRate = 18;
-			holdFireRate = 28;
+			tapFireRate		= 18;
+			holdFireRate	= 28;
 			break;
 		case (1 << PLASMA_BEAM):	// = 8
 			show_debug_message("PLASMA BEAM");
-			tapFireRate = 14;
-			holdFireRate = 26;
+			tapFireRate		= 14;
+			holdFireRate	= 26;
 			break;
 		case (1 << MISSILE):		// = 16
 			create_missile(x, y, image_xscale); // No charge flag necessary.
-			tapFireRate = 24;
-			holdFireRate = 38;
+			tapFireRate		= 24;
+			holdFireRate	= 38;
 			break;
 		case (1 << ICE_MISSILE):	// = 32
 			show_debug_message("ICE MISSILE");
-			tapFireRate = 40;
-			holdFireRate = 60;
+			tapFireRate		= 40;
+			holdFireRate	= 60;
 			break;
 		case (1 << SHOCK_MISSILE):	// = 64
 			show_debug_message("SHOCK MISSILE");
-			tapFireRate = 32;
-			holdFireRate = 46;
+			tapFireRate		= 32;
+			holdFireRate	= 46;
 			break;
 	}
 }
@@ -744,11 +745,11 @@ check_swap_current_weapon = function(){
 		
 		// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 		if (curWeapon != curMissile){
-			curWeapon = curMissile;
-			tapFireRate = MISSILE_SWAP_TIME;
-			holdFireRate = MISSILE_SWAP_TIME;
-			fireRateTimer = 0.0;
-			chargeTimer = 0.0;
+			curWeapon		= curMissile;
+			tapFireRate		= MISSILE_SWAP_TIME;
+			holdFireRate	= MISSILE_SWAP_TIME;
+			fireRateTimer	= 0.0;
+			chargeTimer		= 0.0;
 		}
 		return;
 	}
@@ -763,11 +764,11 @@ check_swap_current_weapon = function(){
 	
 	// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 	if (curWeapon != curBeam){
-		curWeapon = curBeam;
-		tapFireRate = BEAM_SWAP_TIME;
-		holdFireRate = BEAM_SWAP_TIME;
-		fireRateTimer = 0.0;
-		chargeTimer = 0.0;
+		curWeapon		= curBeam;
+		tapFireRate		= BEAM_SWAP_TIME;
+		holdFireRate	= BEAM_SWAP_TIME;
+		fireRateTimer	= 0.0;
+		chargeTimer		= 0.0;
 	}
 }
 
@@ -797,12 +798,12 @@ initialize = function(_state){
 /// that the game over screen should be shown.
 /// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the entity's hitpoints.
 update_hitpoints = function(_modifier){
-	if (_modifier == 0) {return;}	// Don't bother with the function if the modifier value is zero.
-	hitpoints += floor(_modifier);	// Value is floored so it's always an integer.
+	if (_modifier == 0) {return;}
+	hitpoints += floor(_modifier); // Value is floored so it's always an integer.
 	if (hitpoints > maxHitpoints){ // Prevent the player's hitpoints from exceeding the maximum.
 		hitpoints = maxHitpoints;
 	} else if (hitpoints <= 0){
-		hitpoints = 0; // Always set to zero regardless of reserve hitpoints being available or not.
+		hitpoints = 0;
 		// Check for reserve hitpoints. If the player has an amount to utilize, it will be added to their
 		// hitpoints and whatever amount was put into there is remove from the reserve; reviving the player.
 		if (reserveHitpoints > 0){
@@ -811,10 +812,10 @@ update_hitpoints = function(_modifier){
 			return; // Don't kill off the player.
 		}
 		// If the player has no reserve hitpoints left to utilize, they will have their state removes, and
-		// no longer show up on screen. THe destroyed flag is flipped, but since the player object is set
+		// no longer show up on screen. The destroyed flag is flipped, but since the player object is set
 		// to "invincible" they won't be deleted from the game.
-		object_set_next_state(NO_STATE);
-		stateFlags &= ~(1 << DRAW_SPRITE);
+		curState	= NO_STATE;
+		stateFlags &= ~((1 << DRAW_SPRITE) | (1 << HIT_STUNNED));
 		stateFlags |= (1 << DESTROYED);
 		
 		// TODO -- Trigger death effect here.
@@ -830,7 +831,7 @@ update_hitpoints = function(_modifier){
 /// of 0 and whatever their current maximum aeion is.
 /// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the player's aeion gauge.
 update_aeion = function(_modifier){
-	if (_modifier == 0) {return;}	// Don't bother with the function if the modifier value is zero.
+	if (_modifier == 0) {return;}
 	curAeion += floor(_modifier);	// Value is floored so it's always an integer.
 	if (curAeion > maxAeion)	{curAeion = maxAeion;}
 	else if (curAeion < 0)		{curAeion = 0;}
@@ -974,7 +975,8 @@ player_warp_collision = function(){
 		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
 		object_set_next_state(state_room_warp);
 		
-		// 
+		// Ensure the camera will snap its position to whatever position Samus ends up inside the new room.
+		// Also unlocks the camera if either of its axes were previously being locked by a boundary object.
 		var _camera = -1;
 		with(CAMERA){
 			_camera = camera;
@@ -996,7 +998,9 @@ player_warp_collision = function(){
 	}
 }
 
-/// @descripiton 
+/// @descripiton Checks for collision with an enemy so long as Samus isn't in her hitstun/recovery state. If
+/// she is, the function will perform no collision check. If an enemy was collided with and Samus wasn't in
+/// that hitstun/recovery state, she'll be damaged and sent into said state.
 player_enemy_collision = function(){
 	if (IS_HIT_STUNNED) {return;}
 	
@@ -1018,27 +1022,33 @@ player_item_drop_collision = function(){
 
 #region Player-specific hit stun function and state
 
-// 
+// Stores the parent object's function for applying a hitstun effect onto an entity so it can be called in
+// this function definition that would overwrite the reference to the original otherwise.
 __entity_apply_hitstun = entity_apply_hitstun;
 /// @description 
-/// @param {Real}	duration
-/// @param {Real}	damage
+/// @param {Real}	duration	The time in "frames" (60 units = 1 real-world second) to lock Samus's movement.
+/// @param {Real}	damage		Total amount of damage to apply to Samus's current energy.
 entity_apply_hitstun = function(_duration, _damage = 0){
 	__entity_apply_hitstun(_duration, _damage);
 	if (!IN_MORPHBALL){ // Make Samus airbourne if she isn't in her morphball at the time of the hitstun.
 		object_set_next_state(state_airbourne);
 		
-		// 
-		if (IS_JUMP_SPIN || IS_JUMP_ATTACK) {reset_light_source();}
+		// Make sure the light moves itself to where the visor is since Samus's somersault is interrupted by
+		// sustaining damage from an enemy or enemy projectile. Any animation timers are also skipped over.
+		// Note that the light source is also reset if she was previously crouching as well.
+		if (IS_CROUCHING || IS_JUMP_SPIN || IS_JUMP_ATTACK) {reset_light_source();}
 		jumpStartTimer = JUMPSPIN_ANIM_TIME;
 		aimReturnTimer = 0.0;
 		
-		// 
+		// After animation times and visor light positions have been dealt with, Samus will have certain states
+		// turned off, while also having a flag for "beam visibility" set to true so the arm cannon will render.
 		stateFlags &= ~((1 << CROUCHING) | (1 << JUMP_ATTACK) | (1 << JUMP_SPIN));
 		stateFlags |= (1 << WAS_BEAM_VISIBLE);
 	}
 
-	// 
+	// Regardless of if in her morhpball mode or not, Samus will always be set to move backwards horizontally
+	// and upward; resulting in an up-right or up-left trajectory depending on the direction she was facing
+	// at the time of the attack.
 	stateFlags &= ~(1 << GROUNDED);
 	hspd = get_max_hspd() * 0.5 * -image_xscale;
 	vspd = -2.75;
@@ -1544,6 +1554,10 @@ state_crouching = function(){
 	update_arm_cannon(movement);
 	check_swap_current_weapon();
 	
+	// Allow collisions against the enemy when Samus is crouching by calling the function for dealing with
+	// said collisions.
+	player_enemy_collision();
+	
 	// Use the general offset position for the visor light's current x-position.
 	lightOffsetX = LIGHT_OFFSET_X_GENERAL;
 }
@@ -1728,7 +1742,8 @@ state_phase_shift = function(){
 		}
 	}
 	
-	// Go through all of the standard collision functions.
+	// Go through all of the standard collision functions. However, enemies will be ignored since Samus is
+	// technically phasing through them when using this ability; creating a dodge mechanic with this ability.
 	player_collectible_collision();
 	player_item_drop_collision();
 	fallthrough_floor_collision();

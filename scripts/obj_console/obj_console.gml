@@ -333,7 +333,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// the user an error message within the console's history window.
 		var _index = get_function_from_string(string_lower(_funcString));
 		if (_index == -1){
-			show_debug_message("ERROR -- Function \"" + _funcString + "\" does not exist.");
 			history_add_line("ERROR -- Function \"" + _funcString + "\" does not exist.");
 			return;
 		}
@@ -351,7 +350,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 			var _arguments = get_arguments_from_string(_argString, _datatypes);
 			if (array_length(_arguments) != array_length(_datatypes)){
 				var _errorString = "Argument Error: \n" + string(_datatypes) + "\n" + string(_arguments);
-				show_debug_message(_errorString);
 				history_add_line(_errorString);
 				return;
 			}
@@ -400,6 +398,10 @@ function obj_console(_index) : base_struct(_index) constructor{
 			_argString = string_copy(_string, _index, _spacePos - _index);
 			switch(_datatypes[_currentArg]){
 				case TYPE_REAL: // Convert the string argument into a number and place it into the argument array.
+					if (_argString == ""){
+						history_add_line("ERROR -- Invalid input for type \"real\". Aborting command processing...");
+						return _arguments;
+					}
 					_arguments[array_length(_arguments)] = real(_argString);
 					break;
 				case TYPE_BOOL: // Replace the "true" or "false" string with their GML constant equivalents.

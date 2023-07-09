@@ -1,3 +1,5 @@
+if (curState == NO_STATE) {return;}
+
 // Loop through all existing ghost effect structs and render them at their current positions and opacity levels.
 var _length = ds_list_size(ghostEffectID);
 for (var i = 0; i < _length; i++) {ghostEffectID[| i].draw();}

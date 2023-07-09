@@ -1,5 +1,5 @@
 // Execute the entity's current state if there is a valid function index within the variable.
-if (curState != NO_STATE) {curState();}
+if (curState != NO_STATE && !IS_DESTROYED) {curState();}
 
 // Don't bother manipulating any hitstun/recovery timers if the entity isn't hitstunned OR the game's state isn't
 // set to the normal state.

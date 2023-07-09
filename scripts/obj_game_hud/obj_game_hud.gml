@@ -3,7 +3,7 @@
 // Determines how fast the displayed energy and energy tanks on the HUD approaches the CURRENT value of energy
 // Samus has within the game's actual data. Allows a sort of animation of incrementing/decrementing whenever
 // her energy is altered.
-#macro	ENERGY_INCREMENT_SPEED	0.08
+#macro	ENERGY_INCREMENT_SPEED	0.3
 
 // Much like the energy increment macro, this macro determines the speed of the displayed missile's ammo value
 // incrementing/decrementing towards its true value stored in the player object.
@@ -13,7 +13,7 @@
 // access to an aeion ability. It determines the width of the bar, as well as how fast it fills/empties to
 // match the actual value in the game's data.
 #macro	AEION_GUAGE_WIDTH		46
-#macro	AEION_GAUGE_FILL_SPEED	0.3
+#macro	AEION_GAUGE_FILL_SPEED	0.25
 
 #endregion
 
@@ -183,9 +183,9 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		// Increment and decrement that various numerical animation values towards whatever their actual values
 		// within the player object's data. This method is inspired by how Mario 64's coin counter worked;
 		// increases the value frame-by-frame until it matched what the actual value in the data was.
-		pCurEnergy		= value_set_relative(pCurEnergy, _curEnergy, ENERGY_INCREMENT_SPEED);
-		pCurMissiles	= value_set_relative(pCurMissiles, _curMissiles, MISSILE_INCREMENT_SPEED);
-		pCurAeion		= value_set_relative(pCurAeion, _curAeion, AEION_GAUGE_FILL_SPEED);
+		pCurEnergy		= value_set_relative(pCurEnergy,	 _curEnergy,	ENERGY_INCREMENT_SPEED);
+		pCurMissiles	= value_set_relative(pCurMissiles, _curMissiles,	MISSILE_INCREMENT_SPEED);
+		pCurAeion		= value_set_relative(pCurAeion,	 _curAeion,		AEION_GAUGE_FILL_SPEED);
 	}
 }
 
