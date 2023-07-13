@@ -1,22 +1,20 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "par_player_projectile",
+  "name": "obj_enemy_collider",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":40,"eventType":7,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":1,"eventType":3,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Player Weapons",
-    "path": "folders/Resources/Core/Entities/Dynamic/Player Weapons.yy",
+    "name": "Collision",
+    "path": "folders/Resources/Core/Collision.yy",
   },
   "parentObjectId": {
-    "name": "par_dynamic_entity",
-    "path": "objects/par_dynamic_entity/par_dynamic_entity.yy",
+    "name": "par_collider",
+    "path": "objects/par_collider/par_collider.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -33,7 +31,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_rectangle",
+    "path": "sprites/spr_rectangle/spr_rectangle.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }

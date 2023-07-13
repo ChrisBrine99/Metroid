@@ -3,8 +3,8 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Set the damage of the missile, which is five times the damage dealt by the non-charged power beam.
-damage = 5;
+// Set the damage of the missile, which is four times the damage dealt by the non-charged power beam.
+damage = 4;
 // Set the maximum horizontal and vertical movement speeds for all power beam instances (These values can be
 // surpassed by the initial spread movement of any split beam variants).
 maxHspd = 8.5;
@@ -35,8 +35,8 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	if (event_get_flag(FLAG_SUPER_MISSILES)){
 		entity_set_sprite(spr_super_missile, -1);
 		stateFlags |= (1 << TYPE_SUPER_MISSILE);
-		damage = 15;	// Damage is tripled.
-		maxHspd = 12;	// Maximum speed is increased slightly.
+		damage = 16;	// Damage is quadruplued.
+		maxHspd = 12;	// Maximum speed is increased.
 		maxVspd = 12;
 		hAccel = 0.75;	// Start-up acceleration is heavily improved.
 		vAccel = 0.75;

@@ -213,26 +213,26 @@ morphballMask	= spr_power_mball0;
 // Variables that keep track of the various resources Samus can deplete throughout regular gameplay. The max
 // possible amount that can be stored of each can be upgrade through finding the relevant expansion tanks in
 // the game world.
-reserveHitpoints = 0;
+reserveHitpoints	= 0;
 maxReserveHitpoints = 0;
-energyTankPieces = 0;
-curAeion = 0;
-maxAeion = 0;
-numMissiles = 0;
-maxMissiles = 0;
-numPowerBombs = 0;
-maxPowerBombs = 0;
+energyTankPieces	= 0;
+curAeion			= 0;
+maxAeion			= 0;
+numMissiles			= 0;
+maxMissiles			= 0;
+numPowerBombs		= 0;
+maxPowerBombs		= 0;
 
 // Timer variables that will count upwards until a certain threshold has been met. After which, an animation
 // will conclude, Samus will lower her arm cannon, her main state will change, or her substate will change;
 // to name a few possibilities.
-standingTimer = 0.0;
-aimReturnTimer = 0.0;
-aimSwitchTimer = 0.0;
-mBallEnterTimer = 0.0;
-jumpStartTimer = 0.0;
-aeionCooldownTimer = 0.0;
-aeionFillTimer = 0.0;
+standingTimer		= 0.0;
+aimReturnTimer		= 0.0;
+aimSwitchTimer		= 0.0;
+mBallEnterTimer		= 0.0;
+jumpStartTimer		= 0.0;
+aeionCooldownTimer	= 0.0;
+aeionFillTimer		= 0.0;
 
 // Keeps track of how high the morphball will bounce relative to its falling speed when it initially hits the
 // ground. A high enough value will make the morphball bounce into the air again.
@@ -255,15 +255,15 @@ armCannonX = 0;
 armCannonY = 0;
 
 // 
-curBeam = (1 << POWER_BEAM);
-curMissile = (1 << MISSILE);
-curWeapon = curBeam;
+curBeam		= (1 << POWER_BEAM);
+curMissile	= (1 << MISSILE);
+curWeapon	= curBeam;
 
 // 
-tapFireRate = 1;
-holdFireRate = 1;
-fireRateTimer = 0.0;
-chargeTimer = 0.0;
+tapFireRate		= 1;
+holdFireRate	= 1;
+fireRateTimer	= 0.0;
+chargeTimer		= 0.0;
 
 // 
 liquidData = {
@@ -283,8 +283,8 @@ liquidData = {
 };
 
 // 
-ghostEffectID = ds_list_create();
-effectTimer = 0.0;
+ghostEffectID	= ds_list_create();
+effectTimer		= 0.0;
 
 // 
 warpID = noone;
@@ -695,16 +695,19 @@ create_ice_beam = function(_x, _y, _imageXScale, _charged){
 /// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
 create_missile = function(_x, _y, _imageXScale){
 	if (numMissiles > 0){ // Can't use a missile without ammunition.
-		var _vspd = vspd;
+		var _hspd		= hspd;
+		var _vspd		= vspd;
+		var _signsMatch = (sign(_hspd) == sign(image_xscale));
 		var _projectile = instance_create_object(0, 0, obj_missile);
 		with(_projectile){
 			initialize(state_default, _x, _y, _imageXScale, false);
 			// Preserve the player's velocity for whatever direction the missile is heading toward to prevent
 			// the missile from moving too slow relative to the player's movement.
 			if (IS_MOVING_HORIZONTAL){
-				hspd = other.hspd;
+				if (_signsMatch) {hspd = _hspd;}
+				else			 {hspd = 0.0;} // Don't apply player's hspd if facing direction doesn't match horizontal movement direction.
 			} else if (_vspd >= 0 && IS_MOVING_DOWN){
-				vspd = other.vspd;
+				vspd = _vspd;
 				vAccel *= 2.0; // Doubles acceleration to prevent Samus falling faster than the missile accelerates.
 			}
 		}
@@ -1005,7 +1008,10 @@ player_enemy_collision = function(){
 	if (IS_HIT_STUNNED) {return;}
 	
 	var _enemy = instance_place(x, y, par_enemy);
-	if (_enemy != noone) {entity_apply_hitstun(_enemy.stunDuration, _enemy.damage);}
+	if (_enemy != noone){
+		if (_enemy.curAilment == AIL_FROZEN) {return;}
+		entity_apply_hitstun(_enemy.stunDuration, _enemy.damage);
+	}
 }
 
 /// @description Processes collisions between the player and an item drop, which includes energy restoration,

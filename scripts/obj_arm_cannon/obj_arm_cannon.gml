@@ -28,7 +28,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	// so this variable allows that to be applied to the final image that is drawn.
 	imageIndex = 0;
 	
-	// 
+	// Stores the player's current position for the frame which is used during the arm cannon's draw event.
 	playerX = 0;
 	playerY = 0;
 	

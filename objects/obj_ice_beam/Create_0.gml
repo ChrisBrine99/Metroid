@@ -6,8 +6,8 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Set the damage of the power beam. All other damage values will be based on whatever this beam's non-charged
-// damage is.
+// Set the damage of the ice beam, which is 4.0x as strong as the standard power beam. All other damage values 
+// will be based on whatever this beam's non-charged damage is.
 damage = 4;
 // Set the maximum horizontal and vertical movement speeds for all power beam instances (These values can be
 // surpassed by the initial spread movement of any split beam variants).

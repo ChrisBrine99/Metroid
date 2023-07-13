@@ -31,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_enemy",
-    "path": "sprites/spr_enemy/spr_enemy.yy",
+    "name": "spr_gullug",
+    "path": "sprites/spr_gullug/spr_gullug.yy",
   },
   "spriteMaskId": null,
   "visible": false,

@@ -24,7 +24,9 @@ function obj_player_ghost_effect(_index) : base_struct(_index) constructor{
 	imageIndex	 = 0;
 	alpha		 = 0.0;
 	
-	// 
+	// Determines whether or not to draw a seperate arm cannon that is visible during for some of Samus's
+	// sprites (Standing, Crouching, Jumping, etc.) and animations (Walking). It will use the data within the
+	// struct below to draw the arm cannon should the ghosting effect need to show it along with Samus.
 	drawArmCannon = false;
 	armCannon = {
 		x				: 0,
@@ -33,7 +35,9 @@ function obj_player_ghost_effect(_index) : base_struct(_index) constructor{
 		imageIndex		: 0,
 	};
 	
-	/// @description 
+	/// @description Placed within the Cleanup event of whatever object is managing this struct (More than
+	/// likely the player object since they create the effect). It will "delete" the armCannon struct, which
+	/// signals to GML's garbage collector that it can be freed from memory.
 	cleanup = function(){
 		delete armCannon;
 	}

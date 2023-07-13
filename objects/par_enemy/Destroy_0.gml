@@ -1,7 +1,3 @@
-// Call the function that cleans up pointers and data structures found in inherited variables from "par_dynamic_entity".
-// After that, a check is performed to see if the enemy should drop an item. If that state bit is flipped, an item will
-// attempt to drop based on some RNG.
-entity_cleanup();
 if (!CAN_DROP_ITEM) {return;}
 
 // Generate a floating point number between 0.0 and 1.0, which will represent a percentage value between 0 and 100,
@@ -11,7 +7,7 @@ var _dropChance = random_range(0.0, 1.0);
 if (_dropChance <= energyDropChance){
 	var _hitpointRatio = 0.0;
 	with(PLAYER) {_hitpointRatio = (hitpoints / maxHitpoints) * 0.25;}
-	
+
 	// Utilizing the player's hitpoint ratio, spawn a small or large energy drop based on the default small energy drop
 	// percentage minus the hitpoint ratio's value. The chance of a large energy drop spawning can have its chance 
 	// increased by around 25% max.

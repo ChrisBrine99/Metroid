@@ -194,6 +194,7 @@
     {"name":"spr_collider_slope2","order":2,"path":"sprites/spr_collider_slope2/spr_collider_slope2.yy",},
     {"name":"spr_collider_slope3","order":3,"path":"sprites/spr_collider_slope3/spr_collider_slope3.yy",},
     {"name":"spr_collider_slope4","order":4,"path":"sprites/spr_collider_slope4/spr_collider_slope4.yy",},
+    {"name":"obj_enemy_collider","order":6,"path":"objects/obj_enemy_collider/obj_enemy_collider.yy",},
     {"name":"spr_cutscene_trigger","order":5,"path":"sprites/spr_cutscene_trigger/spr_cutscene_trigger.yy",},
     {"name":"spr_destructible_bomb","order":2,"path":"sprites/spr_destructible_bomb/spr_destructible_bomb.yy",},
     {"name":"spr_destructible_collectible_ball","order":6,"path":"sprites/spr_destructible_collectible_ball/spr_destructible_collectible_ball.yy",},

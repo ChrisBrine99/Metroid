@@ -380,11 +380,11 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @param {Array<Real>}	datatypes	A copy of the datatypes required by the function, which determines how each argument is parsed.
 	get_arguments_from_string = function(_string, _datatypes){
 		var _argString, _argStringExt;
-		var _length = array_length(_datatypes);
-		var _currentArg = 0;
-		var _arguments = [];
-		var _spacePos = 1;
-		var _index = 1;
+		var _length		= array_length(_datatypes);
+		var _currentArg	= 0;
+		var _arguments	= [];
+		var _spacePos	= 1;
+		var _index		= 1;
 		while(_currentArg < _length){
 			// Grab the position of the next space between the arguments OR the last character's index value
 			// due to it not having anymore arguments so the copying of the substring works as it should
@@ -459,7 +459,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// they were set to prior to the console being opened due to it setting the current state to "paused").
 	cmd_game_state = function(){
 		var _gameState = "Current State: " + game_state_get_name(gameCurState) + "\nPrevious State: " + game_state_get_name(gamePrevState);
-		show_debug_message(_gameState);
 		history_add_line(_gameState);
 	}
 	
@@ -470,7 +469,6 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @param {Bool}	flagState	The state to set the flag bit to (1 = true, 0 = false).
 	cmd_set_event_flag = function(_flagID, _flagState){
 		var _flagInfo = "Flag with ID (" + string(_flagID) + ") was set to " + string(_flagState);
-		show_debug_message(_flagInfo);
 		history_add_line(_flagInfo);
 		event_set_flag(_flagID, _flagState);
 	}

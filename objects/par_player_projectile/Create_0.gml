@@ -33,6 +33,9 @@
 #macro	CAN_IGNORE_WALLS		(stateFlags & (1 << IGNORE_WALLS) != 0)
 #macro	CAN_IGNORE_ENTITIES		(stateFlags & (1 << IGNORE_ENTITIES) != 0)
 
+// Macro for the multiplier applied to a projectile if it happens to be charged.
+#macro	CHARGE_MULTIPLIER		4.0
+
 #endregion
 
 #region	Editing inherited variables
@@ -53,6 +56,9 @@ damage = 0;
 // Useful for determining if any of those objects were destructibles, doors, and other objects that can be
 // destroyed by projectiles.
 collisionList = ds_list_create();
+
+// 
+lastEntityID = noone;
 
 #endregion
 
@@ -76,7 +82,7 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	// the projectile is charged needs to be referenced after creation.
 	if (_isCharged){
 		stateFlags |= (1 << PROJ_CHARGED);
-		damage = damage * 4;
+		damage = damage * CHARGE_MULTIPLIER;
 	}
 }
 
@@ -164,6 +170,8 @@ set_initial_position = function(_x, _y, _imageXScale){
 /// @param {Real}	deltaHspd	Movement along the X-axis in whole pixels for the current frame.
 /// @param {Real}	deltaVspd	Movement along the Y-axis in whole pixels for the current frame.
 projectile_world_collision = function(_deltaHspd, _deltaVspd){
+	if (_deltaHspd == 0 && _deltaVspd == 0) {return;}
+	
 	// First, clear the list of the previous frame's collision data. After that, check for collisions along the
 	// line of movement for the projectile in question. After the initial collision_line check occurs, a check
 	// against any special colliders is performed.
@@ -172,14 +180,20 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	var _collider = noone;
 	for (var i = 0; i < _length; i++){
 		_collider = collisionList[| i];
+		if (_collider.object_index == obj_enemy_collider){ // Enemy collision should occur here; exit loop.
+			projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
+			ds_list_clear(collisionList);
+			return;
+		}
 		projectile_door_collision(_collider);
 		projectile_destructible_collision(_collider);
 		if (IS_DESTROYED) {break;}
 	}
-	 
+
 	// The projectile doesn't collide with the walls, ceilings, and floors in the world; move it to its next
 	// position and exit the function early.
 	if (CAN_IGNORE_WALLS){
+		projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 		x += _deltaHspd;
 		y += _deltaVspd;
 		return;
@@ -192,7 +206,9 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 		stateFlags |= (1 << DESTROYED);
 		_deltaHspd = 0;
 		_deltaVspd = 0;
+		return;
 	}
+	projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 	x += _deltaHspd;
 	y += _deltaVspd;
 }
@@ -266,6 +282,33 @@ projectile_door_collision = function(_instance){
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
 	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
+}
+
+/// @description Checks for and handles collision between the current projectile instance
+/// and any enemies that currently exist in the room. Should a collision have occurred
+/// between the two, damage will be dealt out to the enemy if they aren't immune to the
+/// projectile based on its type.
+/// @param {Real}	x2	The target position on the x-axis that the projectile is moving to.
+/// @param {Real}	y2	The target position on the y-axis that the projectile is moving to.
+projectile_enemy_collision = function(_x2, _y2){
+	if (x == _x2 && y == _y2) {return;}
+	
+	var _isDestroyed	= false;
+	var _lastEntityID	= lastEntityID;
+	var _damage			= damage;
+	var _stateFlags		= stateFlags;
+	var _isColdBased	= IS_COLD_BASED;
+	with(collision_line(x, y, _x2, _y2, par_enemy, false, true)){
+		_isDestroyed = true;
+		if (_lastEntityID != id && !IS_HIT_STUNNED && is_weak_to_weapon(_stateFlags)){
+			if (!inflict_freeze(_damage, _isColdBased)) {entity_apply_hitstun(8, _damage);}
+			_lastEntityID = id;
+		}
+	}
+	lastEntityID = _lastEntityID;
+	
+	// Destroy the projectile if it can't pass through enemies and the collision was a success.
+	if (_isDestroyed && !CAN_IGNORE_ENTITIES) {stateFlags |= (1 << DESTROYED);}
 }
 
 #endregion

@@ -1,4 +1,4 @@
-if (curState == NO_STATE) {return;}
+if (hitpoints == 0) {return;}
 
 // Loop through all existing ghost effect structs and render them at their current positions and opacity levels.
 var _length = ds_list_size(ghostEffectID);

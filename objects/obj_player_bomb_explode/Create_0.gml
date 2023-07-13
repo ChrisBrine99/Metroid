@@ -1,3 +1,11 @@
+#region Macro initialization
+
+// State flag that is used during collision with an enemy to determine if they should take damage
+// from it or not. Otherwise, the "ping" sound effect will be heard, and the enemy will be unharmed.
+#macro	TYPE_BOMB				10
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -27,7 +35,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb_explode, -1);
-	stateFlags |= (1 << DRAW_SPRITE);
+	stateFlags |= (1 << DRAW_SPRITE) | (1 << TYPE_BOMB);
 }
 
 #endregion
