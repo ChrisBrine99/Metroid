@@ -233,18 +233,29 @@ is_weak_to_weapon = function(_stateFlags){
 /// @param {Real}	damage			The damage that the weapon will deal should the Enemy not be frozen instead.
 /// @param {Bool}	isColdBased		Determines if the weapon used is "cold-based" and can freeze.
 inflict_freeze = function(_damage, _isColdBased){
+	// If this function is called while the Enemy is already frozen, the timer for the ailment will be reset
+	// before the function is exited prematurely. Allows for freeze resets like most of the games in the series.
+	if (_isColdBased && curAilment == AIL_FROZEN){
+		if (ailmentTimer < FROZEN_DURATION * 0.25){
+			ailmentTimer = FROZEN_DURATION;
+			image_blend = HEX_LIGHT_BLUE;
+			return true;
+		}
+		return false; // Doesn't do anything until a re-freeze can occur.
+	}
+	
 	// Freezing an Enemy can't occur if the weapon isn't "cold-based", they are already frozen, immune to 
 	// the status ailment, their HP is  greater than one, OR their current hitpoint ratio is higher than the 
 	// required threshold percentage.
 	var _hitpoints = hitpoints - _damage;
-	if (!_isColdBased || curAilment == AIL_FROZEN || IMMUNE_TO_FREEZE || 
-			(_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) {return false;}
+	if (!_isColdBased || IMMUNE_TO_FREEZE || (_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) {return false;}
 	
 	if (curAilment != AIL_NONE) {remove_active_ailment();} // Remove previous ailment.
 	
 	// Apply the frozen state; setting the object up to be tinted blue while their current animation is 
 	// completely frozen for the duration of the ailment.
 	object_set_next_state(state_frozen);
+	curState		= NO_STATE;		// Remove current state in case it hasn't processed for the current frame.
 	prevAnimSpeed	= animSpeed;
 	lastStateExt	= lastState;
 	curAilment		= AIL_FROZEN;

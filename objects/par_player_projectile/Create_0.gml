@@ -141,16 +141,16 @@ set_initial_position = function(_x, _y, _imageXScale){
 				if ((_stateFlags & (1 << MOVING)) != 0){
 					// Walking Offset //
 					x = _x + (2 * _imageXScale);
-					y = _y - 46;
+					y = _y - 42;
 				} else{
 					// Standing Offset // 
 					x = _x + (3 * _imageXScale);
-					y = _y - 46;
+					y = _y - 42;
 				}
 			} else{
 				// Jumping Offset //
 				x = _x + (3 * _imageXScale);
-				y = _y - 46;
+				y = _y - 42;
 			}
 			stateFlags |= (1 << PROJ_MOVE_UP);
 			image_angle = 90;
@@ -300,8 +300,10 @@ projectile_enemy_collision = function(_x2, _y2){
 	var _isColdBased	= IS_COLD_BASED;
 	with(collision_line(x, y, _x2, _y2, par_enemy, false, true)){
 		_isDestroyed = true;
-		if (_lastEntityID != id && !IS_HIT_STUNNED && is_weak_to_weapon(_stateFlags)){
-			if (!inflict_freeze(_damage, _isColdBased)) {entity_apply_hitstun(8, _damage);}
+		if (_lastEntityID != id && !IS_HIT_STUNNED){
+			if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags)){
+				entity_apply_hitstun(8, _damage);
+			}
 			_lastEntityID = id;
 		}
 	}

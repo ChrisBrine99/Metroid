@@ -6,7 +6,7 @@ event_inherited();
 // Set the proper sprite, and add a dim ambient light for the Gullug's eyes; the light matching the eye color
 // in the sprite itself. Finally, the Gullug is set to be susceptible to every weapon Samus has access to.
 entity_set_sprite(spr_gullug, -1);
-object_add_light_component(x, y, 0, -5, 20, HEX_LIGHT_PURPLE, 0.3);
+object_add_light_component(x, y, 0, -5, 14, HEX_LIGHT_PURPLE, 0.5);
 initialize_weak_to_all();
 
 // Since te Power Beam deals a single point of damage (On "Normal" difficulty), the Gullug will be able to take

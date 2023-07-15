@@ -1525,6 +1525,19 @@ state_crouching = function(){
 	// code on this frame when it really shouldn't have.
 	process_input();
 	
+	// Check for gravity in the event Samus is crouching on top of a frozen enemy or a moving platform and it
+	// happens to disappear or move to a spot where Samus can't follow it. Otherwise, Samus would get stuck
+	// crouching in the air once the platform is no longer under her.
+	apply_gravity(MAX_FALL_SPEED);
+	if (!IS_GROUNDED){
+		object_set_next_state(state_airbourne);
+		entity_set_sprite(jumpSpriteFw, standingMask);
+		stateFlags &= ~(1 << CROUCHING);
+		jumpStartTimer = JUMPSPIN_ANIM_TIME;
+		aimReturnTimer = 0.0;
+		return; // State changed; ignore input and immediately switch over to "airbourne" state.
+	}
+	
 	// By pressing the up OR the jump input, Samus will exit her crouching state.
 	if (IS_UP_PRESSED || IS_JUMP_PRESSED){
 		crouch_to_standing();

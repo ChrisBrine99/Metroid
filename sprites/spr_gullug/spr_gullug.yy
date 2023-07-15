@@ -2,9 +2,9 @@
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
   "name": "spr_gullug",
-  "bbox_bottom": 21,
-  "bbox_left": 9,
-  "bbox_right": 22,
+  "bbox_bottom": 22,
+  "bbox_left": 8,
+  "bbox_right": 23,
   "bbox_top": 2,
   "bboxMode": 2,
   "collisionKind": 1,
@@ -50,8 +50,8 @@
   },
   "origin": 4,
   "parent": {
-    "name": "Enemies",
-    "path": "folders/Resources/Graphics/Sprites/Entities/Dynamic/Enemies.yy",
+    "name": "General",
+    "path": "folders/Resources/Graphics/Sprites/Entities/Dynamic/Enemies/General.yy",
   },
   "preMultiplyAlpha": false,
   "sequence": {
