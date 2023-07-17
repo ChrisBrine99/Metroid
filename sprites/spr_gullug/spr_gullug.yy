@@ -2,7 +2,7 @@
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
   "name": "spr_gullug",
-  "bbox_bottom": 22,
+  "bbox_bottom": 21,
   "bbox_left": 8,
   "bbox_right": 23,
   "bbox_top": 2,

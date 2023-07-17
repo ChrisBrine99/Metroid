@@ -1009,6 +1009,13 @@ player_enemy_collision = function(){
 	
 	var _enemy = instance_place(x, y, par_enemy);
 	if (_enemy != noone){
+		// If Samus is currently using her screw attack, she will be immune to damage from enemies while also
+		// instantly killing them should they not be immune to the ability.
+		if (IS_JUMP_ATTACK){
+			with(_enemy) {if (!IS_IMMUNE_TO_SATTACK) instance_destroy(self);}
+			return;
+		}
+		// A frozen enemy will also prevent damage from being taken during collision with an enemy.
 		if (_enemy.curAilment == AIL_FROZEN) {return;}
 		entity_apply_hitstun(_enemy.stunDuration, _enemy.damage);
 	}

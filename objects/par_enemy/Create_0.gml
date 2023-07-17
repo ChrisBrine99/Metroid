@@ -2,21 +2,23 @@
 
 // Macros for each of the bits in the variable "stateFlags". These bits will all determine how the enemy functions
 // and interacts with the world depending on which are set (1) and which are not (0).
-#macro	AILMENT_ACTIVE			16
-#macro	STUN_IMMUNITY			17
-#macro	SHOCK_IMMUNITY			18
-#macro	FREEZE_IMMUNITY			19
-#macro	POWER_BOMB_IMMUNITY		20
+#macro	AILMENT_ACTIVE			15
+#macro	STUN_IMMUNITY			16
+#macro	SHOCK_IMMUNITY			17
+#macro	FREEZE_IMMUNITY			18
+#macro	POWER_BOMB_IMMUNITY		19
+#macro	SCREW_ATTACK_IMMUNITY	20
 #macro	DROP_ITEM				21
 
 // Simplified checks for an enemy's state flags, which determine what they can and can't do relative to the bits that
 // are set and those that aren't.
-#macro	AILMENT_INFLICTED		stateFlags & (1 << AILMENT_ACTIVE)
-#macro	IMMUNE_TO_STUN			stateFlags & (1 << STUN_IMMUNITY)
-#macro	IMMUNE_TO_FREEZE		stateFlags & (1 << FREEZE_IMMUNITY)
-#macro	IMMUNE_TO_SHOCK			stateFlags & (1 << SHOCK_IMMUNITY)
-#macro	IS_IMMUNE_TO_PBOMB		stateFlags & (1 << POWER_BOMB_IMMUNITY)
-#macro	CAN_DROP_ITEM			stateFlags & (1 << DROP_ITEM)
+#macro	AILMENT_INFLICTED		(stateFlags & (1 << AILMENT_ACTIVE))
+#macro	IMMUNE_TO_STUN			(stateFlags & (1 << STUN_IMMUNITY))
+#macro	IMMUNE_TO_FREEZE		(stateFlags & (1 << FREEZE_IMMUNITY))
+#macro	IMMUNE_TO_SHOCK			(stateFlags & (1 << SHOCK_IMMUNITY))
+#macro	IS_IMMUNE_TO_PBOMB		(stateFlags & (1 << POWER_BOMB_IMMUNITY))
+#macro	IS_IMMUNE_TO_SATTACK	(stateFlags & (1 << SCREW_ATTACK_IMMUNITY))
+#macro	CAN_DROP_ITEM			(stateFlags & (1 << DROP_ITEM))
 
 // Macros for the ailments based on their priority; where the higher number will overwrite the previous one
 // should it be inflicted while the enemy is already affected by some lower priority ailment.
@@ -146,8 +148,9 @@ initialize_weak_to_all = function(){
 		(1 << TYPE_ICE_MISSILE),
 		(1 << TYPE_SHOCK_MISSILE),
 		(1 << TYPE_BOMB)
-		// Power bomb isn't found here since it will always damage enemies.
 	);
+	// Power bomb and screw attack aren't found here since they will always damage enemies unless two seperate 
+	// immunity flags are toggled to prevent damage from each.
 }
 
 /// @description General function to call in the Create event of the Enemy object to make it weak to beam

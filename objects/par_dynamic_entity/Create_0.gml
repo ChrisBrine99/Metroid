@@ -207,7 +207,12 @@ apply_frame_movement = function(_collisionFunction = NO_FUNCTION){
 	// Step Five: call the collision function that was specified (If one was actually provided when this
 	// function was called in the code; the default is no function at all) to handle collision with the world
 	// using the calculated delta values for the entity's velocities.
-	if (_collisionFunction != NO_FUNCTION && (_deltaHspd != 0 || _deltaVspd != 0)) {_collisionFunction(_deltaHspd, _deltaVspd);}
+	if (_collisionFunction != NO_FUNCTION && (_deltaHspd != 0 || _deltaVspd != 0)){
+		_collisionFunction(_deltaHspd, _deltaVspd);
+	} else{ // No collision function; simply add movement to current coordinates.
+		x += _deltaHspd;
+		y += _deltaVspd;
+	}
 }
 
 /// @description Checks for collision between the entity and the world's collision bounds. If no collision is

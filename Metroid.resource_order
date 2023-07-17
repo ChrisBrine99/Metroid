@@ -265,6 +265,7 @@
     {"name":"spr_power_stand2","order":2,"path":"sprites/spr_power_stand2/spr_power_stand2.yy",},
     {"name":"spr_power_walk0","order":3,"path":"sprites/spr_power_walk0/spr_power_walk0.yy",},
     {"name":"spr_power_walk1","order":4,"path":"sprites/spr_power_walk1/spr_power_walk1.yy",},
+    {"name":"obj_yumbo","order":2,"path":"objects/obj_yumbo/obj_yumbo.yy",},
     {"name":"spr_power_walk2","order":5,"path":"sprites/spr_power_walk2/spr_power_walk2.yy",},
     {"name":"spr_raindrop","order":3,"path":"sprites/spr_raindrop/spr_raindrop.yy",},
     {"name":"spr_raindrop_land","order":2,"path":"sprites/spr_raindrop_land/spr_raindrop_land.yy",},

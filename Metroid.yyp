@@ -344,6 +344,7 @@
     {"id":{"name":"spr_power_stand2","path":"sprites/spr_power_stand2/spr_power_stand2.yy",},},
     {"id":{"name":"spr_power_walk0","path":"sprites/spr_power_walk0/spr_power_walk0.yy",},},
     {"id":{"name":"spr_power_walk1","path":"sprites/spr_power_walk1/spr_power_walk1.yy",},},
+    {"id":{"name":"obj_yumbo","path":"objects/obj_yumbo/obj_yumbo.yy",},},
     {"id":{"name":"rm_test01","path":"rooms/rm_test01/rm_test01.yy",},},
     {"id":{"name":"spr_power_walk2","path":"sprites/spr_power_walk2/spr_power_walk2.yy",},},
     {"id":{"name":"spr_raindrop","path":"sprites/spr_raindrop/spr_raindrop.yy",},},
