@@ -2,17 +2,15 @@
 
 // Positions for the bits that toggle on and off these main entity "states" stored within the "stateFlags"
 // variable found in each child of this object. These are unique to "par_dynamic_entity" and its children.
-#macro	USE_SLOPES				22
-#macro	DESTRUCTIBLE			23
-#macro	GROUNDED				24
-#macro	HIT_STUNNED				25
+#macro	USE_SLOPES				21
+#macro	DESTRUCTIBLE			22
+#macro	GROUNDED				23
 
 // Simplified checks of each default "state" flags condensed into macros that explain what they functionally
 // do. Otherwise, there would be a bunch of the same bitwise operations all over the code, which is messy.
 #macro	CAN_USE_SLOPES			(stateFlags & (1 << USE_SLOPES) != 0)
 #macro	DESTROY_WALL_COLLIDE	(stateFlags & (1 << DESTRUCTIBLE) != 0)
 #macro	IS_GROUNDED				(stateFlags & (1 << GROUNDED) != 0)
-#macro	IS_HIT_STUNNED			(stateFlags & (1 << HIT_STUNNED) != 0)
 
 #endregion
 

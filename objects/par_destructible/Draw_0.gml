@@ -1,3 +1,6 @@
+if (!IS_ON_SCREEN) {return;}
+global.drawnEntities++;
+
 // Render the block regeneration/destruction effect if it exists; skipping over rendering the block itself during
 // that process to avoid any weird issues with both rendering in the same frame without the "return" statement. 
 with(effectID){

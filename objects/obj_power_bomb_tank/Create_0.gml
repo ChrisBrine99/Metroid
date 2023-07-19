@@ -14,7 +14,7 @@ collectibleInfo = "Samus's power bomb capacity has been permanently increased by
 // Setup the ambient light source to match the energy tank's color scheme.
 baseRadius = 24;
 baseStrength = 0.7;
-object_add_light_component(x, y, 8, 8, baseRadius, HEX_LIGHT_YELLOW, baseStrength);
+object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_YELLOW, baseStrength);
 
 #endregion
 

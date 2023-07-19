@@ -14,7 +14,7 @@ collectibleInfo = "A small energy piece. When four are combined, Samus's maximum
 // Setup the ambient light source to match the energy tank piece's color scheme.
 baseRadius = 24;
 baseStrength = 0.4;
-object_add_light_component(x, y, 8, 10, baseRadius, HEX_PURPLE, baseStrength);
+object_add_light_component(x, y, 0, 2, baseRadius, HEX_PURPLE, baseStrength);
 
 #endregion
 

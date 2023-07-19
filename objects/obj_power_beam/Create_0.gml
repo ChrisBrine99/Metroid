@@ -2,8 +2,8 @@
 
 // The positions for the bit flags that when toggled will determine if the beam is the upper, lower, or center
 // projectile of the three that exist for the split power beam.
-#macro	UPPER_POWER_BEAM		15
-#macro	LOWER_POWER_BEAM		16
+#macro	UPPER_POWER_BEAM		12
+#macro	LOWER_POWER_BEAM		13
 
 // Condenses the code required to check if the current instance of the beam projectile is the upper (Moves away
 // from the center beam in negative values) or the lower (Moves away in positive values) of the three instances.

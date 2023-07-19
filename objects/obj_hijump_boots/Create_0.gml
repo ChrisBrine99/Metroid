@@ -14,7 +14,7 @@ collectibleInfo = "Samus's maximum jumping height has been drastically increased
 // Setup the ambient light source to match the hi-jump boots' color scheme.
 baseRadius = 32;
 baseStrength = 0.7;
-object_add_light_component(x, y, 7, 8, baseRadius, HEX_LIGHT_RED, baseStrength);
+object_add_light_component(x, y, -1, 0, baseRadius, HEX_LIGHT_RED, baseStrength);
 
 #endregion
 

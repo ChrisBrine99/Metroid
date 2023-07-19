@@ -14,7 +14,7 @@ collectibleInfo = "Samus's spin jump will now produce a dangerous field of elect
 // Setup the ambient light source to match the screw attack orb's color scheme.
 baseRadius = 26;
 baseStrength = 0.65;
-object_add_light_component(x, y, 8, 8, baseRadius, HEX_LIGHT_ORANGE, baseStrength);
+object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_ORANGE, baseStrength);
 
 #endregion
 

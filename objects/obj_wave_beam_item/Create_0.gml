@@ -14,7 +14,7 @@ collectibleInfo = "Adds a new beam to Samus's arm cannon. The wave beam inflicts
 // Setup the ambient light source to match the ice beam totem's color scheme.
 baseRadius = 40;
 baseStrength = 0.5;
-object_add_light_component(x, y, 12, 4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
+object_add_light_component(x, y, 4, -4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
 
 #endregion
 

@@ -41,6 +41,6 @@ function instance_create_singleton_object(_x, _y, _object, _depth = 30){
 /// @param {Id.Instance}	instance		The id of the object that will be destroyed.
 /// @param {Bool}			performEvents	Determines if the "Destroy" event should be called.
 function instance_destroy_object(_instance, _performEvents = true){
-	if (singleton_instance_exists(object_index)) {return;}
+	if (singleton_instance_exists(_instance.object_index)) {return;}
 	instance_destroy(_instance, _performEvents);
 }

@@ -3,7 +3,9 @@
 // Positions for the bit flags that allow or restrict specific functionalities of the entity, whether they be
 // a dynamic or static one. These four highest positioned bits are shared by both entity types; any others will
 // be unique to one type or the other.
-#macro	DRAW_SPRITE				26
+#macro	HIT_STUNNED				24
+#macro	DRAW_SPRITE				25
+#macro	ON_SCREEN				26
 #macro	FREEZE_ANIMATION		27
 #macro	LOOP_ANIMATION			28
 #macro	ANIMATION_END			29
@@ -11,7 +13,9 @@
 #macro	DESTROYED				31
 
 // Condenses the code required to check any of the four shared bit flags' current states into macro values.
+#macro	IS_HIT_STUNNED			(stateFlags & (1 << HIT_STUNNED) != 0)
 #macro	CAN_DRAW_SPRITE			(stateFlags & (1 << DRAW_SPRITE) != 0)
+#macro	IS_ON_SCREEN			(stateFlags & (1 << ON_SCREEN) != 0)
 #macro	IS_ANIMATION_FROZEN		(stateFlags & (1 << FREEZE_ANIMATION) != 0)
 #macro	CAN_LOOP_ANIMATION		(stateFlags & (1 << LOOP_ANIMATION) != 0)
 #macro	DID_ANIMATION_END		(stateFlags & (1 << ANIMATION_END) != 0)
@@ -38,7 +42,7 @@ function entity_draw(){
 	// Don't process any code within this event if there isn't a valid sprite to draw. The default value for a 
 	// sprite before it is initialized by an object (Which is done using the "set_sprite" function that is 
 	// found in the  "Create" event of this parent object) should be the constant NO_SPRITE.
-	if (sprite_index == NO_SPRITE || !CAN_DRAW_SPRITE) {return;}
+	if (sprite_index == NO_SPRITE || !CAN_DRAW_SPRITE || !IS_ON_SCREEN) {return;}
 
 	// Animate the sprite as long as the game isn't paused AND the length of the sprite is greater than one 
 	// image. Otherwise, the sprite will only render whatever image is found at the "imageIndex" number. After 
@@ -67,6 +71,7 @@ function entity_draw(){
 	// After the new animation logic has been updated; draw the sprite to the screen using all the other 
 	// default image/sprite manipulation variables that are built into every Game Maker object.
 	draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
+	global.drawnEntities++;
 }
 
 /// @description Moves the entity to the specified x and y coordinates within the current room. In case decimals
@@ -89,14 +94,30 @@ function entity_set_position(_x, _y){
 /// @param {Real}			loopOffset	Animation frame to reset to whenever it loops.
 function entity_set_sprite(_sprite, _mask, _speed = 1, _start = -1, _loopOffset = 0){
 	if (sprite_index != _sprite && sprite_exists(_sprite)){
-		sprite_index =	_sprite;
-		mask_index =	_mask;
-		loopOffset =	_loopOffset;
-		spriteLength =	sprite_get_number(_sprite);
-		spriteSpeed =	sprite_get_speed(_sprite);
+		sprite_index	= _sprite;
+		mask_index		= _mask;
+		loopOffset		= _loopOffset;
+		spriteLength	= sprite_get_number(_sprite);
+		spriteSpeed		= sprite_get_speed(_sprite);
 		if (_start != -1) {imageIndex =	_start;}
 	}
 	animSpeed =	_speed; // The animation speed can always be updated by calling this function.
+}
+
+/// @description Performs a check to see if an entity is on-screen on not. If they are, they will have their
+/// draw event(s) processed. Otherwise, the entity will be removed from the render pipeline until they are
+/// considered "on-screen" once again.
+/// @param {Real}	x		Position of the viewport along the x-axis.
+/// @param {Real}	y		Position of the viewport along the y-axis.
+/// @param {Real}	width	The size of the viewport (In pixels) along the x-axis.
+/// @param {Real}	height	The size of the viewport (In pixels) along the y-axis.
+function entity_is_on_screen(_x, _y, _width, _height){
+	if (_x				> bbox_right	+ CULL_PADDING	||
+		_x + _width		< bbox_left		- CULL_PADDING	||
+		_y				> bbox_bottom	+ CULL_PADDING	||
+		_y + _height	< bbox_top		- CULL_PADDING)
+			{stateFlags &= ~(1 << ON_SCREEN);}
+	else	{stateFlags |= (1 << ON_SCREEN);}
 }
 
 #endregion

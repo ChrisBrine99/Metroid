@@ -14,7 +14,7 @@ collectibleInfo = "Allows Samus to jump again while she is somersaulting in the 
 // Setup the ambient light source to match the space jump's color scheme.
 baseRadius = 34;
 baseStrength = 0.8;
-object_add_light_component(x, y, 8, 6, baseRadius, HEX_LIGHT_BLUE, baseStrength);
+object_add_light_component(x, y, 0, -2, baseRadius, HEX_LIGHT_BLUE, baseStrength);
 
 #endregion
 

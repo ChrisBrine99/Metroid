@@ -52,12 +52,12 @@ ammoDropChance = 0.2;		// 20%
 
 // 
 targetX = x;
-targetY = y;
+targetY = y + 32;
 targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
 
 // 
 centerX = x;
-centerY = y;
+centerY = y + 64;
 
 // 
 chaseCooldownTimer = 0.0;
@@ -85,6 +85,8 @@ state_default = function(){
 			targetX = centerX + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
 			targetY = centerY + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
 		} until(!collision_line(x, y, targetX, targetY, par_collider, false, true));
+		image_xscale = (x > targetX) ? -1 : 1;
+		lightOffsetX = -4 * image_xscale;
 		return;
 	}
 	
@@ -96,33 +98,40 @@ state_default = function(){
 	hspd = lengthdir_x(WANDER_SPEED, direction);
 	vspd = lengthdir_y(WANDER_SPEED, direction);
 	apply_frame_movement(NO_FUNCTION);
-	
-	// 
-	image_xscale = (x > targetX) ? -1 : 1;
-	lightOffsetX = -4 * image_xscale;
 }
 
-/// @description 
+/// @description The Yumbo's "attacking" state. It will target Samus's current position (Offset by 16 pixels
+/// above her actual position so it's more inline with the center of her sprite) until it damages her OR Samus
+/// manages to go outside of the Yumbo's "territory". Regardless of the condition that is met, the Yumbo will
+/// return to its default state and have a 1.5 second cooldown applied before it can chase Samus once again.
 state_chase_samus = function(){
-	// 
+	// The Yumbo has gone outside of its "hunting" region OR it has collided with and damaged Samus. Resets
+	// itself back to its default state; moving back to the center of its "territory" region.
 	if (distance_to_point(centerX, centerY) >= ESCAPE_RADIUS || place_meeting(x, y, PLAYER)){
 		object_set_next_state(state_default);
-		targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
-		chaseCooldownTimer = CHASE_COOLDOWN_INTERVAL;
-		targetX = centerX;
-		targetY = centerY;
-		return;
+		targetUpdateTimer	= random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
+		chaseCooldownTimer	= CHASE_COOLDOWN_INTERVAL;
+		image_xscale = (x > targetX) ? -1 : 1;
+		lightOffsetX = -4 * image_xscale;
+		
+		// Move the Yumbo back to the center of its "territory", but with a random offset within an eight-pixel 
+		// radius from that center applied so it doesn't always return to the same place after ending a chase.
+		targetX = centerX + irandom_range(-8, 8);
+		targetY = centerY + irandom_range(-8, 8);
+		
+		return; // State was changed; exit current state early.
 	}
 	
-	// 
+	// Move the Yumbo towards the player at its maximum possible movement speed. Its hspd and vspd will be
+	// determined by the angle between its position and Samus's multiplied by its maximum hspd and vspd values.
 	var _playerX = PLAYER.x;
 	var _playerY = PLAYER.y - 16;
 	direction = point_direction(x, y, _playerX, _playerY);
 	hspd = lengthdir_x(maxHspd, direction);
 	vspd = lengthdir_y(maxVspd, direction);
-	apply_frame_movement(NO_FUNCTION);
+	apply_frame_movement(NO_FUNCTION); // No world collision function is needed for the Yumbo.
 	
-	// 
+	// Ensure the Yumbo is always facing Samus; its eye light being properly offset for said facing direction.
 	image_xscale = (x < _playerX) ? 1 : -1;
 	lightOffsetX = -4 * image_xscale;
 }

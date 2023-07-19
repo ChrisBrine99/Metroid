@@ -10,13 +10,13 @@
 #macro	TYPE_SUPER_MISSILE		5
 #macro	TYPE_ICE_MISSILE		6
 #macro	TYPE_SHOCK_MISSILE		7
-#macro	PROJ_CHARGED			17
-#macro	PROJ_MOVE_RIGHT			18
-#macro	PROJ_MOVE_LEFT			19
-#macro	PROJ_MOVE_UP			20
-#macro	PROJ_MOVE_DOWN			21
-#macro	IGNORE_WALLS			22
-#macro	IGNORE_ENTITIES			23
+#macro	PROJ_CHARGED			14
+#macro	PROJ_MOVE_RIGHT			15
+#macro	PROJ_MOVE_LEFT			16
+#macro	PROJ_MOVE_UP			17
+#macro	PROJ_MOVE_DOWN			18
+#macro	IGNORE_WALLS			19
+#macro	IGNORE_ENTITIES			20
 
 // Macro statements that condense the code required for checking each of the state flags found within the
 // player projectile's "stateFlags" variable; which vastly differ from those found in other dynamic entities.

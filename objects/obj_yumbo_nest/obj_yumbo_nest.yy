@@ -1,22 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "par_static_entity",
+  "name": "obj_yumbo_nest",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":8,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":1,"eventType":3,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Static",
-    "path": "folders/Resources/Core/Entities/Static.yy",
+    "name": "Spawners",
+    "path": "folders/Resources/Core/Entities/Dynamic/Enemies/Spawners.yy",
   },
   "parentObjectId": {
-    "name": "par_collider",
-    "path": "objects/par_collider/par_collider.yy",
+    "name": "par_enemy",
+    "path": "objects/par_enemy/par_enemy.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -33,7 +30,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_yumbo_nest",
+    "path": "sprites/spr_yumbo_nest/spr_yumbo_nest.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }

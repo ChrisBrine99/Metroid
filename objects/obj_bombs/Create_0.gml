@@ -14,7 +14,7 @@ collectibleInfo = "The Morph Ball can now deploy bombs that can destroy blocks i
 // Setup the ambient light source to match the bomb tank's color scheme.
 baseRadius = 24;
 baseStrength = 0.5;
-object_add_light_component(x, y, 8, 8, baseRadius, HEX_LIGHT_BLUE, baseStrength);
+object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_BLUE, baseStrength);
 
 #endregion
 

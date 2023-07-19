@@ -2,13 +2,13 @@
 
 // Macros for each of the bits in the variable "stateFlags". These bits will all determine how the enemy functions
 // and interacts with the world depending on which are set (1) and which are not (0).
-#macro	AILMENT_ACTIVE			15
-#macro	STUN_IMMUNITY			16
-#macro	SHOCK_IMMUNITY			17
-#macro	FREEZE_IMMUNITY			18
-#macro	POWER_BOMB_IMMUNITY		19
-#macro	SCREW_ATTACK_IMMUNITY	20
-#macro	DROP_ITEM				21
+#macro	AILMENT_ACTIVE			14
+#macro	STUN_IMMUNITY			15
+#macro	SHOCK_IMMUNITY			16
+#macro	FREEZE_IMMUNITY			17
+#macro	POWER_BOMB_IMMUNITY		18
+#macro	SCREW_ATTACK_IMMUNITY	19
+#macro	DROP_ITEM				20
 
 // Simplified checks for an enemy's state flags, which determine what they can and can't do relative to the bits that
 // are set and those that aren't.

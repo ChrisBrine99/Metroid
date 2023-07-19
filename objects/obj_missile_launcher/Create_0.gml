@@ -14,7 +14,7 @@ collectibleInfo = "Enables Samus to fire missiles from her arm cannon; consuming
 // Setup the ambient light source to match the energy tank's color scheme.
 baseRadius = 24;
 baseStrength = 0.7;
-object_add_light_component(x, y, 8, 8, baseRadius, HEX_WHITE, baseStrength);
+object_add_light_component(x, y, 0, 0, baseRadius, HEX_WHITE, baseStrength);
 
 #endregion
 

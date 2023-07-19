@@ -21,12 +21,19 @@
 #macro	DEADZONE_WIDTH			4
 #macro	DEADZONE_HEIGHT			3
 
+// Determines distance that the entity's bounding box must be from the edges of the camera in order to have
+// itself culled from the rendering process for the current frame.
+#macro	CULL_PADDING			12
+
 #endregion
 
 #region Initializing enumerators that are useful/related to obj_camera
 #endregion
 
 #region Initializing any globals that are useful/related to obj_camera
+
+global.drawnEntities = 0;
+
 #endregion
 
 #region	The main object code for obj_camera
@@ -106,17 +113,19 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	
 	/// @description Update the view's position to the coordinates supplied into the function arguments. If the
 	/// room view boundaries flag is enabled, the position supplied will be clamped to be between (0, 0) and
-	/// the current room's dimensions.
-	/// @param {Real}	x
-	/// @param {Real}	y
+	/// the current room's dimensions. This function will also call the function responsible for culling all
+	/// entities that are currently off-screen.
+	/// @param {Real}	x	Target value for the viewport's next X position.
+	/// @param {Real}	y	Target value for the viewport's next Y position.
 	update_view_position = function(_x, _y){
+		var _width = camera_get_view_width(camera);
+		var _height = camera_get_view_height(camera);
 		if (IS_VIEW_BOUND_ENABLED){
-			var _width = camera_get_view_width(camera);
-			var _height = camera_get_view_height(camera);
 			_x = clamp(_x, 0, max(room_width - _width, 0));
 			_y = clamp(_y, 0, max(room_height - _height, 0));
 		}
 		camera_set_view_pos(camera, _x, _y);
+		cull_off_screen_entities(_x, _y, _width, _height);
 	}
 	
 	/// @description Updates the position of the camera based on the target object's position, but only if the
@@ -215,6 +224,24 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			var _oTargetY = targetObject.y + targetOffsetY;
 			y = value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.2));
 			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT) {stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));}
+		}
+	}
+	
+	/// @description Loops through all existing dynamic and static entity objects to test their visibility on
+	/// screen. All entities considered off-screen after this check will have their draw events ignored for the
+	/// current frame.
+	/// @param {Real}	x		Current x-position for the camera's viewport.
+	/// @param {Real}	y		Current y-position for the camera's viewport.
+	/// @param {Real}	width	Width of the camera's viewport (In pixels).
+	/// @param {Real}	height	Height of the camera's viewport (In pixels).
+	cull_off_screen_entities = function(_x, _y, _width, _height){
+		with(par_dynamic_entity){
+			if (!CAN_DRAW_SPRITE) {continue;} // Ignore invisible dynamic entities.
+			entity_is_on_screen(_x, _y, _width, _height);
+		}
+		with(par_static_entity){
+			if (!CAN_DRAW_SPRITE) {continue;} // Ignore invisible static entities.
+			entity_is_on_screen(_x, _y, _width, _height);
 		}
 	}
 }

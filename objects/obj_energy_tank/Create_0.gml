@@ -14,7 +14,7 @@ collectibleInfo = "Samus's maximum energy capacity has been permanently increase
 // Setup the ambient light source to match the energy tank's color scheme.
 baseRadius = 32;
 baseStrength = 0.5;
-object_add_light_component(x, y, 8, 4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
+object_add_light_component(x, y, 0, -4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
 
 #endregion
 

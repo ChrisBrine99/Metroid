@@ -41,7 +41,7 @@
 #macro	MOVING					0
 #macro	CROUCHING				1
 #macro	JUMP_SPIN				2
-#macro	JUMP_ATTACK				3		// Screw Attack's damaging/invincibility effect
+#macro	JUMP_ATTACK				3		// Screw Attack's damaging/invincibility effect.
 #macro	AIMING_UP				4
 #macro	AIMING_DOWN				5
 #macro	AIMING_FRONT			6
@@ -49,6 +49,7 @@
 #macro	SUBMERGED				8
 #macro	ENERGY_SHIELD			9
 #macro	PHASE_SHIFT				10
+#macro	WAS_BEAM_VISIBLE		20		// Determines if the arm cannon was visible so it can flicker during a hitstun.
 
 // Condenses the logic required to check if certain substate bits are set or not.
 #macro	IS_MOVING				(stateFlags & (1 << MOVING) != 0)
@@ -82,7 +83,6 @@
 #macro	ALT_WEAPON				14	// Makes Samus user her missiles or power bombs if she's in her morphball form.
 #macro	USE_ENERGY_SHIELD		15
 #macro	USE_PHASE_SHIFT			16
-#macro	WAS_BEAM_VISIBLE		17	// Determines if the arm cannon was visible so it can flicker during a hitstun.
 
 // These macros condense all the code required to check if a valid input is being pressed or held by the player.
 #macro	IS_RIGHT_HELD			(inputFlags & (1 << MOVE_RIGHT) != 0)

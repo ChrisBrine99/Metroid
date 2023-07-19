@@ -14,7 +14,7 @@ collectibleInfo = "A special type of energy tank that will store excess energy t
 // Setup the ambient light source to match the energy tank piece's color scheme.
 baseRadius = 32;
 baseStrength = 0.5;
-object_add_light_component(x, y, 8, 10, baseRadius, HEX_WHITE, baseStrength);
+object_add_light_component(x, y, 0, -4, baseRadius, HEX_WHITE, baseStrength);
 
 #endregion
 
