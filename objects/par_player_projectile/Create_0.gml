@@ -301,9 +301,8 @@ projectile_enemy_collision = function(_x2, _y2){
 	with(collision_line(x, y, _x2, _y2, par_enemy, false, true)){
 		_isDestroyed = true;
 		if (_lastEntityID != id && !IS_HIT_STUNNED){
-			if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags)){
+			if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags))
 				entity_apply_hitstun(8, _damage);
-			}
 			_lastEntityID = id;
 		}
 	}

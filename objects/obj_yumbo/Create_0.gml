@@ -1,15 +1,19 @@
 #region Macros that are useful/related to obj_yumbo
 
-// 
+// Determines characteristics of the Yumbo; how long it will take before it can persue Samus after hitting 
+// her; how far Samus needs to be from the Yumbo for it to begin chasing her; and the distance from the Yumbo's 
+// area Samus must be before the Yumbo gives up the chase.
 #macro	CHASE_COOLDOWN_INTERVAL	90.0
 #macro	DETECTION_RADIUS		64
 #macro	ESCAPE_RADIUS			96
 
-// 
+// Determines characteristics of the Yumbo's dormant state; how fast it can move along either axes, and the
+// distance from the center of its "territory" that it is allowed to wander around.
 #macro	WANDER_SPEED			1.0
 #macro	TARGET_POS_RADIUS		32
 
-// 
+// The minimum and maximum values for the range of time that a position will be targetted before it is 
+// refreshed and the Yumbo finds a new spot to target, respectively.
 #macro	TARGET_UPDATE_MIN_TIME	45.0
 #macro	TARGET_UPDATE_MAX_TIME	150.0
 
@@ -20,17 +24,19 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Set the proper sprite, and add a dim ambient light for the Gullug's eyes; the light matching the eye color
+// Set the proper sprite, and add a dim ambient light for the Yumbo's eyes; the light matching the eye color
 // in the sprite itself. Finally, the Yumbo is set to be susceptible to every weapon Samus has access to.
 entity_set_sprite(spr_yumbo, -1);
 object_add_light_component(x, y, -4, -2, 6, HEX_LIGHT_ORANGE, 0.5);
 initialize_weak_to_all();
 
-// 
+// Set maximum velocity for the Yumbo, which is slightly slower than Samus herself. These values will be used
+// to determine the Yumbo's actual speed relative to the direction found between it and Samus's position while
+// it is chasing her.
 maxHspd = 1.8;
 maxVspd = 1.8;
 
-// Since te Power Beam deals a single point of damage (On "Normal" difficulty), the Yumbo will be able to take
+// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Yumbo will be able to take
 // four hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
 maxHitpoints = 4;
 hitpoints = maxHitpoints;

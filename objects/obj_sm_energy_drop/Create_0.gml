@@ -7,7 +7,7 @@
 
 // Two macros for the small energy drop's ambient light source characteristics; the first being the size of the
 // light and the second being the intensity/brightness of the light that is cast.
-#macro	SM_ENERGY_BASE_RADIUS		32.0
+#macro	SM_ENERGY_BASE_RADIUS		16.0
 #macro	SM_ENERGY_BASE_STRENGTH		0.8
 
 #endregion

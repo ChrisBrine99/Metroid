@@ -109,10 +109,20 @@ stunStrength	= 0;
 
 #endregion
 
-#region Hitstun function initialization
+#region Hitpoint and hitstun function initializations
 
-// Stores the parent object's function for applying a hitstun effect onto an entity so it can be called in
-// this function definition that would overwrite the reference to the original otherwise.
+/// Stores the pointer to the parent "update_hitpoints" function to allow the inherited version of the function
+/// to call the logic from the base function despite overriding it to add more functionality.
+__update_hitpoints = update_hitpoints;
+/// @description A simple modification of the standard Entity "update_hitpoints" function that flips the flag
+/// "DROP_ITEM" to true, which actually allows the enemy to drop an item upon death from taking too much damage.
+update_hitpoints = function(_modifier){
+	__update_hitpoints(_modifier);
+	if (hitpoints == 0) {stateFlags |= (1 << DROP_ITEM);}
+}
+
+/// Stores the parent object's function for applying a hitstun effect onto an entity so it can be called in
+/// this function definition that would overwrite the reference to the original otherwise.
 __entity_apply_hitstun = entity_apply_hitstun;
 /// @description A hitstun function unique to enemy entities. It will send them into their hitstun state while
 /// also applying a shake effect--its intensity varying depending on the damage it sustained--during the hitstun.

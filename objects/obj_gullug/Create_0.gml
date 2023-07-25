@@ -9,7 +9,7 @@ entity_set_sprite(spr_gullug, -1);
 object_add_light_component(x, y, 0, -5, 14, HEX_LIGHT_PURPLE, 0.5);
 initialize_weak_to_all();
 
-// Since te Power Beam deals a single point of damage (On "Normal" difficulty), the Gullug will be able to take
+// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Gullug will be able to take
 // eight hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
 maxHitpoints = 8;
 hitpoints = maxHitpoints;
@@ -17,7 +17,7 @@ hitpoints = maxHitpoints;
 // Set the damage output and hitstun duration for the Gullug. These values are increased/decreased by the
 // difficulty level selected by the player.
 damage = 10;
-stunDuration = 10;
+stunDuration = 12;
 
 // Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
 // variables storing those chances here.

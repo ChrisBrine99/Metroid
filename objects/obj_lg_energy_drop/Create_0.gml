@@ -7,7 +7,7 @@
 
 // Two macros for the large energy drop's ambient light source characteristics; the first being the size of the
 // light and the second being the intensity/brightness of the light that is cast.
-#macro	LG_ENERGY_BASE_RADIUS		50.0
+#macro	LG_ENERGY_BASE_RADIUS		24.0
 #macro	LG_ENERGY_BASE_STRENGTH		0.8
 
 #endregion

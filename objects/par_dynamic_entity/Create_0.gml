@@ -10,7 +10,8 @@
 #macro	DESTROY_WALL_COLLIDE	(stateFlags & (1 << DESTRUCTIBLE) != 0)
 #macro	IS_GROUNDED				(stateFlags & (1 << GROUNDED) != 0)
 
-// 
+// Flags for the Entity slope collision function to let it know which direction a slope is so the function
+// can calculate collisions according to that direction.
 #macro	SLOPE_UPWARD		   -1
 #macro	SLOPE_DOWNWARD			1
 
@@ -162,16 +163,21 @@ update_hitpoints = function(_modifier){
 /// that state is flipped and the vspd value is reset to 0.
 /// @param {Real}	maxFallSpeed
 apply_gravity = function(_maxFallSpeed){
-	var _isOnGround		= place_meeting(x, y + 1, par_collider);
-	if (!_isOnGround){
+	// Always apply gravity on the Entity, which is cancelled out if they are on the ground. Otherwise, their
+	// vspd will be constantly increased by their vertical acceleration until they hit their terminal velocity.
+	vspd	   += get_vert_accel() * DELTA_TIME;
+	if (vspd > _maxFallSpeed)
+		vspd	= _maxFallSpeed;
+	
+	// Determine if the Entity is currently on the grounded or are airbourne; flipping their "grounded" state
+	// flag to true or false while removing gravity's effect, respectively.
+	var _onGround		= place_meeting(x, y + 1, par_collider);
+	if (!_onGround){
 		stateFlags	   &= ~(1 << GROUNDED);
-		vspd		   += get_vert_accel() * DELTA_TIME;
-		if (vspd > _maxFallSpeed)
-			vspd		= _maxFallSpeed;
-	} else if (_isOnGround && vspd >= 0 && !IS_GROUNDED){
+	} else if (!IS_GROUNDED && vspd >= 0.0 && _onGround){
 		stateFlags	   |= (1 << GROUNDED);
-		vspdFraction	= 0;
-		vspd			= 0;
+		vspdFraction	= 0.0;
+		vspd			= 0.0;
 	}
 }
 
@@ -182,31 +188,38 @@ apply_gravity = function(_maxFallSpeed){
 /// NOTE -- These functions must include two arguments for the "deltaHspd" and "deltaVspd" values calculated
 ///			within this function or else the game will likely crash.
 /// 
-/// @param {Function}	collisionFunction
+/// @param {Function}	collisionFunction	Optional function to calculate world collision with against current frame's movement.
 apply_frame_movement = function(_collisionFunction = NO_FUNCTION){
-	// 
+	// Store the current delta time value in a local variable since it will be used to calculate both the
+	// horizontal and vertical velocities from the current frame.
 	var _deltaTime = DELTA_TIME;
 	
-	// 
+	// Convert horizontal velocity from a floating point number to an integer by removing the fractional
+	// value from the "_deltaHspd" value; storing it in "hspdFraction" until a whole number can be parsed from
+	// said variable.
 	var _deltaHspd		= hspd * _deltaTime;
 	if (_deltaHspd != 0.0){
-		_deltaHspd	   += hspdFraction;
+		_deltaHspd	   += hspdFraction;	// Add previous fraction to combine it with the new fractional value.
 		hspdFraction	= _deltaHspd - (floor(abs(_deltaHspd)) * sign(_deltaHspd));
 		_deltaHspd	   -= hspdFraction;
 	}
 	
-	// 
+	// Convert the vertical velocity from a floating point number to an integer by removing the fractional
+	// value from the "_deltaVspd" value; storing it in "vspdFraction" until a whole number can be parsed from
+	// said variable.
 	var _deltaVspd		= vspd * _deltaTime;
 	if (_deltaVspd != 0.0){
-		_deltaVspd	   += vspdFraction;
+		_deltaVspd	   += vspdFraction;	// Add previous fraction to combine it with the new fractional value.
 		vspdFraction	= _deltaVspd - (floor(abs(_deltaVspd)) * sign(_deltaVspd));
 		_deltaVspd	   -= vspdFraction;
 	}
 
-	// 
+	// Finally, call the collision function specified for the Entity if there was one provided, which will 
+	// handle collision between said Entity and the world collider objects. Otherwise, their delta hspd and
+	// vspd values will simply be added to their positions if they don't process world collision.
 	if (_collisionFunction != NO_FUNCTION){
 		_collisionFunction(_deltaHspd, _deltaVspd);
-	} else if (_deltaHspd != 0.0 || _deltaVspd != 0.0){
+	} else if (_deltaHspd != 0 || _deltaVspd != 0){
 		x += _deltaHspd;
 		y += _deltaVspd;
 	}
@@ -244,10 +257,12 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 					stateFlags |= (1 << DESTROYED);
 					return;
 				}
-				_destX = x;
-				hspd = 0.0;
+				
+				_destX		 = x;
+				hspdFraction = 0.0;
+				hspd		 = 0.0;
 			}
-		} else{
+		} else if (IS_GROUNDED){
 			// If there is no horizontal collision, a check still needs to be made to see if there is a downward
 			// slope instead. If there is, this function call will move the Entity properly as a result.
 			entity_world_slope_collision(_destX, y + 1, SLOPE_DOWNWARD, true);
@@ -263,6 +278,8 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 		// will be processed.
 		var _destY = y + _deltaVspd;
 		if (place_meeting(x, _destY, par_collider)){
+			if (_destY > y) {stateFlags |= (1 << GROUNDED);}
+			
 			// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
 			// direction of their current vertical velocity.
 			var _signVspd = sign(_deltaVspd);
@@ -276,8 +293,10 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 				stateFlags |= (1 << DESTROYED);
 				return;
 			}
-			_destY = y;
-			vspd = 0.0;
+			
+			_destY		 = y;
+			vspdFraction = 0.0;
+			vspd		 = 0.0;
 		}
 		y = _destY;
 	}
@@ -301,7 +320,7 @@ entity_world_slope_collision = function(_x, _y, _slopeDirection, _desiredOutcome
 	// for the collision was met prior to the final collision check. Either outcome will exit the loop.
 	while(place_meeting(_x, _y + _curSlopeOffset, par_collider) != _desiredOutcome){
 		_curSlopeOffset += _slopeDirection;
-		if (_curSlopeOffset == _maxSlopeOffset) {break;}
+		if (_curSlopeOffset >= _maxSlopeOffset) {break;}
 	}
 	
 	// Perform one last collision check to see if the desired outcome is returned. If not, no slope movement

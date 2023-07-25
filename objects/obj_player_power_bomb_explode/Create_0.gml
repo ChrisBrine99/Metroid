@@ -1,3 +1,11 @@
+#region Macro initialization
+
+// 
+#macro	POWER_BOMB_DAMAGE			50
+#macro	POWER_BOMB_STUN_DURATION	20
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -62,22 +70,61 @@ state_default = function(){
 	// in its size aside from what the length of the explosion is.
 	pBombRadius += pBombRadiusSpeed * DELTA_TIME;
 	
+	// Store characteristics about the Power Bomb--its position and radius--before collisions are processed
+	// against destructibles, enemies, and doors using these stored variables.
+	var _radius = pBombRadius;
+	var _x		= x;
+	var _y		= y;
+	
 	// Check collision against all destructible objects within the room; destroying any that are susceptible
 	// to the power bomb's explosion. Any destructilbes that aren't weak to the power bomb will simply be
 	// skipped over in this loop.
-	var _radius = pBombRadius;
-	var _x = x;
-	var _y = y;
 	with(par_destructible){
 		// If the destructible is already destroyed OR its object index doesn't match what the power bomb
 		// is able to destroy out of all possible destructible types, it will be skipped over for the 
 		// distance check that occurs for valid objects.
-		if (IS_DESTROYED || (object_index != obj_destructible_all && object_index != obj_destructible_collectible_ball
-			&& object_index != obj_destructible_power_bomb)) {continue;}
+		if (!IS_ON_SCREEN || IS_DESTROYED || 
+			(object_index != obj_destructible_all && 
+				object_index != obj_destructible_collectible_ball && 
+				object_index != obj_destructible_power_bomb)) {continue;}
 		
 		// Determine if the destructible is within current range of the explosion. If so, the destructible 
 		// will be destroyed by the blast.
-		if (distance_to_point(_x, _y) < _radius) {destructible_destroy_self();}
+		if (distance_to_point(_x, _y) <= _radius) {destructible_destroy_self();}
+	}
+	
+	// Walk through all instances of Door objects within the room (They are inherit from "obj_general_door"
+	// instead of a parent object using the "par_" prefix) to check if they have come into contact with the
+	// current explosion's affected radius or not.
+	var _isDestroyed = false;
+	with(obj_general_door){
+		// Skip over any door instance that is outside of the Camera's view, OR whose distance from the 
+		// power bomb is greater than the current radius of the explosion itself.
+		if (!IS_ON_SCREEN || distance_to_point(_x, _y) > _radius) {continue;}
+		
+		switch(object_index){
+			case obj_general_door:		_isDestroyed = true;						break;
+			case obj_power_bomb_door:	_isDestroyed = true;						break;
+			case obj_inactive_door:		_isDestroyed = inactive_door_collision();	break;
+		}
+		
+		// If the local flag is set to true after the switch statement has been processed, the door will
+		// be opened by the bomb's explosion. Otherwise, nothing will happen to the door.
+		if (_isDestroyed){
+			if (flagID != EVENT_FLAG_INVALID) {event_set_flag(flagID, true);}
+			animSpeed		= 1.0;
+			_isDestroyed	= false;
+		}
+	}
+	
+	// Much like Door objects, each Enemy in the room will be stepped through to see if the power bomb explosion
+	// has come into contact with it or not. If so (And other conditions have been passed), the enemy will be
+	// damaged and stunned by the explosion.
+	with(par_enemy){
+		// Skip over Enemy instances that have already been hit, are already considered destroyed in their 
+		// state flags, OR are outside of the current radius of the power bomb's explosion.
+		if (IS_HIT_STUNNED || IS_DESTROYED || distance_to_point(_x, _y) > _radius) {continue;}
+		entity_apply_hitstun(POWER_BOMB_DAMAGE, POWER_BOMB_STUN_DURATION);
 	}
 }
 

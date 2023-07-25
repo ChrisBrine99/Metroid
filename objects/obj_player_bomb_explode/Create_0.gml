@@ -4,6 +4,11 @@
 // from it or not. Otherwise, the "ping" sound effect will be heard, and the enemy will be unharmed.
 #macro	TYPE_BOMB				10
 
+// Macros for the damage output of the standard bomb explosion as well as its stun duration on Enemies that
+// have been hit by said explosion.
+#macro	BOMB_DAMAGE				4
+#macro	BOMB_STUN_DURATION		10
+
 #endregion
 
 #region	Editing inherited variables
@@ -67,6 +72,15 @@ state_default = function(){
 		}
 	}
 	if (_length > 0){ds_list_clear(collisionList);}
+	
+	// Check for collision with enemies that come into contact with this explosion. If a collision is found, 
+	// the enemy instance in question will be damaged if they are not immune to damage from standard bombs.
+	var _stateFlags = stateFlags;
+	var _enemy		= instance_place(x, y, par_enemy);
+	with(_enemy){
+		if (IS_HIT_STUNNED || !is_weak_to_weapon(_stateFlags)) {break;}
+		entity_apply_hitstun(BOMB_DAMAGE, BOMB_STUN_DURATION);
+	}
 	
 	// Check for collision with the general door and also the inactive door (In case it's active) to see
 	// if they should be opened by the bomb's explosion. Every other door type cannot be opened by the

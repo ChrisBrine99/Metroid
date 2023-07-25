@@ -35,6 +35,9 @@ collectible_collect_self = function(){
 		event_set_flag(FLAG_MISSILES, true);
 		maxMissiles += 10;
 		numMissiles += 10;
+		
+		var _numMissiles = numMissiles;
+		with(GAME_HUD) {pCurMissiles = _numMissiles;}
 	}
 }
 

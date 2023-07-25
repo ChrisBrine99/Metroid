@@ -806,10 +806,14 @@ __initialize = initialize;
 /// @param {Function}	state
 initialize = function(_state){
 	__initialize(_state);
+	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
+	
+	game_set_state(GSTATE_NORMAL, true);
 	entity_set_position(480, 320);
 	entity_set_sprite(introSprite, spr_empty_mask);
-	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
-	game_set_state(GSTATE_NORMAL, true);
+	
+	var _hitpoints = hitpoints;
+	with(GAME_HUD) {pCurEnergy = _hitpoints;}
 }
 
 /// @description A modification to the entity's hitpoint manipulation function; allowing the entity to be
@@ -1360,10 +1364,15 @@ state_airbourne = function(){
 	}
 	if (IS_JUMP_RELEASED && vspd < 0) {vspd *= 0.5;}
 	
-	// 
+	// Process horizontal movement while airbourne, which functions a bit different to how Samus moves while
+	// on the ground. Her maximum velocity will be reduced to 70% if she isn't somersaulting, and her acceleration
+	// is cut if half. On top of that, switching directions doesn't zero out her velocity.
 	var _hspdFactor = 1.0;
 	if (abs(hspd) < get_max_hspd() && !IS_JUMP_SPIN) {_hspdFactor = 0.7;}
 	process_horizontal_movement(_hspdFactor, 0.5, false, false);
+	
+	// Determine if Samus's downward aim should end depending on how long the player holds either the left
+	// or right movement inputs for; much like how aiming down in the air functions in Super Metroid.
 	if (movement != 0){
 		if (IS_AIMING_DOWN && !IS_DOWN_HELD){
 			aimReturnTimer += DELTA_TIME;
@@ -1372,7 +1381,7 @@ state_airbourne = function(){
 				aimReturnTimer = 0.0;
 			}
 		}
-	} else{
+	} else{ // Return timer to 0 to reset time needed to end downward aiming.
 		aimReturnTimer = 0.0;
 	}
 	
@@ -1764,13 +1773,17 @@ state_phase_shift = function(){
 		}
 	}
 	
-	// 
+	// Since vertical velocity isn't processed during a phase shift, Samus's horizontal velocity is the only
+	// value that is converted from floating point to an integer; storing the fractional value until a whole
+	// number can be parsed from it.
 	var _deltaHspd	= hspd * DELTA_TIME;
 	_deltaHspd	   += hspdFraction;
 	hspdFraction	= _deltaHspd - (floor(abs(_deltaHspd)) * sign(_deltaHspd));
 	_deltaHspd	   -= hspdFraction;
 	
-	// 
+	// Store Samus's last x position and then call her movement/collision function. Then, the current shift
+	// distance value is incremented by the difference in Samus's x position prior to and after movement and
+	// collisions have been processed.
 	var _lastX = x;
 	entity_world_collision(_deltaHspd, 0);
 	curShiftDist += abs(_lastX - x);
@@ -1818,5 +1831,3 @@ state_phase_shift = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
-
-temp = 0.0;

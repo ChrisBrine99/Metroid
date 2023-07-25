@@ -7,6 +7,7 @@ if (!CAN_DROP_ITEM) {return;}
 // respectively. After that, check to see if the value generated is within the range to drop energy, aeion, ammunition,
 // or nothing at all.
 var _dropChance = random_range(0.0, 1.0);
+show_debug_message(_dropChance);
 if (_dropChance <= energyDropChance){
 	var _hitpointRatio = 0.0;
 	with(PLAYER) {_hitpointRatio = (hitpoints / maxHitpoints) * 0.25;}
@@ -17,14 +18,14 @@ if (_dropChance <= energyDropChance){
 	var _energyDrop = random_range(0.0, 1.0);
 	if (_energyDrop <= SM_ENERGY_DROP_CHANCE - _hitpointRatio)	{instance_create_object(x, y, obj_sm_energy_drop, depth - 1);}
 	else														{instance_create_object(x, y, obj_lg_energy_drop, depth - 1);}
-} else if (_dropChance <= aeionDropChance){
+} else if (_dropChance <= energyDropChance + aeionDropChance){
 	if (PLAYER.maxAeion > 0){ // Aeion powers unlocked; spawn aeion orb.
 		instance_create_object(x, y, obj_aeion_drop, depth - 1);
 	} else{ // 80/20 chance to drop small energy orb vs. large orb.
 		if (!irandom(5))	{instance_create_object(x, y, obj_lg_energy_drop, depth - 1);}
 		else				{instance_create_object(x, y, obj_sm_energy_drop, depth - 1);}
 	}
-} else if (_dropChance <= ammoDropChance){
+} else if (_dropChance <= (energyDropChance + aeionDropChance) + ammoDropChance){
 	var _ammoDrop = random_range(0.0, 1.0); // Roll chance for dropping missile ammo or power bomb ammo.
 	if (event_get_flag(FLAG_MISSILES) && _ammoDrop <= MISSILE_DROP_CHANCE){ // Missiles unlocked; drop ammo for it.
 		instance_create_object(x, y, obj_missile_drop, depth - 1);

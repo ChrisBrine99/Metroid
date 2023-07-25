@@ -3,8 +3,8 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Set the proper sprite, and add a dim ambient light for the Gullug's eyes; the light matching the eye color
-// in the sprite itself. Finally, the Gullug is set to be susceptible to every weapon Samus has access to.
+// Set the proper sprite, and add a dim ambient light for the Ripper's eyes; the light matching the eye color
+// in the sprite itself. Finally, the Ripper is set to be susceptible to every weapon Samus has access to.
 entity_set_sprite(spr_ripper, -1);
 object_add_light_component(x, y, 7, 2, 8, HEX_LIGHT_BLUE, 0.6);
 // Rippers have no weakness aside from super missiles and power bombs (Power Bombs don't count as a weakness
@@ -26,7 +26,7 @@ hitpoints = maxHitpoints;
 // Set the damage output and hitstun duration for the Ripper. These values are increased/decreased by the
 // difficulty level selected by the player.
 damage = 10;
-stunDuration = 10;
+stunDuration = 12;
 
 // Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
 // variables storing those chances here. Rippers will almost always drop ammunition.
@@ -38,7 +38,8 @@ ammoDropChance = 0.9;		// 90%
 
 #region Unique variable initialization
 
-// Determines the direction that the ripper is currently moving in; right or left.
+// Determines the direction that the Ripper is currently moving in; right or left. It is randomly set upon a
+// Ripper instance's creation so they don't all start in the same direction.
 movement = choose(1, -1);
 
 #endregion

@@ -30,7 +30,7 @@ maxInstances	= 1;
 
 // 
 timeToSpawn		= 120.0;
-spawnTimer		= 0.0;
+spawnTimer		= timeToSpawn * 0.75;
 
 #endregion
 

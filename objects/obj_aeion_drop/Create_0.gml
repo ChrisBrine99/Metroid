@@ -7,7 +7,7 @@
 
 // Two macros for the missile drop's ambient light source characteristics; the first being the size of the
 // light and the second being the intensity/brightness of the light that is cast.
-#macro	AEION_DROP_BASE_RADIUS		36.0
+#macro	AEION_DROP_BASE_RADIUS		16.0
 #macro	AEION_DROP_BASE_STRENGTH	0.7
 
 #endregion
