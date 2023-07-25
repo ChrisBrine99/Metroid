@@ -31,9 +31,6 @@
 #endregion
 
 #region Initializing any globals that are useful/related to obj_camera
-
-global.drawnEntities = 0;
-
 #endregion
 
 #region	The main object code for obj_camera

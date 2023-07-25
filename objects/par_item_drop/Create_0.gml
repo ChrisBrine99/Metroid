@@ -7,7 +7,7 @@ event_inherited();
 // Default values for the drop's sprite, which allows the rendering of sprites should a child object have a
 // sprite assigned to it; looping whatever its animation may be. The "sprite_index" is set to "NO_SPRITE" to
 // prevent the entity rendering from occurring.
-stateFlags		= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
 sprite_index	= NO_SPRITE;
 visible			= true;
 

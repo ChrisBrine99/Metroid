@@ -19,10 +19,18 @@ hitpoints = maxHitpoints;
 
 #region Unique variable initialization
 
+// 
 objToSpawn		= obj_yumbo;
-timeToSpawn		= 0.0;
-spawnTimer		= 0.0;
+spawnOffsetX	= 0;
+spawnOffsetY	= 0;
+
+// 
+curInstances	= 0;
 maxInstances	= 1;
+
+// 
+timeToSpawn		= 120.0;
+spawnTimer		= 0.0;
 
 #endregion
 
@@ -30,7 +38,15 @@ maxInstances	= 1;
 
 /// @description 
 state_default = function(){
+	if (!IS_ON_SCREEN || !IS_ACTIVE || curInstances == maxInstances) {return;}
 	
+	spawnTimer += DELTA_TIME;
+	if (spawnTimer > timeToSpawn){
+		var _instance = instance_create_object(x + spawnOffsetX, y + spawnOffsetY, objToSpawn);
+		_instance.linkedSpawnerID = id;
+		spawnTimer = 0.0;
+		curInstances++;
+	}
 }
 
 // Set the Enemy Spawner to its default state upon creation.

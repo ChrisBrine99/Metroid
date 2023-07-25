@@ -10,6 +10,9 @@
 // the game; allowing them to be rendered in a single batch within the effect handler's draw event.
 global.lightSources = ds_list_create();
 
+// FOR DEBUGGING -- Counts how many light sources were drawn in a frame.
+global.lightsDrawn = 0;
+
 #endregion
 
 #region The main object code for obj_effect_handler
@@ -19,7 +22,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	// Stores the current texel values for the application surface, which is a normalized value for a single
 	// pixel relative to the dimensions of said surface. Since the aspect ratio can be altered in the game,
 	// these variables will be updated to store the proper texel sizes for any changes that occur.
-	windowTexelWidth =	0;
+	windowTexelWidth = 0;
 	windowTexelHeight = 0;
 	
 	// 
@@ -27,11 +30,11 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	surfLights = -1;
 	
 	// 
-	sWorldColor =		shader_get_uniform(shd_lighting, "color");
-	sWorldBrightness =	shader_get_uniform(shd_lighting, "brightness");
-	sWorldSaturation =	shader_get_uniform(shd_lighting, "saturation");
-	sWorldContrast =	shader_get_uniform(shd_lighting, "contrast");
-	sWorldLights =		shader_get_sampler_index(shd_lighting, "lightTexture");
+	sWorldColor			= shader_get_uniform(shd_lighting, "color");
+	sWorldBrightness	= shader_get_uniform(shd_lighting, "brightness");
+	sWorldSaturation	= shader_get_uniform(shd_lighting, "saturation");
+	sWorldContrast		= shader_get_uniform(shd_lighting, "contrast");
+	sWorldLights		= shader_get_sampler_index(shd_lighting, "lightTexture");
 	
 	// Parameters for the world's lighting system that allows a fine-tuning of the current room's ambient
 	// lighting; the color to use, the overall brightness of unlit objects, as well as the saturation and
@@ -48,20 +51,20 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	// Store each of the uniforms required for the blurring shader to their own unique variables, which are
 	// then used again when rendering with the blur shader to apply the correct settings to it; creating
 	// the desired effect based on the settings applied to said uniforms.
-	sBlurRadius =		shader_get_uniform(shd_screen_blur, "blurRadius");
-	sBlurIntensity =	shader_get_uniform(shd_screen_blur, "blurIntensity");
-	sBlurTexelSize =	shader_get_uniform(shd_screen_blur, "blurTexelSize");
-	sBlurDirection =	shader_get_uniform(shd_screen_blur, "blurDirection");
+	sBlurRadius		= shader_get_uniform(shd_screen_blur, "blurRadius");
+	sBlurIntensity	= shader_get_uniform(shd_screen_blur, "blurIntensity");
+	sBlurTexelSize	= shader_get_uniform(shd_screen_blur, "blurTexelSize");
+	sBlurDirection	= shader_get_uniform(shd_screen_blur, "blurDirection");
 	
 	// Parameters for the screen blur effect that allow for the adjustment of the amount of samples per pixel
 	// that are required by the effect within the shader, as well as how much of an effect the blurring will
 	// have only the final image that is rendered for the player to see.
-	blurRadius =			0;
-	blurRadiusTarget =		0;
-	blurRadiusModifier =	0;
-	blurAmount =			0;
-	blurAmountTarget =		0;
-	blurAmountModifier =	0.001;
+	blurRadius			= 0;
+	blurRadiusTarget	= 0;
+	blurRadiusModifier	= 0;
+	blurAmount			= 0;
+	blurAmountTarget	= 0;
+	blurAmountModifier	= 0.001;
 	
 	// The surface that is used for achieving the game's blooming effect. The surface index is stored in the
 	// first variable, and the texture ID for that surface is stored in the second variable so it can be used
@@ -72,23 +75,23 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	// Determines the range of colors that are affected by blooming; any colors that surpass the threshold 
 	// will have a bloom effect applied (The amount of bloom being determined by how far that color is below
 	// the "threshold" relative to the range value).
-	sBloomThreshold =	shader_get_uniform(shd_bloom_luminance, "threshold");
-	sBloomRange =		shader_get_uniform(shd_bloom_luminance, "range");
+	sBloomThreshold	= shader_get_uniform(shd_bloom_luminance, "threshold");
+	sBloomRange		= shader_get_uniform(shd_bloom_luminance, "range");
 	
 	// Uniforms for the bloom effect. The first determines how intense the blooming effect is at the current
 	// moment in-game, the second determines how pronounced the bloom is relative to the rest of the screen
 	// that isn't affected, the third determines how saturated the bloomed colors become, and the final
 	// allows the bloom surface to be used as an additional sample texture in the bloom shader for accurate
 	// blending onto the application surface.
-	sBloomIntensity =	shader_get_uniform(shd_bloom_blend, "intensity");
-	sBloomDarken =		shader_get_uniform(shd_bloom_blend, "darkenAmount");
-	sBloomSaturation =	shader_get_uniform(shd_bloom_blend, "saturation");
-	sBloomTexture =		shader_get_sampler_index(shd_bloom_blend, "bloomTexture");
+	sBloomIntensity		= shader_get_uniform(shd_bloom_blend, "intensity");
+	sBloomDarken		= shader_get_uniform(shd_bloom_blend, "darkenAmount");
+	sBloomSaturation	= shader_get_uniform(shd_bloom_blend, "saturation");
+	sBloomTexture		= shader_get_sampler_index(shd_bloom_blend, "bloomTexture");
 	
 	// The uniform that is responsible for determining how intense the chromatic aberration effect is on the
 	// screen. A higher values means the effect begins closer to the center of the screen, and the effect at
 	// the outer edges is more defined.
-	sAbrIntensity =		shader_get_uniform(shd_aberration, "intensity");
+	sAbrIntensity		= shader_get_uniform(shd_aberration, "intensity");
 	
 	// Parameters for the optional film grain effect that is applied to the game's GUI layer. The offset values
 	// are updated every frame to mimic the sporadic nature of the actual effect on a reel of film, and the
@@ -103,7 +106,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	
 	// Stores the uniform location within the shader for the parameter that is responsible for determining
 	// how transparent the scanlines are on the screen when the effect is enabled by the player.
-	sScanlineOpacity =	shader_get_uniform(shd_scanlines, "opacity");
+	sScanlineOpacity	= shader_get_uniform(shd_scanlines, "opacity");
 	
 	/// @description Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// obj_effect_handler. In short, it will cleanup any data that needs to be freed from memory that isn't 
@@ -160,45 +163,69 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// application surface AND the game's GUI surface. For example, both the scanlines and noise filter are
 	/// applied here to overlap the entire image.
 	draw_gui_end = function(){
+		//draw_set_font(font_gui_small);
+		//draw_text(5, 60, "Lights Drawn: " + string(global.lightsDrawn));
+		
 		if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
 		if (game_get_setting_flag(SCANLINE_FILTER))		{apply_scanlines(0.15);}
 	}
 	
-	/// @description 
+	/// @description Renders the world using the current global illumination parameters (brightness, contrast,
+	/// and saturation) alongside any on-screen lights to determine how the world currently looks from the
+	/// camera's point of view.
 	apply_world_lighting = function(){
-		// 
-		var _camera = CAMERA.camera;
-		var _cameraX = camera_get_view_x(_camera);
-		var _cameraY = camera_get_view_y(_camera);
+		// Grab and store characteristics about the camera's current viewport for use during the rendering
+		// of each light source and whether or not the light is even rendered to begin with.
+		var _camera			= CAMERA.camera;
+		var _cameraX		= camera_get_view_x(_camera);
+		var _cameraY		= camera_get_view_y(_camera);
+		var _cameraWidth	= camera_get_view_width(_camera);
+		var _cameraHeight	= camera_get_view_height(_camera);
 		
-		// 
-		if (!surface_exists(surfWorld))	{surfWorld = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));}
+		// FOR DEBUGGING -- Reset value stored in "lightsDrawn" global for the new frame.
+		global.lightsDrawn = 0;
+		
+		// Since the world lighting is the first effect that is applied to the application surface, it will be
+		// created here; drawing the application surface to it so it can be manipulated through subsequent passes
+		// of varying shader/post-processing effects.
+		if (!surface_exists(surfWorld))	{surfWorld = surface_create(_cameraWidth, _cameraHeight);}
 		surface_set_target(surfWorld);
 		draw_surface(application_surface, 0, 0);
 		surface_reset_target();
 		
-		// 
+		// Create the light surface texture if it doesn't currently exist within the GPUs VRAM due to a flush
+		// of GPU memory that may have occurred during runtime. The texture ID for that surface is grabbed
+		// immediately after the surface's initialization since its value never changes.
 		if (!surface_exists(surfLights)){
-			surfLights = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
+			surfLights = surface_create(_cameraWidth, _cameraHeight);
 			texLights = surface_get_texture(surfLights);
 		}
 		
-		// 
+		// The lights in the world need to be rendered onto a seperate surface before they can be added to the
+		// world surface during the shader's execution. The light will immediately be turned completely black
+		// before lights are additively blended on top of that.
 		surface_set_target(surfLights);
 		draw_clear(HEX_BLACK); // make the surface completely black
 		gpu_set_blendmode(bm_add);
 		
-		// 
+		// Loop through all light sources and render them onto the light source surface texture. Lights that
+		// are inactive or not visible within the camera's current viewport will be skipped over in the process;
+		// ensuring only visible lights are actually rendered.
 		var _x = 0;
 		var _y = 0;
 		var _length = ds_list_size(global.lightSources);
 		for (var i = 0; i < _length; i++){
 			with(global.lightSources[| i]){
 				if (!isActive) {continue;}
+				
 				_x = x - _cameraX;
 				_y = y - _cameraY;
-				draw_set_alpha(strength);
-				draw_ellipse_color(_x - radius, _y - radius, _x + radius, _y + radius, color, c_black, false);
+				if (_x + radius > 0 && _x - radius < _cameraWidth &&
+					_y + radius > 0 && _y - radius < _cameraHeight){
+					draw_set_alpha(strength);
+					draw_ellipse_color(_x - radius, _y - radius, _x + radius, _y + radius, color, c_black, false);
+					global.lightsDrawn++;
+				}
 			}
 		}
 		draw_set_alpha(1);
@@ -206,18 +233,23 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		gpu_set_blendmode(bm_normal);
 		surface_reset_target();
 		
-		// 
+		// Once the light surface texture has been prepared, the lighting shader will be applied to the world
+		// surface, which is drawn after all uniforms have been properly set up. It will be drawn at the position
+		// of the camera within room and not at (0, 0) due to the lighting system existing in world-space and
+		// not GUI space.
 		shader_set(shd_lighting);
 		shader_set_uniform_f_array(sWorldColor, worldColor);
 		shader_set_uniform_f(sWorldBrightness, worldBrightness);
 		shader_set_uniform_f(sWorldSaturation, worldSaturation);
 		shader_set_uniform_f(sWorldContrast, worldContrast);
 		texture_set_stage(sWorldLights, texLights);
-		draw_surface(surfWorld, camera_get_view_x(_camera), camera_get_view_y(_camera));
+		draw_surface(surfWorld, _cameraX, _cameraY);
 		shader_reset();
 	}
 	
-	/// @description 
+	/// @description Applies a blur across the entire screen; the resulting blur being determined by the surface
+	/// that is used as the "base" for the blurring, the maximum radius of it, and the "amount" to blur (This
+	/// value will increase or decrease the overall blur depending on its value).
 	/// @param {Id.Surface}	baseSurface		What is used as the initial sample for the effect (Effect overwrites with final pass).
 	/// @param {Real}		blurRadius		How many pixels will be sampled for each pixel; total amount required being 2 * blurRadius.
 	/// @param {Real}		blurAmount		Determines the overall visibility of the blurring on the surface.
@@ -307,8 +339,9 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		shader_reset();
 	}
 	
-	/// @description 
-	/// @param {Real}	intensity	
+	/// @description Applies a chromatic aberration effect to the game's viewport; having its intensity 
+	/// increase the further the pixel on the screen is from the center of the screen.
+	/// @param {Real}	intensity	Determines how pronounced the aberration effect will be.
 	apply_aberration = function(_intensity){
 		shader_set(shd_aberration);
 		shader_set_uniform_f(sAbrIntensity, _intensity);
@@ -325,24 +358,32 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		draw_sprite_tiled_ext(spr_film_grain, 0, fgOffsetX, fgOffsetY, 1, 1, c_white, fgAlpha);
 	}
 	
-	/// @description 
-	/// @param {Real}	opacity
+	/// @description Creates the per-pixel scanline effect to the screen; the final step in the post-processing
+	/// effect pipeline for the game. It will temporarily match the GUI's dimensions to the display that the
+	/// game is being rendered to in order to achieve this effect; ignoring the scaling factors of the game's
+	/// actual resolution.
+	/// @param {Real}	opacity		Determines how intense the scanlines are (0.0 = transparent, 1.0 = opaque).
 	apply_scanlines = function(_opacity){
-		// 
-		var _scale =		RESOLUTION_SCALE;
-		var _prevWidth =	display_get_gui_width();
-		var _prevHeight =	display_get_gui_height();
-		var _tempWidth =	_prevWidth * _scale;
-		var _tempHeight =	_prevHeight * _scale;
+		// Local variables that store information about the GUI's width and height prior to the scanline effect
+		// being rendered onto the screen, as well as the temporary resolution that matches the resolution of
+		// the player's monitor.
+		var _scale		= RESOLUTION_SCALE;
+		var _prevWidth	= display_get_gui_width();
+		var _prevHeight = display_get_gui_height();
+		var _tempWidth	= _prevWidth * _scale;
+		var _tempHeight = _prevHeight * _scale;
 		display_set_gui_size(_tempWidth, _tempHeight);
 		
-		// 
+		// Activate the shader, and then simply draw a rectangle across the entire screen. The shader will turn
+		// it black, set its opacity, and remove every other pixel to finalize the effect.
 		shader_set(shd_scanlines);
 		shader_set_uniform_f(sScanlineOpacity, _opacity);
 		draw_sprite_ext(spr_rectangle, 0, 0, 0, _tempWidth, _tempHeight, 0, c_white, 1);
 		shader_reset();
 		
-		// 
+		// After the scanlines have been rendered at the resolution matching the player's active monitor (The
+		// one displaying the game's window), return the size of the gui surface back to the same size as the
+		// game's world-space resolution (320 by 180).
 		display_set_gui_size(_prevWidth, _prevHeight);
 	}
 }
@@ -351,17 +392,18 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 
 #region Global functions related to obj_effect_handler
 
-/// @description 
-/// @param {Array}	color
-/// @param {Real}	brightness
-/// @param {Real}	saturation
-/// @param {Real}	contrast
+/// @description Determines the ambient color of the world (AKA the color where there are no light sources
+/// influencing the final color).
+/// @param {Array<Real>}	color			The base color to use for the lighting.
+/// @param {Real}			brightness		Determines how bright the final ambient lighting output will be.
+/// @param {Real}			saturation		Pronounces or diminishes the world's colors when only affected by the ambient light.
+/// @param {Real}			contrast		Increases/decreases distance between lightest and darkest color outside of any light sources.
 function effect_set_world_lighting(_color, _brightness, _saturation, _contrast){
 	with(EFFECT_HANDLER){
 		array_copy(worldColor, 0, _color, 0, 3); // Length of three [R, G, B].
-		worldBrightness =	_brightness;
-		worldSaturation =	_saturation;
-		worldContrast =		_contrast;
+		worldBrightness	= _brightness;
+		worldSaturation = _saturation;
+		worldContrast	= _contrast;
 	}
 }
 
@@ -373,8 +415,8 @@ function effect_set_world_lighting(_color, _brightness, _saturation, _contrast){
 /// @param {Real}	modifier	Determines how fast/slow the blurring effect updates on the screen.
 function effect_apply_screen_blur(_radius, _intensity, _modifier){
 	with(EFFECT_HANDLER){
-		intensityTarget =	clamp(_intensity, 0, 1);
-		intensityModifier = _modifier;
+		intensityTarget		= clamp(_intensity, 0, 1);
+		intensityModifier	= _modifier;
 	}
 }
 

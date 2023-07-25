@@ -1,5 +1,8 @@
+// Prevent the object from processing anything if it has been destroyed OR it is currently inactive.
+if (IS_DESTROYED || !IS_ACTIVE) {return;}
+
 // Execute the entity's current state if there is a valid function index within the variable.
-if (curState != NO_STATE && !IS_DESTROYED) {curState();}
+if (curState != NO_STATE) {curState();}
 
 // Don't bother manipulating any hitstun/recovery timers if the entity isn't hitstunned OR the game's state isn't
 // set to the normal state.

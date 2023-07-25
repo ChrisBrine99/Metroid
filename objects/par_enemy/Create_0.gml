@@ -58,13 +58,16 @@ recoveryLength = 1.0;
 // Default values for an enemy's sprite, which allows the rendering of sprites should a child object have a
 // sprite assigned to it; looping whatever its animation may be. The "sprite_index" is set to "NO_SPRITE" to
 // prevent the entity rendering from occurring.
-stateFlags		= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
 sprite_index	= NO_SPRITE;
 visible			= true;
 
 #endregion
 
 #region Initializing unique variables
+
+// 
+linkedSpawnerID = noone;
 
 // Stores the damage prior to any damage reduction due to difficulty settings or Samus's current suit upgrades.
 // The stun duration determines how long in "unit frames" (60 = 1 real-world second), to prevent any input from

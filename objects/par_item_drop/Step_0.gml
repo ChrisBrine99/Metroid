@@ -1,5 +1,5 @@
 // The life timer (As well as the sprite flicker) is paused whenever the game state isn't set to "Normal".
-if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
+if (IS_DESTROYED || !IS_ACTIVE) {return;}
 
 hitpoints -= DELTA_TIME; // Countdown timer until destruction of the pickup.
 if (hitpoints <= 0.0){

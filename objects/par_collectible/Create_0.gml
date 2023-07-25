@@ -14,7 +14,7 @@ event_inherited();
 // Set the collectibles up so that can draw their sprites to the screen for the player to see. Reset the value
 // within "sprite_index" to its default so the function "entity_set_sprite" can be properly used to initialize
 // the sprite within code.
-stateFlags		= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
 sprite_index	= NO_SPRITE;
 visible			= true;
 

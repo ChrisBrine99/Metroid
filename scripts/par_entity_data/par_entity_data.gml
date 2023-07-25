@@ -3,22 +3,24 @@
 // Positions for the bit flags that allow or restrict specific functionalities of the entity, whether they be
 // a dynamic or static one. These four highest positioned bits are shared by both entity types; any others will
 // be unique to one type or the other.
-#macro	HIT_STUNNED				24
-#macro	DRAW_SPRITE				25
-#macro	ON_SCREEN				26
-#macro	FREEZE_ANIMATION		27
-#macro	LOOP_ANIMATION			28
-#macro	ANIMATION_END			29
+#macro	HIT_STUNNED				23
+#macro	DRAW_SPRITE				24
+#macro	FREEZE_ANIMATION		25
+#macro	LOOP_ANIMATION			26
+#macro	ANIMATION_END			27
+#macro	ON_SCREEN				28
+#macro	ACTIVE					29
 #macro	INVINCIBLE				30
 #macro	DESTROYED				31
 
 // Condenses the code required to check any of the four shared bit flags' current states into macro values.
 #macro	IS_HIT_STUNNED			(stateFlags & (1 << HIT_STUNNED) != 0)
 #macro	CAN_DRAW_SPRITE			(stateFlags & (1 << DRAW_SPRITE) != 0)
-#macro	IS_ON_SCREEN			(stateFlags & (1 << ON_SCREEN) != 0)
 #macro	IS_ANIMATION_FROZEN		(stateFlags & (1 << FREEZE_ANIMATION) != 0)
 #macro	CAN_LOOP_ANIMATION		(stateFlags & (1 << LOOP_ANIMATION) != 0)
 #macro	DID_ANIMATION_END		(stateFlags & (1 << ANIMATION_END) != 0)
+#macro	IS_ON_SCREEN			(stateFlags & (1 << ON_SCREEN) != 0)
+#macro	IS_ACTIVE				(stateFlags & (1 << ACTIVE) != 0)
 #macro	IS_INVINCIBLE			(stateFlags & (1 << INVINCIBLE) != 0)
 #macro	IS_DESTROYED			(stateFlags & (1 << DESTROYED) != 0)
 
@@ -42,7 +44,7 @@ function entity_draw(){
 	// Don't process any code within this event if there isn't a valid sprite to draw. The default value for a 
 	// sprite before it is initialized by an object (Which is done using the "set_sprite" function that is 
 	// found in the  "Create" event of this parent object) should be the constant NO_SPRITE.
-	if (sprite_index == NO_SPRITE || !CAN_DRAW_SPRITE || !IS_ON_SCREEN) {return;}
+	if (sprite_index == NO_SPRITE || !IS_ACTIVE) {return;}
 
 	// Animate the sprite as long as the game isn't paused AND the length of the sprite is greater than one 
 	// image. Otherwise, the sprite will only render whatever image is found at the "imageIndex" number. After 
@@ -70,8 +72,8 @@ function entity_draw(){
 
 	// After the new animation logic has been updated; draw the sprite to the screen using all the other 
 	// default image/sprite manipulation variables that are built into every Game Maker object.
+	if (!CAN_DRAW_SPRITE || !IS_ON_SCREEN) {return;}
 	draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
-	global.drawnEntities++;
 }
 
 /// @description Moves the entity to the specified x and y coordinates within the current room. In case decimals

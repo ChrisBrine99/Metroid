@@ -50,25 +50,36 @@ ammoDropChance = 0.2;		// 20%
 
 #region Unique variable initialization
 
-// 
+// Variables that are relevant to the Yumbo's functionality during its "dormant" state. The first two variables
+// determine the x and y positions that the Yumbo will "target" and move towards, respectively. The final value
+// determines how much time will remain before the target coordinate is updating to new values.
 targetX = x;
 targetY = y + 32;
 targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
+// Starting timer will be a random value within the range of 45 and 150 units, respectively.
 
-// 
+// Determines the "center" of the Yumbo's territory. This value is then used to determine if Samus is close
+// enough to the Yumbo for it to begin aggressively chasing her.
 centerX = x;
 centerY = y + 64;
 
-// 
+// A value that will decrement itself until it hits zero whenever a value is applied to it. When greater than
+// zero, the Yumbo will not engage in chasing Samus even if she's within its territory.
 chaseCooldownTimer = 0.0;
 
 #endregion
 
 #region State function initialization
 
-/// @description 
+/// @description The Yumbo's default state, where it will randomly choose a point within an area that has its
+/// range determined by the values of "centerX" and "centerY", respectively. Once it reaches said point OR the
+/// target update timer reaches zero prior to the target coordinates being reached, the Yumbo will choose a
+/// new target position. They will wait at the target position until the "target update" timer reaches 0.0
+/// should they reach the target before the timer completely counts down.
 state_default = function(){
-	// 
+	// Prevent the Yumbo from instantly attacking Samus whenever she's within range of them by applying a value
+	// to the "chase cooldown" timer variable. If that timer is at or below 0.0, the Yumbo will begin chasing
+	// Samus if she's within range and there aren't any colliders between them.
 	if (chaseCooldownTimer > 0.0){
 		chaseCooldownTimer -= DELTA_TIME;
 	} else if (chaseCooldownTimer <= 0.0 && distance_to_object(PLAYER) <= DETECTION_RADIUS 
@@ -77,11 +88,13 @@ state_default = function(){
 		return;
 	}
 	
-	// 
+	// The "target update" time will be decremented at a rate of ~60 units per second regardless of if the 
+	// Yumbo is resting at its target coordinates or still moving towards it. This timer will be reset to a 
+	// value within a range of 45 and 150 units, resepctively.
 	targetUpdateTimer -= DELTA_TIME;
 	if (targetUpdateTimer <= 0.0){
 		targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
-		do{ // 
+		do{ // Set a new target position until there isn't a collider between the Yumbo and said coordinates.
 			targetX = centerX + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
 			targetY = centerY + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
 		} until(!collision_line(x, y, targetX, targetY, par_collider, false, true));
@@ -90,10 +103,11 @@ state_default = function(){
 		return;
 	}
 	
-	// 
+	// Don't bother trying to move the Yumbo if it's already at its target position.
 	if (x == targetX && y == targetY) {return;}
 	
-	// 
+	// Move the Yumbo along both axes in the direction that the target coordinates are from its current position.
+	// After that, the general entity movement function is called but no world collision function will be checked.
 	direction = point_direction(x, y, targetX, targetY);
 	hspd = lengthdir_x(WANDER_SPEED, direction);
 	vspd = lengthdir_y(WANDER_SPEED, direction);
@@ -136,7 +150,10 @@ state_chase_samus = function(){
 	lightOffsetX = -4 * image_xscale;
 }
 
-// Set the Yumbo to its default state upon creation.
+// Set the Yumbo to its default state upon creation. Randomly set the Yumbo's facing direction to either left
+// or right as well, so they don't always spawn in facing the same direction.
 object_set_next_state(state_default);
+image_xscale = choose(-1, 1);
+lightOffsetX = -4 * image_xscale;	// Fix light offset to match facing direction.
 
 #endregion

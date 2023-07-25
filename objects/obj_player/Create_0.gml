@@ -32,7 +32,7 @@
 // well as the speed Samus will move because of the ability. Finally, the cooldown from using another aeion
 // ability after this one (60 units = 1 second) and its cost are initialized here.
 #macro	PHASE_SHIFT_DISTANCE	80
-#macro	PHASE_SHIFT_SPEED		12
+#macro	PHASE_SHIFT_SPEED		12.0
 #macro	PHASE_SHIFT_COOLDOWN	30
 #macro	PHASE_SHIFT_COST		50
 
@@ -381,7 +381,7 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 	// hspd value would constantly increase to 1 before zeroing out at the collision check so long as the
 	// player was holding either the right or left movement inputs; making her run while against walls due
 	// to that "moving" flag never being set to false despite any actual movement being obstructed.
-	if (IS_GROUNDED && IS_MOVING && place_meeting(x + movement, y, par_collider)){
+	if (movement != 0 && IS_GROUNDED && place_meeting(x + movement, y, par_collider)){
 		var _yOffset = 0;
 		while(place_meeting(x + movement, y - _yOffset, par_collider) && _yOffset < maxHspd) {_yOffset++;}
 		if (place_meeting(x + movement, y - _yOffset, par_collider)){
@@ -390,6 +390,21 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 			hspd = 0.0;
 		}
 	}
+}
+
+/// @description 
+grounded_to_airbourne = function(){
+	if (!IS_GROUNDED){
+		object_set_next_state(state_airbourne);
+		entity_set_sprite(jumpSpriteFw, standingMask);
+		stateFlags &= ~(1 << MOVING);
+		jumpStartTimer = JUMPSPIN_ANIM_TIME;
+		aimReturnTimer = 0.0;
+		return true; // Samus is no longer on the ground; return true to signify such.
+	}
+	
+	// By default, this function will return false to signify no change in Samus's "Grounded" state occurring.
+	return false;
 }
 
 /// @description Since this piece of code needs to be utilized for two seperate scenarios in the crouching
@@ -532,7 +547,7 @@ activate_phase_shift = function(_movement){
 	if (IS_JUMP_SPIN){ // Exit Samus from her somersault should she be in one upon the phase shift's activation.
 		entity_set_sprite(jumpSpriteFw, -1);
 	} else{ // Use the first frame of animation for the walking sprite that isn't aiming Samus's arm cannon when on the floor.
-		if (sprite_index == standSpriteFw || sprite_index == standSpriteUp) {entity_set_sprite(walkSpriteFw, -1);}
+		if (sprite_index == standSpriteFw || sprite_index == standSpriteUp) {entity_set_sprite(walkSpriteFw, standingMask);}
 		imageIndex = 0;
 	}
 	prevAnimSpeed = animSpeed; // Store animation speed before it's zeroed out.
@@ -544,25 +559,28 @@ activate_phase_shift = function(_movement){
 	lightOffsetY = -20;
 	
 	// Apply the correct state and flags to Samus to signify to other objects she's executing her phase shift.
+	// Change required variables to values they need to be during the ability's effect.
 	object_set_next_state(state_phase_shift);
 	stateFlags		   &= ~((1 << DRAW_SPRITE) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 	stateFlags		   |= (1 << PHASE_SHIFT);
 	effectTimer			= PSHIFT_EFFECT_INTERVAL;
 	aeionCooldownTimer	= PHASE_SHIFT_COOLDOWN;
+	vspd				= 0.0; // All vertical movement is cancelled out by the ability.
 	
-	// By default, Samus will be shifted backwards, but this can be controlled by pressing either the left
-	// or right movement inputs to control the direction of the phase shift upon activating it. Samus's
-	// vertical velocity is completely cancelled out by the use of this ability.
-	prevMaxHspd = maxHspd; // Store previous maxHspd in case it's overwritten for the fix detailed below.
-	if (_movement == 0){
-		hspd = (PHASE_SHIFT_SPEED * -image_xscale);
-		// Bugfix for error on slopes when no horizontal movement input from player. Without this, Samus will
-		// get stuck on the slope and instantly exit out of phase shifting.
-		maxHspd = abs(hspd);
-	} else{
-		hspd = (PHASE_SHIFT_SPEED * _movement);
-	}
-	vspd = 0.0;
+	// Store the previous maximum hspd value and it will be overwritten to match Samus's speed during the
+	// phase shift. Without this, she would get stuck on slope since it wiould assume her default maximum hspd
+	// of 2.2 instead of the 12.0 it should be.
+	prevMaxHspd = maxHspd;
+	maxHspd		= PHASE_SHIFT_SPEED;
+	if (_movement == 0) // No movement input will result in Samus shifting herself backwards.
+		hspd	= (PHASE_SHIFT_SPEED * -image_xscale);
+	else // Move in the direction that the player is currently holding if detected.
+		hspd	= (PHASE_SHIFT_SPEED * _movement);
+	
+	// Clear fractional values that were stored prior to the phase shift's activation are cleared to avoid
+	// potential issues with anything stored here during the phase shift's movement logic.
+	hspdFraction = 0.0;
+	vspdFraction = 0.0;
 	
 	// Aeion ability activated; return true to let the state that called this function know.
 	return true;
@@ -790,7 +808,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_position(480, 320);
 	entity_set_sprite(introSprite, spr_empty_mask);
-	stateFlags = (1 << USE_SLOPES) | (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
+	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
 	game_set_state(GSTATE_NORMAL, true);
 }
 
@@ -1160,18 +1178,10 @@ state_default = function(){
 	// code on this frame when it really shouldn't have.
 	process_input();
 	
-	// Handling "gravity" which is just to see if Samus is no longer on the floor or not. If she isn't on the
-	// floor, her state will be switched to her airborune state; where gravity Samus's current vertical
-	// velocity are properly utilized.
+	// Call Samus's gravity function. Then, call the check to see if Samus should transition from grounded to
+	// airbourne. This function will return true when she is no longer grounded to signify the substate change.
 	apply_gravity(MAX_FALL_SPEED);
-	if (!IS_GROUNDED){
-		object_set_next_state(state_airbourne);
-		entity_set_sprite(jumpSpriteFw, standingMask);
-		stateFlags &= ~(1 << MOVING);
-		jumpStartTimer = JUMPSPIN_ANIM_TIME;
-		aimReturnTimer = 0.0;
-		return; // State changed; ignore input and immediately switch over to "airbourne" state.
-	}
+	if (grounded_to_airbourne()) {return;}
 	
 	// Another method of activating Samus's airborune state, but this is done by pressing the input set for
 	// jumping. After that, Samus will have her vertical velocity set to whatever her jump height is (Stored
@@ -1532,18 +1542,10 @@ state_crouching = function(){
 	// code on this frame when it really shouldn't have.
 	process_input();
 	
-	// Check for gravity in the event Samus is crouching on top of a frozen enemy or a moving platform and it
-	// happens to disappear or move to a spot where Samus can't follow it. Otherwise, Samus would get stuck
-	// crouching in the air once the platform is no longer under her.
+	// Call Samus's gravity function. Then, call the check to see if Samus should transition from grounded to
+	// airbourne. This function will return true when she is no longer grounded to signify the substate change.
 	apply_gravity(MAX_FALL_SPEED);
-	if (!IS_GROUNDED){
-		object_set_next_state(state_airbourne);
-		entity_set_sprite(jumpSpriteFw, standingMask);
-		stateFlags &= ~(1 << CROUCHING);
-		jumpStartTimer = JUMPSPIN_ANIM_TIME;
-		aimReturnTimer = 0.0;
-		return; // State changed; ignore input and immediately switch over to "airbourne" state.
-	}
+	if (grounded_to_airbourne()) {return;}
 	
 	// By pressing the up OR the jump input, Samus will exit her crouching state.
 	if (IS_UP_PRESSED || IS_JUMP_PRESSED){
@@ -1714,9 +1716,9 @@ state_morphball = function(){
 	
 	// Counting down the timer that prevents spamming morphball bombs with each push of the "use weapon" input.
 	// Once this timer hits zero again, another bomb can be deployed should the player choose to do so.
-	if (bombDropTimer > 0){
+	if (bombDropTimer > 0.0){
 		bombDropTimer -= DELTA_TIME;
-		if (bombDropTimer <= 0) {bombDropTimer = 0;}
+		if (bombDropTimer <= 0.0) {bombDropTimer = 0.0;}
 	}
 	
 	// Handling the bomb expolosion's physics. It will move Samus to either the left or the right depending on
@@ -1727,7 +1729,7 @@ state_morphball = function(){
 		stateFlags &= ~(1 << MOVING); // Allows preservation of velocity from bomb jump.
 		bombExplodeID = _id;
 		vspd = bombJumpVspd;
-		hspd = ((x - _id.x) / 12) * maxHspd;
+		hspd = ((x - _id.x) / 12.0) * maxHspd;
 	}
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
@@ -1752,12 +1754,6 @@ state_morphball = function(){
 /// thing the player can do is time another press of the phase shift input to potentially trigger a quick
 /// shift, which doubles the distance of the shift at twice the cost; ignoring the aeion cooldown.
 state_phase_shift = function(){
-	// Increment the total distance Samus has moved since the activation of the phase shift by comparing the
-	// difference between her x position before and after the frame's horizontal movement has been applied.
-	var _lastX = x;
-	apply_frame_movement(entity_world_collision);
-	curShiftDist += abs(_lastX - x);
-	
 	// Doubles the distance of the phase shift if the player manages to press its activation input while Samus
 	// is between 30 and 80 pixels from her initial position prior to the phase shift. She also needs to have
 	// at least 50 aeion remaining to activate a double phase shift.
@@ -1767,6 +1763,17 @@ state_phase_shift = function(){
 			curShiftDist -= PHASE_SHIFT_DISTANCE;
 		}
 	}
+	
+	// 
+	var _deltaHspd	= hspd * DELTA_TIME;
+	_deltaHspd	   += hspdFraction;
+	hspdFraction	= _deltaHspd - (floor(abs(_deltaHspd)) * sign(_deltaHspd));
+	_deltaHspd	   -= hspdFraction;
+	
+	// 
+	var _lastX = x;
+	entity_world_collision(_deltaHspd, 0);
+	curShiftDist += abs(_lastX - x);
 	
 	// Go through all of the standard collision functions. However, enemies will be ignored since Samus is
 	// technically phasing through them when using this ability; creating a dodge mechanic with this ability.
@@ -1779,7 +1786,11 @@ state_phase_shift = function(){
 	// Check if Samus has moved the required distance for a phase shift (Or she was stopped by a collision that
 	// set her horizontal velocity to 0). If so, she'll return to her previous state.
 	if (curShiftDist >= PHASE_SHIFT_DISTANCE || hspd == 0.0){
-		object_set_next_state(lastState);
+		// Since gravity isn't updated during the ability, a check to see if Samus is airbourne after it has
+		// ended will occur so she isn't set back to her "grounded" state despite that not being the case.
+		if (place_meeting(x, y + 1, par_collider))	{object_set_next_state(lastState);}
+		else										{object_set_next_state(state_airbourne);}
+		
 		reset_light_source();
 		stateFlags	   &= ~(1 << PHASE_SHIFT);
 		stateFlags	   |= (1 << DRAW_SPRITE);
@@ -1787,7 +1798,7 @@ state_phase_shift = function(){
 		hspd			= 0.0;
 		maxHspd			= prevMaxHspd;
 		animSpeed		= prevAnimSpeed;
-		return; 
+		return;
 	}
 	
 	// Increment the timer by delta time until the effect interval's value has been reached or exceeded. If so,

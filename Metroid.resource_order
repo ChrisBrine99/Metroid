@@ -261,7 +261,6 @@
     {"name":"spr_power_jump3","order":12,"path":"sprites/spr_power_jump3/spr_power_jump3.yy",},
     {"name":"spr_power_mball0","order":13,"path":"sprites/spr_power_mball0/spr_power_mball0.yy",},
     {"name":"spr_power_mball1","order":14,"path":"sprites/spr_power_mball1/spr_power_mball1.yy",},
-    {"name":"spr_power_stand0","order":9,"path":"sprites/spr_power_stand0/spr_power_stand0.yy",},
     {"name":"spr_power_stand1","order":1,"path":"sprites/spr_power_stand1/spr_power_stand1.yy",},
     {"name":"spr_power_stand2","order":2,"path":"sprites/spr_power_stand2/spr_power_stand2.yy",},
     {"name":"spr_power_walk0","order":3,"path":"sprites/spr_power_walk0/spr_power_walk0.yy",},
