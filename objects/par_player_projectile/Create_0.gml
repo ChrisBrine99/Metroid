@@ -285,33 +285,46 @@ projectile_door_collision = function(_instance){
 	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
 }
 
-/// @description 
+/// @description Checks collision against any enemy colliders the projectile instance may have come into contact
+/// with during its step event call. Should a collision have occurred, it will be processed to determine if
+/// damage should be inflicted on the Enemy, an ailment should be applied, it should be skipped, etc..
 /// @param {Real}	x2	The target position on the x-axis that the projectile is moving to.
 /// @param {Real}	y2	The target position on the y-axis that the projectile is moving to.
 projectile_enemy_collision = function(_x2, _y2){
-	// 
+	// First, create some local variables that will be referenced throughout the collision(s). Each caches an
+	// aspect or characteristic about the projectile, so these properties can be easily referenced when inside
+	// the scope of a given collider.
 	var _hitEntityIDs	= hitEntityIDs;
 	var _damage			= damage;
 	var _stateFlags		= stateFlags;
 	var _ignoreEntities = CAN_IGNORE_ENTITIES;
 	var _isColdBased	= IS_COLD_BASED;
 	
-	// 
+	// Perform a line check that orders all collisions based on distance from the (x1, y1) coordinate; storing
+	// it all in a ds_list that is then looped through to process what will happen to the projectile and the
+	// enemy(s) in question relative to the resulting collision(s).
 	var _length			= collision_line_list(x, y, _x2, _y2, obj_enemy_collider, false, true, enemyList, true);
 	for (var i = 0; i < _length; i++){
 		with(enemyList[| i]){
-			// 
+			// First, check if the collider is considered an "immunity area". If so, the projectile will be
+			// immediately destroyed and the for loop through all collider collisions will exit early should
+			// the projectile not have its "IGNORE_ENTITIES" flags set to 1.
 			if (isImmunityArea){
 				if (!_ignoreEntities){
 					_stateFlags |= (1 << DESTROYED);
 					break;
 				}
-				continue;
+				continue; // Move onto next collider if the projectile wasn't destroyed.
 			}
 			
+			// The collider itself doesn't store any information, so the rest of the loop is passed off to the
+			// Enemy object that is attached to said collider.
 			with(parentID){
-				// 
-				if (ds_list_find_index(_hitEntityIDs, id) != -1 || IS_HIT_STUNNED) {continue;}
+				// Check if the entity has already been hit by the projectile. This ensures that a single
+				// projectile can't deal damage to an entity more than once if that situation were to ever
+				// occur during runtime. A current hitstunned Enemy will also not take damage.
+				if (ds_list_find_index(_hitEntityIDs, id) != -1 || IS_HIT_STUNNED)
+					continue;
 				ds_list_add(_hitEntityIDs, id);
 			
 				// 
@@ -320,12 +333,16 @@ projectile_enemy_collision = function(_x2, _y2){
 			}
 		}
 		
-		// 
+		// After the collider has been processed, a check to see if the projectile should be deleted is
+		// performed. The only projectile weapon that bypasses this is the Plasma Beam.
 		if (!_ignoreEntities){
 			_stateFlags |= (1 << DESTROYED);
-			break;
+			break; // Projectile was destroyed; break out of the loop early.
 		}
 	}
+	
+	// Finally, clear out the list of collisions and update the projectile's state flags to match any 
+	// adjustments made during the processing of said collisions.
 	if (ds_list_size(enemyList) > 0) {ds_list_clear(enemyList);}
 	stateFlags = _stateFlags;
 }

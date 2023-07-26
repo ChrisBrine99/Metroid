@@ -98,11 +98,8 @@ initialize = function(_state){
 	centerY = y;
 	targetX = x;
 	targetY = y;
-	// Shift center and initial target down 48 pixels if Yumbo was created by a spawner.
-	if (linkedSpawnerID != noone){
-		centerY += 48;
-		targetY += 48;
-	}
+	
+	alarm[0] = 1;
 	
 	// Initial timer before the Yumbo will update its dormant positional target will be randomly set to be a
 	// value between the minimum possible time (45.0 units) and maximum (150.0 units), respectively (60 units
@@ -141,10 +138,8 @@ state_default = function(){
 	targetUpdateTimer -= DELTA_TIME;
 	if (targetUpdateTimer <= 0.0){
 		targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
-		do{ // Set a new target position until there isn't a collider between the Yumbo and said coordinates.
-			targetX = centerX + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
-			targetY = centerY + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
-		} until(!collision_line(x, y, targetX, targetY, par_collider, false, true));
+		targetX = centerX + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
+		targetY = centerY + irandom_range(-TARGET_POS_RADIUS, TARGET_POS_RADIUS);
 		image_xscale = (x > targetX) ? -1 : 1;
 		lightOffsetX = -4 * image_xscale;
 		return;
