@@ -44,23 +44,11 @@
 
 #endregion
 
-#region	Editing inherited variables
+#region Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-
-// By default, every enemy will have a single frame (60 "frames" = 1 second) of recovery time after an attack's
-// hitstun. This will allow them the chance to escape Samus's attacks and help with prevention of stun-locking
-// enemies, while not making it impossible.
-recoveryLength = 1.0;
-
-// Default values for an enemy's sprite, which allows the rendering of sprites should a child object have a
-// sprite assigned to it; looping whatever its animation may be. The "sprite_index" is set to "NO_SPRITE" to
-// prevent the entity rendering from occurring.
-stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
-sprite_index	= NO_SPRITE;
-visible			= true;
 
 #endregion
 
@@ -106,6 +94,21 @@ freezeThreshold = 0.25;
 stunX			= 0;
 stunY			= 0;
 stunStrength	= 0;
+
+#endregion
+
+#region Default initialize function override
+
+/// @description The default initialization function for an Enemy entity. By default, they will all be toggled
+/// to visible while also having their loop animation flag flipped to true. On top of that, Enemies will have
+/// a default recovery period of 1/60th units (60 units = 1 second).
+/// @param {Function}	state	The function to use for this entity's initial state.
+initialize = function(_state){
+	object_set_next_state(_state);
+	stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+	recoveryLength	= 1.0;
+	visible			= true;
+}
 
 #endregion
 

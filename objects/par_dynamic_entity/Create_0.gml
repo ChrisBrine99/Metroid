@@ -20,11 +20,11 @@
 #region Editing default variables, initializing unique variables, and other important initializations
 
 // Edit some of the object's default variables before any initialization of unique variables occurs.
-direction = 0;
-sprite_index = NO_SPRITE;
-image_index = 0;
-image_speed = 0;
-visible = false;
+direction		= 0.0;
+sprite_index	= NO_SPRITE;
+image_index		= 0;
+image_speed		= 0.0;
+visible			= false;
 
 // The three state variables, which will store the currently execution state function, the previous state
 // state function that was in use, and the next available state function to swap too at the beginning of the
@@ -123,7 +123,7 @@ get_max_vspd = function() {return maxVspd * maxVspdFactor;}
 /// @description The default initialization for an entity, which will set itself to visible and also assign
 /// a starting state to them. This function can be overridden and modified to include initialization of
 /// attributes that only exist to specific entities if need be.
-/// @param {Function}		state	The function to use for this entity's initial state.
+/// @param {Function}	state	The function to use for this entity's initial state.
 initialize = function(_state){
 	object_set_next_state(_state);
 	visible = true;

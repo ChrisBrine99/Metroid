@@ -38,19 +38,19 @@ maxVspd = 1.8;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Yumbo will be able to take
 // four hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
-maxHitpoints = 4;
-hitpoints = maxHitpoints;
+maxHitpoints	= 4;
+hitpoints		= maxHitpoints;
 
 // Set the damage output and hitstun duration for the Yumbo. These values are increased/decreased by the
 // difficulty level selected by the player.
-damage = 8;
-stunDuration = 10;
+damage			= 8;
+stunDuration	= 10;
 
 // Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
 // variables storing those chances here.
-energyDropChance = 0.5;		// 50%
-aeionDropChance = 0.2;		// 20%
-ammoDropChance = 0.2;		// 20%
+energyDropChance	= 0.5;	// 50%
+aeionDropChance		= 0.2;	// 20%
+ammoDropChance		= 0.2;	// 20%
 
 #endregion
 
@@ -59,19 +59,59 @@ ammoDropChance = 0.2;		// 20%
 // Variables that are relevant to the Yumbo's functionality during its "dormant" state. The first two variables
 // determine the x and y positions that the Yumbo will "target" and move towards, respectively. The final value
 // determines how much time will remain before the target coordinate is updating to new values.
-targetX = x;
-targetY = y + 32;
-targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
+targetX				= x;
+targetY				= y + 32;
+targetUpdateTimer	= random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
 // Starting timer will be a random value within the range of 45 and 150 units, respectively.
 
 // Determines the "center" of the Yumbo's territory. This value is then used to determine if Samus is close
 // enough to the Yumbo for it to begin aggressively chasing her.
-centerX = x;
-centerY = y + 64;
+centerX = 0;
+centerY = 0;
 
 // A value that will decrement itself until it hits zero whenever a value is applied to it. When greater than
 // zero, the Yumbo will not engage in chasing Samus even if she's within its territory.
 chaseCooldownTimer = 0.0;
+
+#endregion
+
+#region Initiaize function override
+
+/// Store the pointer for the parent's initialize function into a local variable for the Yumbo, which is then
+/// called inside its own initialization function so the original functionality isn't ignored.
+__initialize = initialize;
+/// @description Initialization function for the Yumbo. It sets its sprite, and sets it to be weak to all 
+/// forms of weaponry. On top of that, its initial state is set and its starting facing direction is randomly
+/// chosen to be either to the left (-1) or right (1). Its unique variables and properties are also determined
+/// by a call to this function.
+/// @param {Function} state		The function to use for this entity's initial state.
+initialize = function(_state){
+	__initialize(_state);
+	entity_set_sprite(spr_yumbo, -1);
+	initialize_weak_to_all();
+	
+	// By default, the center of the Yumbo's "territory" will be the coordinates it is found at during the
+	// call to this initialization function. The target position it stores will also be the same. However,
+	// those values are adjusted if the Yumbo was created by a Yumbo Nest spawner.
+	centerX = x;
+	centerY = y;
+	targetX = x;
+	targetY = y;
+	// Shift center and initial target down 48 pixels if Yumbo was created by a spawner.
+	if (linkedSpawnerID != noone){
+		centerY += 48;
+		targetY += 48;
+	} 
+	
+	// Initial timer before the Yumbo will update its dormant positional target will be randomly set to be a
+	// value between the minimum possible time (45.0 units) and maximum (150.0 units), respectively (60 units
+	// = 1 second).
+	targetUpdateTimer = random_range(TARGET_UPDATE_MIN_TIME, TARGET_UPDATE_MAX_TIME);
+	
+	// Randomly determine what direction the Yumbo will spawn in facing; left (-1) or right (+1).
+	image_xscale = choose(-1, 1);
+	lightOffsetX = -4 * image_xscale;	// Fix light offset to match facing direction.
+}
 
 #endregion
 
@@ -156,10 +196,7 @@ state_chase_samus = function(){
 	lightOffsetX = -4 * image_xscale;
 }
 
-// Set the Yumbo to its default state upon creation. Randomly set the Yumbo's facing direction to either left
-// or right as well, so they don't always spawn in facing the same direction.
-object_set_next_state(state_default);
-image_xscale = choose(-1, 1);
-lightOffsetX = -4 * image_xscale;	// Fix light offset to match facing direction.
-
 #endregion
+
+// Once the create event has executed, initialize the Yumbo by setting it to its default state function.
+initialize(state_default);

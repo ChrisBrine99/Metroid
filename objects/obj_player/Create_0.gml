@@ -1031,15 +1031,33 @@ player_enemy_collision = function(){
 	
 	var _enemy = instance_place(x, y, par_enemy);
 	if (_enemy != noone){
-		// If Samus is currently using her screw attack, she will be immune to damage from enemies while also
-		// instantly killing them should they not be immune to the ability.
-		if (IS_JUMP_ATTACK){
-			with(_enemy) {if (!IS_IMMUNE_TO_SATTACK) instance_destroy(self);}
-			return;
+		var _inJumpAttack	= IS_JUMP_ATTACK;
+		var _curAilment		= AIL_NONE;
+		var _damage			= 0;
+		var _stunDuration	= 0.0;
+		with(_enemy){
+			// When utilizing her Screw Attack, Samus will be immune to all damage that could be inflicted
+			// by an enemy during collision. On top of that, the enemy will instantly be killed if she hits
+			// them and they aren't immune to the Screw Attack.
+			if (_inJumpAttack){
+				if (!IS_IMMUNE_TO_SATTACK){
+					instance_destroy_object(id);
+					stateFlags |= (1 << DROP_ITEM);
+				}
+				return;
+			}
+			
+			// Copy information about enemy damage/stun duration data, as well as its current ailment so Samus
+			// can use that data to determine if she should be considered "hit" or not.
+			_damage			= damage;
+			_stunDuration	= stunDuration;
+			_curAilment		= curAilment;
 		}
-		// A frozen enemy will also prevent damage from being taken during collision with an enemy.
-		if (_enemy.curAilment == AIL_FROZEN) {return;}
-		entity_apply_hitstun(_enemy.stunDuration, _enemy.damage);
+
+		// A frozen enemy OR one that doesn't deal any damage will also prevent the hitstun function from
+		// being called; negating any hitstun or damage they may have inflicted otherwise.
+		if (_curAilment == AIL_FROZEN || _damage == 0) {return;}
+		entity_apply_hitstun(_stunDuration, _damage);
 	}
 }
 

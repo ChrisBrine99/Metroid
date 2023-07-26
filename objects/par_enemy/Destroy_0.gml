@@ -7,7 +7,6 @@ if (!CAN_DROP_ITEM) {return;}
 // respectively. After that, check to see if the value generated is within the range to drop energy, aeion, ammunition,
 // or nothing at all.
 var _dropChance = random_range(0.0, 1.0);
-show_debug_message(_dropChance);
 if (_dropChance <= energyDropChance){
 	var _hitpointRatio = 0.0;
 	with(PLAYER) {_hitpointRatio = (hitpoints / maxHitpoints) * 0.25;}
