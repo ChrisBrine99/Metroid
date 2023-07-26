@@ -67,6 +67,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yodare, -1);
+	create_general_collider();
 	initialize_weak_to_all();
 	
 	// Consider whatever collider the Yodare first comes into contact with as the "ceiling". If there is no

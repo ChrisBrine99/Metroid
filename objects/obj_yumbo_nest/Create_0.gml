@@ -49,6 +49,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yumbo_nest, -1);
+	create_general_collider();
 	initialize_weak_to_missiles();
 	objToSpawn		= obj_yumbo;
 	maxInstances	= 2;

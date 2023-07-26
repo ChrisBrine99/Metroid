@@ -1,6 +1,6 @@
 // If the enemy was spawned from a spawner object, decrement the current number of instances that currently
 // exist due to said spawner, and then spawn an item if the enemy is able to actually drop an item.
-with(linkedSpawnerID) {curInstances--;} 
+with(linkedSpawnerID) {curInstances--;}
 if (!CAN_DROP_ITEM) {return;}
 
 // Generate a floating point number between 0.0 and 1.0, which will represent a percentage value between 0 and 100,

@@ -1,18 +1,21 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_enemy_collider",
+  "name": "obj_enemy_platform",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":2,"eventType":3,"isDnD":false,},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Enemies",
-    "path": "folders/Resources/Core/Entities/Dynamic/Enemies.yy",
+    "name": "Collision",
+    "path": "folders/Resources/Core/Collision.yy",
   },
-  "parentObjectId": null,
+  "parentObjectId": {
+    "name": "par_collider",
+    "path": "objects/par_collider/par_collider.yy",
+  },
   "persistent": false,
   "physicsAngularDamping": 0.1,
   "physicsDensity": 0.5,
@@ -33,5 +36,5 @@
     "path": "sprites/spr_rectangle/spr_rectangle.yy",
   },
   "spriteMaskId": null,
-  "visible": true,
+  "visible": false,
 }

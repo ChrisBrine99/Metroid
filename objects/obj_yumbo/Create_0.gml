@@ -88,6 +88,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yumbo, -1);
+	create_general_collider();
 	initialize_weak_to_all();
 	
 	// By default, the center of the Yumbo's "territory" will be the coordinates it is found at during the
@@ -101,7 +102,7 @@ initialize = function(_state){
 	if (linkedSpawnerID != noone){
 		centerY += 48;
 		targetY += 48;
-	} 
+	}
 	
 	// Initial timer before the Yumbo will update its dormant positional target will be randomly set to be a
 	// value between the minimum possible time (45.0 units) and maximum (150.0 units), respectively (60 units

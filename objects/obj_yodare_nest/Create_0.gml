@@ -13,6 +13,7 @@ event_inherited();
 initialize = function(_state){
 	__initialize(_state); // Borrows the function pointer to "par_enemy" initialize function instead of the Yumbo Nest's initialize function.
 	entity_set_sprite(spr_yodare_nest, -1);
+	create_general_collider();
 	initialize_weak_to_missiles();
 	objToSpawn		= obj_yodare;
 	spawnOffsetY	= -20;

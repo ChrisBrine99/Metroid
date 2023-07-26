@@ -54,8 +54,12 @@ event_inherited();
 
 #region Initializing unique variables
 
-// 
+// Keeps the instance ID of the spawner that created this Enemy object so it can decrement the "curInstances"
+// value within said spawner object upon death.
 linkedSpawnerID = noone;
+
+// 
+immunityAreas	= ds_list_create();
 
 // Stores the damage prior to any damage reduction due to difficulty settings or Samus's current suit upgrades.
 // The stun duration determines how long in "unit frames" (60 = 1 real-world second), to prevent any input from
@@ -74,7 +78,7 @@ ammoDropChance		= 0.0;
 
 // Keeps track of the weaponry Samus can utilize that the Enemy can be damaged by. Anything not found on this
 // list will simply be ignored if it happens to collide with the Enemy.
-weaknesses = ds_list_create();
+weaknesses		= ds_list_create();
 
 // Stores the current ailment that has afflicted the Enemy. The last variable stores the timer that will cure
 // the Enemy of the ailment once its value reaches or goes below zero.
@@ -241,6 +245,38 @@ is_weak_to_weapon = function(_stateFlags){
 	return false;
 }
 
+/// @description 
+/// @param {Real}	x				The x position of the immunity bounding box relative to the Enemy's own x position.
+/// @param {Real}	y				The y position of the immunity bounding box relative to the Enemy's own y position.
+/// @param {Real}	width			Size of the bounding box along the x axis.
+/// @param {Real}	height			Size of the bounding box along the y axis.
+/// @param {Bool}	isImmunityArea	Flag that toggles the effect of Samus's weaponry on and off for collider region.
+create_weapon_collider = function(_x, _y, _width, _height, _isImmunityArea = false){
+	var _parentID	= id;
+	var _instance	= instance_create_object(x + _x, y + _y, obj_enemy_collider);
+	with(_instance){ // Copy characteristics into immunity area.
+		parentID		= _parentID;
+		offsetX			= _x;
+		offsetY			= _y;
+		isImmunityArea	= _isImmunityArea;
+		if (_isImmunityArea) {image_blend = HEX_BLUE;}
+		image_xscale	= _width;
+		image_yscale	= _height;
+	}
+	ds_list_add(immunityAreas, _instance);
+}
+
+/// @descrition Creates a general bounding box for Samus's weapons to check collision's against that is the
+/// exact size of its actual collider used for collisions against the world and Samus, for example. This assumes
+/// the Enemy's origin is centered and that isn't considered an "immunity" collider.
+create_general_collider = function(){
+	var _width	= (bbox_right - bbox_left);
+	var _height = (bbox_bottom - bbox_top); 
+	var _x		= -(_width >> 1);
+	var _y		= -(_height >> 1);
+	create_weapon_collider(_x, _y, _width, _height);
+}
+
 #endregion
 
 #region Ailment function initializations
@@ -288,7 +324,7 @@ inflict_freeze = function(_damage, _isColdBased){
 	var _bboxLeft	= bbox_left;
 	var _bboxTop	= bbox_top;
 	var _bboxBottom	= bbox_bottom;
-	platformID = instance_create_object(_bboxRight, _bboxTop, obj_enemy_collider);
+	platformID = instance_create_object(_bboxRight, _bboxTop, obj_enemy_platform);
 	with(platformID){
 		image_xscale = _bboxLeft - _bboxRight;
 		image_yscale = _bboxBottom - _bboxTop;

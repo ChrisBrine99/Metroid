@@ -52,6 +52,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_gullug, -1);
 	object_add_light_component(x, y, 0, -5, 14, HEX_LIGHT_PURPLE, 0.5);
+	create_general_collider();
 	initialize_weak_to_all();
 	
 	startX			= x;	// Set "center" of the Gullug's movement circle to its initial position.

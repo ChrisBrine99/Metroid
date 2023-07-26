@@ -52,13 +52,14 @@ event_inherited();
 // contact with. So, this parent object will be where it's initialized at a default of zero damage.
 damage = 0;
 
-// Stores the ids for objects the projectile came into contact with when it moved at the end of its step event.
-// Useful for determining if any of those objects were destructibles, doors, and other objects that can be
-// destroyed by projectiles.
-collisionList = ds_list_create();
+// Two lists that store collisions against children of "par_collider" and "par_enemy", respectively. These lists
+// are cleared and refreshed frame-by-frame to determine what a projectile has collided with so each instance
+// collided can be walked through and processed to see what should be done next.
+colliderList	= ds_list_create();
+enemyList		= ds_list_create();
 
 // 
-lastEntityID = noone;
+hitEntityIDs	= ds_list_create();
 
 #endregion
 
@@ -175,14 +176,14 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	// First, clear the list of the previous frame's collision data. After that, check for collisions along the
 	// line of movement for the projectile in question. After the initial collision_line check occurs, a check
 	// against any special colliders is performed.
-	ds_list_clear(collisionList);
-	var _length = collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, false, true, collisionList, true);
+	ds_list_clear(colliderList);
+	var _length = collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, false, true, colliderList, true);
 	var _collider = noone;
 	for (var i = 0; i < _length; i++){
-		_collider = collisionList[| i];
-		if (_collider.object_index == obj_enemy_collider){ // Enemy collision should occur here; exit loop.
+		_collider = colliderList[| i];
+		if (_collider.object_index == obj_enemy_platform){ // Enemy collision should occur here; exit loop.
 			projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
-			ds_list_clear(collisionList);
+			ds_list_clear(colliderList);
 			return;
 		}
 		projectile_door_collision(_collider);
@@ -284,32 +285,49 @@ projectile_door_collision = function(_instance){
 	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
 }
 
-/// @description Checks for and handles collision between the current projectile instance
-/// and any enemies that currently exist in the room. Should a collision have occurred
-/// between the two, damage will be dealt out to the enemy if they aren't immune to the
-/// projectile based on its type.
+/// @description 
 /// @param {Real}	x2	The target position on the x-axis that the projectile is moving to.
 /// @param {Real}	y2	The target position on the y-axis that the projectile is moving to.
 projectile_enemy_collision = function(_x2, _y2){
-	if (x == _x2 && y == _y2) {return;}
-	
-	var _isDestroyed	= false;
-	var _lastEntityID	= lastEntityID;
+	// 
+	var _hitEntityIDs	= hitEntityIDs;
 	var _damage			= damage;
 	var _stateFlags		= stateFlags;
+	var _ignoreEntities = CAN_IGNORE_ENTITIES;
 	var _isColdBased	= IS_COLD_BASED;
-	with(collision_line(x, y, _x2, _y2, par_enemy, false, true)){
-		_isDestroyed = true;
-		if (_lastEntityID != id && !IS_HIT_STUNNED){
-			if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags))
-				entity_apply_hitstun(8, _damage);
-			_lastEntityID = id;
+	
+	// 
+	var _length			= collision_line_list(x, y, _x2, _y2, obj_enemy_collider, false, true, enemyList, true);
+	for (var i = 0; i < _length; i++){
+		with(enemyList[| i]){
+			// 
+			if (isImmunityArea){
+				if (!_ignoreEntities){
+					_stateFlags |= (1 << DESTROYED);
+					break;
+				}
+				continue;
+			}
+			
+			with(parentID){
+				// 
+				if (ds_list_find_index(_hitEntityIDs, id) != -1 || IS_HIT_STUNNED) {continue;}
+				ds_list_add(_hitEntityIDs, id);
+			
+				// 
+				if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags))
+					entity_apply_hitstun(8, _damage);
+			}
+		}
+		
+		// 
+		if (!_ignoreEntities){
+			_stateFlags |= (1 << DESTROYED);
+			break;
 		}
 	}
-	lastEntityID = _lastEntityID;
-	
-	// Destroy the projectile if it can't pass through enemies and the collision was a success.
-	if (_isDestroyed && !CAN_IGNORE_ENTITIES) {stateFlags |= (1 << DESTROYED);}
+	if (ds_list_size(enemyList) > 0) {ds_list_clear(enemyList);}
+	stateFlags = _stateFlags;
 }
 
 #endregion
