@@ -59,7 +59,7 @@ event_inherited();
 linkedSpawnerID = noone;
 
 // 
-immunityAreas	= ds_list_create();
+colliderIDs		= ds_list_create();
 
 // Stores the damage prior to any damage reduction due to difficulty settings or Samus's current suit upgrades.
 // The stun duration determines how long in "unit frames" (60 = 1 real-world second), to prevent any input from
@@ -263,7 +263,7 @@ create_weapon_collider = function(_x, _y, _width, _height, _isImmunityArea = fal
 		image_xscale	= _width;
 		image_yscale	= _height;
 	}
-	ds_list_add(immunityAreas, _instance);
+	ds_list_add(colliderIDs, _instance);
 }
 
 /// @descrition Creates a general bounding box for Samus's weapons to check collision's against that is the

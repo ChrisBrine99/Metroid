@@ -1,17 +1,21 @@
 #region Macro initialization
 
-// 
+// Bits that represent state flags utilized by the Yodare's AI; allowing it to perform certain actions and make
+// certain checks depending on the values stored at their respective bit positions.
 #macro	IN_CEILING				0
 #macro	IN_FLOOR				1
 
-// 
+// Macros that automate having to type out a bitwise AND check against the state flags that are unique to the
+// Yodare. They determine if it's currently in the "ceiling" (Collider it spawned into) or the "floor" (Collider
+// that is below what it considers its ceiling).
 #macro	IS_IN_CEILING			(stateFlags & (1 << IN_CEILING))
 #macro	IS_IN_FLOOR				(stateFlags & (1 << IN_FLOOR))
 
-// 
+// Determines the maximum vertical speed that the Yodare will move at when it is moving through any collider.
 #macro	BURROWING_SPEED			0.2
 
-// 
+// Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to what
+// it originally started at; making it look like another Yodare is burrowing out of the nest.
 #macro	TIME_FOR_RETURN			80.0
 
 #endregion
@@ -85,29 +89,36 @@ initialize = function(_state){
 
 #region State function initialization
 
-/// @description 
+/// @description The Yodare's default and only state, which will have it burrowing through the ground/ceiling
+/// at a slow speed; falling at increase speeds due to gravity when not burrowing through something solid.
 state_default = function(){
-	// 
+	// Handling vertical movement, which borrows its logic from the general "apply_frame_movement" function
+	// without the code for handling horizontal movement since the Yodare never moves horizontally.
 	var _deltaVspd	= vspd * DELTA_TIME;
 	_deltaVspd	   += vspdFraction;
 	vspdFraction	= _deltaVspd - (floor(abs(_deltaVspd)) * sign(_deltaVspd));
 	_deltaVspd	   -= vspdFraction;
 	y			   += _deltaVspd;
 	
-	// 
+	// While burrowing through the ceiling, the Yodare will check to see if it is no longer within the ceiling
+	// by performing an "inverted gravity" check (Gravity uses y + 1 to determine if an Entity is on the floor
+	// or not). If the check passes, the "IN_CEILING" bit is flipped to zero.
 	if (IS_IN_CEILING){
 		if (!place_meeting(x, y - 1, par_collider))
 			stateFlags &= ~(1 << IN_CEILING);
-		return;
+		return; // No other state functionality allowed while in ceiling.
 	}
 	
-	// 
+	// While not in the ceiling AND not burrowing into the floor, the Yodare will fall relative to the effect
+	// of gravity (Its "vAccel" value) on it; maxing out at the value stored in "maxVspd". While in the floor,
+	// the Yodare will begin burrowing again and no longer be affectd by gravity.
 	if (!IS_IN_FLOOR){
-		// 
 		vspd += vAccel * DELTA_TIME;
 		if (vspd > maxVspd) {vspd = maxVspd;}
 		
-		// 
+		// Perform a standard gravity check like the function "apply_gravity" would, but in the Yodare's case
+		// it will simply flip the "IN_FLOOR" bit to 1 while returning its vertical velocity back to its speed
+		// while burrowing through a solid object.
 		if (place_meeting(x, y + 1, par_collider)){
 			stateFlags |= (1 << IN_FLOOR);
 			vspd		= BURROWING_SPEED;
@@ -115,6 +126,15 @@ state_default = function(){
 	} else{
 		returnTimer += DELTA_TIME;
 		if (returnTimer >= TIME_FOR_RETURN){
+			// UNIQUE CASE -- Perform a check to see if the nest that the Yodare originally came from has been
+			// destroyed or not. If so, the Yodare will destroy itself alongside the spawner.
+			if (!instance_exists(linkedSpawnerID)){
+				stateFlags |= (1 << DESTROYED);
+				return;
+			}
+			
+			// Flip the "IN_FLOOR" bit to 0 while also setting the "IN_CEILING" bit, and then reset the Yodare's
+			// vertical position back to its starting y position to burrow back out of the nest again. 
 			stateFlags	&= ~(1 << IN_FLOOR);
 			stateFlags	|=  (1 << IN_CEILING);
 			returnTimer	 = 0.0;
