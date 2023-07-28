@@ -78,6 +78,7 @@ state_default = function(){
 	x = startX + lengthdir_x(radius, direction);
 	y = startY + lengthdir_y(radius, direction);
 	direction += moveDirection * moveSpeed * DELTA_TIME;
+	// TODO -- Fix to prevent sub-pixel position values.
 }
 
 #endregion

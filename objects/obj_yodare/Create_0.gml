@@ -51,10 +51,12 @@ ammoDropChance		= 0.40;	// 40%
 
 #region Unique variable initialization
 
-// 
+// Value that is set upon initialization of the Yodare that stores the y position is was at during that time.
+// Used to reset itself once it gets reset from burrowing through what it considers a "floor".
 startY = 0;
 
-// 
+// Tracks the amount of time that the Yodare has been burrowing through the "floor" for in unit frames; where
+// 60 units make up one second of real-world time.
 returnTimer = 0.0;
 
 #endregion

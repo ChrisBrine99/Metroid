@@ -24,6 +24,17 @@
 #macro	IS_INVINCIBLE			(stateFlags & (1 << INVINCIBLE) != 0)
 #macro	IS_DESTROYED			(stateFlags & (1 << DESTROYED) != 0)
 
+// Useful marcos for the angle values of the four cardinal directions.
+#macro	DIRECTION_NORTH			90.0
+#macro	DIRECTION_SOUTH			270.0
+#macro	DIRECTION_EAST			0.0
+#macro	DIRECTION_WEST			180.0
+
+// Some more useful macros for determining the current "movement direction" of a given entity (Enemy AI like
+// the "Ripper", "Halzyn", and "Mumbo" utilize these values.
+#macro	MOVE_DIR_RIGHT			1
+#macro	MOVE_DIR_LEFT			-1
+
 #endregion
 
 #region Functions utilized by both entity classes

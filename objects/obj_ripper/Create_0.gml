@@ -70,21 +70,22 @@ initialize = function(_state){
 /// @description The Ripper's default state. All it will do is bounce back and forth between two walls; one
 /// to its left and one to its right; flipping to the opposite direction on contact with each.
 state_default = function(){
-	hspd += movement * hAccel * DELTA_TIME;		// Update horizontal velocity.
+	var _deltaTime = DELTA_TIME;
+	hspd += movement * hAccel * _deltaTime;		// Update horizontal velocity.
 	if (hspd > maxHspd || hspd < -maxHspd) {hspd = maxHspd * movement;}
 	
-	var _deltaHspd = hspd * DELTA_TIME;						// Remove decimal values from velocity.
-	var _signHspd = sign(_deltaHspd);
-	_deltaHspd += hspdFraction;
-	hspdFraction = _deltaHspd - (floor(abs(_deltaHspd)) * _signHspd);
-	_deltaHspd -= hspdFraction;
+	var _deltaHspd	= hspd * _deltaTime;						// Remove decimal values from velocity.
+	var _signHspd	= sign(_deltaHspd);
+	_deltaHspd	   += hspdFraction;
+	hspdFraction	= _deltaHspd - (floor(abs(_deltaHspd)) * _signHspd);
+	_deltaHspd	   -= hspdFraction;
 	
 	if (place_meeting(x + _deltaHspd, y, par_collider)){	// Handling collision.
 		while(!place_meeting(x + _signHspd, y, par_collider)) {x++;}
-		lightOffsetX *= -1;			// Flip eye light's position
-		movement *= -1;				// Flip movement direction
+		lightOffsetX   *= -1;	// Flip eye light's position
+		movement	   *= -1;	// Flip movement direction
+		hspd			= 0.0;
 		imageIndex++;
-		hspd = 0.0;
 		return;
 	}
 	x += _deltaHspd;
