@@ -4,7 +4,6 @@
   "name": "obj_halzyn",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":64,"eventType":8,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
@@ -32,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_halzyn",
-    "path": "sprites/spr_halzyn/spr_halzyn.yy",
+    "name": "spr_halzyn0",
+    "path": "sprites/spr_halzyn0/spr_halzyn0.yy",
   },
   "spriteMaskId": null,
   "visible": false,

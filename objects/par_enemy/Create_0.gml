@@ -259,14 +259,13 @@ create_weapon_collider = function(_x, _y, _width, _height, _isImmunityArea = fal
 		offsetX			= _x;
 		offsetY			= _y;
 		isImmunityArea	= _isImmunityArea;
-		if (_isImmunityArea) {image_blend = HEX_BLUE;}
 		image_xscale	= _width;
 		image_yscale	= _height;
 	}
 	ds_list_add(colliderIDs, _instance);
 }
 
-/// @descrition Creates a general bounding box for Samus's weapons to check collision's against that is the
+/// @description Creates a general bounding box for Samus's weapons to check collision's against that is the
 /// exact size of its actual collider used for collisions against the world and Samus, for example. This assumes
 /// the Enemy's origin is centered and that isn't considered an "immunity" collider.
 create_general_collider = function(){
@@ -275,6 +274,24 @@ create_general_collider = function(){
 	var _x		= -(_width >> 1);
 	var _y		= -(_height >> 1);
 	create_weapon_collider(_x, _y, _width, _height);
+}
+
+/// @description 
+/// @param {Real}	index			Which attached collider is going to be adjusted.
+/// @param {Real}	x				New x offset relative to the Enemy's x position for the collider.
+/// @param {Real}	y				New y offset relative to the Enemy's y position for the collider.
+/// @param {Real}	width			Value to change the collider's width to; in pixels.
+/// @param {Real}	height			Value to change the collider's height to; in pixels.
+/// @param {Bool}	isImmunityArea	Toggles the collider's immunity against Samus's weaponry on/off.
+edit_weapon_collider = function(_index, _x, _y, _width, _height, _isImmunityArea){
+	if (_index >= ds_list_size(colliderIDs)) {return;}
+	with(colliderIDs[| _index]){
+		offsetX			= _x;
+		offsetY			= _y;
+		image_xscale	= _width;
+		image_yscale	= _height;
+		isImmunityArea	= _isImmunityArea;
+	}
 }
 
 #endregion

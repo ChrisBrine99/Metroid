@@ -1,7 +1,7 @@
 {
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
-  "name": "spr_halzyn",
+  "name": "spr_halzyn0",
   "bbox_bottom": 19,
   "bbox_left": 2,
   "bbox_right": 29,
@@ -28,14 +28,14 @@
   "nineSlice": null,
   "origin": 4,
   "parent": {
-    "name": "General",
-    "path": "folders/Resources/Graphics/Sprites/Entities/Dynamic/Enemies/General.yy",
+    "name": "Halzyn",
+    "path": "folders/Resources/Graphics/Sprites/Entities/Dynamic/Enemies/General/Halzyn.yy",
   },
   "preMultiplyAlpha": false,
   "sequence": {
     "resourceType": "GMSequence",
     "resourceVersion": "1.4",
-    "name": "spr_halzyn",
+    "name": "spr_halzyn0",
     "autoRecord": true,
     "backdropHeight": 768,
     "backdropImageOpacity": 0.5,
@@ -57,10 +57,10 @@
     "timeUnits": 1,
     "tracks": [
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"1da47446-1829-4c0d-be09-d9197c26f1a9","path":"sprites/spr_halzyn/spr_halzyn.yy",},},},"Disabled":false,"id":"0017e951-528c-44f4-b527-025660f2877d","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"9e694693-3c9c-48ff-ac23-60d3e8b74545","path":"sprites/spr_halzyn/spr_halzyn.yy",},},},"Disabled":false,"id":"83f40eee-f108-4997-bb13-b91ace456a13","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"ac4c0abf-045c-4937-b48e-7107fe525411","path":"sprites/spr_halzyn/spr_halzyn.yy",},},},"Disabled":false,"id":"418d0c51-8942-4ac3-bd14-8ef4b4812cf6","IsCreationKey":false,"Key":2.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"5228ceba-9256-4111-aa04-a6cb4e3bf8ed","path":"sprites/spr_halzyn/spr_halzyn.yy",},},},"Disabled":false,"id":"f96ec4f6-2075-4753-bb6a-ba49e714733e","IsCreationKey":false,"Key":3.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"1da47446-1829-4c0d-be09-d9197c26f1a9","path":"sprites/spr_halzyn0/spr_halzyn0.yy",},},},"Disabled":false,"id":"0017e951-528c-44f4-b527-025660f2877d","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"9e694693-3c9c-48ff-ac23-60d3e8b74545","path":"sprites/spr_halzyn0/spr_halzyn0.yy",},},},"Disabled":false,"id":"83f40eee-f108-4997-bb13-b91ace456a13","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"ac4c0abf-045c-4937-b48e-7107fe525411","path":"sprites/spr_halzyn0/spr_halzyn0.yy",},},},"Disabled":false,"id":"418d0c51-8942-4ac3-bd14-8ef4b4812cf6","IsCreationKey":false,"Key":2.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"5228ceba-9256-4111-aa04-a6cb4e3bf8ed","path":"sprites/spr_halzyn0/spr_halzyn0.yy",},},},"Disabled":false,"id":"f96ec4f6-2075-4753-bb6a-ba49e714733e","IsCreationKey":false,"Key":3.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange": null,

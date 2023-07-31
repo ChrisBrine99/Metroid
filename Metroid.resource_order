@@ -76,6 +76,7 @@
     {"name":"Visual Effects","order":3,"path":"folders/Resources/Graphics/Sprites/Visual Effects.yy",},
     {"name":"Levels","order":5,"path":"folders/Resources/Levels.yy",},
     {"name":"Test Levels","order":2,"path":"folders/Resources/Levels/Test Levels.yy",},
+    {"name":"Halzyn","order":6,"path":"folders/Resources/Graphics/Sprites/Entities/Dynamic/Enemies/General/Halzyn.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},
@@ -92,7 +93,6 @@
     {"name":"obj_destructible_collectible_ball","order":7,"path":"objects/obj_destructible_collectible_ball/obj_destructible_collectible_ball.yy",},
     {"name":"obj_destructible_missile","order":2,"path":"objects/obj_destructible_missile/obj_destructible_missile.yy",},
     {"name":"obj_destructible_power_bomb","order":4,"path":"objects/obj_destructible_power_bomb/obj_destructible_power_bomb.yy",},
-    {"name":"spr_halzyn","order":1,"path":"sprites/spr_halzyn/spr_halzyn.yy",},
     {"name":"obj_destructible_screw_attack","order":5,"path":"objects/obj_destructible_screw_attack/obj_destructible_screw_attack.yy",},
     {"name":"obj_destructible_weight","order":6,"path":"objects/obj_destructible_weight/obj_destructible_weight.yy",},
     {"name":"obj_energy_tank","order":13,"path":"objects/obj_energy_tank/obj_energy_tank.yy",},
@@ -266,6 +266,7 @@
     {"name":"obj_ripper","order":3,"path":"objects/obj_ripper/obj_ripper.yy",},
     {"name":"spr_power_jump2","order":11,"path":"sprites/spr_power_jump2/spr_power_jump2.yy",},
     {"name":"spr_power_jump3","order":12,"path":"sprites/spr_power_jump3/spr_power_jump3.yy",},
+    {"name":"spr_halzyn1","order":1,"path":"sprites/spr_halzyn1/spr_halzyn1.yy",},
     {"name":"spr_power_mball0","order":13,"path":"sprites/spr_power_mball0/spr_power_mball0.yy",},
     {"name":"spr_power_mball1","order":14,"path":"sprites/spr_power_mball1/spr_power_mball1.yy",},
     {"name":"spr_power_stand1","order":1,"path":"sprites/spr_power_stand1/spr_power_stand1.yy",},
