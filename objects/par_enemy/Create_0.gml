@@ -99,6 +99,10 @@ stunX			= 0;
 stunY			= 0;
 stunStrength	= 0;
 
+// 
+shiftBaseX		= 0xFFFFFFFF;
+shiftTimer		= 0.0;
+
 #endregion
 
 #region Default initialize function override
@@ -245,7 +249,10 @@ is_weak_to_weapon = function(_stateFlags){
 	return false;
 }
 
-/// @description 
+/// @description Creates a new weapon collider for the Enemy, which is a region that can only be collided with
+/// by Samus's weapons. Its position and size can be set independent of the Enemy's bounding box, and multiple
+/// can be created to have areas that can't be damaged by Samus and areas that can be based on the value of the
+/// collider's "immunityArea" flag.
 /// @param {Real}	x				The x position of the immunity bounding box relative to the Enemy's own x position.
 /// @param {Real}	y				The y position of the immunity bounding box relative to the Enemy's own y position.
 /// @param {Real}	width			Size of the bounding box along the x axis.
@@ -276,7 +283,8 @@ create_general_collider = function(){
 	create_weapon_collider(_x, _y, _width, _height);
 }
 
-/// @description 
+/// @description Edits the parameters of an existing weapon collider. This allows an already created collider
+/// to be repositioned, resized, and have its susceptibility to Samus' weapons toggled on/off as needed.
 /// @param {Real}	index			Which attached collider is going to be adjusted.
 /// @param {Real}	x				New x offset relative to the Enemy's x position for the collider.
 /// @param {Real}	y				New y offset relative to the Enemy's y position for the collider.
@@ -291,6 +299,19 @@ edit_weapon_collider = function(_index, _x, _y, _width, _height, _isImmunityArea
 		image_xscale	= _width;
 		image_yscale	= _height;
 		isImmunityArea	= _isImmunityArea;
+	}
+}
+
+/// @description Horizontally shifts the Enemy along the x axis by one pixel to either the left or right; relative
+/// to the direction it had previously shifted toward. Updating "shiftBaseX" to match the Enemy's position is
+/// required if the Enemy is allowed to move while also performing this shifting effect.
+/// @param {Real}	speed	Determines the frequency of the shifting (Speed of 1.0 = ~60 shifts per second).
+apply_horizontal_shift = function(_speed){
+	shiftTimer += DELTA_TIME;
+	if (shiftTimer >= _speed){
+		if (x == shiftBaseX) {x += choose(-1, 1);}
+		else				 {x	 = shiftBaseX + sign(shiftBaseX - x);}
+		shiftTimer -= _speed;
 	}
 }
 

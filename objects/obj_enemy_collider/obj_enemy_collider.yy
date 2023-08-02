@@ -33,5 +33,5 @@
     "path": "sprites/spr_rectangle/spr_rectangle.yy",
   },
   "spriteMaskId": null,
-  "visible": true,
+  "visible": false,
 }

@@ -1,3 +1,29 @@
+#region Macro initialization
+
+// 
+#macro	GLLG_MOVE_RADIUS		48.0
+#macro	GLLG_MOVE_SPEED			2.0
+
+//
+#macro	GLLG_BASE_DAMAGE		8
+#macro	GLLG_ATTACK_DAMAGE		16
+
+// 
+#macro	GLLG_ATK_DISTANCE		96.0
+#macro	GLLG_ATK_SPEED			2.0
+#macro	GLLG_ATK_RETURN_SPEED	1.0
+
+// 
+#macro	GLLG_ATK_TIME			50.0
+#macro	GLLG_ATK_BEGIN_TIME		20.0
+#macro	GLLG_ATK_END_TIME		5.0
+#macro	GLLG_ATK_COOLDOWN_TIME	60.0
+
+// 
+#macro	GLLG_SHAKE_SPEED		2.0
+
+#endregion
+
 #region	Editing inherited variables
 
 // Ensures all variables that are created within the parent object's create event are also initialized through
@@ -11,7 +37,7 @@ hitpoints		= maxHitpoints;
 
 // Set the damage output and hitstun duration for the Gullug. These values are increased/decreased by the
 // difficulty level selected by the player.
-damage			= 10;
+damage			= GLLG_BASE_DAMAGE;
 stunDuration	= 12;
 
 // Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
@@ -29,12 +55,13 @@ ammoDropChance		= 0.3;	// 30%
 startX			= 0;
 startY			= 0;
 
-// Determines how fast the Gullug will rotate around its "start" coordinates. The direction can be set to -1
-// or +1 to change the direction of movement, and the radius will determine how far from those "start"
-// coordinates the Gullug will circle.
-moveSpeed		= 0;
+// Stores the "direction" that the Gullug will move in; being able to choose from either left (-1) or right(+1).
 moveDirection	= 0;
-radius			= 0;
+
+// 
+returnX			= 0;
+returnY			= 0;
+attackTimer		= 0.0;
 
 #endregion
 
@@ -55,16 +82,17 @@ initialize = function(_state){
 	create_general_collider();
 	initialize_weak_to_all();
 	
-	startX			= x;	// Set "center" of the Gullug's movement circle to its initial position.
+	// 
+	startX			= x;
 	startY			= y;
-	moveSpeed		= 2;	// Set movement speed and randomly determine to move left (-1) or right (+1).
+	moveSpeed		= 2.0;
 	moveDirection	= choose(1, -1);
-	radius			= 48;	// How "large" the Gullug's movement area is.
+	attackTimer		= GLLG_ATK_COOLDOWN_TIME;	// Enables the Gullug to attack as soon as they area created.
 	
 	// Start the Gullug at either the top (90) or bottom (270) of its movement circle by said value being
 	// randomly chosen upon the Gullu's initialization.
 	direction		= choose(90, 270);
-	y				= startY + lengthdir_y(radius, direction);
+	y				= startY + lengthdir_y(GLLG_MOVE_RADIUS, direction);
 }
 
 #endregion
@@ -75,10 +103,96 @@ initialize = function(_state){
 /// point endlessly. If there is a line of sight between the Gullug and Samus, it will try charging at her.
 /// Otherwise, it will remain in this state indefinitely.
 state_default = function(){
-	x = startX + lengthdir_x(radius, direction);
-	y = startY + lengthdir_y(radius, direction);
-	direction += moveDirection * moveSpeed * DELTA_TIME;
-	// TODO -- Fix to prevent sub-pixel position values.
+	// Cache the current value for delta time since it is utilized multiple times throughout the state.
+	var _deltaTime = DELTA_TIME;
+	
+	// 
+	if (attackTimer == GLLG_ATK_COOLDOWN_TIME){
+		// 
+		var _playerX = 0xFFFFFFFF;
+		var _playerY = 0xFFFFFFFF;
+		with(PLAYER){
+			_playerX = x;
+			_playerY = y;
+		}
+	
+		// 
+		if (distance_to_point(_playerX, _playerY) <= GLLG_ATK_DISTANCE){
+			object_set_next_state(state_begin_attack);
+			shiftBaseX	= x;
+			attackTimer	= 0.0;
+			
+			// 
+			var _direction = point_direction(x, y, _playerX, _playerY);
+			hspd = lengthdir_x(GLLG_ATK_SPEED, _direction);
+			vspd = lengthdir_y(GLLG_ATK_SPEED, _direction);
+			return;
+		}
+	} else{ // Incrementing "attackTimer" until it hits the time required for attacking to be "out of cooldown".
+		attackTimer += _deltaTime;
+		if (attackTimer > GLLG_ATK_COOLDOWN_TIME)
+			attackTimer = GLLG_ATK_COOLDOWN_TIME;
+	}
+	
+	// 
+	x = startX + floor(lengthdir_x(GLLG_MOVE_RADIUS, direction));
+	y = startY + floor(lengthdir_y(GLLG_MOVE_RADIUS, direction));
+	direction += moveDirection * moveSpeed * _deltaTime;
+}
+
+/// @description 
+state_begin_attack = function(){
+	// 
+	attackTimer += DELTA_TIME;
+	if (attackTimer > GLLG_ATK_BEGIN_TIME){
+		object_set_next_state(state_attack);
+		x			= shiftBaseX;
+		returnX		= x;
+		returnY		= y;
+		damage		= GLLG_ATTACK_DAMAGE;
+		attackTimer	= 0.0;
+		return;
+	}
+	
+	// 
+	apply_horizontal_shift(GLLG_SHAKE_SPEED);
+}
+
+/// @description 
+state_attack = function(){
+	// 
+	apply_frame_movement(NO_FUNCTION);
+	attackTimer += DELTA_TIME;
+	
+	// 
+	if (attackTimer > GLLG_ATK_TIME || place_meeting(x, y, PLAYER)){
+		object_set_next_state(state_end_attack);
+		damage		= GLLG_BASE_DAMAGE;
+		attackTimer	= 0.0;
+		
+		// 
+		var _direction = point_direction(x, y, returnX, returnY);
+		hspd = lengthdir_x(GLLG_ATK_RETURN_SPEED, _direction);
+		vspd = lengthdir_y(GLLG_ATK_RETURN_SPEED, _direction);
+	}
+}
+
+/// @description 
+state_end_attack = function(){
+	// 
+	var _deltaTime	= DELTA_TIME;
+	attackTimer	   += _deltaTime;
+	if (attackTimer < GLLG_ATK_END_TIME) {return;}
+	
+	// 
+	apply_frame_movement(NO_FUNCTION);
+	if (point_distance(x, y, returnX, returnY) 
+			<= max(GLLG_ATK_RETURN_SPEED, GLLG_ATK_RETURN_SPEED * _deltaTime)){
+		object_set_next_state(state_default);
+		x			= returnX;
+		y			= returnY;
+		attackTimer = 0.0;
+	}
 }
 
 #endregion

@@ -9,7 +9,7 @@ parentID = noone;
 offsetX = 0;
 offsetY = 0;
 
-// 
+// Toggles effect of Samus's weapons against the collider on (false) and off (true).
 isImmunityArea = false;
 
 #endregion

@@ -12,11 +12,11 @@
 #macro	IS_IN_FLOOR				(stateFlags & (1 << IN_FLOOR))
 
 // Determines the maximum vertical speed that the Yodare will move at when it is moving through any collider.
-#macro	BURROWING_SPEED			0.2
+#macro	YDRE_BURROW_SPEED		0.2
 
 // Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to what
 // it originally started at; making it look like another Yodare is burrowing out of the nest.
-#macro	TIME_FOR_RETURN			80.0
+#macro	YDRE_RETURN_TIME		80.0
 
 #endregion
 
@@ -80,7 +80,7 @@ initialize = function(_state){
 	// collision detected, the Yodare will instantly be destroyed.
 	if (place_meeting(x, y, par_collider)){
 		stateFlags |= (1 << IN_CEILING);
-		vspd		= BURROWING_SPEED;
+		vspd		= YDRE_BURROW_SPEED;
 		startY		= y;
 	} else{
 		stateFlags |= (1 << DESTROYED);
@@ -123,11 +123,11 @@ state_default = function(){
 		// while burrowing through a solid object.
 		if (place_meeting(x, y + 1, par_collider)){
 			stateFlags |= (1 << IN_FLOOR);
-			vspd		= BURROWING_SPEED;
+			vspd		= YDRE_BURROW_SPEED;
 		}
 	} else{
 		returnTimer += DELTA_TIME;
-		if (returnTimer >= TIME_FOR_RETURN){
+		if (returnTimer >= YDRE_RETURN_TIME){
 			// UNIQUE CASE -- Perform a check to see if the nest that the Yodare originally came from has been
 			// destroyed or not. If so, the Yodare will destroy itself alongside the spawner.
 			if (!instance_exists(linkedSpawnerID)){
@@ -145,7 +145,7 @@ state_default = function(){
 	}
 }
 
+#endregion
+
 // Set the Yodare to its default state upon creation.
 initialize(state_default);
-
-#endregion

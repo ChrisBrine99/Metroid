@@ -12,32 +12,32 @@
 // state. The top value determines the offset relative to its actual Y to perform the "place_meeting" collision
 // checks, and the last macros determines how fast it'll shake back and forth when a collision occurs.
 #macro	HLZN_YCOLLIDE_OFFSET   -4
-#macro	YCOLLIDE_SHAKE_SPEED	1.5		
+#macro	HLZN_YCOLL_SHAKE_SPEED	1.5
 
 // Values for the damage the Halzyn can inflict on Samus while it is dormant (Flying in a "sine" pattern) state
 // versus its attacking state, respectively.
-#macro	HALZYN_BASE_DAMAGE		30
-#macro	HALZYN_ATTACK_DAMAGE	50
+#macro	HLZN_BASE_DAMAGE		30
+#macro	HLZN_ATTACK_DAMAGE		50
 
 // Macros that determine how the Halzyn moves during its dormant/default state. THe top value is how long in
 // "unit frames" (60 units = 1 second) it will move along the x axis before it switches directions, and the
 // bottom value determines how quick it will bob up and down along that horizontal path.
-#macro	HMOVE_INTERVAL			150.0
-#macro	VMOVE_INTERVAL			7.0
+#macro	HLZN_HMOVE_INTERVAL		150.0
+#macro	HLZN_VMOVE_INTERVAL		7.0
 
 // Macros for various attack state checks/conditions. The first two values are the how close Samus needs to be
 // to the Halzyn's left or right, and how far below she needs to be for it to try attacking her. The next three
 // store durations of time (60.0 = 1 second) for various things related to attacking. THe final value is the
 // speed it will shake back and forth at prior to dropping onto Samus.
-#macro	ATTACK_X_BOUNDS			28
-#macro	ATTACK_Y_BOUNDS			64
-#macro	ATTACK_BEGIN_TIME		10.0
-#macro	ATTACK_END_TIME			36.0
-#macro	ATTACK_COOLDOWN_TIME	80.0
-#macro	ATTACK_SHAKE_SPEED		2.0
+#macro	HLZN_ATTACK_XBOUNDS		38
+#macro	HLZN_ATTACK_YBOUNDS		56
+#macro	HLZN_ATK_BEGIN_TIME		8.0
+#macro	HLZN_ATK_END_TIME		36.0
+#macro	HLZN_ATK_COOLDOWN_TIME	80.0
+#macro	HLZN_ATK_SHAKE_SPEED	2.0
 
 // Stores the upward velocity the Halzyn will use to return to its pre-attack y position after an attack.
-#macro	ATTACK_RETURN_VSPD	   -2.0
+#macro	HLZN_ATK_RETURN_VSPD   -2.0
 
 #endregion
 
@@ -63,7 +63,7 @@ hitpoints		= maxHitpoints;
 
 // Set the damage output and hitstun duration for the Halzyn. These values are increased/decreased by the
 // difficulty level selected by the player.
-damage			= HALZYN_BASE_DAMAGE;
+damage			= HLZN_BASE_DAMAGE;
 stunDuration	= 20;
 
 // Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
@@ -87,11 +87,8 @@ hFlipTimer	= 0.0;
 startY		= 0;
 preAttackY	= 0;
 
-// Timers for various actions that the Halzyn performs while attacking (Entering/exiting the main attacking
-// state, for example) and for the current duration of a shaking effect that is applied to certain actions
-// during an attack.
+// 
 attackTimer	= 0.0;
-shakeTimer	= 0.0;
 
 #endregion
 
@@ -119,28 +116,10 @@ initialize = function(_state){
 	
 	// Set the default values for the variables the Halzyn will utilize in its default state; randomly choosing
 	// starting movement as either to the left or right, and storing the initial y position as the mid-point of
-	// its normal movement (When "cos(.
+	// its normal movement (When direction is ~0.0 or ~180.0).
 	movement	= choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
-	hFlipTimer	= HMOVE_INTERVAL >> 1;
+	hFlipTimer	= HLZN_HMOVE_INTERVAL >> 1;
 	startY		= y;
-}
-
-#endregion
-
-#region Utility function initialization
-
-/// @description Applies a horizontal shake of one pixel to the left or right of the Halzyn's actual x position
-/// (Note that this value is stored in the "stunX" variable) based on the supplied speed value.
-/// @param {Real}	speed	Determines how fast the shake will be.
-halzyn_apply_shake = function(_speed){
-	shakeTimer += DELTA_TIME;
-	if (shakeTimer >= _speed){
-		// First shake is randomly chosen and every subsequent "shake update" will simply flip between -1 and
-		// +1 until this function is no longer being called.
-		if (x == stunX) {x += choose(-1, 1);}	
-		else			{x	= stunX + sign(stunX - x);}
-		shakeTimer -= _speed;
-	}
 }
 
 #endregion
@@ -157,7 +136,7 @@ state_default = function(){
 	// Only attempt to check if Samus should be attacked or not if the attack timer is equal to the Halzyn's
 	// cooldown time for attacks. This is already the case for the Halzyn's first attack, and the timer will
 	// be incremented to reach that cooldown time for each attack afterward.
-	if (attackTimer == ATTACK_COOLDOWN_TIME){
+	if (attackTimer == HLZN_ATK_COOLDOWN_TIME){
 		// The player's current coordinates and movenent direction are required for the Halzyn to determine
 		// if it should attack her and is even able to.
 		var _playerX	= 0xFFFFFFFF;
@@ -172,7 +151,7 @@ state_default = function(){
 		// Compare the coordinates of Samus against the coordinates of the Halzyn (The x axis bounds are 
 		// modified based on player's movement direction). If the checks pass the Halzyn will prep itself
 		// for attack.
-		if (abs(_playerX - x) <= ATTACK_X_BOUNDS * _movement && (_playerY - y) >= ATTACK_Y_BOUNDS){
+		if (abs(_playerX - x) <= HLZN_ATTACK_XBOUNDS * _movement && (_playerY - y) >= HLZN_ATTACK_YBOUNDS){
 			object_set_next_state(state_begin_attack);
 			entity_set_sprite(spr_halzyn1, -1, 1.0, 0);
 		
@@ -187,27 +166,27 @@ state_default = function(){
 			// timer to 0 as well.
 			stateFlags &= ~(1 << LOOP_ANIMATION);
 			attackTimer = 0.0;
-			stunX		= x;	// Borrow hitstun variable for attack beginning's shake effect.
+			shiftBaseX	= x;
 			preAttackY	= y;	// Store pre-attack y position so the Halzyn knows where to return to after attacking.
 			return;
 		}
 	} else{ // Incrementing "attackTimer" until it hits the time required for attacking to be "out of cooldown".
 		attackTimer += _deltaTime;
-		if (attackTimer > ATTACK_COOLDOWN_TIME)
-			attackTimer = ATTACK_COOLDOWN_TIME;
+		if (attackTimer > HLZN_ATK_COOLDOWN_TIME)
+			attackTimer = HLZN_ATK_COOLDOWN_TIME;
 	}
 	
 	// Handling horizontal movement, which requires the incrementing of a timer that determines when the 
 	// Halzyn can flip its movement along the x axis.
 	hspd		= maxHspd * movement;
 	hFlipTimer += _deltaTime;
-	if (hFlipTimer >= HMOVE_INTERVAL){
-		hFlipTimer -= HMOVE_INTERVAL;
+	if (hFlipTimer >= HLZN_HMOVE_INTERVAL){
+		hFlipTimer -= HLZN_HMOVE_INTERVAL;
 		movement   *= -1;
 	}
 	
 	// Updating the "direction" of the Halzyn, which helps determine its vertical position for the frame.
-	direction  += VMOVE_INTERVAL * movement * _deltaTime;
+	direction  += HLZN_VMOVE_INTERVAL * movement * _deltaTime;
 	
 	// Removing fractional values from the Halzyn's hspd value; storing those fractional values into a buffer
 	// variable until a whole number can be parsed out of that variable.
@@ -243,17 +222,16 @@ state_begin_attack = function(){
 	// Increment the timer until it reaches or surpasses a value of 10.0 units (60.0 units = 1 second). Once
 	// that value is met, the Halzyn will be set up to execute its main attack state.
 	attackTimer += _deltaTime;
-	if (attackTimer >= ATTACK_BEGIN_TIME){
+	if (attackTimer >= HLZN_ATK_BEGIN_TIME){
 		object_set_next_state(state_attack);
-		x			= stunX;
-		damage		= HALZYN_ATTACK_DAMAGE;		// Increases Halzyn's damage output during attack.
+		x			= shiftBaseX;
+		damage		= HLZN_ATTACK_DAMAGE;	// Increases Halzyn's damage output during attack.
 		attackTimer	= 0.0;
-		shakeTimer	= 0.0;
 		return;
 	}
 	
 	// Shake the Halzyn left and right at a speed of roughly 1/30th of a second.
-	halzyn_apply_shake(ATTACK_SHAKE_SPEED);
+	apply_horizontal_shift(HLZN_ATK_SHAKE_SPEED);
 }
 
 /// @description The Halzyn's main attack state, where it will drop downward until it collides with the floor
@@ -278,15 +256,14 @@ state_attack = function(){
 	// Finally, perform a vertical collision check against the room collision; shifted ~4 pixels up from where
 	// the Halzyn actually is so it will end up "in the ground" once a collision actually occurs. If a collision
 	// DOES happen, the Halzyn is immediately transitioned into its "end attack" state.
-	var _yy = y + HLZN_YCOLLIDE_OFFSET + _deltaVspd;
+	var _yy = y + _deltaVspd;
 	if (place_meeting(x, _yy, par_collider)){
-		while(!place_meeting(x, _yy, par_collider)){
-			_yy += _signVspd;
-			y	+= _signVspd;
-		}
+		_yy		   += HLZN_YCOLLIDE_OFFSET;	// Offset so Halzyn crashes into the ground upon collision.
+		while(!place_meeting(x, _yy, par_collider)) {_yy += _signVspd;}
 		object_set_next_state(state_end_attack);
-		_deltaVspd	= 0.0;
+		y			= _yy - HLZN_YCOLLIDE_OFFSET;
 		vspd		= 0.0;
+		_deltaVspd	= 0.0;
 	}
 	y += _deltaVspd;
 }
@@ -317,15 +294,14 @@ state_end_attack = function(){
 			// ALlow the Halzyn to loop its sprite animation once again; return its damage back to normal; set
 			// its vspd to its "rising" velocity; and clear out the attack state's various timers.
 			stateFlags |= (1 << LOOP_ANIMATION);
-			damage		= HALZYN_BASE_DAMAGE;
-			vspd		= ATTACK_RETURN_VSPD;
+			damage		= HLZN_BASE_DAMAGE;
+			vspd		= HLZN_ATK_RETURN_VSPD;
 			attackTimer = 0.0;
-			shakeTimer	= 0.0;
 			return;
 		}
 		
 		attackTimer += DELTA_TIME;
-		if (attackTimer >= ATTACK_END_TIME){
+		if (attackTimer >= HLZN_ATK_END_TIME){
 			// Slowly fade in the Halzyn's eye light by performing the reverse of what happened during the
 			// beginning of the attack state; increasing strength based on how close image index is to zero.
 			var _imageIndex		= imageIndex;
@@ -337,7 +313,7 @@ state_end_attack = function(){
 		}
 		
 		// Shake the halzyn left and right to sell the impact it made with the floor because of its "weight".
-		halzyn_apply_shake(YCOLLIDE_SHAKE_SPEED);
+		apply_horizontal_shift(HLZN_YCOLL_SHAKE_SPEED);
 		return; // Don't allow movement until the Halzyn has finished "colliding" with the ground.
 	}
 	
@@ -360,7 +336,7 @@ state_end_attack = function(){
 	}
 }
 
+#endregion
+
 // Set the Halzyn to its default state upon creation.
 initialize(state_default);
-
-#endregion
