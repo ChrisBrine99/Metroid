@@ -58,7 +58,8 @@ event_inherited();
 // value within said spawner object upon death.
 linkedSpawnerID = noone;
 
-// 
+// Stores the weapon colliders that are attached to the Enemy object, which are responsible for handling
+// collisions with player projectiles and weaponry.
 colliderIDs		= ds_list_create();
 
 // Stores the damage prior to any damage reduction due to difficulty settings or Samus's current suit upgrades.
@@ -99,7 +100,8 @@ stunX			= 0;
 stunY			= 0;
 stunStrength	= 0;
 
-// 
+// Variables that are responsible for handling a horizontal shift of one pixel to the left and right at a 
+// regular interval determined by the Enemy utilizing this effect.
 shiftBaseX		= 0xFFFFFFFF;
 shiftTimer		= 0.0;
 

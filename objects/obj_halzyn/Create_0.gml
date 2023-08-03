@@ -87,7 +87,7 @@ hFlipTimer	= 0.0;
 startY		= 0;
 preAttackY	= 0;
 
-// 
+// Timer that is used during Halzyn's various attacking states.
 attackTimer	= 0.0;
 
 #endregion
