@@ -1,25 +1,32 @@
 #region Macro initialization
 
-// 
+// Determines how wide the Gullug's circle of movement is in its default state, as well as the speed it moves
+// along the circumference of that circle.
 #macro	GLLG_MOVE_RADIUS		48.0
 #macro	GLLG_MOVE_SPEED			2.0
 
-//
+// Determines the amount of damage that the Gullug will apply to Samus when it comes into contact with her
+// during its regular and attacking states, respectively.
 #macro	GLLG_BASE_DAMAGE		8
 #macro	GLLG_ATTACK_DAMAGE		16
 
-// 
+// Macro values for various attack state parameters. The first is the radius that Samus is required to be within
+// relative to the Gullug's current position before it can attack her. The final two values are the speed the
+// Gullug moves at when it is attacking and returning from attacking to its regular movement, respectively.
 #macro	GLLG_ATK_DISTANCE		96.0
 #macro	GLLG_ATK_SPEED			2.0
 #macro	GLLG_ATK_RETURN_SPEED	1.0
 
-// 
+// Various timer that the Gullug utilizes for various actions that it can perform. In order, they determine
+// how long in unit frames (60 ufs = 1 second) before it can attack again, how long the Gullug can attack for
+// before giving up, the time between it detecting Samus and beginning its attack, and how long it must wait
+// between its attack and returning to its default state.
+#macro	GLLG_ATK_COOLDOWN_TIME	60.0
 #macro	GLLG_ATK_TIME			50.0
 #macro	GLLG_ATK_BEGIN_TIME		20.0
 #macro	GLLG_ATK_END_TIME		5.0
-#macro	GLLG_ATK_COOLDOWN_TIME	60.0
 
-// 
+// Determines how fast the Gullug shifts to the left and right during its attack begin state.
 #macro	GLLG_SHAKE_SPEED		2.0
 
 #endregion
@@ -58,7 +65,9 @@ startY			= 0;
 // Stores the "direction" that the Gullug will move in; being able to choose from either left (-1) or right(+1).
 moveDirection	= 0;
 
-// 
+// Variables that are utilized by the Gullug for its attacking functionality. The first two store the position
+// that the Gullug was at along its circle of movement before it began its attack, and the final value tracks
+// intervals of time between various states to determine what the Gullug can do.
 returnX			= 0;
 returnY			= 0;
 attackTimer		= 0.0;
@@ -113,7 +122,7 @@ state_default = function(){
 		var _playerY = 0xFFFFFFFF;
 		with(PLAYER){
 			_playerX = x;
-			_playerY = y;
+			_playerY = y - 16; // Offset by 16 so it is properly centered on Samus.
 		}
 	
 		// 

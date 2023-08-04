@@ -244,7 +244,7 @@
     {"id":{"name":"shd_outline","path":"shaders/shd_outline/shd_outline.yy",},},
     {"id":{"name":"obj_player_power_bomb","path":"objects/obj_player_power_bomb/obj_player_power_bomb.yy",},},
     {"id":{"name":"shd_scanlines","path":"shaders/shd_scanlines/shd_scanlines.yy",},},
-    {"id":{"name":"spr_energy_tanks","path":"sprites/spr_energy_tanks/spr_energy_tanks.yy",},},
+    {"id":{"name":"spr_energy_tank_icon","path":"sprites/spr_energy_tank_icon/spr_energy_tank_icon.yy",},},
     {"id":{"name":"shd_screen_blur","path":"shaders/shd_screen_blur/shd_screen_blur.yy",},},
     {"id":{"name":"snd_door_close","path":"sounds/snd_door_close/snd_door_close.yy",},},
     {"id":{"name":"snd_door_locked","path":"sounds/snd_door_locked/snd_door_locked.yy",},},

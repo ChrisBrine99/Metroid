@@ -173,7 +173,7 @@
     {"name":"shd_bloom_blend","order":1,"path":"shaders/shd_bloom_blend/shd_bloom_blend.yy",},
     {"name":"shd_bloom_luminance","order":1,"path":"shaders/shd_bloom_luminance/shd_bloom_luminance.yy",},
     {"name":"obj_player_power_bomb","order":1,"path":"objects/obj_player_power_bomb/obj_player_power_bomb.yy",},
-    {"name":"spr_energy_tanks","order":1,"path":"sprites/spr_energy_tanks/spr_energy_tanks.yy",},
+    {"name":"spr_energy_tank_icon","order":1,"path":"sprites/spr_energy_tank_icon/spr_energy_tank_icon.yy",},
     {"name":"snd_door_close","order":1,"path":"sounds/snd_door_close/snd_door_close.yy",},
     {"name":"snd_door_locked","order":2,"path":"sounds/snd_door_locked/snd_door_locked.yy",},
     {"name":"snd_door_open","order":2,"path":"sounds/snd_door_open/snd_door_open.yy",},

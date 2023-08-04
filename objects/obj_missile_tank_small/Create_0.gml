@@ -1,3 +1,11 @@
+#region Macro initialization
+
+// Macro that stores the constant value for the amount Samus's missile ammunition capacity increases by 
+// whenever she picks up this type of missile tank.
+#macro	SMALL_MTANK_CAPACITY	2
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 
@@ -29,10 +37,7 @@ __collectible_collect_self = collectible_collect_self;
 /// @description Increases Samus's current and maximum missile capaciy values by two.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER){ // Increase current and maximum missiles by the tank's amount given.
-		maxMissiles += 2;
-		numMissiles += 2;
-	}
+	with(PLAYER) {update_maximum_missiles(SMALL_MTANK_CAPACITY);}
 }
 
 #endregion

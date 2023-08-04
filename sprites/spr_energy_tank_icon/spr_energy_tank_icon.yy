@@ -1,7 +1,7 @@
 {
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
-  "name": "spr_energy_tanks",
+  "name": "spr_energy_tank_icon",
   "bbox_bottom": 5,
   "bbox_left": 0,
   "bbox_right": 5,
@@ -33,7 +33,7 @@
   "sequence": {
     "resourceType": "GMSequence",
     "resourceVersion": "1.4",
-    "name": "spr_energy_tanks",
+    "name": "spr_energy_tank_icon",
     "autoRecord": true,
     "backdropHeight": 768,
     "backdropImageOpacity": 0.5,
@@ -55,8 +55,8 @@
     "timeUnits": 1,
     "tracks": [
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"141d25a1-dedf-4498-bc17-b87d381235b9","path":"sprites/spr_energy_tanks/spr_energy_tanks.yy",},},},"Disabled":false,"id":"56c03f3b-fe95-44d9-b4c7-cf84e116c863","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"37e26490-1034-4271-b662-a26b60ff49fa","path":"sprites/spr_energy_tanks/spr_energy_tanks.yy",},},},"Disabled":false,"id":"feb09ea1-44fb-4244-b2bd-1f04d701e499","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"141d25a1-dedf-4498-bc17-b87d381235b9","path":"sprites/spr_energy_tank_icon/spr_energy_tank_icon.yy",},},},"Disabled":false,"id":"56c03f3b-fe95-44d9-b4c7-cf84e116c863","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"37e26490-1034-4271-b662-a26b60ff49fa","path":"sprites/spr_energy_tank_icon/spr_energy_tank_icon.yy",},},},"Disabled":false,"id":"feb09ea1-44fb-4244-b2bd-1f04d701e499","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange": null,

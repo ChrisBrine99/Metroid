@@ -29,10 +29,7 @@ __collectible_collect_self = collectible_collect_self;
 /// @description Increases Samus's current energy and its maximum possible capacity by 100 units.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER){
-		maxHitpoints += 100;
-		hitpoints += 100;
-	}
+	with(PLAYER) {update_maximum_energy(ENERGY_TANK_CAPACITY);}
 }
 
 #endregion

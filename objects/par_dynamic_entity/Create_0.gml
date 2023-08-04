@@ -133,7 +133,7 @@ initialize = function(_state){
 /// will simply reduce the hitpoints of the entity by whatever the "_damage" amount is (A positive number here
 /// will reduce their health; a negative value increasing it, respectively). The default flag for "hitstun" will
 /// be flipped to true until the duration of the stun has ended.
-/// @param {Real}	duration	Time in "frames" to apply the hitstun (Excluding the recovery) for (60 units = 1 second).
+/// @param {Real}	duration	Time in "frames" to apply the hitstun (Excluding the recovery) for (60 frames = 1 second).
 /// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage = 0){
 	update_hitpoints(-_damage);

@@ -1,3 +1,10 @@
+#region Macro initialization
+
+// Macro that stores the constant value for the amount Samus's power bomb supply will increase by when collected.
+#macro	PBOMB_TANK_CAPACITY		1
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 
@@ -29,10 +36,7 @@ __collectible_collect_self = collectible_collect_self;
 /// @description Increases Samus's current and maximum power bomb values by one unit.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER){ // Increase current and maximum power bomb by the tank's amount given.
-		maxPowerBombs++;
-		numPowerBombs++;
-	}
+	with(PLAYER) {update_maximum_power_bombs(PBOMB_TANK_CAPACITY);}
 }
 
 #endregion

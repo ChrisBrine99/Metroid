@@ -3,5 +3,4 @@
 maxMissiles += 10;
 numMissiles += 10;*/
 
-curAeion = 100;
-maxAeion = 100;
+update_maximum_aeion(AEION_LIMIT);

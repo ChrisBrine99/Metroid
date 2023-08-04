@@ -34,9 +34,8 @@ collectible_collect_self = function(){
 	with(PLAYER){
 		energyTankPieces++;
 		if (energyTankPieces == NEEDED_ETANK_PIECES){
-			energyTankPieces = 0;
-			maxHitpoints += 100;
-			hitpoints += 100;
+			update_maximum_energy(ENERGY_TANK_CAPACITY);
+			energyTankPieces = 0;	// Reset number of eTank pieces.
 		}
 	}
 }

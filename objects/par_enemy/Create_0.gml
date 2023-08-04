@@ -139,8 +139,8 @@ update_hitpoints = function(_modifier){
 __entity_apply_hitstun = entity_apply_hitstun;
 /// @description A hitstun function unique to enemy entities. It will send them into their hitstun state while
 /// also applying a shake effect--its intensity varying depending on the damage it sustained--during the hitstun.
-/// @param {Real}	duration
-/// @param {Real}	damage
+/// @param {Real}	duration	Time in "frames" to apply the hitstun (Excluding the recovery) for (60 frames = 1 second).
+/// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage){
 	if (curAilment != AIL_NONE){
 		update_hitpoints(-_damage);

@@ -1,3 +1,10 @@
+#region Macro initialization
+
+// Macro that stores the value of missiles given to Samus when she collects the Missile Launcher.
+#macro	START_MISSILE_AMOUNT	10
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 
@@ -18,9 +25,6 @@ object_add_light_component(x, y, 0, 0, baseRadius, HEX_WHITE, baseStrength);
 
 #endregion
 
-#region Unique variable initialization
-#endregion
-
 #region Editing collection function
 
 // Stores the parent function in another variable so it can be called through the overrided version found
@@ -33,11 +37,7 @@ collectible_collect_self = function(){
 	__collectible_collect_self();
 	with(PLAYER){
 		event_set_flag(FLAG_MISSILES, true);
-		maxMissiles += 10;
-		numMissiles += 10;
-		
-		var _numMissiles = numMissiles;
-		with(GAME_HUD) {pCurMissiles = _numMissiles;}
+		update_maximum_missiles(START_MISSILE_AMOUNT);
 	}
 }
 

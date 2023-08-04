@@ -1,4 +1,1 @@
-if (maxHitpoints >= 1299) {return;}
-
-maxHitpoints += 100;
-hitpoints += 100;
+update_maximum_energy(ENERGY_TANK_CAPACITY);

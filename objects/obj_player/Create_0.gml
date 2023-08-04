@@ -136,13 +136,20 @@
 // represent an X or Y position to place the light at during Samus's actions, which can alter where it is
 // depending on an animation or sprite.
 #macro	LIGHT_OFFSET_X_GENERAL	4 * image_xscale
-#macro	LIGHT_OFFSET_Y_GENERAL	-33
+#macro	LIGHT_OFFSET_Y_GENERAL -33
 #macro	LIGHT_OFFSET_X_DOWN		7 * image_xscale
-#macro	LIGHT_OFFSET_Y_DOWN		-28
+#macro	LIGHT_OFFSET_Y_DOWN	   -28
 #macro	LIGHT_OFFSET_X_ATTACK	0
-#macro	LIGHT_OFFSET_Y_ATTACK	-20
-#macro	LIGHT_OFFSET_Y_CROUCH	-23
-#macro	LIGHT_OFFSET_Y_MBALL	-18
+#macro	LIGHT_OFFSET_Y_ATTACK  -20
+#macro	LIGHT_OFFSET_Y_CROUCH  -23
+#macro	LIGHT_OFFSET_Y_MBALL   -18
+
+// 
+#macro	ENERGY_TANK_CAPACITY	100
+#macro	ENERGY_LIMIT			1299
+#macro	AEION_LIMIT				100
+#macro	MISSILE_LIMIT			250
+#macro	POWER_BOMB_LIMIT		15
 
 #endregion
 
@@ -527,6 +534,56 @@ reset_light_source = function(){
 	lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
 }
 
+/// @description Increases Samus's current energy reserves by the amount specified in the function argument. 
+/// There is a limit of 1299 for available energy, so the amount will not increase if that value is reached.
+/// @param {Real}	modifier	Value to add to the current energy capacity.
+update_maximum_energy = function(_modifier){
+	if (maxHitpoints == ENERGY_LIMIT || _modifier <= 0) {return;}
+	hitpoints	 = (hitpoints + _modifier	 > ENERGY_LIMIT) ? ENERGY_LIMIT : hitpoints + _modifier;
+	maxHitpoints = (maxHitpoints + _modifier > ENERGY_LIMIT) ? ENERGY_LIMIT : maxHitpoints + _modifier;
+	with(GAME_HUD) // Update HUD's stored value for player's maximum energy capacity.
+		pMaxEnergyTanks = floor(other.maxHitpoints * 0.01);
+}
+
+/// @description Increases Samus's current aeion energy by the amount specified in the function argument. 
+/// There is a limit of 100 for available aeion, so the amount will not increase if that value is reached.
+/// @param {Real}	modifier	Value to add to the maximum aeion capacity.
+update_maximum_aeion = function(_modifier){
+	if (maxAeion == AEION_LIMIT || _modifier <= 0) {return;}
+	curAeion = (curAeion + _modifier > AEION_LIMIT) ? AEION_LIMIT : curAeion + _modifier;
+	maxAeion = (maxAeion + _modifier > AEION_LIMIT) ? AEION_LIMIT : maxAeion + _modifier;
+	with(GAME_HUD){ // Update HUD's stored value for player's max aeion capacity.
+		pMaxAeion = other.maxAeion;
+		if (!CAN_SHOW_AEION_GAUGE && pMaxAeion != 0) {stateFlags |= (1 << SHOW_AEION_GAUGE);}
+	}
+}
+
+/// @description Increases Samus's current missile ammunition capacity by the amount specified in the function
+/// argument. There is a limit of 250 for the capacity, so the count will not increase if that value is reached.
+/// @param {Real}	modifier	Value to add to the current missile ammunition capacity.
+update_maximum_missiles = function(_modifier){
+	if (maxMissiles == MISSILE_LIMIT || _modifier <= 0) {return;}
+	numMissiles = (numMissiles + _modifier > MISSILE_LIMIT) ? MISSILE_LIMIT : numMissiles + _modifier;
+	maxMissiles = (maxMissiles + _modifier > MISSILE_LIMIT) ? MISSILE_LIMIT : maxMissiles + _modifier;
+	with(GAME_HUD){ // Update HUD's stored value for player's max missile ammo count.
+		if (!CAN_SHOW_MISSILES && event_get_flag(FLAG_MISSILES)) {stateFlags |= (1 << SHOW_MISSILES);}
+		pMaxMissiles = other.maxMissiles;
+	}
+}
+
+/// @description Increases Samus's current power bomb supply by the amount specified in the function argument. 
+/// There is a limit of 15 for power bombs, so the count will not increase if that value is reached.
+/// @param {Real}	modifier	Value to add to the current power bomb supply.
+update_maximum_power_bombs = function(_modifier){
+	if (maxPowerBombs == POWER_BOMB_LIMIT || _modifier <= 0) {return;}
+	numPowerBombs = (numPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : numPowerBombs + _modifier;
+	maxPowerBombs = (maxPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : maxPowerBombs + _modifier;
+	with(GAME_HUD){ // Update HUD's stored value for player's max power bomb count.
+		if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS)) {stateFlags |= (1 << SHOW_PBOMBS);}
+		pMaxPowerBombs = other.maxPowerBombs;
+	}
+}
+
 #endregion
 
 #region Aeion ability activation functions
@@ -856,10 +913,10 @@ update_hitpoints = function(_modifier){
 /// of 0 and whatever their current maximum aeion is.
 /// @param {Real}	modifier	The value that will be subtracted (Argument is negative) or added (Argument is positive) to the player's aeion gauge.
 update_aeion = function(_modifier){
-	if (_modifier == 0) {return;}
-	curAeion += floor(_modifier);	// Value is floored so it's always an integer.
+	if (_modifier == 0.0) {return;}
+	curAeion += _modifier;
 	if (curAeion > maxAeion)	{curAeion = maxAeion;}
-	else if (curAeion < 0)		{curAeion = 0;}
+	else if (curAeion < 0.0)	{curAeion = 0.0;}
 }
 
 #endregion
