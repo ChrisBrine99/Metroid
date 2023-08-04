@@ -18,7 +18,9 @@
 #macro	CAN_SHOW_PBOMBS			(stateFlags & (1 << SHOW_PBOMBS))
 #macro	CAN_SHOW_AEION_GAUGE	(stateFlags & (1 << SHOW_AEION_GAUGE))
 
-// 
+// Constants for the speed that values shown on the HUD are shifted towards the actual values are internally.
+// The energy and aeion values are incremented faster the further they are from their targets, but the ammo
+// values are incremented as regular intervals no matter the gap between the values.
 #macro	ENERGY_INCREMENT_SPEED	0.3
 #macro	AEION_INCREMENT_SPEED	0.25
 #macro	MISSILE_INCREMENT_SPEED 0.75
@@ -32,9 +34,16 @@
 // Constants relating to where and how the current energy number and energy tanks are rendered on the screen;
 // relative to the screen's top-left origin of (0, 0).
 #macro	ENERGY_NUMBER_WIDTH		10
+#macro	ENERGY_NUMBER_HEIGHT	12
 #macro	ETANK_ROW_LIMIT			6
 #macro	ETANK_ICON_WIDTH		6
 #macro	ETANK_ICON_HEIGHT		6
+
+// 
+#macro	AMMO_NUMBER_WIDTH		5
+#macro	AMMO_NUMBER_HEIGHT		7
+#macro	MISSILE_ICON_WIDTH		12
+#macro	POWER_BOMB_ICON_WIDTH	10
 
 // Constants for the region that the aeion gauge is rendered on the game's GUI layer, which has its origin
 // (0, 0) at the top-left of the screen regardless of the viewport's position within the room.
@@ -104,33 +113,49 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	/// @param {Real}	y		Starting y offset for the player info background elements on the screen.
 	/// @param {Real}	alpha	The overall visibility of the background displayed on the HUD.
 	draw_player_info_background = function(_x, _y, _alpha){
-		/*var _xx				= _x + 1;
-		var _mainBgWidth	= 24;  // Start at 24 since current energy value is 20 pixels wide; plus 2 pixel spacing on each side.
-		
-		var _maxEnergyTanks = floor(PLAYER.maxHitpoints * 0.01);
-		if (_maxEnergyTanks > 0){
-			var _energyBgWidth = _maxEnergyTanks <= 6 ? 22 + (6 * _maxEnergyTanks) + 1 : 22 + 37; // Tank sprite: 6x6; plus one pixel for spacing.
-			draw_sprite_ext(spr_rectangle, 0, _xx, _y + 1, _energyBgWidth, 14, 0, HEX_BLACK, _alpha * 0.25);
-			_mainBgWidth += _energyBgWidth - 22; // Ignore 22 pixels since mainBgWidth already includes it.
-			_xx			 += _energyBgWidth + 1;
-		} else{
-			draw_sprite_ext(spr_rectangle, 0, _xx, _y + 1, 22, 14, 0, HEX_BLACK, _alpha * 0.25);
-			_xx += _x + _mainBgWidth - 1;
+		// First, the background for the player's energy information is rendered onto the screen.
+		var _bgWidth = (ENERGY_NUMBER_WIDTH << 1) + 4;
+		if (pMaxEnergyTanks != 0){
+			// Calculate the width of the background rectangles based on the amount of energy tanks available
+			// to Samus at the current moment (Maxing the calculated width out at 6 or more energy tanks) and
+			// then use that to draw those rectangles, respectively.
+			_bgWidth = (pMaxEnergyTanks <= 6) ? // Both outcomes are padded by one pixel to compensate for the rightmost edge.
+				_bgWidth + (6 * pMaxEnergyTanks) + 1 :	
+				_bgWidth + (ETANK_ICON_WIDTH * ETANK_ROW_LIMIT) + 1;
+			draw_sprite_ext(
+				spr_rectangle, 0,				// <--- Ignore these values.
+					_x + 1,						// Top-left position of inner rectangle (Each axis offset by one).
+					_y + 1,				
+					_bgWidth - 2,				// Width and height of inner rectangle.
+					ENERGY_NUMBER_HEIGHT + 2,	
+				0, HEX_BLACK, _alpha * 0.25		// Rotation, color, and opacity.
+			);
+		} else{ // No additional space along the x axis needs to be calculated for the energy section; drawn rectangle of pre-determined size.
+			draw_sprite_ext(spr_rectangle, 0, _x + 1, _y + 1, _bgWidth - 2, ENERGY_NUMBER_HEIGHT + 2, 0, HEX_BLACK, _alpha * 0.33);
 		}
 		
-		if (stateFlags & (1 << SHOW_MISSILES)){
-			draw_sprite_ext(spr_rectangle, 0, _xx, _y + 1, 28, 11, 0, HEX_BLACK, _alpha * 0.25);
-			_mainBgWidth += 29; // Add 1 pixel for missile background spacing.
-			_xx			 += 29;
+		// The outer rectangle is drawn after the inner rectangle is rendered. It will be two pixels wider and
+		// taller; while also being offset by one pixel to the left and top compared to the inner rectangle.
+		// After this, the background offset is set to whatever the width of the energy info background is.
+		draw_sprite_ext(spr_rectangle, 0, _x, _y, _bgWidth, ENERGY_NUMBER_HEIGHT + 4, 0, HEX_DARK_GRAY, _alpha * 0.5);
+		var _bgOffset = _bgWidth;
+		
+		// 
+		var _showMissiles = CAN_SHOW_MISSILES;
+		if (_showMissiles){
+			_bgWidth = MISSILE_ICON_WIDTH + (AMMO_NUMBER_WIDTH * 3) + 2; // No padding required for leftmost edge.
+			draw_sprite_ext(spr_rectangle, 0, _bgOffset, _y + 1, _bgWidth - 1, AMMO_NUMBER_HEIGHT + 4, 0, HEX_BLACK, _alpha * 0.4);
+			draw_sprite_ext(spr_rectangle, 0, _bgOffset, _y, _bgWidth, AMMO_NUMBER_HEIGHT + 6, 0, HEX_DARK_GRAY, _alpha * 0.6);
+			_bgOffset += _bgWidth;
 		}
 		
-		if (stateFlags & (1 << SHOW_PBOMBS)){
-			draw_sprite_ext(spr_rectangle, 0, _xx, _y + 1, 20, 11, 0, HEX_BLACK, _alpha* 0.25);
-			_mainBgWidth += 21; // Add 1 pixel for power bomb background spacing.
-			_xx			 += 21;
+		// 
+		var _showPBombs = CAN_SHOW_PBOMBS;
+		if (_showPBombs){
+			_bgWidth = POWER_BOMB_ICON_WIDTH + (AMMO_NUMBER_WIDTH * 2) + 1; // No padding required.
+			draw_sprite_ext(spr_rectangle, 0, _bgOffset, _y + 1, _bgWidth - 1, AMMO_NUMBER_HEIGHT + 4, 0, HEX_BLACK, _alpha * 0.4);
+			draw_sprite_ext(spr_rectangle, 0, _bgOffset, _y, _bgWidth, AMMO_NUMBER_HEIGHT + 6, 0, HEX_DARK_GRAY, _alpha * 0.6);
 		}
-		
-		draw_sprite_ext(spr_rectangle, 0, _x, _y, _mainBgWidth, 16, 0, HEX_BLACK, _alpha * 0.5);*/
 	}
 	
 	/// @description Displays the player's current energy along with their current energy tank sum--whether

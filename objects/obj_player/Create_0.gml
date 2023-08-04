@@ -579,7 +579,8 @@ update_maximum_power_bombs = function(_modifier){
 	numPowerBombs = (numPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : numPowerBombs + _modifier;
 	maxPowerBombs = (maxPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : maxPowerBombs + _modifier;
 	with(GAME_HUD){ // Update HUD's stored value for player's max power bomb count.
-		if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS)) {stateFlags |= (1 << SHOW_PBOMBS);}
+		//if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS)) {
+		stateFlags |= (1 << SHOW_PBOMBS);//}
 		pMaxPowerBombs = other.maxPowerBombs;
 	}
 }
