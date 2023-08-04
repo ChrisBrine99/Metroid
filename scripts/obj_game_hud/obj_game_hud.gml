@@ -1,16 +1,19 @@
 #region	Initializing any macros that are useful/related to obj_player_hud
 
-// 
+// Bits that represent state flags utilized by the HUD; allowing it to enable or disable entire sections of 
+// the HUD without requiring complex logic to do so otherwise.
 #macro	SHOW_MISSILES			0
 #macro	SHOW_PBOMBS				1
 #macro	SHOW_AEION_GAUGE		2
 
-// 
+// Positions of the bits that the "_pSubStates" variable that only exists within the rendering function of the 
+// player's info to the HUD uses. Being set to 1 or 0 changing how certain pieces of that information are drawn.
 #macro	USING_MISSILE			0
 #macro	USING_POWER_BOMB		1
 #macro	AEION_COOLDOWN			2
 
-// 
+// Condensed checks for flag bits being used by the HUD to enable/disable various parts of itself; returning
+// as "true" if the resulting bit is flipped to 1, and "false" if it's set to 0.
 #macro	CAN_SHOW_MISSILES		(stateFlags & (1 << SHOW_MISSILES))
 #macro	CAN_SHOW_PBOMBS			(stateFlags & (1 << SHOW_PBOMBS))
 #macro	CAN_SHOW_AEION_GAUGE	(stateFlags & (1 << SHOW_AEION_GAUGE))
@@ -21,21 +24,20 @@
 #macro	MISSILE_INCREMENT_SPEED 0.75
 #macro	PBOMB_INCREMENT_SPEED	0.5
 
-// 
+// Stores the amount of remaining energy (Including any 100s that are normally represented as energy tank 
+// icons) Samus must have left before the HUD colors the energy number in a dark red hue to signify Samus is
+// very close to death.
 #macro	LOW_ENERGY_THRESHOLD	30.0
 
-// 
+// Constants relating to where and how the current energy number and energy tanks are rendered on the screen;
+// relative to the screen's top-left origin of (0, 0).
 #macro	ENERGY_NUMBER_WIDTH		10
 #macro	ETANK_ROW_LIMIT			6
 #macro	ETANK_ICON_WIDTH		6
 #macro	ETANK_ICON_HEIGHT		6
-#macro	MISSILE_NUMBER_WIDTH	5
 
-// 
-#macro	MISSILE_ICON_WIDTH		12
-#macro	POWER_BOMB_ICON_WIDTH	8
-
-// 
+// Constants for the region that the aeion gauge is rendered on the game's GUI layer, which has its origin
+// (0, 0) at the top-left of the screen regardless of the viewport's position within the room.
 #macro	AEION_GAUGE_XOFFSET		9
 #macro	AEION_GAUGE_YOFFSET		17
 #macro	AEION_GUAGE_WIDTH		47
@@ -68,13 +70,16 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	glowStrength	= 0.0;
 	glowTarget		= 1.0;
 	
-	// 
+	// Values that represent internal values within the Player object, but--unlike the variables initialized
+	// below--are drawn to the screen and smoothly incremented/decremented to reach whatever the internal
+	// values for these numbers actually are in the object.
 	pCurEnergy		= 0.0;
 	pCurAeion		= 0.0;
 	pCurMissiles	= 0.0;
 	pCurPowerBombs	= 0.0;
 	
-	// 
+	// Storage variables for various parts of internal information in the Player object in order to speed up
+	// the rendering process by preventing having to retrieve those values for every frame drawn.
 	pMaxEnergyTanks = 0;
 	pMaxAeion		= 0;
 	pMaxMissiles	= 0;
@@ -92,7 +97,9 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		draw_player_info(2, 2, alpha);
 	}
 	
-	/// @description 
+	/// @description Displays the background for all the information about the player that is drawn to the
+	/// in-game HUD. It's drawn prior to any of that information is drawn to prevent any accidental overlap
+	/// of background elements against the drawn data.
 	/// @param {Real}	x		Starting x offset for the player info background elements on the screen.
 	/// @param {Real}	y		Starting y offset for the player info background elements on the screen.
 	/// @param {Real}	alpha	The overall visibility of the background displayed on the HUD.
