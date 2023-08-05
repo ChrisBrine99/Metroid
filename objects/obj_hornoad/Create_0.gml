@@ -1,10 +1,28 @@
 #region Macro initialization
 
-// Important timer values that determine what the Hornoad is able to do when in its default state. The first
-// determines how long in unit frames until the Hornoad is able to jump again (60 units = 1 second), and the
-// second determines how long must pass before the Hornoad can change facing directions after landing.
+// 
+#macro	HRND_ALERTED			0
+#macro	HRND_FLIP_DIRECTION		1
+
+// 
+#macro	HRND_IS_ALERTED			(stateFlags & (1 << HRND_ALERTED))
+#macro	HRND_CAN_FLIP_DIRECTION	(stateFlags & (1 << HRND_FLIP_DIRECTION))
+
+// 
+#macro	HRND_ALERT_RADIUS		56.0
+
+// 
+#macro	HRND_DEFAULT_HSPD		1.0
+#macro	HRND_DEFAULT_VSPD	   -2.5
+#macro	HRND_ALERTED_HSPD		1.8
+#macro	HRND_ALERTED_VSPD	   -4.0
+
+// 
 #macro	HRND_JMP_COOLDOWN_TIME	100.0
-#macro	HRND_FACING_LOCK_TIME	15.0
+#macro	HRND_FACING_LOCK_TIME	25.0
+
+// 
+#macro	HRND_CD_REDUCTION		40.0
 
 #endregion
 
@@ -14,10 +32,9 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// Set the maximum horizontal and vertical velocities for the Hornoad; both of which are only ever utilized
-// when its in its jumping state.
-maxHspd = 1.8;
-maxVspd = -4.0;
+// 
+maxHspd = HRND_ALERTED_HSPD;
+maxVspd = HRND_ALERTED_VSPD;
 
 // Set the force of gravity against the Hornoad, which is the same amount that is applied to Samus.
 vAccel = 0.25;
@@ -48,8 +65,7 @@ movement = 0;
 
 // Timer for tracking how long it has been since the Hornoad last jumped. Until this value surpasses the required
 // amount of time (The macro "HRND_JUMP_INTERVAL" stores said amount), the Hornoad will remain on the ground.
-jumpTimer		= 0.0;
-jumpTimerStart	= 0.0; // Stores the value the timer started at since it speeds up relative to Hornoad's remaining HP.
+jumpTimer = 0.0;
 
 #endregion
 
@@ -82,14 +98,23 @@ initialize = function(_state){
 /// this function definition that would overwrite the reference to the original otherwise.
 ___entity_apply_hitstun = entity_apply_hitstun;
 /// @description A slight deviation from the standard hitstun function found in par_enemy; the parent of this
-/// object. It will instantly set its jumping cooldown timer to the value is requires for making the Hornoad
-/// execute its jump state once again, but only if it's higher than the "facing lock time" value.
+/// object. It will reduce the time required for the Hornoad to jump again and instantly put the Hornoad in its
+/// alerted substate.
 /// @param {Real}	duration	Time in "frames" to apply the hitstun (Excluding the recovery) for (60 frames = 1 second).
 /// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage){
 	___entity_apply_hitstun(_duration, _damage);
-	if (jumpTimer > HRND_FACING_LOCK_TIME)	{jumpTimer = HRND_JMP_COOLDOWN_TIME;}
-	else									{jumpTimer += HRND_FACING_LOCK_TIME;} // Instantly flip to face Samus after being hit.
+	stateFlags	|= (1 << HRND_ALERTED);
+	jumpTimer	+= HRND_CD_REDUCTION;
+	
+	// Instantly snap the Hornoad to face the direction of the projectile that hit it, which should also be
+	// the direction that Samus is in relative to the Hornoad's position.
+	var _playerX = PLAYER.x;
+	if ((_playerX < x && movement == MOVE_DIR_RIGHT) || (_playerX >= x && movement == MOVE_DIR_LEFT)){
+		movement	 *= -1;
+		image_xscale *= -1;
+		lightOffsetX *= -1;
+	}
 }
 
 #endregion
@@ -100,21 +125,83 @@ entity_apply_hitstun = function(_duration, _damage){
 /// into its jumping state should the value stored in "jumpTimer" exceed the required value, and the second
 /// is the ability to change facing directions relative to which side of the Hornoad Samus is on.
 state_default = function(){
+	// Check that prevents accidental execution of this function if the Hornoard is hit by one of Samus's
+	// weapons before its state function happens to be executed.
+	if (IS_HIT_STUNNED) {return;}
+	
 	// Keep incrementing the jump timer until it exceeds the required amount, which will instantly switch the
-	// Hornoad into its airbourne state.
+	// Hornoad into its airbourne state. Depending on the situation, the Hornoad can be prevented from jumping
+	// and instead flip directions and reset its jump cooldown timer.
 	jumpTimer += DELTA_TIME;
 	if (jumpTimer > HRND_JMP_COOLDOWN_TIME){
+		// Perform a collision check against the top-left/top-right of the Hornoad (This check is relative to
+		// whatever direction it is facing at the time of the jump attempt). If there is a collision at this
+		// spot, the Hornoad won't attempt to jump; flipping its facing direction to try jumping again.
+		if (place_meeting(x + (16 * movement), y - 16, par_collider)){
+			stateFlags	 &= ~(1 << HRND_ALERTED);
+			jumpTimer	  = 0.0;
+			movement	 *= -1;	
+			image_xscale *= -1;
+			lightOffsetX *= -1;
+			return;
+		}
+		
+		// If the collision check failed, the Hornoad is able to jump, so the proper state is applied to them
+		// and the proper sprite is set. Its resulting jump velocity is determined below.
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(spr_hornoad1, -1);
 		stateFlags &= ~(1 << GROUNDED);
-		hspd		= maxHspd * movement;
-		vspd		= maxVspd;
-		return;
+		jumpTimer	= 0.0;
+		
+		// The hornoad will jump higher and further when altered, and will perform small hops when in its
+		// docile state. This check determines which of the two outcomes for hspd/vspd executed.
+		if (HRND_IS_ALERTED){
+			hspd	= HRND_ALERTED_HSPD * movement;
+			vspd	= HRND_ALERTED_VSPD;
+			return; // State changed and hspd/vspd already set; exit very early.
+		}
+		hspd		= HRND_DEFAULT_HSPD * movement;
+		vspd		= HRND_DEFAULT_VSPD;
+		return; // State changed; exit early.
 	}
 	
-	// Wait until the "jumpTimer" variable surpasses the small buffer interval so the Hornoad can't instantly 
-	// switch directions upon landing, which it would do without this check.
-	if (jumpTimer - jumpTimerStart < HRND_FACING_LOCK_TIME) {return;}
+	// Logic that is only ran while the Hornoad isn't alerted to Samus's presence/hostility. During this
+	// substate, a check to see if Samus gets too close to the Hornoad is performed; alerted the Hornoad if
+	// said distance is too small.
+	if (!HRND_IS_ALERTED){
+		// First, get and store Samus's current position within the room. The values are defaulted to the
+		// maximum possible values that a 32-bit integer can store if the player's coordinates could not be
+		// retrieved for whatever reason.
+		var _playerX = 0xFFFFFFFF;
+		var _playerY = 0xFFFFFFFF;
+		with(PLAYER){
+			_playerX = x;
+			_playerY = y;
+		}
+		
+		// Perform the check against the Hornoad's current position and Samus's. If the length of the vector
+		// calcualted is smaller than the Hornoad's alert radius, it will become alerted; facing her and having
+		// its jumping capabilities increased.
+		if (point_distance(x, y, _playerX, _playerY) <= HRND_ALERT_RADIUS){
+			stateFlags |= (1 << HRND_ALERTED);
+			return; // Don't bother checking for docile direction changing once alerted.
+		}
+		
+		// Have a bit of buffer time between the Hornoad landing and it being able to swap its direction.
+		if (!HRND_CAN_FLIP_DIRECTION || jumpTimer < HRND_FACING_LOCK_TIME) {return;}
+		stateFlags &= ~(1 << HRND_FLIP_DIRECTION); // Ensures the below code is only ran once.
+		
+		// Choose a random direction between left (-1) and right (+1) and compare it against the current 
+		// direction that the Hornoad is already facing. If they differ, the hornoad will flip to face the
+		// other direction. Otherwise, it will remain facing the same direction.
+		var _movement = choose(-1, 1);
+		if (_movement != movement){
+			movement	 *= -1;
+			image_xscale *= -1;
+			lightOffsetX *= -1;
+		}
+		return;
+	}
 	
 	// Compare the x position of the player against the Hornoad. If the difference is bigger than 8 relative 
 	// to the direction the Hornoad is currently facing, it will switch facing and movement directions.
@@ -139,13 +226,10 @@ state_airbourne = function(){
 	if (IS_GROUNDED){ // Hit the ground; return to default state.
 		object_set_next_state(state_default);
 		entity_set_sprite(spr_hornoad0, -1);
-		hspd = 0.0;
-		vspd = 0.0;
-		
-		// Reset the jump timer, but start it above 0.0 relative to the amount of HP is has lost. This means
-		// the hornoad will jump more frequently the less HP is has remaining.
-		jumpTimer		= (1.0 - (hitpoints / maxHitpoints)) * (HRND_JMP_COOLDOWN_TIME - HRND_FACING_LOCK_TIME);
-		jumpTimerStart	= jumpTimer; // Store starting time so it can't instantaneously switch facing directions.
+		stateFlags |= (1 << HRND_FLIP_DIRECTION);
+		stateFlags &= ~(1 << HRND_ALERTED);
+		hspd		= 0.0;
+		vspd		= 0.0;
 		return;
 	}
 	

@@ -189,7 +189,8 @@ apply_gravity = function(_maxFallSpeed){
 ///			within this function or else the game will likely crash.
 /// 
 /// @param {Function}	collisionFunction	Optional function to calculate world collision with against current frame's movement.
-apply_frame_movement = function(_collisionFunction = NO_FUNCTION){
+/// @param {Bool}		ignoreSlopes		Optional flag that can prevent the Entity from moving along sloped surfaces.
+apply_frame_movement = function(_collisionFunction = NO_FUNCTION, _ignoreSlopes = false){
 	// Store the current delta time value in a local variable since it will be used to calculate both the
 	// horizontal and vertical velocities from the current frame.
 	var _deltaTime = DELTA_TIME;
@@ -218,7 +219,7 @@ apply_frame_movement = function(_collisionFunction = NO_FUNCTION){
 	// handle collision between said Entity and the world collider objects. Otherwise, their delta hspd and
 	// vspd values will simply be added to their positions if they don't process world collision.
 	if (_collisionFunction != NO_FUNCTION){
-		_collisionFunction(_deltaHspd, _deltaVspd);
+		_collisionFunction(_deltaHspd, _deltaVspd, _ignoreSlopes);
 	} else if (_deltaHspd != 0 || _deltaVspd != 0){
 		x += _deltaHspd;
 		y += _deltaVspd;
@@ -228,9 +229,10 @@ apply_frame_movement = function(_collisionFunction = NO_FUNCTION){
 /// @description Checks for collision between the entity and the world's collision bounds. If no collision is
 /// detected, the entity will be translated to their new position based on the hspd and vspd values provided
 /// in the function's parameters.
-/// @param {Real}	deltaHspd	Movement along the X-axis in whole pixels for the current frame.
-/// @param {Real}	deltaVspd	Movement along the Y-axis in whole pixels for the current frame.
-entity_world_collision = function(_deltaHspd, _deltaVspd){
+/// @param {Real}	deltaHspd		Movement along the X-axis in whole pixels for the current frame.
+/// @param {Real}	deltaVspd		Movement along the Y-axis in whole pixels for the current frame.
+/// @param {Bool}	ignoreSlopes	Bool that enables/disables Entity's ability to traverse slopes.
+entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 	// Check horizontal collision only if the value of "_deltaHspd" is a value other than 0. Otherwise, checks
 	// for collision on the x-axis would be pointless since there isn't any movement occurring.
 	if (_deltaHspd != 0){
@@ -242,7 +244,7 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 			// First, a check for a potential upward slope is processed prior to any horizontal movement
 			// occurring. If there is, the Entity will be moved along it if allowed, and the main chunk of the
 			// horizontal collision processing will occur if a collision is still occurring.
-			entity_world_slope_collision(_destX, y, SLOPE_UPWARD, false);
+			if (!_ignoreSlopes) {entity_world_slope_collision(_destX, y, SLOPE_UPWARD, false);}
 			if (place_meeting(_destX, y, par_collider)){
 				// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
 				// direction of their current horizontal velocity.
@@ -262,7 +264,7 @@ entity_world_collision = function(_deltaHspd, _deltaVspd){
 				hspdFraction = 0.0;
 				hspd		 = 0.0;
 			}
-		} else if (IS_GROUNDED){
+		} else if (!_ignoreSlopes && IS_GROUNDED){
 			// If there is no horizontal collision, a check still needs to be made to see if there is a downward
 			// slope instead. If there is, this function call will move the Entity properly as a result.
 			entity_world_slope_collision(_destX, y + 1, SLOPE_DOWNWARD, true);
@@ -320,7 +322,9 @@ entity_world_slope_collision = function(_x, _y, _slopeDirection, _desiredOutcome
 	// for the collision was met prior to the final collision check. Either outcome will exit the loop.
 	while(place_meeting(_x, _y + _curSlopeOffset, par_collider) != _desiredOutcome){
 		_curSlopeOffset += _slopeDirection;
-		if (_curSlopeOffset >= _maxSlopeOffset) {break;}
+		if ((_slopeDirection == SLOPE_UPWARD	&& _curSlopeOffset <= _maxSlopeOffset) ||
+			(_slopeDirection == SLOPE_DOWNWARD	&& _curSlopeOffset >= _maxSlopeOffset)) 
+				break;
 	}
 	
 	// Perform one last collision check to see if the desired outcome is returned. If not, no slope movement

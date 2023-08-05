@@ -403,7 +403,7 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 grounded_to_airbourne = function(){
 	if (!IS_GROUNDED){
 		object_set_next_state(state_airbourne);
-		entity_set_sprite(jumpSpriteFw, standingMask);
+		entity_set_sprite(jumpSpriteFw, jumpingMask);
 		stateFlags &= ~(1 << MOVING);
 		jumpStartTimer = JUMPSPIN_ANIM_TIME;
 		aimReturnTimer = 0.0;
@@ -629,11 +629,11 @@ activate_phase_shift = function(_movement){
 	// phase shift. Without this, she would get stuck on slope since it wiould assume her default maximum hspd
 	// of 2.2 instead of the 12.0 it should be.
 	prevMaxHspd = maxHspd;
-	maxHspd		= PHASE_SHIFT_SPEED;
+	maxHspd	= PHASE_SHIFT_SPEED;
 	if (_movement == 0) // No movement input will result in Samus shifting herself backwards.
-		hspd	= (PHASE_SHIFT_SPEED * -image_xscale);
+		hspd = (PHASE_SHIFT_SPEED * -image_xscale);
 	else // Move in the direction that the player is currently holding if detected.
-		hspd	= (PHASE_SHIFT_SPEED * _movement);
+		hspd = (PHASE_SHIFT_SPEED * _movement);
 	
 	// Clear fractional values that were stored prior to the phase shift's activation are cleared to avoid
 	// potential issues with anything stored here during the phase shift's movement logic.
@@ -1861,7 +1861,7 @@ state_phase_shift = function(){
 	// distance value is incremented by the difference in Samus's x position prior to and after movement and
 	// collisions have been processed.
 	var _lastX = x;
-	entity_world_collision(_deltaHspd, 0);
+	entity_world_collision(_deltaHspd, 0, false);
 	curShiftDist += abs(_lastX - x);
 	
 	// Go through all of the standard collision functions. However, enemies will be ignored since Samus is
