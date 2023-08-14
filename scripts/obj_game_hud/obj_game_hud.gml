@@ -39,7 +39,9 @@
 #macro	ETANK_ICON_WIDTH		6
 #macro	ETANK_ICON_HEIGHT		6
 
-// 
+// Stores information about the width/height of the text used to display Samus's current missile and power bomb 
+// ammunition, as well as the width of both the missile and power bomb icons which are referenced throughout the
+// player info section of the HUD rendering.
 #macro	AMMO_NUMBER_WIDTH		5
 #macro	AMMO_NUMBER_HEIGHT		7
 #macro	MISSILE_ICON_WIDTH		12
@@ -140,7 +142,9 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		draw_sprite_ext(spr_rectangle, 0, _x, _y, _bgWidth, ENERGY_NUMBER_HEIGHT + 4, 0, HEX_DARK_GRAY, _alpha * 0.5);
 		var _bgOffset = _bgWidth;
 		
-		// 
+		// Draws the inner and outer rectangles for the missile ammo section of the HUD, but only if the player
+		// has access to missiles. Otherwise, the "CAN_SHOW_MISSILES" macro will return false and this part of
+		// the background will be skipped.
 		var _showMissiles = CAN_SHOW_MISSILES;
 		if (_showMissiles){
 			_bgWidth = MISSILE_ICON_WIDTH + (AMMO_NUMBER_WIDTH * 3) + 2; // No padding required for leftmost edge.
@@ -149,7 +153,8 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 			_bgOffset += _bgWidth;
 		}
 		
-		// 
+		// Draws the background for the Power Bomb information much like how Missile information is drawn above.
+		// If the player has access to Power Bombs, the background is shown. Otherwise, it is skipped.
 		var _showPBombs = CAN_SHOW_PBOMBS;
 		if (_showPBombs){
 			_bgWidth = POWER_BOMB_ICON_WIDTH + (AMMO_NUMBER_WIDTH * 2) + 1; // No padding required.

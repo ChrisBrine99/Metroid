@@ -1,1 +1,0 @@
-update_maximum_energy(ENERGY_TANK_CAPACITY);

@@ -50,8 +50,10 @@ function instance_create_singleton_struct(_struct){
 /// deleted by this function; as they generally exist for the entire duration of the game's runtime.
 /// @param {Struct}	instance	The struct instance that will be marked for deletion by GameMaker's garbage collector.
 function instance_destroy_struct(_instance){
-	if (ds_list_find_index(global.structs, _instance) == -1 || 
-		singleton_instance_exists(_instance.object_index)) {return;}
+	var _index = ds_list_find_index(global.structs, _instance);
+	if (_index == -1 || singleton_instance_exists(_instance.object_index)) 
+			return;
+	ds_list_delete(global.structs, _index);
 	_instance.cleanup();
 	delete _instance;
 }

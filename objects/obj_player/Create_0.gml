@@ -928,11 +928,17 @@ update_aeion = function(_modifier){
 /// by Samus is she walks across it, but won't be destroyed or manipulated otherwise. This means any other
 /// entity can walk along this floor and have it react like a standard collider would.
 fallthrough_floor_collision = function(){
+	var _floorCollapsed = false;
 	with(instance_place(x, y + 1, obj_destructible_weight)){
 		if (!IS_DESTROYED){
 			destructible_destroy_self();
-			other.vspd = 0.0;
+			_floorCollapsed = true;
 		}
+	}
+	
+	if (_floorCollapsed){
+		grounded_to_airbourne();
+		vspd = 0.0;
 	}
 }
 
@@ -1198,6 +1204,7 @@ state_room_warp = function(){
 			with(_warpID){
 				// Prevents crashing and warping if the room provided doesn't exist.
 				if (targetRoom == ROOM_INDEX_INVALID){
+					instance_destroy_object(_warpID);
 					PLAYER.warpID = noone;
 					other.alphaTarget = 0;
 					return;
@@ -1221,6 +1228,7 @@ state_room_warp = function(){
 					armCannon.end_step();
 					curState = _state;
 				}
+				with(DEBUGGER) {lastRoom = room;}
 				room_goto(targetRoom);
 				return; // Ensures the transition effect will begin after everything has been properly set.
 			}

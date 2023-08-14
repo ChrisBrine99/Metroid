@@ -14,8 +14,8 @@
 #macro	DEBUGGER					global.sInstances[? obj_debugger]
 
 // A map that stores pointers/references to all singletons that exist within the game currently. An object being
-// in this list will prevent copies of them from being instantiated. (When used in tandem with the new functions
-// "instance_create_object" and "instance_create_struct")
+// in this list will prevent copies of them from being instantiated (When used in tandem with the new functions
+// "instance_create_object" and "instance_create_struct").
 global.sInstances = ds_map_create();
 
 /// @description A simple function that will check to see if the instance being created for an object is an 

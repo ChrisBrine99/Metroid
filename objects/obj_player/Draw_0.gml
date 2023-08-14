@@ -1,7 +1,5 @@
 if (hitpoints == 0) {return;}
 
-draw_sprite_ext(spr_rectangle, 0, bbox_left, bbox_top, (bbox_right - bbox_left), (bbox_bottom - bbox_top), 0, c_white, 1);
-
 // Loop through all existing ghost effect structs and render them at their current positions and opacity levels.
 var _length = ds_list_size(ghostEffectID);
 for (var i = 0; i < _length; i++) {ghostEffectID[| i].draw();}

@@ -32,22 +32,26 @@
 
 global.gameManager = {
 	// Stores the values for the current and previous global states for the game, respectively.
-	curState :			GSTATE_NONE,
-	lastState :			GSTATE_NONE,
+	curState			: GSTATE_NONE,
+	lastState			: GSTATE_NONE,
 	
 	// The top variable will store the current value for delta timing to apply to all physics calculations
 	// for processing the current game frame, and the target FPS determines how many times a value in processed
 	// in a real-world section (Ex. Increasing a value by 2 every frame with a target FPS of 60 will result in
 	// the value increasing by 120 units every second).
-	deltaTime :			0,
-	targetFPS :			60,
+	deltaTime			: 0,
+	targetFPS			: 60.0,
+	
+	// 
+	totalTime			: 0,
+	totalTimeMillis		: 0.0,
 	
 	// Variables that manage the game's current playtime; determined by instances where the "isTimerActive"
 	// flag is set to true. Otherwise, the in-game time will not be added to the overall playtime for however
 	// long the flag is false.
-	curPlaytime :		0,
-	playtimeMillis :	0.0,
-	isTimerActive :		false,
+	curPlaytime			: 0,
+	playtimeMillis		: 0.0,
+	isTimerActive		: false,
 	
 	/// @description A function borrowing the same name as the event that it will be called in within the
 	/// "obj_controller" object for the game. It will update the value of delta time for the new frame, and
@@ -55,13 +59,20 @@ global.gameManager = {
 	begin_step : function(){
 		deltaTime = (delta_time / 1000000) * targetFPS;
 		
+		// Update the total playtime value regardless of if the in-game time is ticking up or not.
+		totalTimeMillis += deltaTime;
+		if (totalTimeMillis >= targetFPS){
+			totalTimeMillis -= targetFPS;
+			totalTime++;
+		}
+		
 		// Update the current playtime if the timer hasn't been disabled by the current game state (The timer
 		// will always be paused when the game is in a cutscene or completely paused).
 		if (!isTimerActive) {return;}
 		playtimeMillis += deltaTime;
-		if (playtimeMillis >= 1.0){ // 1000 milliseconds have passed; add one second to the overall playtime.
+		if (playtimeMillis >= targetFPS){
+			playtimeMillis -= targetFPS;
 			curPlaytime++;
-			playtimeMillis -= 1.0;
 		}
 	}
 }

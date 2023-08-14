@@ -3,9 +3,24 @@
 // 
 #macro	CMD_EXIT_GAME			"exit_game"
 #macro	CMD_GAME_STATE			"game_state"
+
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 #macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
 #macro	CMD_SHOW_ALL_FLAGS		"show_all_event_flags"
+
+#macro	CMD_PLAYER_FILL_AMMO	"player_fill_ammo"
+#macro	CMD_PLAYER_FILL_ENERGY	"player_fill_energy"
+#macro	CMD_INCREASE_MAX_ENERGY	"player_increase_max_energy"
+#macro	CMD_INCREASE_MAX_AEION	"player_increase_max_aeion"
+
+#macro	CMD_TOGGLE_DEBUG_INFO	"toggle_debug_window"
+#macro	CMD_DEBUG_SHOW_TIME		"debug_show_playtime"
+#macro	CMD_DEBUG_SHOW_GSTATE	"debug_show_game_state"
+#macro	CMD_DEBUG_SHOW_FPS		"debug_show_fps"
+#macro	CMD_DEBUG_SHOW_RENDER	"debug_show_render_data"
+#macro	CMD_DEBUG_SHOW_ROOM		"debug_show_room_data"
+#macro	CMD_DEBUG_SHOW_CAMERA	"debug_show_camera_data"
+#macro	CMD_DEBUG_SHOW_OBJECTS	"debug_show_instance_data"
 
 // 
 #macro	DRAW_CURSOR				28
@@ -102,12 +117,15 @@ function obj_console(_index) : base_struct(_index) constructor{
 	end_step = function(){
 		// 
 		if (!IS_CONSOLE_ACTIVE){
+			// 
 			if (keyboard_check_pressed(vk_insert)){
 				var _curState, _nextState, _lastState;
 				var _entityStates = entityStates;
 				var _key = ds_map_find_first(entityStates);
 				with(par_dynamic_entity){
 					if (curState == NO_STATE) {continue;}
+					
+					// 
 					_curState = curState;
 					_nextState = nextState;
 					_lastState = lastState;
@@ -116,20 +134,25 @@ function obj_console(_index) : base_struct(_index) constructor{
 						nextState	: _nextState,
 						lastState	: _lastState,
 					});
+					
+					// 
 					stateFlags |= (1 << FREEZE_ANIMATION);
 					curState	= NO_STATE;
 					nextState	= NO_STATE;
 					lastState	= NO_STATE;
 				}
 				
-				gameCurState = GAME_CURRENT_STATE;
-				gamePrevState = GAME_PREVIOUS_STATE;
-				stateFlags |= (1 << CONSOLE_ACTIVE);
+				// 
+				stateFlags	   |= (1 << CONSOLE_ACTIVE);
+				gameCurState	= GAME_CURRENT_STATE;
+				gamePrevState	= GAME_PREVIOUS_STATE;
 				game_set_state(GSTATE_PAUSED, true);
+				
+				// 
 				window_set_cursor(cr_default);
 				keyboard_lastchar = "";
 			}
-			return;
+			return; // No other functionality is processed when the console is closed.
 		}
 		
 		// 
@@ -441,11 +464,10 @@ function obj_console(_index) : base_struct(_index) constructor{
 		var _arraySize = array_length(suggestionData);
 		var _length = _arraySize * 0.5;
 		for (var i = 0; i < _length; i++){
-			if (string_count(_string, suggestionData[i]) > 0){
+			if (string_count(_string, suggestionData[i]) > 0)
 				ds_list_add(suggestions, suggestionData[i]);
-			} else if (string_count(_string, suggestionData[_arraySize - i - 1]) > 0){
+			else if (string_count(_string, suggestionData[_arraySize - i - 1]) > 0)
 				ds_list_add(suggestions, suggestionData[_arraySize - i - 1]);
-			}
 		}
 	}
 	
@@ -460,6 +482,39 @@ function obj_console(_index) : base_struct(_index) constructor{
 	cmd_game_state = function(){
 		var _gameState = "Current State: " + game_state_get_name(gameCurState) + "\nPrevious State: " + game_state_get_name(gamePrevState);
 		history_add_line(_gameState);
+	}
+	
+	/// @description 
+	cmd_player_fill_ammo = function(){
+		with(PLAYER){
+			numMissiles		= maxMissiles;
+			numPowerBombs	= maxPowerBombs;
+		}
+		history_add_line("Samus's ammunition reserves have been completely filled.");
+	}
+	
+	/// @description 
+	cmd_player_fill_energy = function(){
+		with(PLAYER){
+			hitpoints			= maxHitpoints;
+			reserveHitpoints	= maxReserveHitpoints
+			curAeion			= maxAeion;
+		}
+		history_add_line("Samus's current and reserve energy have been completely filled.\nHer aeion gauge has also been filled.");
+	}
+	
+	/// @description 
+	/// @param {Real}	modifier	Amount to increase Samus's maximum energy by if possible.
+	cmd_player_increase_max_energy = function(_modifier){
+		with(PLAYER) {update_maximum_energy(_modifier);}
+		history_add_line("Samus's maximum energy has been increased by " + string(_modifier) + " units.");
+	}
+	
+	/// @description 
+	/// @param {Real}	modifier	Amount to increase Samus's maximum aeion amount by if possible.
+	cmd_player_increase_max_aeion = function(_modifier){
+		with(PLAYER) {update_maximum_aeion(_modifier);}
+		history_add_line("Samus's maximum aeion has been increased by " + string(_modifier) + " units.");
 	}
 	
 	/// @description Allows the setting/resetting of a desired flag to either 1 (true) or 0 (false), which will
@@ -501,12 +556,12 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// and unused. The main difference between this and the "show_event_flags" function is the bits here will
 	/// be grouped based on what they represent: items, doorways, other, etc..
 	cmd_show_all_event_flags = function(){
-		history_add_line("Suit Upgrades:\n" // Displaying flags that alter Samus's suit.
+		history_add_line("Suit Upgrades (Bits 0 and 1):\n" // Displaying flags that alter Samus's suit.
 			+ string(event_get_flag(FLAG_VARIA_SUIT)) 
 			+ string(event_get_flag(FLAG_GRAVITY_SUIT))
 		);
 		
-		history_add_line("Jump Upgrades:\n" // Displaying all upgrades to Samus's jumping capabilities.
+		history_add_line("Jump Upgrades (Bits 2 to 4):\n" // Displaying all upgrades to Samus's jumping capabilities.
 			+ string(event_get_flag(FLAG_HIJUMP_BOOTS))
 			+ string(event_get_flag(FLAG_SPACE_JUMP))
 			+ string(event_get_flag(FLAG_SCREW_ATTACK))
@@ -514,9 +569,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 		
 		var _eventFlags = ""; // Displaying all upgrade flags for Samus's arm cannon.
 		for (var i = FLAG_ICE_BEAM; i < FLAG_ENERGY_SHIELD; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Beam Upgrades:\n" + _eventFlags);
+		history_add_line("Beam Upgrades (Bits 5 to 9):\n" + _eventFlags);
 		
-		history_add_line("Aeion Upgrades:\n" // Displaying acquired aeion abilities that Samus has access to.
+		history_add_line("Aeion Upgrades (Bits 10 to 12):\n" // Displaying acquired aeion abilities that Samus has access to.
 			+ string(event_get_flag(FLAG_ENERGY_SHIELD))
 			+ string(event_get_flag(FLAG_PHASE_SHIFT))
 			+ string(event_get_flag(FLAG_SCAN_PULSE))
@@ -524,52 +579,148 @@ function obj_console(_index) : base_struct(_index) constructor{
 		
 		_eventFlags = ""; // Displaying all currently active morphball upgrades.
 		for (var i = FLAG_MORPHBALL; i < FLAG_MISSILES; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Morphball Upgrades:\n" + _eventFlags);
+		history_add_line("Morphball Upgrades (Bits 13 to 18):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all acquired missile upgrades.
 		for (var i = FLAG_MISSILES; i < FLAG_LOCK_ON_MISSILES + 1; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Missile Upgrades:\n" + _eventFlags);
+		history_add_line("Missile Upgrades (Bits 19 to 23):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all small missile tanks Samus has collected.
 		for (var i = SMALL_MISSILE_TANK0; i < LARGE_MISSILE_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Missile Tanks (Small):\n" + _eventFlags);
+		history_add_line("Small Missile Tanks (Bits 32 to 91):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all large missile tanks Samus has collected.
 		for (var i = LARGE_MISSILE_TANK0; i < POWER_BOMB_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Missile Tanks (Large):\n" + _eventFlags);
+		history_add_line("Large Missile Tanks (Bits 92 to 103):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all power bombs Samus has collected.
-		for (var i = POWER_BOMB_TANK0; i < ENERGY_TANK_PIECE0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Power Bomb Tanks:\n" + _eventFlags);
+		for (var i = POWER_BOMB_TANK0; i < ENERGY_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Power Bomb Tanks (Bits 104 to 115):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all energy tanks Samus has collected.
 		for (var i = ENERGY_TANK0; i < ENERGY_TANK_PIECE0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Energy Tanks:\n" + _eventFlags);
+		history_add_line("Energy Tanks (Bits 116 to 123):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all energy tank pieces Samus has collected.
 		for (var i = ENERGY_TANK_PIECE0; i < RESERVE_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Energy Tank Pieces:\n" + _eventFlags);
+		history_add_line("Energy Tank Pieces (Bits 124 to 137):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all reserve tanks Samus has collected.
 		for (var i = RESERVE_TANK0; i < AEION_TANK0; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Reserve Tanks:\n" + _eventFlags);
+		history_add_line("Reserve Tanks (Bits 138 to 141):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all aeion tanks Samus has collected.
-		for (var i = AEION_TANK0; i < 146; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Collected Aeion Tanks:\n" + _eventFlags);
+		for (var i = AEION_TANK0; i < AEION_TANK0 + 4; i++) {_eventFlags += string(event_get_flag(i));}
+		history_add_line("Aeion Tanks (Bits 142 to 145):\n" + _eventFlags);
 		
 		_eventFlags = ""; // Displaying all "special" door flags.
 		for (var i = FLAG_SPECIAL_DOOR0; i < FLAG_SPECIAL_DOOR0 + 1; i++) {_eventFlags += string(event_get_flag(i));}
-		history_add_line("Unlocked Doors:\n" + _eventFlags);
+		history_add_line("Unlocked Doors (Bits 150 to 150):\n" + _eventFlags);
 	}
 	
+	/// @description Turns the debug info window on and off; allowing the user to see information about the
+	/// game's performance, camera position, room info, and so on.
+	cmd_toggle_debug_info = function(){
+		var _windowVisible = false;
+		with(DEBUGGER){ // Determine if the state bit to flip to 0 or 1 depending on what its current value is.
+			_windowVisible = CAN_SHOW_WINDOW;
+			if (_windowVisible) {stateFlags &= ~(1 << DBG_SHOW_WINDOW);}
+			else				{stateFlags |= (1 << DBG_SHOW_WINDOW);}
+		}
+		
+		// Let the user know what state the debug info window was put into (Shown or not shown) since this
+		// function doesn't take a "True" or "False" argument to determine its functionality.
+		if (_windowVisible)	{history_add_line("Debug info will not be displayed on screen.");}
+		else				{history_add_line("Debug info will now be displayed (Will not display if console is open).");}			
+	}
+	
+	/// @description 
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_playtime = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_TIME);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_TIME);}
+		}
+	}
+	
+	/// @description 
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_game_state = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_GAME_STATE);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_GAME_STATE);}
+		}
+	}
+	
+	/// @description 
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_fps = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_FPS);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_FPS);}
+		}
+	}
+	
+	/// @description Allows the user to toggle whether or not information about entity and light source 
+	/// rendering--the number of each rendered for the current frame--is displayed in the debug info window.
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_render_data = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_RENDER);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_RENDER);}
+		}
+	}
+	
+	/// @description Allows the user to enable or disable the section on the debug info window that displays 
+	/// the name of both the current and previous room, respectively.
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_room_data = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_RENDER);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_RENDER);}
+		}
+	}
+	
+	/// @description 
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_camera_data = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_CAMPOS);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_CAMPOS);}
+		}
+	}
+	
+	/// @description 
+	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
+	cmd_debug_show_instance_data = function(_displayInfo){
+		with(DEBUGGER){
+			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_INSTANCES);}
+			else				{stateFlags &= ~(1 << DBG_SHOW_INSTANCES);}
+		}
+	}
+
 	// 
 	array_push(suggestionData,
-		CMD_EXIT_GAME + " []",
-		CMD_GAME_STATE + " []",
-		CMD_SET_EVENT_FLAG + " [" + STRING_REAL + ", " + STRING_STRING + "]",
-		CMD_SHOW_EVENT_FLAGS + " [" + STRING_REAL + ", " + STRING_REAL + "]",
-		CMD_SHOW_ALL_FLAGS + " []",
+		CMD_EXIT_GAME				+ " []",
+		CMD_GAME_STATE				+ " []",
+		
+		CMD_SET_EVENT_FLAG			+ " [ flagID: " + STRING_REAL + ", flagState: " + STRING_STRING + " ]",
+		CMD_SHOW_EVENT_FLAGS		+ " [ start: " + STRING_REAL + ", range: " + STRING_REAL + " ]",
+		CMD_SHOW_ALL_FLAGS			+ " []",
+		
+		CMD_PLAYER_FILL_AMMO		+ " []",
+		CMD_PLAYER_FILL_ENERGY		+ " []",
+		CMD_INCREASE_MAX_ENERGY		+ " [ modifier: " + STRING_REAL + " ]",
+		CMD_INCREASE_MAX_AEION		+ " [ modifier: " + STRING_REAL + " ]",
+		
+		CMD_TOGGLE_DEBUG_INFO		+ " []",
+		CMD_DEBUG_SHOW_TIME			+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_GSTATE		+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_FPS			+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_RENDER		+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_ROOM			+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_CAMERA		+ " [ showInfo: " + STRING_BOOL + " ]",
+		CMD_DEBUG_SHOW_OBJECTS		+ " [ showInfo: " + STRING_BOOL + " ]",
 	);
 	
 	// Add all console functions to this array, which is used to parse the string data that represents the
@@ -578,9 +729,24 @@ function obj_console(_index) : base_struct(_index) constructor{
 	array_push(validCommands,
 		[CMD_EXIT_GAME,				cmd_exit_game],
 		[CMD_GAME_STATE,			cmd_game_state],
+		
 		[CMD_SET_EVENT_FLAG,		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL],
 		[CMD_SHOW_EVENT_FLAGS,		cmd_show_event_flags, TYPE_REAL, TYPE_REAL],
 		[CMD_SHOW_ALL_FLAGS,		cmd_show_all_event_flags],
+		
+		[CMD_PLAYER_FILL_AMMO,		cmd_player_fill_ammo],
+		[CMD_PLAYER_FILL_ENERGY,	cmd_player_fill_energy],
+		[CMD_INCREASE_MAX_ENERGY,	cmd_player_increase_max_energy, TYPE_REAL],
+		[CMD_INCREASE_MAX_AEION,	cmd_player_increase_max_aeion, TYPE_REAL],
+		
+		[CMD_TOGGLE_DEBUG_INFO,		cmd_toggle_debug_info],
+		[CMD_DEBUG_SHOW_TIME,		cmd_debug_show_playtime, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_GSTATE,		cmd_debug_show_game_state, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_FPS,		cmd_debug_show_fps, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_RENDER,		cmd_debug_show_render_data, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_ROOM,		cmd_debug_show_room_data, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_CAMERA,		cmd_debug_show_camera_data, TYPE_BOOL],
+		[CMD_DEBUG_SHOW_OBJECTS,	cmd_debug_show_instance_data, TYPE_BOOL],
 	);
 	totalCommands = array_length(validCommands);
 }
