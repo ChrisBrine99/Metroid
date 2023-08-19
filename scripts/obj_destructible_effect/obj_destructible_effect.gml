@@ -17,18 +17,18 @@ function obj_destructible_effect(_index) : base_struct(_index) constructor{
 	// Variables that are identical in function to the GML variables "sprite_index", "image_speed", and
 	// "image_index", repsectively, with a few extras to store the animation speed of the sprite relative
 	// to its predetermined animation rate and the length of the sprite's total frames of animation.
-	spriteIndex = spr_destructible_effect;
-	spriteLength = sprite_get_number(spriteIndex);
-	spriteSpeed = sprite_get_speed(spriteIndex);
-	imageIndex = 0;
-	animSpeed = 0;
+	spriteIndex		= spr_destructible_effect;
+	spriteLength	= sprite_get_number(spriteIndex);
+	spriteSpeed		= sprite_get_speed(spriteIndex);
+	imageIndex		= 0;
+	animSpeed		= 0;
 	
 	/// @description Draws the effect for the destructible block's destruction or rebuild; depending on how
 	/// the image index and animation speeds were setup, respectively. It will only animate if the game is
 	/// not in its "Paused" state much like how entities animate. The difference here is the effect struct is
 	/// destroyed once the animation has reached its start or ending, respectively.
 	draw = function(){
-		if (GAME_CURRENT_STATE == GSTATE_PAUSED) {return;}
+		if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
 		
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
 		if ((imageIndex < 0 && animSpeed < 0) || (imageIndex >= spriteLength && animSpeed > 0)){

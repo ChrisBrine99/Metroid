@@ -1,30 +1,15 @@
-// Destroy each singleton; cleaning up all their allocated data in the form of data structures, surfaces, and so
-// on. For the player, the cleanup event is automatically called by GML's "instance_destroy" function, but for
-// the other struct singletons their cleanups must be called before their pointer's deletion if the contain
-// that function.
-with(CAMERA)			{cleanup();}	delete CAMERA;
-with(MUSIC_HANDLER)		{cleanup();}	delete MUSIC_HANDLER;
-with(EFFECT_HANDLER)	{cleanup();}	delete EFFECT_HANDLER;
-with(CUTSCENE_MANAGER)	{cleanup();}	delete CUTSCENE_MANAGER;
-with(TEXTBOX_HANDLER)	{cleanup();}	delete TEXTBOX_HANDLER;
-with(CONTROL_INFO)		{cleanup();}	delete CONTROL_INFO;
-with(GAME_HUD)			{cleanup();}	delete GAME_HUD;
-with(SCREEN_FADE)		{cleanup();}	delete SCREEN_FADE;
+// First, global struct instances will be cleaned up and removed from memory. On top of that, the buffer that
+// held the flags for the game's various events is deleted.
 with(GAME_SETTINGS)		{cleanup();}	delete GAME_SETTINGS;
 with(AUDIO_MANAGER)		{cleanup();}	delete AUDIO_MANAGER;
-with(DEBUGGER)			{cleanup();}	delete DEBUGGER;
 										delete GAME_MANAGER;
 										delete GAMEPAD_MANAGER;
 										delete SHADER_OUTLINE;
 										delete SHADER_FEATHERING;
 buffer_delete(EVENT_HANDLER);
 
-// Remove the map that stored the instance pointers for all singleton objects that existed within the game.
-// Then, the main list for non-singleton structs is looped through; their cleanup functions are called if they
-// still exist, and the list is destroyed.
-ds_map_clear(global.sInstances);
-ds_map_destroy(global.sInstances);
-
+// After all global structs have been cleaned up, the existing Struct instances will have their cleanup events
+// called before they are also deleted; destroying the list that held the pointers to these instances afterward.
 var _instance = noone;
 var _length = ds_list_size(global.structs);
 for (var i = 0; i < _length; i++){
@@ -35,12 +20,17 @@ for (var i = 0; i < _length; i++){
 }
 ds_list_destroy(global.structs);
 
+// Remove the map that stored the instance pointers for all singleton objects that existed within the game.
+ds_map_clear(global.sInstances);
+ds_map_destroy(global.sInstances);
+
 // Destroy the list that held all the currently active instances of menu structs. Their cleanup functions and
 // "pointer" values do not need to be managed because the main list for all struct instances does that already.
 ds_list_destroy(global.menuInstances);
 
 // 
-ds_list_destroy(global.lightSources);
+_length = ds_list_size(global.lightSources);
+for (var i = 0; i < _length; i++) {delete global.lightSources[| i];}
 
 // Destroy all of the interactable components that existed within the game's data when it was set to close
 // down. After all the interact components have been freed from memory, the list is destroyed to clear it

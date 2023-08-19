@@ -64,6 +64,13 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	shakeCurStrength = 0.0;
 	shakeDuration = 0.0;
 	
+	/// @description The standard cleanup function for the Camera, which mimics how GameMaker's own "cleanup"
+	/// event. As such, it should be called within the "cleanup" event by the controller object that manages
+	/// this struct.
+	cleanup = function(){
+		camera_destroy(camera);
+	}
+	
 	/// @description The "End Step" function for the struct, which should be called in the "End Step" event of 
 	/// the obejct that is set to managed this one. It will update the camera's position; resulting in a new
 	/// position to the view based on the camera's position updates.
@@ -99,13 +106,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		view_set_camera(0, camera);
 		view_set_visible(0, true);
 		view_enabled = true;
-	}
-	
-	/// @description The standard cleanup function for the Camera, which mimics how GameMaker's own "cleanup"
-	/// event. As such, it should be called within the "cleanup" event by the controller object that manages
-	/// this struct.
-	cleanup = function(){
-		camera_destroy(camera);
 	}
 	
 	/// @description Update the view's position to the coordinates supplied into the function arguments. If the
@@ -259,9 +259,9 @@ function camera_initialize(_x, _y, _width, _height, _scale, _flags){
 	with(CAMERA){
 		// First, set position and copy over the flags argument; overwritting whatever may have previously
 		// been occupying these variables.
-		x = _x;
-		y = _y;
-		stateFlags = _flags;
+		x			= _x;
+		y			= _y;
+		stateFlags	= _flags;
 		
 		// Set the sizes of the view, application surface, and GUI to match the required resolution. The window
 		// is also set to match these dimensions, but will have the scale applied to it as well as extra logic
@@ -290,8 +290,14 @@ function camera_initialize(_x, _y, _width, _height, _scale, _flags){
 		// Finally, the effect handler updates the application surface's texel values to match what the new
 		// dimensions need them to be when normalized between 0.0 and 1.0.
 		with(EFFECT_HANDLER){
-			windowTexelWidth = 1 / _width;
-			windowTexelHeight = 1 / _height;
+			windowTexelWidth	= 1 / _width;
+			windowTexelHeight	= 1 / _height;
+		}
+		
+		// 
+		with(MAP_MANAGER){
+			cellWidth	= _width;
+			cellHeight	= _height;
 		}
 	}
 }
@@ -304,11 +310,11 @@ function camera_initialize(_x, _y, _width, _height, _scale, _flags){
 function camera_set_target_object(_object, _offsetX, _offsetY){
 	with(CAMERA){
 		if (instance_exists(_object)){
-			targetObject =		_object;	// Stores ID and offset paramters.
-			targetOffsetX =		_offsetX;
-			targetOffsetY =		_offsetY;
-			x = _object.x + _offsetX;		// Snaps camera to proper position.
-			y = _object.y + _offsetY;
+			targetObject	= _object;				// Stores ID and offset paramters.
+			targetOffsetX	= _offsetX;
+			targetOffsetY	= _offsetY;
+			x				= _object.x + _offsetX;	// Snaps camera to proper position.
+			y				= _object.y + _offsetY;
 		}
 	}
 }

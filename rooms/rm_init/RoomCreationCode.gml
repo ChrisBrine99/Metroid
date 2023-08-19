@@ -11,6 +11,7 @@ instance_create_singleton_struct(obj_cutscene_manager);
 //instance_create_singleton_struct(obj_textbox_handler);
 //instance_create_singleton_struct(obj_control_info);
 instance_create_singleton_struct(obj_game_hud);
+instance_create_singleton_struct(obj_map_manager);
 instance_create_singleton_struct(obj_screen_fade);
 instance_create_singleton_struct(obj_debugger);
 instance_create_singleton_object(0, 0, obj_controller);

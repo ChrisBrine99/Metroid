@@ -12,11 +12,20 @@
 
 // Macro values storing the amount of time a given block will remain destroyed for; measured in 60 equalling
 // one second of real-time due to how my delta timing implementation is determined.
-#macro	RESPAWN_TIMER_INFINITE -255
-#macro	RESPAWN_TIMER_GENERAL	600
-#macro	RESPAWN_TIMER_BOMB		1200
-#macro	RESPAWN_TIMER_WEIGHT	30
-#macro	RESPAWN_TIMER_SATTACK	450
+#macro	RESPAWN_TIMER_INFINITE -255.0
+#macro	RESPAWN_TIMER_GENERAL	600.0
+#macro	RESPAWN_TIMER_BOMB		1200.0
+#macro	RESPAWN_TIMER_WEIGHT	30.0
+#macro	RESPAWN_TIMER_SATTACK	450.0
+
+// Since the animation for regenerating the block doesn't change, its length in frames can be set in this macro
+// and used in place of calling "sprite_get_number({sprite's name})".
+#macro	REGEN_ANIM_EFFECT		4
+
+// The distance Samus needs to be from the center of a destructible object along both the x and y axis before 
+// it is destroyed by her screw attack.
+#macro	SCREW_ATTACK_XBOUNDS	24
+#macro	SCREW_ATTACK_YBOUNDS	16
 
 #endregion
 
@@ -28,9 +37,9 @@ event_inherited();
 // Make the entity visible within the room and set its state bits up so it draws the sprite that is set for 
 // any child destructible object. Also, set the sprite index so it doesn't trigger the drawing code for the
 // object until "entity_set_sprite" is called. Otherwise, the game will crash trying to draw an invalid sprite.
-stateFlags |= (1 << DRAW_SPRITE) | (1 << USE_EFFECTS);
-sprite_index = NO_SPRITE;
-visible = true;
+stateFlags	   |= (1 << DRAW_SPRITE) | (1 << USE_EFFECTS);
+sprite_index	= NO_SPRITE;
+visible			= true;
 
 #endregion
 
@@ -43,15 +52,16 @@ effectID = noone;
 // This variable pair is used for any destructible blocks that are hidden within the game's world. They will
 // store the required tile set and tile information to render that tile on top of them until they are no longer
 // hidden.
-tileset = -1;
-tiledata = -1;
+tileset		= -1;
+tiledata	= -1;
+// Note -- TILEMAP LOGIC STILL NEEDS TO BE IMPLEMENTED!!
 
 // The top value stores the block's unique time in "frames" (One frame is equal to 1/60th of a second of real 
 // time) before the block will attempt to respawn itself after being destroyed. Setting this value to the macro 
 // "RESPAWN_TIMER_INFINITE" will cause the block to destroy itself for the duration of the room's existence. 
 // Finally, the bottom value simply tracks the time elapsed since the block was considered "destroyed".
-timeToRespawn = 0;
-respawnTimer = 0;
+timeToRespawn	= 0.0;
+respawnTimer	= 0.0;
 
 #endregion
 
@@ -62,26 +72,32 @@ respawnTimer = 0;
 /// a struct that is used for animating the block's destruction while also temporarily disabling collision and
 /// sprite rendering for the block in question.
 destructible_destroy_self = function(){
-	// Create the block destruction effect if the block in question has been toggled to do so.
-	if (CAN_USE_EFFECTS){
-		var _x = x;
-		var _y = y;
-		var _id = id;
-		effectID = instance_create_struct(obj_destructible_effect);
-		with(effectID){
-			x =				_x;
-			y =				_y;
-			parentID =		_id;
-			imageIndex =	0;
-			animSpeed =		1;
-		}
-	}
-	
 	// Update the state flags for the block so that it is no longer visible or interactable (Collision) with
 	// the player object. These states are reversed if the block can rebuild itself.
 	stateFlags &= ~((1 << DRAW_SPRITE) | (1 << HIDDEN));
 	stateFlags |= (1 << DESTROYED);
-	mask_index = spr_empty_mask;
+	mask_index	= spr_empty_mask;
+	
+	// Don't process destructible effect logic if the instance in question doesn't have effect enabled.
+	if (!CAN_USE_EFFECTS) {return;}
+	
+	// Copy over the coordinates and instance ID for the destructible so it can be copied over to the effect
+	// instance all at once instead of needing to jump back and forth to get the same data.
+	var _x	= x;
+	var _y	= y;
+	var _id = id;
+	
+	// Create the "obj_destructible_effect" struct; storing its instance ID in the "effectID" variable so it
+	// can be managed by the block that created it. The required information is copied over and the effect
+	// is set up to animate normally.
+	effectID = instance_create_struct(obj_destructible_effect);
+	with(effectID){
+		x			= _x;
+		y			= _y;
+		parentID	= _id;
+		imageIndex	= 0;	// Ensures the animation plays forward.
+		animSpeed	= 1.0;
+	}
 }
 
 /// @description A function that is basically the reverse of the above function with a few added factors to
@@ -108,22 +124,26 @@ destructible_rebuild_self = function(){
 }
 
 /// @description A function that can be placed into the step event in any child of this parent destructible;
-/// enabling it to be destroyed by Samus's somersault jump if she has previously acquired the Screw Attack.
+/// enabling it to be destroyed by Samus's somersault jump if she has acquired the Screw Attack.
 step_screw_attack_check = function(){
-	// 
-	event_inherited();
-	if (IS_DESTROYED) {return;}
-
-	// 
+	// Get the coordinates for the center of the destructible block. Otherwise, the distance when calculated
+	// from the left vs. the right will differ; the same would apply between the top vs. the bottom.
 	var _x = x + 8;
 	var _y = y + 8;
 	with(PLAYER){
+		// Don't process the rest of the function's logic if Samus isn't currently utilizing her Screw Attack
+		// because she's either in a standard jump or doesn't have acess to the ability yet.
 		if (!IS_JUMP_ATTACK) {return;}
 	
-		// 
-		var _pY = y - (bbox_bottom - bbox_top);
-		if (point_distance(0, _pY, 0, _y) <= 24 && point_distance(x, 0, _x, 0) <= 16){
-			with(other){destructible_destroy_self();}
+		// Since Samus's position is actually at her feet, the position of her bounding box is used instead,
+		// and centered within that area along the y axis (The x axis is already centered about said area).
+		var _pY = bbox_bottom - ((bbox_bottom - bbox_top) >> 1);
+		
+		// Once the proper y value is calculated, Samus and the destructible's positions are compared to see
+		// if the resulting lengths are within 16 pixels along the x and 24 pixels along the y, respectively.
+		// If so, the block will be destroyed by the screw attack.
+		if (point_distance(x, 0, _x, 0) <= SCREW_ATTACK_XBOUNDS && point_distance(0, _pY, 0, _y) <= SCREW_ATTACK_YBOUNDS){
+			with(other) {destructible_destroy_self();}
 		}
 	}
 }

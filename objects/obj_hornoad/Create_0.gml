@@ -107,6 +107,10 @@ entity_apply_hitstun = function(_duration, _damage){
 	stateFlags	|= (1 << HRND_ALERTED);
 	jumpTimer	+= HRND_CD_REDUCTION;
 	
+	// Ignore snapping facing direction to which side the projectile hit the Hornoad on if they're already
+	// in the air, as turning around while airbourne looks weird.
+	if (!IS_GROUNDED) {return;}
+	
 	// Instantly snap the Hornoad to face the direction of the projectile that hit it, which should also be
 	// the direction that Samus is in relative to the Hornoad's position.
 	var _playerX = PLAYER.x;
@@ -140,7 +144,7 @@ state_default = function(){
 		if (place_meeting(x + (16 * movement), y - 16, par_collider)){
 			stateFlags	 &= ~(1 << HRND_ALERTED);
 			jumpTimer	  = 0.0;
-			movement	 *= -1;	
+			movement	 *= -1;
 			image_xscale *= -1;
 			lightOffsetX *= -1;
 			return;
@@ -156,8 +160,9 @@ state_default = function(){
 		// The hornoad will jump higher and further when altered, and will perform small hops when in its
 		// docile state. This check determines which of the two outcomes for hspd/vspd executed.
 		if (HRND_IS_ALERTED){
-			hspd	= HRND_ALERTED_HSPD * movement;
-			vspd	= HRND_ALERTED_VSPD;
+			stateFlags &= ~(1 << HRND_ALERTED);
+			hspd		= HRND_ALERTED_HSPD * movement;
+			vspd		= HRND_ALERTED_VSPD;
 			return; // State changed and hspd/vspd already set; exit very early.
 		}
 		hspd		= HRND_DEFAULT_HSPD * movement;
@@ -227,7 +232,6 @@ state_airbourne = function(){
 		object_set_next_state(state_default);
 		entity_set_sprite(spr_hornoad0, -1);
 		stateFlags |= (1 << HRND_FLIP_DIRECTION);
-		stateFlags &= ~(1 << HRND_ALERTED);
 		hspd		= 0.0;
 		vspd		= 0.0;
 		return;

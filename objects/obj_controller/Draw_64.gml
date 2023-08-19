@@ -1,6 +1,7 @@
 var _camera = CAMERA.camera; // Store a reference to the camera component for reference while drawing stuff.
 
-// 
+// Render the game's HUD first; allowing menus, control information, and all other GUI elements to display on
+// top of the HUD instead of being obscured by it.
 with(GAME_HUD) {draw_gui();}
 
 // Render all currently existing menu instances here; looping through them in the order that they were created

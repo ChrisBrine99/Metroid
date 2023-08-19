@@ -112,25 +112,10 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// obj_effect_handler. In short, it will cleanup any data that needs to be freed from memory that isn't 
 	/// collected by Game Maker's built-in garbage collection handler.
 	cleanup = function(){
-		// Freeing the memory that could still potentially be reserved for each of the surfaces that are
-		// used in order to achieve all of the post-processing effects that exist within the game. Otherwise,
-		// they will remain allocated in memory with no reference to clear them from memory.
-		if (surface_exists(surfWorld)) {surface_free(surfWorld);}
-		if (surface_exists(surfLights)) {surface_free(surfLights);}
-		if (surface_exists(surfBloomLum)) {surface_free(surfBloomLum);}
+		if (surface_exists(surfWorld))		{surface_free(surfWorld);}
+		if (surface_exists(surfLights))		{surface_free(surfLights);}
+		if (surface_exists(surfBloomLum))	{surface_free(surfBloomLum);}
 		if (surface_exists(surfBlurBuffer)) {surface_free(surfBlurBuffer);}
-		
-		// Since this struct should exist for the entire duration of the game, all existing light sources
-		// will be removed from memory through this loop before the ds_list for managing and referencing
-		// those lights is cleared from memory.
-		if (ds_exists(global.lightSources, ds_type_list)){
-			var _length = ds_list_size(global.lightSources);
-			for (var i = 0; i < _length; i++){
-				with(global.lightSources[| i].parentID) {object_remove_light_component(true);}
-				delete global.lightSources[| i];
-			}
-			ds_list_destroy(global.lightSources);
-		}
 	}
 	
 	/// @description Code that should be placed into the "Step" event of whatever object is controlling

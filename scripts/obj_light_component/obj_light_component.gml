@@ -60,7 +60,7 @@ function obj_light_component(_index) : base_struct(_index) constructor{
 		if (lifespan != INF_LIFESPAN){
 			lifespan -= DELTA_TIME;
 			if (lifespan <= 0){
-				with(parentID){object_remove_light_component(true);}
+				with(parentID) {object_remove_light_component(true);}
 				return;
 			}
 		}
@@ -166,7 +166,6 @@ function object_remove_light_component(_removePersistent = false){
 		if (_index != -1){
 			instance_destroy_struct(lightComponent);
 			delete global.lightSources[| _index];
-			delete lightComponent;
 			ds_list_delete(global.lightSources, _index);
 			lightComponent = noone;
 		}

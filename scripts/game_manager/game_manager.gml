@@ -42,7 +42,9 @@ global.gameManager = {
 	deltaTime			: 0,
 	targetFPS			: 60.0,
 	
-	// 
+	// Stores the current amount of time in seconds and milliseconds, resepctively. Differs from playtime timer
+	// which only increments when it is active. Total time is always incrementing as long as the "targetFPS"
+	// value isn't set to 0.0.
 	totalTime			: 0,
 	totalTimeMillis		: 0.0,
 	
@@ -58,20 +60,22 @@ global.gameManager = {
 	/// will update the player's in-game playtime if the tracking flag is enabled.
 	begin_step : function(){
 		deltaTime = (delta_time / 1000000) * targetFPS;
+		if (targetFPS == 0.0) {return;}
 		
 		// Update the total playtime value regardless of if the in-game time is ticking up or not.
-		totalTimeMillis += deltaTime;
-		if (totalTimeMillis >= targetFPS){
-			totalTimeMillis -= targetFPS;
+		var _curMillisecondDelta = deltaTime / targetFPS;
+		totalTimeMillis += _curMillisecondDelta;
+		if (totalTimeMillis >= 1.0){
+			totalTimeMillis -= 1.0;
 			totalTime++;
 		}
 		
 		// Update the current playtime if the timer hasn't been disabled by the current game state (The timer
 		// will always be paused when the game is in a cutscene or completely paused).
 		if (!isTimerActive) {return;}
-		playtimeMillis += deltaTime;
-		if (playtimeMillis >= targetFPS){
-			playtimeMillis -= targetFPS;
+		playtimeMillis += _curMillisecondDelta;
+		if (playtimeMillis >= 1.0){
+			playtimeMillis -= 1.0;
 			curPlaytime++;
 		}
 	}

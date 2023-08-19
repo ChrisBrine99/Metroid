@@ -3,6 +3,7 @@ with(CAMERA)				{end_step();}
 with(AUDIO_MANAGER)			{end_step();}
 with(MUSIC_HANDLER)			{end_step();}
 with(TEXTBOX_HANDLER)		{end_step();}
+with(MAP_MANAGER)			{end_step();}
 
 // Call the end step event for all currently existing menu structs, which will handle their next state logic.
 // Also destroy any menus that have been flagged for deletion.

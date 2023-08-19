@@ -6,9 +6,6 @@ image_index = 0;
 image_speed = 0;
 visible = false;
 
-// 
-cullBounds = 0;
-
 // 32-bits that can each represent their own functionality within any children of this object. However, the 
 // top eight bits are reserved for generic flags that are required for an entity to function properly.
 stateFlags = (1 << ACTIVE);
@@ -41,3 +38,6 @@ spriteSpeed = 0;
 loopOffset = 0;
 
 #endregion
+
+// VARIABLES FOR DEBUGGING PURPOSES
+collisionMaskColor = HEX_GRAY;

@@ -55,7 +55,6 @@ initialize = function(_state){
 	maxInstances	= 2;
 	timeToSpawn		= 120.0;
 	spawnTimer		= timeToSpawn * 0.75;	// First instance spawn only requires 25% of the normal time.
-	show_debug_message("TEST");
 }
 
 #endregion
