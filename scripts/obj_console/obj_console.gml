@@ -70,6 +70,10 @@
 // lines begin to be discarded for new infomration.
 #macro	HISTORY_DISPLAY_LIMIT	250
 
+// 
+#macro	MOUSE_WINDOW_WIDTH		140
+#macro	MOUSE_WINDOW_HEIGHT		42
+
 #endregion
 
 #region Initializing any globals that are useful/related to obj_console
@@ -106,6 +110,13 @@ function obj_console(_index) : base_struct(_index) constructor{
 	// typed into the console by the user.
 	cursorPos = 1;
 	
+	// 
+	mInstanceID		= noone;
+	mInstanceName	= "";
+	mInstanceIndex	= -1;
+	mInstanceX		= 0;
+	mInstanceY		= 0;
+	
 	// Stores the states for all entity objects prior to the console being opened, as well as the current and
 	// previous game states from that time period as well (The Console sets the state to "PAUSED" which would
 	// discard that other previous state without these storage variables).
@@ -137,77 +148,14 @@ function obj_console(_index) : base_struct(_index) constructor{
 	end_step = function(){
 		// 
 		if (!IS_CONSOLE_ACTIVE){
-			// 
-			if (keyboard_check_pressed(vk_insert)){
-				var _curState, _nextState, _lastState;
-				var _entityStates	= entityStates;
-				var _key			= ds_map_find_first(entityStates);
-				with(par_dynamic_entity){
-					if (curState == NO_STATE) {continue;}
-					
-					// 
-					_curState	= curState;
-					_nextState	= nextState;
-					_lastState	= lastState;
-					ds_map_add(_entityStates, id, {
-						curState	: _curState,
-						nextState	: _nextState,
-						lastState	: _lastState,
-					});
-					
-					// 
-					stateFlags |= (1 << FREEZE_ANIMATION);
-					curState	= NO_STATE;
-					nextState	= NO_STATE;
-					lastState	= NO_STATE;
-				}
-				
-				// 
-				stateFlags	   |= (1 << CONSOLE_ACTIVE);
-				gameCurState	= GAME_CURRENT_STATE;
-				gamePrevState	= GAME_PREVIOUS_STATE;
-				game_set_state(GSTATE_PAUSED, true);
-				
-				// 
-				window_set_cursor(cr_default);
-				keyboard_lastchar = "";
-			}
-			return; // No other functionality is processed when the console is closed.
+			if (keyboard_check_pressed(vk_insert))
+				enable_console_window();
+			return;
 		}
 		
 		// 
 		if (keyboard_check_pressed(vk_insert)){
-			var _stateData, _curState, _nextState, _lastState;
-			var _key = ds_map_find_first(entityStates);
-			while(!is_undefined(_key)){
-				_stateData = entityStates[? _key];
-				with(_stateData){
-					_curState	= curState;
-					_nextState	= nextState;
-					_lastState	= lastState;
-				}
-				
-				with(_key){
-					stateFlags &= ~(1 << FREEZE_ANIMATION);
-					curState	= _curState;
-					nextState	= _nextState;
-					lastState	= _lastState;
-				}
-				_key = ds_map_find_next(entityStates, _key);
-				delete _stateData;
-			}
-			ds_map_clear(entityStates);
-			ds_list_clear(suggestions);
-			
-			game_set_state(GAME_PREVIOUS_STATE, true);
-			window_set_cursor(cr_none);
-			stateFlags	   &= ~((1 << CONSOLE_ACTIVE) | (1 << DRAW_CURSOR));
-			stateFlags	   |= ((1 << FIRST_BACKSPACE) | (1 << FIRST_CURSOR_MOVE));
-			backspaceTimer	= 0.0;
-			cursorMoveTimer = 0.0;
-			cursorTimer		= 0.0;
-			cursorPos		= 1;
-			command			= "";
+			disable_console_window();
 			return;
 		}
 		
@@ -233,8 +181,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 				ds_list_clear(suggestions);
 			}
 			keyboard_lastchar	= "";
-			cursorPos			= 1;
 			command				= "";
+			cursorPos			= 1;
 			return;
 		}
 		
@@ -244,20 +192,20 @@ function obj_console(_index) : base_struct(_index) constructor{
 			if (backspaceTimer <= 0.0){
 				cursorPos--;
 				command = string_delete(command, cursorPos, 1);
-				if (command == "") {ds_list_clear(suggestions);}
-				else {find_suggestions(command);}
+				if (command == "")	{ds_list_clear(suggestions);}
+				else				{find_suggestions(command);}
 				if (IS_FIRST_BACKSPACE){ // First backspace; longer duration before next character is deleted. 
-					backspaceTimer = FIRST_BSPACE_INTERVAL;
-					stateFlags &= ~(1 << FIRST_BACKSPACE);
+					backspaceTimer	= FIRST_BSPACE_INTERVAL;
+					stateFlags	   &= ~(1 << FIRST_BACKSPACE);
 				} else{ // All subsequent backspaces, which are much faster than the initial one.
-					backspaceTimer = BSPACE_INTERVAL;
+					backspaceTimer	= BSPACE_INTERVAL;
 				}
 			}
 			keyboard_lastchar = "";
 			return;
 		} else{ // Reset backspace variables to enable the longer first deletion interval again.
-			stateFlags |= (1 << FIRST_BACKSPACE);
-			backspaceTimer = 0.0;
+			stateFlags	   |= (1 << FIRST_BACKSPACE);
+			backspaceTimer	= 0.0;
 		}
 		
 		// 
@@ -265,11 +213,11 @@ function obj_console(_index) : base_struct(_index) constructor{
 		if (_movement != 0){
 			cursorMoveTimer -= DELTA_TIME;
 			if (cursorMoveTimer <= 0.0){
-				if (_movement == 1 && cursorPos <= string_length(command))	{cursorPos++;} 
+				if (_movement == 1 && cursorPos <= string_length(command))	{cursorPos++;}
 				else if (_movement == -1 && cursorPos > 1)					{cursorPos--;}
 				
 				if (IS_FIRST_CURSOR_MOVE){ // Like the backspace code; the first movement will always have a longer duration until the next movement.
-					stateFlags &= ~(1 << FIRST_CURSOR_MOVE);
+					stateFlags	   &= ~(1 << FIRST_CURSOR_MOVE);
 					cursorMoveTimer = FIRST_MOVE_INTERVAL;
 				} else{ // All subsequent cursor movements will move at a quick and regular interval.
 					cursorMoveTimer = CURSOR_MOVE_INTERVAL;
@@ -278,7 +226,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			keyboard_lastchar = "";
 			return;
 		} else{ // 
-			stateFlags |= (1 << FIRST_CURSOR_MOVE);
+			stateFlags	   |= (1 << FIRST_CURSOR_MOVE);
 			cursorMoveTimer = 0.0;
 		}
 		
@@ -288,10 +236,37 @@ function obj_console(_index) : base_struct(_index) constructor{
 		if (keyboard_lastkey != vk_nokey && keyboard_lastkey != vk_shift && keyboard_lastchar != ""){
 			command = string_insert(keyboard_lastchar, command, cursorPos);
 			find_suggestions(command);
-			keyboard_lastkey = vk_nokey;
-			keyboard_lastchar = "";
+			keyboard_lastkey	= vk_nokey;
+			keyboard_lastchar	= "";
+			stateFlags		   |= (1 << DRAW_CURSOR);
+			cursorTimer			= 0.0;
 			cursorPos++;
 		}
+		
+		// 
+		var _id = instance_position(mouse_x, mouse_y, all);
+		if (_id == mInstanceID) {return;}
+		
+		// 
+		var _name	= "";
+		var _index	= -1;
+		var _x		= 0;
+		var _y		= 0;
+		with(_id){
+			_name	= object_get_name(object_index);
+			_index	= object_index;
+			_x		= x;
+			_y		= y;
+		}
+		
+		// Finally, take those copied values and place them into the matching variables contained within the
+		// Console itself. Overall, this prevents the code jumping back and forth to copy these values one by
+		// one and prevents having to cast each value to a string for every draw_gui call.
+		mInstanceID		= string(real(_id));
+		mInstanceName	= _name;
+		mInstanceIndex	= string(_index);
+		mInstanceX		= string(_x);
+		mInstanceY		= string(_y);
 	}
 	
 	/// @description 
@@ -299,11 +274,11 @@ function obj_console(_index) : base_struct(_index) constructor{
 		if (!IS_CONSOLE_ACTIVE) {return;}
 		
 		// 
-		var _cameraID = CAMERA.camera;
-		var _camWidth = camera_get_view_width(_cameraID);
-		var _camHeight = camera_get_view_height(_cameraID);
-		draw_sprite_ext(spr_rectangle, 0, 0, 0, _camWidth, _camHeight, 0, HEX_BLACK, 0.75);
-		draw_sprite_ext(spr_rectangle, 0, 0, 163, _camWidth, 12, 0, HEX_DARK_GRAY, 0.5);
+		var _cameraID		= CAMERA.camera;
+		var _cameraWidth	= camera_get_view_width(_cameraID);
+		var _cameraHeight	= camera_get_view_height(_cameraID);
+		draw_sprite_ext(spr_rectangle, 0, 0, 0, _cameraWidth, _cameraHeight, 0, HEX_BLACK, 0.75);
+		draw_sprite_ext(spr_rectangle, 0, 0, 163, _cameraWidth, 12, 0, HEX_DARK_GRAY, 0.5);
 		
 		// 
 		shader_set_outline(font_gui_small, RGB_GRAY);
@@ -314,15 +289,14 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// 
 		if (CAN_DRAW_CURSOR){
 			var _cursorX = string_width(string_copy(command, 1, cursorPos - 1)) + 1;
-			draw_sprite_ext(spr_rectangle, 0, 8 + _cursorX, 164, 1, 8, 0, HEX_LIGHT_YELLOW, 1);
+			draw_sprite_ext(spr_rectangle, 0, 8 + _cursorX, 164, 1, 10, 0, HEX_LIGHT_YELLOW, 1);
 		}
 		
 		// 
 		var _start = ds_list_size(history) - 1;
 		if (_start >= 0){
 			if (!surface_exists(historySurf)){
-				var _camera = CAMERA.camera;
-				historySurf = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera) - 20);
+				historySurf = surface_create(camera_get_view_width(_cameraID), camera_get_view_height(_cameraID) - 20);
 			}
 			
 			// 
@@ -347,7 +321,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// 
 		var _suggestionSize = ds_list_size(suggestions);
 		if (_suggestionSize > 0){
-			draw_sprite_ext(spr_rectangle, 0, 5, 163, _camWidth - 10, -(_suggestionSize * 11) - 3, 0, HEX_DARK_GRAY, 1);
+			draw_sprite_ext(spr_rectangle, 0, 5, 163, _cameraWidth - 10, -(_suggestionSize * 11) - 3, 0, HEX_DARK_GRAY, 1);
 			
 			var _yy = 152;
 			shader_set_outline(font_gui_small, RGB_DARK_YELLOW);
@@ -358,6 +332,109 @@ function obj_console(_index) : base_struct(_index) constructor{
 			}
 			shader_reset();
 		}
+		
+		// 
+		var _mouseScreenX = mouse_x - camera_get_view_x(_cameraID);
+		var _mouseScreenY = mouse_y - camera_get_view_y(_cameraID);
+		draw_sprite_ext(spr_rectangle, 0, _mouseScreenX, _mouseScreenY, 1, 1, 0, HEX_WHITE, 1);
+		if (mInstanceID == noone) {return;}
+		
+		// 
+		var _limitX = min(_mouseScreenX + 1, _cameraWidth - MOUSE_WINDOW_WIDTH - 1);
+		var _limitY = min(_mouseScreenY + 1, _cameraHeight - MOUSE_WINDOW_HEIGHT - 1);
+		draw_sprite_ext(spr_rectangle, 0, _limitX, _limitY, MOUSE_WINDOW_WIDTH, MOUSE_WINDOW_HEIGHT, 0, HEX_BLACK, 0.75); 
+		draw_sprite_ext(spr_rectangle, 0, _limitX, _limitY, MOUSE_WINDOW_WIDTH, 12, 0, HEX_DARK_GRAY, 0.25);
+	
+		// 
+		shader_set_outline(font_gui_small, RGB_DARK_YELLOW);
+		draw_text_outline(_limitX + 3, _limitY + 15, "Instance ID\nObject Index\nPosition", HEX_WHITE, RGB_GRAY, 1);
+		draw_set_halign(fa_right);
+		
+		// 
+		var _dataX = _limitX + MOUSE_WINDOW_WIDTH - 3;
+		draw_text_outline(_dataX, _limitY + 2, mInstanceName, HEX_RED, RGB_DARK_RED, 1);
+		draw_text_outline(_dataX, _limitY + 15, 
+			mInstanceID + "\n" + mInstanceIndex + "\n[" + mInstanceX + ", " + mInstanceY + "]", 
+				HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
+		
+		draw_set_halign(fa_left);
+		shader_reset();
+	}
+	
+	/// @description Opens up the Console's main window, which allows the user to input commands via the 
+	/// keyboard to execute functions that assist with the debugging process. On top of that, the mouse cursor 
+	/// can be used to check instance information by hovering over a given object.
+	enable_console_window = function(){
+		var _entityStates	= entityStates; // Copy index of ds_map for quick reference while in Entity scope.
+		var _curState		= NO_STATE;
+		var _nextState		= NO_STATE;
+		var _lastState		= NO_STATE;
+		with(par_dynamic_entity){
+			_curState		= curState;
+			_nextState		= nextState;
+			_lastState		= lastState;
+			
+			// 
+			ds_map_add(_entityStates, id, {
+				curState	: _curState,
+				nextState	: _nextState,
+				lastState	: _lastState
+			});
+			
+			// 
+			stateFlags |= (1 << FREEZE_ANIMATION);
+			curState	= NO_STATE;
+			nextState	= NO_STATE;
+			lastState	= NO_STATE;
+		}
+		
+		// 
+		stateFlags		   |= (1 << CONSOLE_ACTIVE) | (1 << FIRST_BACKSPACE) | (1 << FIRST_CURSOR_MOVE) | (1 << DRAW_CURSOR);
+		gameCurState		= GAME_CURRENT_STATE;
+		gamePrevState		= GAME_PREVIOUS_STATE;
+		command				= "";	// Remove anything that was previous typed as a command.
+		cursorPos			= 1;
+		backspaceTimer		= 0.0;	// Clear all timer variable values.
+		cursorMoveTimer		= 0.0;
+		cursorTimer			= 0.0;
+		
+		// 
+		keyboard_lastchar	= "";
+		game_set_state(GSTATE_PAUSED);
+	}
+	
+	/// @description 
+	disable_console_window = function(){
+		var _key			= ds_map_find_first(entityStates);
+		var _stateStruct	= noone;
+		var _curState		= NO_STATE;
+		var _nextState		= NO_STATE;
+		var _lastState		= NO_STATE;
+		while(!is_undefined(_key)){
+			// 
+			_stateStruct	= entityStates[? _key];
+			with(_stateStruct){
+				_curState	= curState;
+				_nextState	= nextState;
+				_lastState	= lastState;
+			}
+			
+			// 
+			with(_key){
+				stateFlags &= ~(1 << FREEZE_ANIMATION);
+				curState	= _curState;
+				nextState	= _nextState;
+				lastState	= _lastState;
+			}
+			_key = ds_map_find_next(entityStates, _key);
+			delete _stateStruct; // Signal to GameMaker that the struct can be cleared from memory.
+		}
+		
+		// 
+		stateFlags &= ~(1 << CONSOLE_ACTIVE);
+		game_set_state(gameCurState, true);
+		ds_map_clear(entityStates);
+		ds_list_clear(suggestions);
 	}
 	
 	/// @description Attempts to parse out the command data that was typed in by the user. It will find the
@@ -374,7 +451,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// arguments from that point onward). If no function exists, the command will be discarded.
 		var _data = ds_map_find_value(validCommands, string_lower(_funcString));
 		if (is_undefined(_data)){
-			history_add_line("ERROR -- Function \"" + _funcString + "\" does not exist.");
+			history_add_line("ERROR -- Command \"" + _funcString + "\" does not exist.");
 			return;
 		}
 		

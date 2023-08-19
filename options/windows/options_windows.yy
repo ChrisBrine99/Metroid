@@ -10,7 +10,7 @@
   "option_windows_description_info": "A GameMaker Studio 2 Game",
   "option_windows_disable_sandbox": false,
   "option_windows_display_cursor": false,
-  "option_windows_display_name": "Created with GameMaker Studio 2",
+  "option_windows_display_name": "Metroid",
   "option_windows_enable_steam": false,
   "option_windows_executable_name": "${project_name}.exe",
   "option_windows_icon": "${base_options_dir}/windows/icons/icon.ico",
@@ -29,6 +29,6 @@
   "option_windows_steam_use_alternative_launcher": false,
   "option_windows_texture_page": "2048x2048",
   "option_windows_use_splash": false,
-  "option_windows_version": "1.0.0.0",
+  "option_windows_version": "0.0.1.0",
   "option_windows_vsync": false,
 }
