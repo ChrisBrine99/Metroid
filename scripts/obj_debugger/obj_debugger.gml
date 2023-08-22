@@ -137,7 +137,7 @@ function obj_debugger(_index) : base_struct(_index) constructor{
 		// on or off, as well as the toggle for enabling or disabling the Debug information window.
 		shader_set_outline(font_gui_small, RGB_GRAY);
 		draw_set_halign(fa_right);
-		draw_text_outline(_cameraWidth - 5, _cameraHeight - 20, "Press [F1] to show colliders\nPress [~] to open console", HEX_WHITE, RGB_GRAY, 1);
+		draw_text_outline(_cameraWidth - 5, _cameraHeight - 20, "Press [F1] to show colliders\nPress [Insert] for console", HEX_WHITE, RGB_GRAY, 1);
 		draw_set_halign(fa_left);
 		shader_reset();
 		
@@ -258,7 +258,7 @@ function obj_debugger(_index) : base_struct(_index) constructor{
 		// (Seconds of time) to a standard time format of HH:MM:SS. Milliseconds are not visible for the timers.
 		return draw_debug_info(
 			_yOffset,
-			"-- Time --\n Total\n In-Game",
+			"-- Time --\n Application\n Playtime",
 			string_number_to_time_format(_totalTime) + "\n" +
 			string_number_to_time_format(_playtime), 
 			3	// Sum of "\n" in second argument plus one
