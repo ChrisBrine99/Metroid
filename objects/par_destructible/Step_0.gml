@@ -1,7 +1,7 @@
 // Don't process the respawning logic for the destructible if any of the three conditions are met: the object isn't
 // set to respawn based on its "timeToRespawn" value, it isn't considered "destroyed", or its effect variable has
 // a valid instance ID stored in it currently.
-if (timeToRespawn != RESPAWN_TIMER_INFINITE || !IS_DESTROYED || effectID != noone) {return;}
+if (timeToRespawn == RESPAWN_TIMER_INFINITE || !IS_DESTROYED || effectID != noone) {return;}
 
 // Increment the respawn timer by the current value of delta time until it surpasses the required time interval
 // After this, the block will "rebuild" itself; playing the blcok regeneration animation if it has its flag for

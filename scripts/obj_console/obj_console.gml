@@ -15,6 +15,7 @@
 // -- General Commands -- //
 #macro	CMD_EXIT_GAME			"exit_game"
 #macro	CMD_GAME_STATE			"game_state"
+#macro	CMD_TOGGLE_GODMODE		"toggle_godmode"
 // -- Event Flag Commands -- //
 #macro	CMD_SET_EVENT_FLAG		"set_event_flag"
 #macro	CMD_SHOW_EVENT_FLAGS	"show_event_flags"
@@ -23,6 +24,8 @@
 #macro	CMD_CREATE_OBJECT		"create_object"
 #macro	CMD_DESTROY_OBJECT		"destroy_object"
 #macro	CMD_MOVE_OBJECT			"move_object"
+// -- Entity Commands -- //
+#macro	CMD_SET_ENTITY_FLAG		"set_entity_flag"
 // -- Player Data Commands -- //
 #macro	CMD_PLAYER_FILL_AMMO	"player_fill_ammo"
 #macro	CMD_PLAYER_FILL_ENERGY	"player_fill_energy"
@@ -37,9 +40,17 @@
 #macro	CMD_DEBUG_SHOW_ROOM		"debug_show_room_data"
 #macro	CMD_DEBUG_SHOW_CAMERA	"debug_show_camera_data"
 #macro	CMD_DEBUG_SHOW_OBJECTS	"debug_show_instance_data"
+#macro	CMD_DEBUG_SHOW_MAP		"debug_show_map_data"
 
-// -- Debugger Command Shortcuts -- //
-#macro	CMD_TDI					"tdi"
+// -- Command Shortcuts -- //
+#macro	CMD_EXIT				"exit"
+#macro	CMD_TGM					"tgm"
+#macro	CMD_TDW					"tdw"
+
+// 
+#macro	COMMAND_ARG_STRING		0
+#macro	COMMAND_FUNCTION		1
+#macro	COMMAND_ARGS			2
 
 // Stores the values used for the first backspace and the subsequent backspaces that occur afterward if the
 // key is held for longer than that initial interval (60.0 = 1 second).
@@ -90,15 +101,10 @@ function obj_console(_index) : base_struct(_index) constructor{
 	// to get the value of an event flag, set or reset flags, create objects, destroy objects, and much more.
 	command = "";
 	
-	// Stores all the commands that the user can type into the console in order to execute the function tied
-	// to that command. The command name stores the array containing its function and required arguments.
-	validCommands = ds_map_create();
-	
-	// Contains data for the Console's suggestion window, which displays what functions the user can potentially
-	// type in relative to what they've already typed into the command window. The array cotains all the commands
-	// and their arguments that are parsed to determine the suggestions to display to the user.
-	suggestions		= ds_list_create();
-	suggestionData	= [];
+	// 
+	commandData		= ds_map_create();
+	commandKeys		= ds_list_create();
+	curSuggestions	= ds_list_create();
 	
 	// Variables for handling the Console's history window, which shows the 250 previous commands and information
 	// that have been typed out by the user and displayed to the Console by the resulting command executions.
@@ -134,8 +140,9 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// event. As such, it should be called within the "cleanup" event by the controller object that manages
 	/// this struct.
 	cleanup = function(){
-		ds_map_destroy(validCommands);
-		ds_list_destroy(suggestions);
+		ds_map_destroy(commandData);
+		ds_list_destroy(commandKeys);
+		ds_list_destroy(curSuggestions);
 		ds_list_destroy(history);
 		ds_map_destroy(entityStates);
 
@@ -176,10 +183,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 		
 		// 
 		if (keyboard_check_pressed(vk_enter)){
-			if (command != ""){ // Don't bother processing empty strings
-				parse_current_command(command);
-				ds_list_clear(suggestions);
-			}
+			if (command != "") {parse_current_command();}
 			keyboard_lastchar	= "";
 			command				= "";
 			cursorPos			= 1;
@@ -192,8 +196,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			if (backspaceTimer <= 0.0){
 				cursorPos--;
 				command = string_delete(command, cursorPos, 1);
-				if (command == "")	{ds_list_clear(suggestions);}
-				else				{find_suggestions(command);}
+				find_suggestions();
 				if (IS_FIRST_BACKSPACE){ // First backspace; longer duration before next character is deleted. 
 					backspaceTimer	= FIRST_BSPACE_INTERVAL;
 					stateFlags	   &= ~(1 << FIRST_BACKSPACE);
@@ -235,12 +238,12 @@ function obj_console(_index) : base_struct(_index) constructor{
 		// duplication of a character when a non-character key is pressed.
 		if (keyboard_lastkey != vk_nokey && keyboard_lastkey != vk_shift && keyboard_lastchar != ""){
 			command = string_insert(keyboard_lastchar, command, cursorPos);
-			find_suggestions(command);
 			keyboard_lastkey	= vk_nokey;
 			keyboard_lastchar	= "";
 			stateFlags		   |= (1 << DRAW_CURSOR);
 			cursorTimer			= 0.0;
 			cursorPos++;
+			find_suggestions();
 		}
 		
 		// 
@@ -319,15 +322,15 @@ function obj_console(_index) : base_struct(_index) constructor{
 		}
 		
 		// 
-		var _suggestionSize = ds_list_size(suggestions);
-		if (_suggestionSize > 0){
-			draw_sprite_ext(spr_rectangle, 0, 5, 163, _cameraWidth - 10, -(_suggestionSize * 11) - 3, 0, HEX_DARK_GRAY, 1);
+		var _numSuggestions = ds_list_size(curSuggestions);
+		if (_numSuggestions > 0){
+			draw_sprite_ext(spr_rectangle, 0, 5, 163, _cameraWidth - 10, -(_numSuggestions * 11) - 3, 0, HEX_DARK_GRAY, 1);
 			
 			var _yy = 152;
 			shader_set_outline(font_gui_small, RGB_DARK_YELLOW);
-			for (var i = 0; i < _suggestionSize; i++){
+			for (var i = 0; i < _numSuggestions; i++){
 				if (_yy <= 0) {break;} // Exit to prevent drawing suggestions that will be drawn off of the screen's visible region.
-				draw_text_outline(10, _yy, suggestionData[suggestions[| i]], HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
+				draw_text_outline(10, _yy, curSuggestions[| i], HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, 1);
 				_yy -= 11;
 			}
 			shader_reset();
@@ -398,12 +401,16 @@ function obj_console(_index) : base_struct(_index) constructor{
 		cursorMoveTimer		= 0.0;
 		cursorTimer			= 0.0;
 		
-		// 
+		// Finally, clear out the built-in variable "keyboard_lastchar" to ensure no odd inputs appear in the
+		// Console upon start up, and set the game state to PAUSED to signal to various systems to act upon
+		// the change relative to their functionalities.
 		keyboard_lastchar	= "";
 		game_set_state(GSTATE_PAUSED);
 	}
 	
-	/// @description 
+	/// @description Closes the console window, which resets all Entities back to their previous states,
+	/// returns the game state to what it was previously, and also cleans up data structures within the Console
+	/// struct that have data that is no longer needed.
 	disable_console_window = function(){
 		var _key			= ds_map_find_first(entityStates);
 		var _stateStruct	= noone;
@@ -411,7 +418,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 		var _nextState		= NO_STATE;
 		var _lastState		= NO_STATE;
 		while(!is_undefined(_key)){
-			// 
+			// First, retrieve the current entity's states from the struct within the entity state storage
+			// map; storing each state in a local variable for quick access when in the entity's scope.
 			_stateStruct	= entityStates[? _key];
 			with(_stateStruct){
 				_curState	= curState;
@@ -419,7 +427,8 @@ function obj_console(_index) : base_struct(_index) constructor{
 				_lastState	= lastState;
 			}
 			
-			// 
+			// Jump into the instance ID's scope that these state variables belong to. The flag bit for pausing 
+			// the entity's animation (If one was even playing) is cleared to enable animation yet again.
 			with(_key){
 				stateFlags &= ~(1 << FREEZE_ANIMATION);
 				curState	= _curState;
@@ -430,54 +439,52 @@ function obj_console(_index) : base_struct(_index) constructor{
 			delete _stateStruct; // Signal to GameMaker that the struct can be cleared from memory.
 		}
 		
-		// 
+		// Finally, clear the bit that lets the game know the Console is up and active, return the game to 
+		// whatever state it was in prior, and clear out the entity state storage map and suggestion list.
 		stateFlags &= ~(1 << CONSOLE_ACTIVE);
 		game_set_state(gameCurState, true);
 		ds_map_clear(entityStates);
-		ds_list_clear(suggestions);
+		ds_list_clear(curSuggestions);
 	}
 	
 	/// @description Attempts to parse out the command data that was typed in by the user. It will find the
 	/// required function and any arguments that the function may require. Any errors within this process will
 	/// display a failure message in order to let the user know where they messed up in the command.
-	/// @param {String}	command		The data that was typed into the console command line by the user.
-	parse_current_command = function(_command){
-		var _funcString = _command;
-		var _firstSpace = string_pos(CHAR_SPACE, _funcString);
-		if (_firstSpace > 0) {_funcString = string_copy(_command, 1, _firstSpace - 1);}
-		history_add_line("> " +_command); // Display the command that was typed into the console's history.
-		
-		// Check if a function exists for what the user typed in prior to the first space (That space denotes
-		// arguments from that point onward). If no function exists, the command will be discarded.
-		var _data = ds_map_find_value(validCommands, string_lower(_funcString));
-		if (is_undefined(_data)){
-			history_add_line("ERROR -- Command \"" + _funcString + "\" does not exist.");
+	parse_current_command = function(){
+		// 
+		if (ds_list_size(curSuggestions) == 0){
+			history_add_line("ERROR -- Command \"" + command + "\" doesn't exist.");
 			return;
 		}
+		history_add_line(" > " + command);
+		ds_list_clear(curSuggestions);
 		
-		// Determine if arguments exist for the function or not by checking the length of the array containing
-		// the command's function information. If the size is greater than 1, argument parsing will occur.
-		var _length = array_length(_data);
-		if (_length > 1){
-			// Copy over all the arguments supplied by the user in their command. Then, create a temporary
-			// array that will store the datatypes required for each argument in the command so the function
-			// parsing this data knows what to look for.
-			var _argString = string_copy(_command, _firstSpace + 1, string_length(_command));
-			var _datatypes = [];
-			array_copy(_datatypes, 0, _data, 1, _length - 1);
+		// 
+		var _command	 = command;
+		var _firstSpace	 = string_pos(" ", _command);
+		if (_firstSpace != 0) {_command = string_copy(command, 1, _firstSpace - 1);}
+		
+		// 
+		var _commandData = ds_map_find_value(commandData, _command);
+		var _commandSize = array_length(_commandData);
+		if (_commandSize > COMMAND_ARGS){ // Argument parameters exist from index 2 onward in the command data array.
+			// 
+			var _datatypes	 = [];
+			array_copy(_datatypes, 0, _commandData, COMMAND_ARGS, array_length(_commandData) - COMMAND_ARGS);
 			
-			// Call the function that parses the arguments from "_argString". This will return an array where
-			// all values are the proper datatype; it will be the same length as the "_datatypes" array should
-			// the parsing process have been successful.
+			// 
+			var _argString = string_copy(command, _firstSpace - 1, string_length(command));
 			var _arguments = get_arguments_from_string(_argString, _datatypes);
-			if (array_length(_arguments) < array_length(_datatypes)){
+			if (array_length(_arguments) != array_length(_datatypes)){
 				history_add_line("Argument Error: \n" + string(_datatypes) + "\n" + string(_arguments));
 				return;
 			}
-			script_execute_ext(method_get_index(_data[0]), _arguments);
-		} else{ // Simply call the requested function.
-			_data[0]();
+			script_execute_ext(method_get_index(_commandData[COMMAND_FUNCTION]), _arguments);
+			return;
 		}
+		
+		// 
+		_commandData[COMMAND_FUNCTION]();
 	}
 	
 	/// @description Takes in the remainder of the "command" string and attempts to parse out the required
@@ -536,29 +543,37 @@ function obj_console(_index) : base_struct(_index) constructor{
 		ds_list_add(history, _string);
 	}
 	
-	/// @description Look through the Console's "suggestionData" array to see which values should be displayed
-	/// to help the user see what commands they can input relative to the current text they've typed into the
-	/// Console's input section.
-	/// @param {String}	string	The line of text that the user typed into the Console's input window.
-	find_suggestions = function(_string){
-		// Ensures that the proper function along with its argument types won't disappear once the user 
-		// starts inputting arguments; as the suggestion will disappear as the argument data doesn't match
-		// the string data representing those argument types in the suggestion data.
-		if (string_count(" ", _string) > 0) {_string = string_copy(_string, 1, string_pos(" ", _string));}
+	/// @description 
+	find_suggestions = function(){
+		// 
+		ds_list_clear(curSuggestions);
+		if (command == "") {return;}
 		
-		// Loop through the list of suggestion data that can be displayed to the user; adding everything
-		// that contains the current command that has been typed in to the list that is then displayed on
-		// screen to show the user functions they may want to use based on said command string.
-		ds_list_clear(suggestions);
-		var _arraySize = array_length(suggestionData);
-		var _length = _arraySize * 0.5;
+		// 
+		var _firstSpace = string_pos(" ", command);
+		if (_firstSpace > 0){
+			var _command	= string_copy(command, 1, _firstSpace - 1);
+			var _index		= ds_list_find_index(commandKeys, _command);
+			if (_index != -1){
+				ds_list_add(curSuggestions, 
+					_command + " [ " + commandData[? _command][COMMAND_ARG_STRING] + "]");
+			}
+			return;
+		}
+		
+		// 
+		var _suggestion	= "";
+		var _length		= ds_list_size(commandKeys);
 		for (var i = 0; i < _length; i++){
-			if (string_count(_string, suggestionData[i]) > 0)
-				ds_list_add(suggestions, i);
-			else if (string_count(_string, suggestionData[_arraySize - i - 1]) > 0)
-				ds_list_add(suggestions, _arraySize - i - 1);
+			_suggestion = commandKeys[| i];
+			if (string_count(command, _suggestion) > 0){
+				ds_list_add(curSuggestions, 
+					_suggestion + " [ " + commandData[? _suggestion][COMMAND_ARG_STRING] + "]");
+			}
 		}
 	}
+	
+	/// GENERAL COMMAND FUNCTIONS /////////////////////////////////////////////////////////////////////////////////////
 	
 	/// @description A very simple command that will execute the game's end; closing the application and 
 	/// running all existing objects "cleanup" functions to clear any manually allocated memory in the game.
@@ -569,9 +584,20 @@ function obj_console(_index) : base_struct(_index) constructor{
 	/// @description A simple function that displays the game's current state and its previous state (Whatever 
 	/// they were set to prior to the console being opened due to it setting the current state to "paused").
 	cmd_game_state = function(){
-		var _gameState = "Current State: " + game_state_get_name(gameCurState) + "\nPrevious State: " + game_state_get_name(gamePrevState);
-		history_add_line(_gameState);
+		history_add_line(
+			"Current State: "	+ game_state_get_name(gameCurState) + "\n" + 
+			"Previous State: "	+ game_state_get_name(gamePrevState)
+		);
 	}
+	
+	/// @description 
+	cmd_toggle_godmode = function(){
+		
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// EVENT FLAG COMMAND FUNCTIONS //////////////////////////////////////////////////////////////////////////////////
 	
 	/// @description Allows the setting/resetting of a desired flag to either 1 (true) or 0 (false), which will
 	/// determine if certain objects (Ex. Collectibles) exist within the world or not, if special doorwars are
@@ -675,6 +701,22 @@ function obj_console(_index) : base_struct(_index) constructor{
 		history_add_line("Unlocked Doors (Bits 150 to 150):\n" + _eventFlags);
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// ENTITY COMMAND FUNCTIONS //////////////////////////////////////////////////////////////////////////////////////
+	
+	/// @description 
+	/// @param {Real}	instanceID
+	/// @param {Real}	flagID
+	/// @param {Bool}	flagState
+	cmd_set_entity_flag = function(_instanceID, _flagID, _flagState){
+		
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// OBJECT COMMAND FUNCTIONS //////////////////////////////////////////////////////////////////////////////////////
+	
 	/// @description 
 	/// @param {Real}	x
 	/// @param {Real}	y
@@ -743,6 +785,10 @@ function obj_console(_index) : base_struct(_index) constructor{
 		history_add_line("Instance \"" + string(_instanceID) + "\" was moved from (" + _prevX + ", " + _prevY + ") to (" + string(_x) + ", " + string(_y) + ")");
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// PLAYER COMMAND FUNCTIONS //////////////////////////////////////////////////////////////////////////////////////
+	
 	/// @description Maxes out Samus's ammunition reserves for her missiles and power bombs.
 	cmd_player_fill_ammo = function(){
 		with(PLAYER){
@@ -778,6 +824,10 @@ function obj_console(_index) : base_struct(_index) constructor{
 		history_add_line("Samus's maximum aeion has been increased by " + string(_modifier) + " units.");
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/// DEBUG COMMAND FUNCTIONS ///////////////////////////////////////////////////////////////////////////////////////
+	
 	/// @description Turns the debug info window on and off; allowing the user to see information about the
 	/// game's performance, camera position, room info, and so on.
 	cmd_toggle_debug_info = function(){
@@ -785,139 +835,213 @@ function obj_console(_index) : base_struct(_index) constructor{
 		with(DEBUGGER){ // Determine if the state bit to flip to 0 or 1 depending on what its current value is.
 			_windowVisible = CAN_SHOW_WINDOW;
 			if (_windowVisible) {stateFlags &= ~(1 << DBG_SHOW_WINDOW);}
-			else				{stateFlags |= (1 << DBG_SHOW_WINDOW);}
+			else				{stateFlags |=  (1 << DBG_SHOW_WINDOW);}
 		}
 		
 		// Let the user know what state the debug info window was put into (Shown or not shown) since this
 		// function doesn't take a "True" or "False" argument to determine its functionality.
-		if (_windowVisible)	{history_add_line("Debug info will not be displayed on screen.");}
+		if (_windowVisible)	{history_add_line("Debug info will no longer be displayed on screen.");}
 		else				{history_add_line("Debug info will now be displayed (Will not display if console is open).");}			
 	}
 	
-	/// @description Toggles the playtime and total program time section of the debug information window on 
-	/// or off depending on the value supplied in the argument parameter.
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_playtime = function(_displayInfo){
+	/// @description Toggles information about the program's current amount of time since launch, as well as
+	/// the current game's playtime (This value exists on a per-save basis) from being displayed on the debug
+	/// information window (As long as that window is visible) to not being displayed in said window (It is
+	/// shown by default).
+	cmd_debug_show_playtime = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_TIME);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_TIME);}
+			if (CAN_SHOW_TIME)	{stateFlags &= ~(1 << DBG_SHOW_TIME);}
+			else				{stateFlags |=  (1 << DBG_SHOW_TIME);}
 		}
 	}
 	
-	/// @description 
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_game_state = function(_displayInfo){
+	/// @description Toggles information about the current game state index as well as the previous one from
+	/// being displayed on the debug information window (As long as that window is visible) to not being
+	/// displayed in said window (It is shown by default).
+	cmd_debug_show_game_state = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_GAME_STATE);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_GAME_STATE);}
+			if (CAN_SHOW_GAME_STATE) {stateFlags &= ~(1 << DBG_SHOW_GAME_STATE);}
+			else					 {stateFlags |=  (1 << DBG_SHOW_GAME_STATE);}
 		}
 	}
 	
-	/// @description 
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_fps = function(_displayInfo){
+	/// @description Toggles information about the current FPS the game is running at (As well as the current
+	/// value for the game's delta time value) from being displayed on the debug information window (As long
+	/// as that window is visible) to not being displayed in said window (It is shown by default).
+	cmd_debug_show_fps = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_FPS);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_FPS);}
+			if (CAN_SHOW_FPS)	{stateFlags &= ~(1 << DBG_SHOW_FPS);}
+			else				{stateFlags |=  (1 << DBG_SHOW_FPS);}
 		}
 	}
 	
-	/// @description Allows the user to toggle whether or not information about entity and light source 
-	/// rendering--the number of each rendered for the current frame--is displayed in the debug info window.
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_render_data = function(_displayInfo){
+	/// @description Toggles information about the total number of entities and lights being actively rendered 
+	/// from being displayed on the debug information window (As long as that window is visible) to not being
+	/// displayed in said window (This is the default).
+	cmd_debug_show_render_data = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_RENDER);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_RENDER);}
+			if (CAN_SHOW_RENDER) {stateFlags &= ~(1 << DBG_SHOW_RENDER);}
+			else				 {stateFlags |=  (1 << DBG_SHOW_RENDER);}
 		}
 	}
 	
-	/// @description Allows the user to enable or disable the section on the debug info window that displays 
-	/// the name of both the current and previous room, respectively.
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_room_data = function(_displayInfo){
+	/// @description Toggles information about the current room (Along with its width and height) and previous
+	/// room from being displayed on the debug information window (As long as that window is visible) to not
+	/// being displayed in said window (This is the default).
+	cmd_debug_show_room_data = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_ROOM);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_ROOM);}
+			if (CAN_SHOW_ROOM)	{stateFlags &= ~(1 << DBG_SHOW_ROOM);}
+			else				{stateFlags |=  (1 << DBG_SHOW_ROOM);}
 		}
 	}
 	
-	/// @description 
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_camera_data = function(_displayInfo){
+	/// @description Toggles information about the camera's size, position, and centerpoint within the current
+	/// room from being displayed on the debug information window (As long as that window is visible) to not
+	/// being displayed in said window (This is the default).
+	cmd_debug_show_camera_data = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_CAMPOS);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_CAMPOS);}
+			if (CAN_SHOW_CAMPOS) {stateFlags &= ~(1 << DBG_SHOW_CAMPOS);}
+			else				 {stateFlags |=  (1 << DBG_SHOW_CAMPOS);}
 		}
 	}
 	
-	/// @description 
-	/// @param {Bool}	displayInfo		Determines if this information should show up in the debug info window.
-	cmd_debug_show_instance_data = function(_displayInfo){
+	/// @description Toggles information about instance information (Number currently in the room, total amount
+	/// of singletons, existing "struct objects", and so on) from being displayed on the debug information
+	/// window (As long as that window is visible) to not being displayed in said window (This is the default).
+	cmd_debug_show_instance_data = function(){
 		with(DEBUGGER){
-			if (_displayInfo)	{stateFlags |= (1 << DBG_SHOW_INSTANCES);}
-			else				{stateFlags &= ~(1 << DBG_SHOW_INSTANCES);}
+			if (CAN_SHOW_INSTANCES) {stateFlags &= ~(1 << DBG_SHOW_INSTANCES);}
+			else					{stateFlags |=  (1 << DBG_SHOW_INSTANCES);}
 		}
 	}
+	
+	/// @description Toggles internal numerical information about the map system from being displayed on the
+	/// debug information window (As long as that window is visible) to not being displayed in said window
+	/// (This is the default).
+	cmd_debug_show_map_data = function(){
+		with(DEBUGGER){
+			if (CAN_SHOW_MAP_INFO)	{stateFlags &= ~(1 << DBG_SHOW_MAP);}
+			else					{stateFlags |=  (1 << DBG_SHOW_MAP);}
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Initialize the suggestion data array, which contains a string representation of a given command along
-	// with its argument parameters contained within square brackets. These arguments have a name and denote
-	// their datatype so the user knows what the commands expects as input.
-	array_push(suggestionData,
-		// -- General Commands -- //
-		CMD_EXIT_GAME				+ " []",
-		CMD_GAME_STATE				+ " []",
-		// -- Event Flag Commands -- //
-		CMD_SET_EVENT_FLAG			+ " [ flagID: " + STRING_REAL + ", flagState: " + STRING_BOOL + " ]",
-		CMD_SHOW_EVENT_FLAGS		+ " [ start: " + STRING_REAL + ", range: " + STRING_REAL + " ]",
-		CMD_SHOW_ALL_FLAGS			+ " []",
-		// -- Object Commands -- //
-		CMD_CREATE_OBJECT			+ " [ x: " + STRING_REAL + ", y: " + STRING_REAL + ", name: " + STRING_STRING + "]",
-		CMD_DESTROY_OBJECT			+ " [ instanceID: " + STRING_REAL + ", performEvents: " + STRING_BOOL + "]",
-		CMD_MOVE_OBJECT				+ " [ instanceID: " + STRING_REAL + ", x: " + STRING_REAL + ", y: " + STRING_REAL + "]",
-		// -- Player Data Commands -- //
-		CMD_PLAYER_FILL_AMMO		+ " []",
-		CMD_PLAYER_FILL_ENERGY		+ " []",
-		CMD_INCREASE_MAX_ENERGY		+ " [ modifier: " + STRING_REAL + " ]",
-		CMD_INCREASE_MAX_AEION		+ " [ modifier: " + STRING_REAL + " ]",
-		// -- Debugger Commands -- //
-		CMD_TOGGLE_DEBUG			+ " []",
-		CMD_DEBUG_SHOW_TIME			+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_GSTATE		+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_FPS			+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_RENDER		+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_ROOM			+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_CAMERA		+ " [ showInfo: " + STRING_BOOL + " ]",
-		CMD_DEBUG_SHOW_OBJECTS		+ " [ showInfo: " + STRING_BOOL + " ]",
-	);
-	
 	// -- General Commands -- //
-	ds_map_add(validCommands, CMD_EXIT_GAME,			[cmd_exit_game]);
-	ds_map_add(validCommands, CMD_GAME_STATE,			[cmd_game_state]);
+	ds_list_add(commandKeys,	CMD_EXIT_GAME);
+	ds_map_add(commandData,		CMD_EXIT_GAME, [
+		"", cmd_exit_game
+	]);
+	ds_list_add(commandKeys,	CMD_GAME_STATE);
+	ds_map_add(commandData,		CMD_GAME_STATE, [
+		"", cmd_game_state
+	]);
+	ds_list_add(commandKeys,	CMD_TOGGLE_GODMODE);
+	ds_map_add(commandData,		CMD_TOGGLE_GODMODE,	[
+		"", cmd_toggle_godmode
+	]);
 	// -- Event Flag Commands -- //
-	ds_map_add(validCommands, CMD_SET_EVENT_FLAG,		[cmd_set_event_flag, TYPE_REAL, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_SHOW_EVENT_FLAGS,		[cmd_show_event_flags, TYPE_REAL, TYPE_REAL]);
-	ds_map_add(validCommands, CMD_SHOW_ALL_FLAGS,		[cmd_show_all_event_flags]);
+	ds_list_add(commandKeys,	CMD_SET_EVENT_FLAG);
+	ds_map_add(commandData,		CMD_SET_EVENT_FLAG, [
+		"flagID: " + STRING_REAL + ", flagState: " + STRING_BOOL,
+		cmd_set_event_flag, TYPE_REAL, TYPE_BOOL
+	]);
+	ds_list_add(commandKeys,	CMD_SHOW_EVENT_FLAGS);
+	ds_map_add(commandData,		CMD_SHOW_EVENT_FLAGS, [
+		"startBit: " + STRING_REAL + ", count: " + STRING_REAL,
+		cmd_show_event_flags, TYPE_REAL, TYPE_REAL
+	]);
+	ds_list_add(commandKeys,	CMD_SHOW_ALL_FLAGS);
+	ds_map_add(commandData,		CMD_SHOW_ALL_FLAGS, [
+		"", cmd_show_all_event_flags
+	]);
+	// -- Entity Commands -- //
+	ds_list_add(commandKeys,	CMD_SET_ENTITY_FLAG);
+	ds_map_add(commandData,		CMD_SET_ENTITY_FLAG, [
+		"entityID: " + STRING_REAL + ", flagID: " + STRING_REAL + ", flagState: " + STRING_BOOL,
+		cmd_set_entity_flag, TYPE_REAL, TYPE_REAL, TYPE_BOOL
+	]);
 	// -- Object Commands -- //
-	ds_map_add(validCommands, CMD_CREATE_OBJECT,		[cmd_create_object, TYPE_REAL, TYPE_REAL, TYPE_STRING]);
-	ds_map_add(validCommands, CMD_DESTROY_OBJECT,		[cmd_destroy_object, TYPE_REAL, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_MOVE_OBJECT,			[cmd_move_object, TYPE_REAL, TYPE_REAL, TYPE_REAL]);
-	// -- Player Data Commands -- //
-	ds_map_add(validCommands, CMD_PLAYER_FILL_AMMO,		[cmd_player_fill_ammo]);
-	ds_map_add(validCommands, CMD_PLAYER_FILL_ENERGY,	[cmd_player_fill_energy]);
-	ds_map_add(validCommands, CMD_INCREASE_MAX_ENERGY,	[cmd_player_increase_max_energy, TYPE_REAL]);
-	ds_map_add(validCommands, CMD_INCREASE_MAX_AEION,	[cmd_player_increase_max_aeion, TYPE_REAL]);
+	ds_list_add(commandKeys,	CMD_CREATE_OBJECT);
+	ds_map_add(commandData,		CMD_CREATE_OBJECT, [
+		"x: " + STRING_REAL + ", y: " + STRING_REAL + ", objectName: " + STRING_STRING,
+		cmd_create_object, TYPE_REAL, TYPE_REAL, TYPE_STRING
+	]);
+	ds_list_add(commandKeys,	CMD_DESTROY_OBJECT);
+	ds_map_add(commandData,		CMD_DESTROY_OBJECT, [
+		"instanceID: " + STRING_REAL + ", parformEvent: " + STRING_BOOL,
+		cmd_destroy_object, TYPE_REAL, TYPE_BOOL
+	]);
+	ds_list_add(commandKeys,	CMD_MOVE_OBJECT);
+	ds_map_add(commandData,		CMD_MOVE_OBJECT, [
+		"instanceID: " + STRING_REAL + ", x: " + STRING_REAL + ", y:" + STRING_REAL,
+		cmd_move_object, TYPE_REAL, TYPE_REAL, TYPE_REAL
+	]);
+	// -- Player Commands -- //
+	ds_list_add(commandKeys,	CMD_PLAYER_FILL_AMMO);
+	ds_map_add(commandData,		CMD_PLAYER_FILL_AMMO, [
+		"", cmd_player_fill_ammo
+	]);
+	ds_list_add(commandKeys,	CMD_PLAYER_FILL_ENERGY);
+	ds_map_add(commandData,		CMD_PLAYER_FILL_ENERGY, [
+		"", cmd_player_fill_energy
+	]);
+	ds_list_add(commandKeys,	CMD_INCREASE_MAX_ENERGY);
+	ds_map_add(commandData,		CMD_INCREASE_MAX_ENERGY, [
+		"modifier: " + STRING_REAL,
+		cmd_player_increase_max_energy, TYPE_REAL
+	]);
+	ds_list_add(commandKeys,	CMD_INCREASE_MAX_AEION);
+	ds_map_add(commandData,		CMD_INCREASE_MAX_AEION, [
+		"modifier: " + STRING_REAL,
+		cmd_player_increase_max_aeion, TYPE_REAL
+	]);
 	// -- Debugger Commands -- //
-	ds_map_add(validCommands, CMD_TOGGLE_DEBUG,			[cmd_toggle_debug_info]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_TIME,		[cmd_debug_show_playtime, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_GSTATE,	[cmd_debug_show_game_state, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_FPS,		[cmd_debug_show_fps, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_RENDER,	[cmd_debug_show_render_data, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_ROOM,		[cmd_debug_show_room_data, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_CAMERA,	[cmd_debug_show_camera_data, TYPE_BOOL]);
-	ds_map_add(validCommands, CMD_DEBUG_SHOW_OBJECTS,	[cmd_debug_show_instance_data, TYPE_BOOL]);
-	// -- Debugger Command Shortcuts -- //
-	ds_map_add(validCommands, CMD_TDI,					[cmd_toggle_debug_info]);
+	ds_list_add(commandKeys,	CMD_TOGGLE_DEBUG);
+	ds_map_add(commandData,		CMD_TOGGLE_DEBUG, [
+		"", cmd_toggle_debug_info
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_TIME);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_TIME, [
+		"", cmd_debug_show_playtime
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_GSTATE);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_GSTATE, [
+		"", cmd_debug_show_game_state
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_FPS);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_FPS, [
+		"", cmd_debug_show_fps
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_RENDER);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_RENDER, [
+		"", cmd_debug_show_render_data
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_ROOM);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_ROOM, [
+		"", cmd_debug_show_room_data
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_CAMERA);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_CAMERA, [
+		"", cmd_debug_show_camera_data
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_OBJECTS);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_OBJECTS, [
+		"", cmd_debug_show_instance_data
+	]);
+	ds_list_add(commandKeys,	CMD_DEBUG_SHOW_MAP);
+	ds_map_add(commandData,		CMD_DEBUG_SHOW_MAP, [
+		"", cmd_debug_show_map_data
+	]);
+	// -- Shortcut Commands -- //
+	ds_list_add(commandKeys,	CMD_TGM);
+	ds_map_add(commandData,		CMD_TGM, [
+		"", cmd_toggle_godmode
+	]);
+	ds_list_add(commandKeys,	CMD_TDW);
+	ds_map_add(commandData,		CMD_TDW, [
+		"", cmd_toggle_debug_info
+	]);
 }
 
 #endregion

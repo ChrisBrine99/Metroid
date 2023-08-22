@@ -48,6 +48,9 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 			_playerY = y;
 			var _state = curState;
 			switch(_state){
+				case NO_STATE: // Simply set the beam to be invisible or visible based on what it was previously.
+					_visible = other.visible;
+					break;
 				case state_phase_shift: // Determining visibility of arm cannon during a phase shift.
 					_visible = !IS_GROUNDED;
 					break;

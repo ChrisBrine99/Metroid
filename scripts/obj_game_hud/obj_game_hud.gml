@@ -106,6 +106,7 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		
 		draw_player_info_background(0, 0, alpha);
 		draw_player_info(2, 2, alpha);
+		draw_minimap(2, 2, alpha);
 	}
 	
 	/// @description Displays the background for all the information about the player that is drawn to the
@@ -130,16 +131,16 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 					_y + 1,				
 					_bgWidth - 2,				// Width and height of inner rectangle.
 					ENERGY_NUMBER_HEIGHT + 2,	
-				0, HEX_BLACK, _alpha * 0.25		// Rotation, color, and opacity.
+				0, HEX_BLACK, _alpha * 0.4		// Rotation, color, and opacity.
 			);
 		} else{ // No additional space along the x axis needs to be calculated for the energy section; drawn rectangle of pre-determined size.
-			draw_sprite_ext(spr_rectangle, 0, _x + 1, _y + 1, _bgWidth - 2, ENERGY_NUMBER_HEIGHT + 2, 0, HEX_BLACK, _alpha * 0.33);
+			draw_sprite_ext(spr_rectangle, 0, _x + 1, _y + 1, _bgWidth - 2, ENERGY_NUMBER_HEIGHT + 2, 0, HEX_BLACK, _alpha * 0.4);
 		}
 		
 		// The outer rectangle is drawn after the inner rectangle is rendered. It will be two pixels wider and
 		// taller; while also being offset by one pixel to the left and top compared to the inner rectangle.
 		// After this, the background offset is set to whatever the width of the energy info background is.
-		draw_sprite_ext(spr_rectangle, 0, _x, _y, _bgWidth, ENERGY_NUMBER_HEIGHT + 4, 0, HEX_DARK_GRAY, _alpha * 0.5);
+		draw_sprite_ext(spr_rectangle, 0, _x, _y, _bgWidth, ENERGY_NUMBER_HEIGHT + 4, 0, HEX_DARK_GRAY, _alpha * 0.6);
 		var _bgOffset = _bgWidth;
 		
 		// Draws the inner and outer rectangles for the missile ammo section of the HUD, but only if the player
@@ -361,6 +362,19 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		draw_sprite_ext(_ammoIcon, 0, _x, _y, 1, 1, 0, _iconColor, _alpha);
 		var _xOffset = sprite_get_width(_ammoIcon);
 		return _xOffset + draw_number_as_sprite(_x + _xOffset, _y + 1, _curAmmo, spr_ammo_numbers, _ammoColor, _totalPVs, 0, 1, _alpha);
+	}
+	
+	/// @description 
+	/// @param {Real}	x	Distance from the top-right edge of the screen (In pixels) to display the minimap at along the x axis.
+	/// @param {Real}	y	Distance from the top-right edge of the screen (In pixels) to display the minimap at along the y axis.
+	draw_minimap = function(_x, _y, _alpha){
+		var _width	= MAP_TILE_WIDTH * 5;
+		var _height	= MAP_TILE_HEIGHT * 3;
+		var _xx		= camera_get_view_width(CAMERA.camera) - _x - _width;
+		
+		draw_sprite_ext(spr_rectangle, 0, _xx - 2, _y - 2, _width + 4, _height + 4, 0, HEX_DARK_GRAY,	_alpha * 0.6);
+		draw_sprite_ext(spr_rectangle, 0, _xx - 1, _y - 1, _width + 2, _height + 2, 0, HEX_BLACK,		_alpha * 0.4);
+		map_draw_area_centered(_xx, _y, 5, 3, _alpha * 0.5);
 	}
 }
 

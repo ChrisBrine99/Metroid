@@ -36,3 +36,57 @@ camera_set_target_object(PLAYER, 0, -16);
 //audio_debug(true);
 texture_debug_messages(true);
 audio_set_linked_object(PLAYER);
+
+
+with(MAP_MANAGER){
+	// -- "rm_test01" map cells -- //
+	initialize_map_cell(12, 12, 51, -1, [
+	{
+		direction	:	MAP_DOOR_NORTH,
+		color		:	HEX_LIGHT_BLUE
+	}
+	]);
+	initialize_map_cell(13, 12, 54);
+	initialize_map_cell(14, 12, 55, -1, [
+	{
+		direction	:	MAP_DOOR_EAST,
+		color		:	HEX_LIGHT_PURPLE
+	}
+	]);
+	initialize_map_cell(12, 13, 43, -1, [
+	{
+		direction	:	MAP_DOOR_WEST,
+		color		:	HEX_LIGHT_BLUE
+	}
+	]);
+	initialize_map_cell(13, 13, 66, 0);
+	initialize_map_cell(14, 13, 61, -1, [
+	{
+		direction	:	MAP_DOOR_EAST,
+		color		:	HEX_RED
+	}
+	]);
+	
+	// -- "rm_test02" map cells -- //
+	initialize_map_cell( 8, 13, 49, -1, [
+	{
+		direction	:	MAP_DOOR_WEST,
+		color		:	HEX_LIGHT_BLUE
+	}
+	]);
+	initialize_map_cell( 9, 13, 54);
+	initialize_map_cell(10, 13, 23);
+	initialize_map_cell(11, 13, 35, -1, [
+	{
+		direction	:	MAP_DOOR_EAST,
+		color		:	HEX_LIGHT_BLUE
+	}
+	]);
+	initialize_map_cell( 8, 14, 43, -1, [
+	{
+		direction	:	MAP_DOOR_WEST,
+		color		:	HEX_LIGHT_BLUE
+	}
+	]);
+	initialize_map_cell( 9, 14, 64);
+}
