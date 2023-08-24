@@ -473,7 +473,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			array_copy(_datatypes, 0, _commandData, COMMAND_ARGS, array_length(_commandData) - COMMAND_ARGS);
 			
 			// 
-			var _argString = string_copy(command, _firstSpace - 1, string_length(command));
+			var _argString = string_copy(command, _firstSpace + 1, string_length(command));
 			var _arguments = get_arguments_from_string(_argString, _datatypes);
 			if (array_length(_arguments) != array_length(_datatypes)){
 				history_add_line("Argument Error: \n" + string(_datatypes) + "\n" + string(_arguments));

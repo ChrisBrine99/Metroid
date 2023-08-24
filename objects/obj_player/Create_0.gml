@@ -400,13 +400,15 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 }
 
 /// @description 
-grounded_to_airbourne = function(){
-	if (!IS_GROUNDED){
+/// @param {Bool}	skipAnimTime	Optional skip over start up animation that plays after the player presses the jump button.
+grounded_to_airbourne = function(_skipAnimTime = true){
+	if (!IS_GROUNDED && !IN_MORPHBALL){
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(jumpSpriteFw, jumpingMask);
-		stateFlags &= ~(1 << MOVING);
-		jumpStartTimer = JUMPSPIN_ANIM_TIME;
-		aimReturnTimer = 0.0;
+		stateFlags	   &= ~(1 << MOVING);
+		aimReturnTimer	= 0.0;
+		if (_skipAnimTime)  {jumpStartTimer = JUMP_ANIM_TIME;}
+		else				{jumpStartTimer = 0.0;}
 		return true; // Samus is no longer on the ground; return true to signify such.
 	}
 	
@@ -463,10 +465,11 @@ update_arm_cannon = function(_movement){
 	if ((_useHeld || _usePressed) && !_isAiming){
 		if (IS_JUMP_SPIN || IS_JUMP_ATTACK){
 			stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
+			if (movement == 0) {hspd = 0.0;} // Remove horizontal velocity if no movement inputs are currently held.
 			reset_light_source();
 		}
-		stateFlags |= (1 << AIMING_FRONT);
-		aimReturnTimer = 0.0;
+		stateFlags	   |= (1 << AIMING_FRONT);
+		aimReturnTimer	= 0.0;
 	}
 	
 	// Handling the charge beam logic, which is only factored in if the player doesn't have a missile equipped
@@ -492,9 +495,9 @@ update_arm_cannon = function(_movement){
 	}
 	
 	// 
-	var _holdingFire = (_useHeld && !_isCharged && fireRateTimer == holdFireRate);
-	var _tappingFire = (_usePressed && fireRateTimer >= tapFireRate);
-	var _chargeFire = (_useReleased && _isCharged);
+	var _holdingFire	= (_useHeld && !_isCharged && fireRateTimer == holdFireRate);
+	var _tappingFire	= (_usePressed && fireRateTimer >= tapFireRate);
+	var _chargeFire		= (_useReleased && _isCharged);
 	if (_holdingFire || _tappingFire || _chargeFire){
 		create_projectile(_isCharged);
 		fireRateTimer = 0.0;
@@ -936,8 +939,9 @@ fallthrough_floor_collision = function(){
 		}
 	}
 	
-	if (_floorCollapsed){
-		grounded_to_airbourne();
+	if (_floorCollapsed && !place_meeting(x, y + 1, par_collider)){
+		grounded_to_airbourne(false);
+		hspd = 0.0;
 		vspd = 0.0;
 	}
 }
@@ -1142,7 +1146,8 @@ player_item_drop_collision = function(){
 // Stores the parent object's function for applying a hitstun effect onto an entity so it can be called in
 // this function definition that would overwrite the reference to the original otherwise.
 __entity_apply_hitstun = entity_apply_hitstun;
-/// @description 
+/// @description Samus's hitstun function, which implements the default entity function on top of the unique
+/// code it requires regarding Samus's state and various variabnles.
 /// @param {Real}	duration	The time in "frames" (60 units = 1 real-world second) to lock Samus's movement.
 /// @param {Real}	damage		Total amount of damage to apply to Samus's current energy.
 entity_apply_hitstun = function(_duration, _damage = 0){
@@ -1167,8 +1172,8 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	// and upward; resulting in an up-right or up-left trajectory depending on the direction she was facing
 	// at the time of the attack.
 	stateFlags &= ~(1 << GROUNDED);
-	hspd = get_max_hspd() * 0.5 * -image_xscale;
-	vspd = -2.75;
+	hspd		= get_max_hspd() * 0.5 * -image_xscale;
+	vspd		= -2.75;
 }
 
 #endregion
@@ -1402,10 +1407,10 @@ state_airbourne = function(){
 		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
 		// Samus's horizontal velocity to make it add to the impact of Samus landing.
 		stateFlags &= ~((1 << JUMP_SPIN) | (1 << JUMP_ATTACK) | (1 << AIMING_DOWN));
-		jumpStartTimer = 0.0;
-		aimReturnTimer = 0.0;
-		hspdFraction = 0.0;
-		hspd = 0.0;
+		jumpStartTimer	= 0.0;
+		aimReturnTimer	= 0.0;
+		hspdFraction	= 0.0;
+		hspd			= 0.0;
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -1432,14 +1437,15 @@ state_airbourne = function(){
 	// somersaulting or not. The second will activate that somersaulting jump if she's moving horizontally 
 	// and not aiming. Finally, a check for the space jump ability will occur if she's already in that 
 	// somersaulting jump; allowing her to jump again indefinitely while in that same jump.
-	if (IS_JUMP_PRESSED){
+	if (IS_JUMP_PRESSED && jumpStartTimer == JUMPSPIN_ANIM_TIME){
 		if (!IS_AIMING_DOWN && !IS_AIMING_UP){ // Samus cannot be aiming in any direction to enable somersaulting in the air and her space jump.
 			if (!IS_JUMP_SPIN){ // Entering a somersault jump when airbourne.
-				if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= (1 << JUMP_ATTACK);}
-				stateFlags &= ~(1 << AIMING_FRONT);
-				stateFlags |= (1 << JUMP_SPIN);
-				hspd = get_max_hspd() * image_xscale;
-				aimReturnTimer = 0.0;
+				if (event_get_flag(FLAG_SCREW_ATTACK))	{stateFlags |= (1 << JUMP_ATTACK);}
+				if (vspd < 0.0)							{vspd = 0.0;}
+				stateFlags	   &= ~((1 << AIMING_FRONT) | (1 << AIMING_DOWN));
+				stateFlags	   |= (1 << JUMP_SPIN);
+				hspd			= get_max_hspd() * image_xscale;
+				aimReturnTimer	= 0.0;
 				effectTimer = JUMP_EFFECT_INTERVAL;
 			} else if (vspd >= 2 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
 				vspd = get_max_vspd();
@@ -1478,6 +1484,8 @@ state_airbourne = function(){
 	// forward.
 	var _vInput = IS_DOWN_PRESSED - IS_UP_PRESSED;
 	if (_vInput == -1){
+		if (IS_JUMP_SPIN && hspd != 0.0) {hspd = 0.0;}
+		
 		if (!IS_AIMING_DOWN){ // Aiming upward until the player releases their up input.
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
 			stateFlags |= (1 << AIMING_UP);
@@ -1488,6 +1496,8 @@ state_airbourne = function(){
 			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
 		}
 	} else if (_vInput == 1){
+		if (IS_JUMP_SPIN && hspd != 0.0) {hspd = 0.0;}
+		
 		if (!IS_AIMING_DOWN){ // Entering a downward aiming state.
 			var _jumpAttack = stateFlags & (1 << JUMP_ATTACK);
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << AIMING_UP) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
@@ -1569,6 +1579,7 @@ state_airbourne = function(){
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
 	player_item_drop_collision();
+	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_enemy_collision();
 	player_warp_collision();
@@ -1588,7 +1599,7 @@ state_airbourne = function(){
 	// on this timer's value against specific macro values.
 	if (!_animFinished){
 		jumpStartTimer += DELTA_TIME;
-		if (jumpStartTimer >= JUMPSPIN_ANIM_TIME) {jumpStartTimer = JUMPSPIN_ANIM_TIME;}
+		if (jumpStartTimer > JUMPSPIN_ANIM_TIME) {jumpStartTimer = JUMPSPIN_ANIM_TIME;}
 	}
 	
 	// Assign Samus's jumping animation, which is determined by her aiming substates, and also her "jumpspin"

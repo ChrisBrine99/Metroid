@@ -73,6 +73,17 @@ collectible_collect_self = function(){
 	// set to false to prevent the object from being drawn after it's technically been "destroyed".
 	stateFlags |= (1 << DESTROYED);
 	visible = false;
+	
+	// 
+	var _camera = CAMERA.camera;
+	var _cellX = floor(x / camera_get_view_width(_camera));
+	var _cellY = floor(y / camera_get_view_height(_camera));
+	with(MAP_MANAGER){
+		_cellX += rOriginX;	// Offset based on room's current origin on the map.
+		_cellY += rOriginY;
+		if (_cellX < 0 || _cellX >= MAP_GRID_WIDTH || _cellY < 0 || _cellY >= MAP_GRID_HEIGHT) {return;}
+		with(cells[# _cellX, _cellY]) {icon = ICON_ITEM_COLLECTED;}
+	}
 }
 
 #endregion

@@ -46,7 +46,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_mumbo, -1);
-	object_add_light_component(x, y, 0, -2, 10, HEX_LIGHT_GREEN, 0.65);
+	object_add_light_component(x, y, 0, 0, 10, HEX_LIGHT_GREEN, 0.65);
 	create_general_collider();
 	initialize_weak_to_all();
 	movement = choose(-1, 1);

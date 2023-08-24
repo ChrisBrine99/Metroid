@@ -9,6 +9,7 @@
 #macro	DBG_SHOW_CAMPOS			5
 #macro	DBG_SHOW_INSTANCES		6
 #macro	DBG_SHOW_MAP			7
+#macro	DBG_SHOW_LIGHT_POS		29
 #macro	DBG_SHOW_COLLIDERS		30
 #macro	DBG_SHOW_WINDOW			31
 
@@ -21,6 +22,7 @@
 #macro	CAN_SHOW_CAMPOS			(stateFlags & (1 << DBG_SHOW_CAMPOS))
 #macro	CAN_SHOW_INSTANCES		(stateFlags & (1 << DBG_SHOW_INSTANCES))
 #macro	CAN_SHOW_MAP_INFO		(stateFlags & (1 << DBG_SHOW_MAP))
+#macro	CAN_SHOW_LIGHT_POS		(stateFlags & (1 << DBG_SHOW_LIGHT_POS))
 #macro	CAN_SHOW_COLLIDERS		(stateFlags & (1 << DBG_SHOW_COLLIDERS))
 #macro	CAN_SHOW_WINDOW			(stateFlags & (1 << DBG_SHOW_WINDOW))
 
@@ -114,6 +116,7 @@ function obj_debugger(_index) : base_struct(_index) constructor{
 	/// draw in world-space instead of screen-space.
 	draw_end = function(){
 		draw_entity_colliders();
+		draw_light_origins();
 	}
 	
 	/// @description Renders Debugger information onto the GUI surface. Also handles rendering the Console
@@ -210,6 +213,18 @@ function obj_debugger(_index) : base_struct(_index) constructor{
 		with(par_static_entity){
 			if (!IS_ON_SCREEN || mask_index == spr_empty_mask) {continue;}
 			draw_sprite_ext(spr_rectangle, 0, bbox_left, bbox_top, (bbox_right - bbox_left) + 1, (bbox_bottom - bbox_top) + 1, 0, collisionMaskColor, 0.5);
+		}
+	}
+	
+	/// @description 
+	draw_light_origins = function(){
+		if (!CAN_SHOW_LIGHT_POS) {return;}
+		
+		var _length = ds_list_size(global.lightSources);
+		for (var i = 0; i < _length; i++){
+			with(global.lightSources[| i]){
+				draw_sprite_ext(spr_rectangle, 0, x, y, 1, 1, 0, HEX_BLACK, 1);
+			}
 		}
 	}
 	

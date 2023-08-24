@@ -104,7 +104,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_halzyn0, -1);
-	object_add_light_component(x, y, 0, 4, 10, HEX_LIGHT_RED, 0.5);
+	object_add_light_component(x, y, 0, 2, 10, HEX_LIGHT_RED, 0.5);
 	initialize_weak_to_all();
 	
 	// The Halzyn is unique in that is has two invulnerable colliders and then a smaller collider between the

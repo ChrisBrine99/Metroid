@@ -80,7 +80,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_hornoad0, -1);
-	object_add_light_component(x, y, 3, -6, 10, HEX_LIGHT_RED, 0.5);
+	object_add_light_component(x, y, 3, -4, 10, HEX_LIGHT_RED, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
 	
