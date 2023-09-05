@@ -18,6 +18,7 @@
 #macro	MISSILE_SWAP_TIME		10		// How long the player will have to wait between missile swaps before firing again.
 #macro	JUMP_EFFECT_INTERVAL	2.5		// How often the phantom effect while somersaulting occurs.
 #macro	PSHIFT_EFFECT_INTERVAL	1.75	// Interval between ghost images of Samus during her phase shift.
+#macro	SPRITE_FLICKER_INTERVAL	2.0		// Time in frames (1 "frame" == 60.0) between Samus's sprite flickering whenever she has been hit.
 
 // Variables for Samus's morphball bombs; the top value being how fast she can deploy them (Calculated as 60
 // being one second of real-worl time) and the lower value being the max number of bombs Samus can actively
@@ -300,6 +301,9 @@ warpID = noone;
 curShiftDist	= 0.0;
 prevMaxHspd		= 0.0;
 prevAnimSpeed	= 0.0;
+
+// 
+flickerTimer	= 0.0;
 
 #endregion
 
@@ -1171,9 +1175,10 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	// Regardless of if in her morhpball mode or not, Samus will always be set to move backwards horizontally
 	// and upward; resulting in an up-right or up-left trajectory depending on the direction she was facing
 	// at the time of the attack.
-	stateFlags &= ~(1 << GROUNDED);
-	hspd		= get_max_hspd() * 0.5 * -image_xscale;
-	vspd		= -2.75;
+	stateFlags	   &= ~(1 << GROUNDED);
+	flickerTimer	= SPRITE_FLICKER_INTERVAL;
+	hspd			= get_max_hspd() * 0.5 * -image_xscale;
+	vspd			= -2.75;
 }
 
 #endregion

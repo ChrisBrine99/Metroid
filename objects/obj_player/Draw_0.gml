@@ -9,9 +9,12 @@ for (var i = 0; i < _length; i++) {ghostEffectID[| i].draw();}
 entity_draw();
 if (CAN_DRAW_SPRITE) {armCannon.draw();}
 
-// Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase. If she is, her sprite visibility
-// with be toggled on and off on a per-frame basis.
+// Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase.
 if (!IS_HIT_STUNNED) {return;}
-stateFlags = CAN_DRAW_SPRITE ?
-	stateFlags &   ~(1 << DRAW_SPRITE) :
-	stateFlags |	(1 << DRAW_SPRITE);
+
+flickerTimer += DELTA_TIME;
+if (flickerTimer >= SPRITE_FLICKER_INTERVAL){
+	if (CAN_DRAW_SPRITE) {stateFlags &= ~(1 << DRAW_SPRITE);}
+	else				 {stateFlags |=	 (1 << DRAW_SPRITE);}
+	flickerTimer -= SPRITE_FLICKER_INTERVAL;
+}
