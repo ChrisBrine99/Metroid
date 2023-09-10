@@ -119,7 +119,7 @@
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
-    "IDEVersion": "2023.6.0.92",
+    "IDEVersion": "2023.8.0.98",
   },
   "resources": [
     {"id":{"name":"font_gui_medium","path":"fonts/font_gui_medium/font_gui_medium.yy",},},
@@ -269,6 +269,7 @@
     {"id":{"name":"snd_player_hurt3","path":"sounds/snd_player_hurt3/snd_player_hurt3.yy",},},
     {"id":{"name":"snd_player_hurt4","path":"sounds/snd_player_hurt4/snd_player_hurt4.yy",},},
     {"id":{"name":"snd_player_step_grass","path":"sounds/snd_player_step_grass/snd_player_step_grass.yy",},},
+    {"id":{"name":"spr_senjoo","path":"sprites/spr_senjoo/spr_senjoo.yy",},},
     {"id":{"name":"snd_player_step_gravel","path":"sounds/snd_player_step_gravel/snd_player_step_gravel.yy",},},
     {"id":{"name":"snd_player_step_mud","path":"sounds/snd_player_step_mud/snd_player_step_mud.yy",},},
     {"id":{"name":"snd_player_step_snow","path":"sounds/snd_player_step_snow/snd_player_step_snow.yy",},},
@@ -383,6 +384,7 @@
     {"id":{"name":"spr_small_missile_tank","path":"sprites/spr_small_missile_tank/spr_small_missile_tank.yy",},},
     {"id":{"name":"spr_space_jump","path":"sprites/spr_space_jump/spr_space_jump.yy",},},
     {"id":{"name":"spr_spider_ball","path":"sprites/spr_spider_ball/spr_spider_ball.yy",},},
+    {"id":{"name":"obj_senjoo","path":"objects/obj_senjoo/obj_senjoo.yy",},},
     {"id":{"name":"rm_test02","path":"rooms/rm_test02/rm_test02.yy",},},
     {"id":{"name":"spr_spring_ball","path":"sprites/spr_spring_ball/spr_spring_ball.yy",},},
     {"id":{"name":"obj_enemy_collider","path":"objects/obj_enemy_collider/obj_enemy_collider.yy",},},
@@ -408,6 +410,7 @@
     {"roomId":{"name":"rm_test01","path":"rooms/rm_test01/rm_test01.yy",},},
     {"roomId":{"name":"rm_test02","path":"rooms/rm_test02/rm_test02.yy",},},
   ],
+  "templateType": null,
   "TextureGroups": [
     {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"targets":-1,},
   ],
