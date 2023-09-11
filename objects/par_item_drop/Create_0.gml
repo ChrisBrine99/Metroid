@@ -20,6 +20,10 @@ visible			= true;
 baseRadius		= 0.0;
 baseStrength	= 0.0;
 
+// Timer that ensures the drop will flicker at a rate of 1/60th per second to ensure the sprite doesn't flicker
+// so fast that it looks lopsided relative to the user monitor's refresh rate.
+flickerTimer	= 0.0;
+
 #endregion
 
 #region Utility function initialization

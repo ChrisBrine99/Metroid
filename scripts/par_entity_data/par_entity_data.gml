@@ -63,14 +63,14 @@ function entity_draw(){
 	// end" flag, and reset the value within "imageIndex".
 	if (!IS_ANIMATION_FROZEN && spriteLength > 1){
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
-		if (imageIndex >= spriteLength && animSpeed > 0){
+		if (imageIndex >= spriteLength && animSpeed > 0.0){
 			if (CAN_LOOP_ANIMATION){ // Flip "animation end" bit; reset animation when animation limit reached.
 				stateFlags |= (1 << ANIMATION_END);
 				imageIndex -= spriteLength - loopOffset;
 			} else{ // Animation cannot loop; lock it at the end of the sprite.
 				imageIndex = spriteLength - 1;
 			}
-		} else if (imageIndex <= 0 && animSpeed < 0){
+		} else if (imageIndex <= 0 && animSpeed < 0.0){
 			if (CAN_LOOP_ANIMATION){ // Animation is reversed; reset back to end, which is the start in this case.
 				imageIndex += spriteLength - loopOffset;
 			} else{ // Animation does not loop; set it to the zeroth indexed frame of the animation and freeze it.

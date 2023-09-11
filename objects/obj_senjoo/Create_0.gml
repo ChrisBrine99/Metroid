@@ -1,15 +1,18 @@
 #region Macro initialization
 
-// 
+// The damage dealt to Samus upon collision with the Senjoo while it is stationary and while it is moving to 
+// its next target point, respectively.
 #macro	SNJO_BASE_DAMAGE		16
 #macro	SNJO_ATTACK_DAMAGE		48
 
-// 
-#macro	SNJO_ATK_MOVE_SPEED		3.5
+// Determines how fast the Senjoo will move towards its next target position, as well as how long the length
+// of the point between its previous and next target coordinates is.
+#macro	SNJO_ATK_MOVE_SPEED		3.0
 #macro	SNJO_ATK_MOVE_DISTANCE	48
 
-// 
-#macro	SNJO_WAIT_INTERVAL		75.0
+// Determines how long the Senjoo will wait at its current target coordinates once reaching said point before 
+// it will begin to move toward the next target point that is calculated.
+#macro	SNJO_WAIT_INTERVAL		20.0
 
 #endregion
 
@@ -19,7 +22,8 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-//
+// Set the maximum possible speed of the Senjoo to the value within the macro above. Both velocity values will
+// use the same value so there is no speed difference along the x and y axis.
 maxHspd = SNJO_ATK_MOVE_SPEED;
 maxVspd = SNJO_ATK_MOVE_SPEED;
 
@@ -56,13 +60,10 @@ flipTimer		= 0.0;
 
 #region Initialize function override
 
-/// Store the pointer for the parent's initialize function into a local variable for the Gullug, which is then
+/// Store the pointer for the parent's initialize function into a local variable for the Senjoo, which is then
 /// called inside its own initialization function so the original functionality isn't ignored.
 __initialize = initialize;
-/// @description Initialization function for the Gullug. It sets its sprite, creates an ambient light for its
-/// eyes, and sets it to be weak to all forms of weaponry. On top of that, its initial state is set while its 
-/// starting movement direction is randomly determined between left (-1) and right (+1); the starting position
-/// being determined as either the top (90) or bottom (270) of its movement circle.
+/// @description 
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
@@ -70,14 +71,15 @@ initialize = function(_state){
 	object_add_light_component(x, y, 0, -2, 14, HEX_LIGHT_RED, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
+	spriteSpeed /= ANIMATION_FPS; // Divide by required value once since the Senjoo's sprite never changes.
 	
 	// Randomly choose a moving direction (Either clockwise or counter-clockwise depending on the chosen value)
 	// and then always set the Senjoo to be at its lowest point in terms of movment/direction.
 	moveDirection	= choose(MOVE_DIR_RIGHT, MOVE_DIR_LEFT);
 	direction		= moveDirection == MOVE_DIR_RIGHT ? 135 : 45;
 	
-	// Also, have the Senjoo wait twice as long for its first movement relative to the rest.
-	waitTimer		= SNJO_WAIT_INTERVAL * 2.0;
+	// Also, have the Senjoo wait four times as long for its first movement relative to the rest.
+	waitTimer		= SNJO_WAIT_INTERVAL * 4.0;
 }
 
 #endregion
