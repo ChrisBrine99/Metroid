@@ -65,17 +65,17 @@ colliderIDs		= ds_list_create();
 // Stores the damage prior to any damage reduction due to difficulty settings or Samus's current suit upgrades.
 // The stun duration determines how long in "unit frames" (60 = 1 real-world second), to prevent any input from
 // the player after Samus takes damage.
-damage			= 0;
-stunDuration	= 0.0;
+damage		 = 0;
+stunDuration = 0.0;
 
 // Stores the percentage drop chances (Ranging from 0.0 to 1.0 == 0% to 100% chance) for energy (small and large), aeion, 
 // and ammunition (missiles and power bombs), respectively. The enemy will check in the order: energy, aeion, and ammo, 
 // upon defeat, so if the previous value(s) equal or surpass 1.0; the remaining checks will be ignored. Another thing to 
 // note is that the aeion and ammo drops are converted into a 80/20 chance at spawning an small/large energy orb if Samus 
 // doesn't have access to her missile launcher/power bomb and aeion powers, respectively.
-energyDropChance	= 0.0;
-aeionDropChance		= 0.0;
-ammoDropChance		= 0.0;
+energyDropChance = 0.0;
+aeionDropChance	 = 0.0;
+ammoDropChance	 = 0.0;
 
 // Keeps track of the weaponry Samus can utilize that the Enemy can be damaged by. Anything not found on this
 // list will simply be ignored if it happens to collide with the Enemy.

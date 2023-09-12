@@ -1,21 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "par_player_projectile",
+  "name": "obj_skree_bullet",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":40,"eventType":7,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,},
   ],
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "Player Weapons",
-    "path": "folders/Resources/Core/Entities/Dynamic/Player Weapons.yy",
+    "name": "Skree",
+    "path": "folders/Resources/Core/Entities/Dynamic/Enemies/General/Skree.yy",
   },
   "parentObjectId": {
-    "name": "par_dynamic_entity",
-    "path": "objects/par_dynamic_entity/par_dynamic_entity.yy",
+    "name": "par_enemy_projectile",
+    "path": "objects/par_enemy_projectile/par_enemy_projectile.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -32,7 +30,10 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_skree_bullet",
+    "path": "sprites/spr_skree_bullet/spr_skree_bullet.yy",
+  },
   "spriteMaskId": null,
   "visible": false,
 }

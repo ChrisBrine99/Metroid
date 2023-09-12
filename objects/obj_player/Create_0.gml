@@ -1489,7 +1489,7 @@ state_airbourne = function(){
 	// forward.
 	var _vInput = IS_DOWN_PRESSED - IS_UP_PRESSED;
 	if (_vInput == -1){
-		if (IS_JUMP_SPIN && hspd != 0.0) {hspd = 0.0;}
+		if (IS_JUMP_SPIN && movement == 0) {hspd = 0.0;}
 		
 		if (!IS_AIMING_DOWN){ // Aiming upward until the player releases their up input.
 			stateFlags &= ~((1 << AIMING_FRONT) | (1 << JUMP_SPIN) | (1 << JUMP_ATTACK));
@@ -1501,7 +1501,7 @@ state_airbourne = function(){
 			lightOffsetY = LIGHT_OFFSET_Y_GENERAL;
 		}
 	} else if (_vInput == 1){
-		if (IS_JUMP_SPIN && hspd != 0.0) {hspd = 0.0;}
+		if (IS_JUMP_SPIN && movement == 0) {hspd = 0.0;}
 		
 		if (!IS_AIMING_DOWN){ // Entering a downward aiming state.
 			var _jumpAttack = stateFlags & (1 << JUMP_ATTACK);

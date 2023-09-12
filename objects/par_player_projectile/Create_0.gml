@@ -188,7 +188,8 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 		}
 		projectile_door_collision(_collider);
 		projectile_destructible_collision(_collider);
-		if (IS_DESTROYED) {break;}
+		if (IS_DESTROYED)
+			break;
 	}
 
 	// The projectile doesn't collide with the walls, ceilings, and floors in the world; move it to its next

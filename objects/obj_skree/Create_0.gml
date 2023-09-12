@@ -14,11 +14,12 @@
 #macro	SKRE_ATK_ANIM_SPEED		3.0
 #macro	SKRE_ANIM_SPD_INCREASE	0.3
 
-// Important time values for the Skree's pre and post attack wait times in "frames" (60 of those being one 
+// Important time values for the Skree's various attack state waiting times in "frames" (60 of those being one 
 // second of real-time), as well as the amount in "frames" that the Skree will shift back and forth horizontally
 // whenever this effect is required in each state.
 #macro	SKRE_ATK_BEGIN_TIME		10.0
-#macro	SKRE_ATK_END_TIME		45.0
+#macro	SKRE_ATK_END_TIME		30.0
+#macro	SKRE_POST_DEATH_TIME	8.0
 #macro	SKRE_SHIFT_INTERVAL		2.0
 
 #endregion
@@ -45,7 +46,7 @@ vAccel = 0.6;
 maxHitpoints	= 4;
 hitpoints		= maxHitpoints;
 
-// Set the damage output and hitstun duration for the Gullug. These values are increased/decreased by the
+// Set the damage output and hitstun duration for the Skree. These values are increased/decreased by the
 // difficulty level selected by the player.
 damage			= SKRE_BASE_DAMAGE;
 stunDuration	= 8;
@@ -162,7 +163,7 @@ state_attack = function(){
 	// Finally, call the general entity movement/collision function to update the Skree's position for the frame.
 	// After that process completes, a check if the Skree is no longer moving downward AND there is a collision
 	// with a collider directly below it will be performed to try and move the skree onto its suicide state.
-	apply_frame_movement(entity_world_collision);
+	apply_frame_movement(entity_world_collision, true);
 	if (vspd == 0.0 && place_meeting(x, y + 1, par_collider)){
 		object_set_next_state(state_kill_self);
 		shiftBaseX = x; // Update shaking position to match x position after collision.
@@ -176,15 +177,53 @@ state_kill_self = function(){
 	// Track how long the Skree has been in this state for; kill self once required value has been exceeded.
 	attackTimer += DELTA_TIME;
 	if (attackTimer > SKRE_ATK_END_TIME){
-		stateFlags |= (1 << DESTROYED);
-		// TODO -- Spawn skree projectiles
+		// 
+		object_set_next_state(state_post_death);
+		entity_set_sprite(spr_empty_mask, -1);
+		stateFlags &= ~(1 << DRAW_SPRITE);
+		attackTimer = 0.0;
+		visible		= false;
+		
+		// 
+		var _direction	= 180;
+		for (var i = 0; i < 6; i++){
+			with(instance_create_object(x, y + 4, obj_skree_bullet)){
+				hspd = lengthdir_x(maxHspd, _direction);
+				vspd = lengthdir_y(maxVspd, _direction);
+			}
+			_direction -= 36;
+		}
+		
+		// 
+		with(lightComponent) {set_properties(80, HEX_LIGHT_PINK, 0.7);}
+		lightOffsetY -= 8;
 		return;
 	}
 	
 	// Only allow the Skree to shake back and forth once it's considered near enough to being destroyed instead
 	// of for the entirety of this final attacking state.
-	if (attackTimer > SKRE_ATK_END_TIME - 20.0)
+	if (attackTimer > SKRE_ATK_END_TIME * 0.6)
 		apply_horizontal_shift(SKRE_SHIFT_INTERVAL);
+}
+
+/// @description 
+state_post_death = function(){
+	//
+	var _deltaTime = DELTA_TIME;
+	
+	// 
+	attackTimer += _deltaTime;
+	if (attackTimer >= SKRE_POST_DEATH_TIME){
+		stateFlags |= (1 << DESTROYED);
+		return;
+	}
+	
+	// 
+	var _atkTimer = sqrt(attackTimer);
+	with(lightComponent){
+		radius		= baseRadius + (_atkTimer * 8.0);
+		strength   -= (0.7 / SKRE_POST_DEATH_TIME) * _deltaTime;
+	}
 }
 
 #endregion
