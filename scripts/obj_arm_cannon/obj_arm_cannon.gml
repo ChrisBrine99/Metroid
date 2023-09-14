@@ -36,13 +36,13 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	/// lightweight object. It will update the characteristics of the arm cannon depending on the actions
 	/// Samus is performing, and the state she currently finds herself in.
 	end_step = function(){
-		var _x = x;
-		var _y = y;
-		var _playerX = 0;
-		var _playerY = 0;
-		var _visible = true;
+		var _x			 = x;
+		var _y			 = y;
+		var _playerX	 = 0;
+		var _playerY	 = 0;
+		var _visible	 = true;
 		var _imageXScale = image_xscale;
-		var _imageIndex = imageIndex;
+		var _imageIndex	 = imageIndex;
 		with(PLAYER){
 			_playerX = x;
 			_playerY = y;
@@ -55,10 +55,11 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					_visible = !IS_GROUNDED;
 					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
-					_visible = IS_AIMING && !IN_MORPHBALL;
+					_visible = (PLYR_IS_AIMING && !PLYR_IN_MORPHBALL) || 
+								(!IS_GROUNDED && jumpStartTimer < PLYR_JUMP_START_TIME);
 					break;
 				case state_default: // Beam position for when samus is standing or walking on the floor.
-					if (stateFlags & (1 << AIMING_UP)){
+					if (PLYR_IS_AIMING_UP){
 						_x = -(1 * image_xscale);
 						_y = -43;
 						// Determines if the player's missiles are active, which will change the image that is 
@@ -66,8 +67,8 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 						if (curWeapon == curMissile) {_imageIndex = 5;}
 						else						 {_imageIndex = 4;}
 						break;
-					} else if (IS_MOVING){
-						if (!IS_AIMING) {_visible = false;}
+					} else if (PLYR_IS_MOVING){
+						if (!PLYR_IS_AIMING) {_visible = false;}
 						_x = (9 * image_xscale);
 						_y = -30;
 						// Determines if the player's missiles are active, which will change the image that is 
@@ -84,8 +85,8 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					else						 {_imageIndex = 1;}
 					break;
 				case state_airbourne: // Beam positions for whenever Samus is in the air.
-					if (stateFlags & (1 << AIMING_UP)){
-						if (jumpStartTimer < JUMP_ANIM_TIME){ // Temporarily use the standing while aiming up coordinates for the intro animation.
+					if (PLYR_IS_AIMING_UP){
+						if (jumpStartTimer < PLYR_JUMP_START_TIME){ // Temporarily use the standing while aiming up coordinates for the intro animation.
 							_x = -(1 * image_xscale);
 							_y = -43;
 						} else{ // Animation is finished; use standard coordinates for jumping while aiming up.
@@ -97,7 +98,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 						if (curWeapon == curMissile) {_imageIndex = 5;}
 						else						 {_imageIndex = 4;}
 						break;
-					} else if (stateFlags & (1 << AIMING_DOWN)){
+					} else if (PLYR_IS_AIMING_DOWN){
 						_x = 0;
 						_y = -18;
 						// Determines if the player's missiles are active, which will change the image that is 
@@ -109,7 +110,9 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					// Make the arm cannon invisible while somersaulting OR during the first frame of animation
 					// for all possible jump "intro" animations. The only exception to this is the second frame of
 					// the somersaulting intro where the arm cannon must be drawn to complete the sprite that is used.
-					if ((IS_JUMP_SPIN && sprite_index != jumpSpriteFw) || (jumpStartTimer < JUMP_ANIM_TIME && vspd <= 0)) {_visible = false;}
+					if ((PLYR_IN_SOMERSAULT && sprite_index == jumpSpriteSpin) 
+							|| jumpStartTimer < PLYR_JUMP_START_TIME) 
+						_visible = false;
 					_x = (5 * image_xscale);
 					_y = -25;
 					// Determines if the player's missiles are active, which will change the image that is 

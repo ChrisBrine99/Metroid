@@ -48,7 +48,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_ripper, -1);
-	object_add_light_component(x, y, 7, 2, 8, HEX_LIGHT_BLUE, 0.6);
+	//object_add_light_component(x, y, 7, 2, 8, HEX_LIGHT_BLUE, 0.6);
 	create_general_collider();
 	
 	// Only one weakness aside from being hit by a Power Bomb's explosion: Super Missiles.

@@ -30,23 +30,23 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	// first value will determine the color of the fade, the second will determine how fast the fade will
 	// reach complete opacity and reach full transparency again, and the third will determine how long in
 	// frames (1/60th of a real-world second) the effect will be fully opaque for.
-	fadeColor =		HEX_WHITE;
-	fadeSpeed =		0;
-	fadeDuration =	0;
+	fadeColor		= HEX_WHITE;
+	fadeSpeed		= 0;
+	fadeDuration	= 0;
 	// NOTE -- The "fadeDuration" value can be set to "FADE_PAUSE_FOR_TOGGLE" which will prevent the effect
 	// from fading out until it is signaled to by overwriting this value. Useful for things like loading 
 	// screens where the length of loading time isn't known.
 	
 	// The variables that determine the current opacity of the screen fade, and the value it is trying to
 	// move towards given its current state. (This value is either 0 or 1)
-	alpha = 0;
-	alphaTarget = 1;
+	alpha		= 0.0;
+	alphaTarget = 1.0;
 	
 	// 
-	playerX = 0;
-	playerY = 0;
-	drawPlayer = true;
-	playerSurf = -1;
+	playerX		= 0;
+	playerY		= 0;
+	drawPlayer	= true;
+	playerSurf	= -1;
 	
 	// 
 	targetX = 0;
@@ -62,10 +62,10 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	/// visibility if the effect is required to do so.
 	step = function(){
 		alpha = value_set_linear(alpha, alphaTarget, fadeSpeed);
-		if (fadeDuration != FADE_PAUSE_FOR_TOGGLE && alpha == 1 && alphaTarget == 1){ // Count down the duration until the fade out can begin.
+		if (fadeDuration != FADE_PAUSE_FOR_TOGGLE && alpha == 1.0 && alphaTarget == 1.0){ // Count down the duration until the fade out can begin.
 			fadeDuration -= DELTA_TIME;
-			if (fadeDuration <= 0) {alphaTarget = 0;}
-		} else if (alpha == 0 && alphaTarget == 0){ // The fade has completed; clear its pointer from the singleton map.
+			if (fadeDuration <= 0.0) {alphaTarget = 0.0;}
+		} else if (alpha == 0.0 && alphaTarget == 0.0){ // The fade has completed; clear its pointer from the singleton map.
 			// Reset the game's state back to what it was prior to the screen fade. All entities will have their
 			// "freeze animation" flags returned to whatever they were before the fade as well.
 			if (GAME_CURRENT_STATE == GSTATE_PAUSED){
@@ -86,10 +86,10 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 			// out by the GPU. All other variables related to it are reset as well.
 			if (surface_exists(playerSurf)){
 				surface_free(playerSurf);
-				playerSurf = -1;
-				drawPlayer = false;
-				playerX = 0;
-				playerY = 0;
+				playerSurf	= -1;
+				drawPlayer	= false;
+				playerX		= 0;
+				playerY		= 0;
 			}
 		}
 	}
@@ -115,23 +115,23 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 		// 
 		if (drawPlayer){
 			// 
-			var _x = 0;
-			var _y = 0;
 			var _spriteWidth = 0;
 			var _spriteHeight = 0;
 			var _offsetX = 0;
 			var _offsetY = 0;
 			with(PLAYER){
-				_x = x;
-				_y = y;
-				_spriteWidth = sprite_get_width(sprite_index);
-				_spriteHeight = sprite_get_height(sprite_index);
-				_offsetX = sprite_get_xoffset(sprite_index) + SURFACE_OFFSET_X;
-				_offsetY = sprite_get_yoffset(sprite_index) + SURFACE_OFFSET_Y;
+				_spriteWidth	= sprite_get_width(sprite_index);
+				_spriteHeight	= sprite_get_height(sprite_index);
+				_offsetX		= sprite_get_xoffset(sprite_index) + SURFACE_OFFSET_X;
+				_offsetY		= sprite_get_yoffset(sprite_index) + SURFACE_OFFSET_Y;
 			}
 			
 			// 
-			if (!surface_exists(playerSurf)) {playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), _spriteHeight + (SURFACE_OFFSET_Y * 2));}
+			if (!surface_exists(playerSurf)) 
+				playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), 
+					_spriteHeight + (SURFACE_OFFSET_Y * 2));
+			
+			// 
 			surface_set_target(playerSurf);
 			draw_clear_alpha(c_black, 0);
 			with(PLAYER){
@@ -145,6 +145,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 				}
 			}
 			surface_reset_target();
+			
+			// 
 			draw_surface_ext(playerSurf, playerX, playerY, 1, 1, 0, HEX_WHITE, alpha);
 		}
 	}
@@ -163,14 +165,17 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 /// @param {Bool}		drawPlayer
 function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration, _drawPlayer = true){
 	with(SCREEN_FADE){
-		if (alpha != 0 && alphaTarget != 0) {return;}
-		alpha = 0;
-		alphaTarget = 1;
+		// Don't attempt to "create" another screen fade effect (One struct manages it that is created at the
+		// start of execution) if there is currently a screen fade already occurring.
+		if (alpha != 0.0 && alphaTarget != 0.0) 
+			return;
+		alpha		= 0.0;
+		alphaTarget = 1.0;
 		
-		fadeColor =		_fadeColor;
-		fadeSpeed =		_fadeSpeed;
-		fadeDuration =	_fadeDuration;
-		drawPlayer =	_drawPlayer;
+		fadeColor	 = _fadeColor;
+		fadeSpeed	 = _fadeSpeed;
+		fadeDuration = _fadeDuration;
+		drawPlayer	 = _drawPlayer;
 		
 		var _animationFlags = prevAnimationFlags;
 		with(par_dynamic_entity){ // Freezes animations for all dynamic entities (They can move around the world).
@@ -182,7 +187,11 @@ function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration, _drawP
 			stateFlags |= (1 << FREEZE_ANIMATION);
 		}
 	}
-	if (GAME_CURRENT_STATE != GSTATE_CUTSCENE) {game_set_state(GSTATE_PAUSED);}
+	
+	// Pause the game outright if there isn't a cutscene currently being executed. Otherwise, the last game
+	// state would become the paused state and the game would softlock after the cutscene finished.
+	if (GAME_CURRENT_STATE != GSTATE_CUTSCENE)
+		game_set_state(GSTATE_PAUSED);
 }
 
 #endregion

@@ -1,12 +1,12 @@
 #region Macro initialization
 
 // 
-#macro	HRND_ALERTED			0
-#macro	HRND_FLIP_DIRECTION		1
+#macro	HRND_ALERTED			0x00000001
+#macro	HRND_FLIP_DIRECTION		0x00000002
 
 // 
-#macro	HRND_IS_ALERTED			(stateFlags & (1 << HRND_ALERTED))
-#macro	HRND_CAN_FLIP_DIRECTION	(stateFlags & (1 << HRND_FLIP_DIRECTION))
+#macro	HRND_IS_ALERTED			(stateFlags & HRND_ALERTED)
+#macro	HRND_CAN_FLIP_DIRECTION	(stateFlags & HRND_FLIP_DIRECTION)
 
 // 
 #macro	HRND_ALERT_RADIUS		56.0
@@ -16,6 +16,7 @@
 #macro	HRND_DEFAULT_VSPD	   -2.5
 #macro	HRND_ALERTED_HSPD		1.8
 #macro	HRND_ALERTED_VSPD	   -4.0
+#macro	HRND_MAX_FALL_SPEED		8.0
 
 // 
 #macro	HRND_JMP_COOLDOWN_TIME	100.0
@@ -80,7 +81,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_hornoad0, -1);
-	object_add_light_component(x, y, 3, -4, 10, HEX_LIGHT_RED, 0.5);
+	//object_add_light_component(x, y, 3, -4, 10, HEX_LIGHT_RED, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
 	
@@ -104,7 +105,7 @@ ___entity_apply_hitstun = entity_apply_hitstun;
 /// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage){
 	___entity_apply_hitstun(_duration, _damage);
-	stateFlags	|= (1 << HRND_ALERTED);
+	stateFlags	|= HRND_ALERTED;
 	jumpTimer	+= HRND_CD_REDUCTION;
 	
 	// Ignore snapping facing direction to which side the projectile hit the Hornoad on if they're already
@@ -142,7 +143,7 @@ state_default = function(){
 		// whatever direction it is facing at the time of the jump attempt). If there is a collision at this
 		// spot, the Hornoad won't attempt to jump; flipping its facing direction to try jumping again.
 		if (place_meeting(x + (16 * movement), y - 16, par_collider)){
-			stateFlags	 &= ~(1 << HRND_ALERTED);
+			stateFlags	 &= ~HRND_ALERTED;
 			jumpTimer	  = 0.0;
 			movement	 *= -1;
 			image_xscale *= -1;
@@ -160,13 +161,13 @@ state_default = function(){
 		// The hornoad will jump higher and further when altered, and will perform small hops when in its
 		// docile state. This check determines which of the two outcomes for hspd/vspd executed.
 		if (HRND_IS_ALERTED){
-			stateFlags &= ~(1 << HRND_ALERTED);
+			stateFlags &= ~HRND_ALERTED;
 			hspd		= HRND_ALERTED_HSPD * movement;
 			vspd		= HRND_ALERTED_VSPD;
 			return; // State changed and hspd/vspd already set; exit very early.
 		}
-		hspd		= HRND_DEFAULT_HSPD * movement;
-		vspd		= HRND_DEFAULT_VSPD;
+		hspd = HRND_DEFAULT_HSPD * movement;
+		vspd = HRND_DEFAULT_VSPD;
 		return; // State changed; exit early.
 	}
 	
@@ -188,13 +189,14 @@ state_default = function(){
 		// calcualted is smaller than the Hornoad's alert radius, it will become alerted; facing her and having
 		// its jumping capabilities increased.
 		if (point_distance(x, y, _playerX, _playerY) <= HRND_ALERT_RADIUS){
-			stateFlags |= (1 << HRND_ALERTED);
+			stateFlags |= HRND_ALERTED;
 			return; // Don't bother checking for docile direction changing once alerted.
 		}
 		
 		// Have a bit of buffer time between the Hornoad landing and it being able to swap its direction.
-		if (!HRND_CAN_FLIP_DIRECTION || jumpTimer < HRND_FACING_LOCK_TIME) {return;}
-		stateFlags &= ~(1 << HRND_FLIP_DIRECTION); // Ensures the below code is only ran once.
+		if (!HRND_CAN_FLIP_DIRECTION || jumpTimer < HRND_FACING_LOCK_TIME) 
+			return;
+		stateFlags &= ~HRND_FLIP_DIRECTION; // Ensures the below code is only ran once.
 		
 		// Choose a random direction between left (-1) and right (+1) and compare it against the current 
 		// direction that the Hornoad is already facing. If they differ, the hornoad will flip to face the
@@ -227,11 +229,11 @@ state_default = function(){
 /// x and y position relative to its hspd and vspd values, respectively.
 state_airbourne = function(){
 	// Apply gravity's effect on the Hornoad for the frame, and then check to see if it has landed on the ground.
-	apply_gravity(MAX_FALL_SPEED);
+	apply_gravity(HRND_MAX_FALL_SPEED);
 	if (IS_GROUNDED){ // Hit the ground; return to default state.
 		object_set_next_state(state_default);
 		entity_set_sprite(spr_hornoad0, -1);
-		stateFlags |= (1 << HRND_FLIP_DIRECTION);
+		stateFlags |= HRND_FLIP_DIRECTION;
 		hspd		= 0.0;
 		vspd		= 0.0;
 		return;

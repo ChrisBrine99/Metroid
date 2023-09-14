@@ -39,6 +39,9 @@
 // Stores the upward velocity the Halzyn will use to return to its pre-attack y position after an attack.
 #macro	HLZN_ATK_RETURN_VSPD   -2.0
 
+// Determines the maximum downward velocity the Halzyn can move at when attacking.
+#macro	HLZN_MAX_FALL_SPEED		9.0
+
 #endregion
 
 #region	Editing inherited variables
@@ -104,7 +107,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_halzyn0, -1);
-	object_add_light_component(x, y, 0, 2, 10, HEX_LIGHT_RED, 0.5);
+	//object_add_light_component(x, y, 0, 2, 10, HEX_LIGHT_RED, 0.5);
 	initialize_weak_to_all();
 	
 	// The Halzyn is unique in that is has two invulnerable colliders and then a smaller collider between the
@@ -212,7 +215,7 @@ state_begin_attack = function(){
 	// during the attacking state.
 	var _imageIndex		= imageIndex;
 	var _spriteLength	= spriteLength - 1;
-	with(lightComponent) {strength = (1.0 - (_imageIndex / _spriteLength)) * 0.5;}
+	//with(lightComponent) {strength = (1.0 - (_imageIndex / _spriteLength)) * 0.5;}
 	
 	// Don't allow the state to process anything else until the Halzyn has reached the final frame in the
 	// "begin attack" animation.
@@ -243,7 +246,7 @@ state_attack = function(){
 	// Horizontal movement isn't needed for the frame, so only update vertical movement. Once the Halzyn's
 	// vspd reaches its "max" (Which is borrowed from obj_player), it will remain at that speed.
 	vspd += vAccel * _deltaTime;
-	if (vspd >= MAX_FALL_SPEED) {vspd = MAX_FALL_SPEED;}
+	if (vspd >= HLZN_MAX_FALL_SPEED) {vspd = HLZN_MAX_FALL_SPEED;}
 	
 	// Removing fractional values from the Halzyn's vspd value; storing those fractional values into a buffer
 	// variable until a whole number can be parsed out of that variable.
@@ -304,9 +307,9 @@ state_end_attack = function(){
 		if (attackTimer >= HLZN_ATK_END_TIME){
 			// Slowly fade in the Halzyn's eye light by performing the reverse of what happened during the
 			// beginning of the attack state; increasing strength based on how close image index is to zero.
-			var _imageIndex		= imageIndex;
-			var _spriteLength	= spriteLength - 1;
-			with(lightComponent) {strength = ((_spriteLength - _imageIndex) / _spriteLength) * 0.5;}
+			//var _imageIndex		= imageIndex;
+			//var _spriteLength	= spriteLength - 1;
+			//with(lightComponent) {strength = ((_spriteLength - _imageIndex) / _spriteLength) * 0.5;}
 			
 			animSpeed = -1.0; // Reverses shell's closing animation to open it.
 			return;

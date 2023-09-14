@@ -192,9 +192,9 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 			// Check some conditions that will be stored in the local "_pSubStates" variable, which will change
 			// how certain aspects of the HUD are shown to the player: highlighting ammo information for an 
 			// in-use weapon, to a temporary cooldown on an ability, and so on.
-			if (curWeapon == curMissile)			{_pSubStates |= (1 << USING_MISSILE);}
-			if (IN_MORPHBALL && IS_ALT_WEAPON_HELD)	{_pSubStates |= (1 << USING_POWER_BOMB);}
-			if (aeionCooldownTimer > 0.0)			{_pSubStates |= (1 << AEION_COOLDOWN);}
+			if (curWeapon == curMissile)					{_pSubStates |= (1 << USING_MISSILE);}
+			if (PLYR_IN_MORPHBALL && PLYR_ALT_WEAPON_HELD)	{_pSubStates |= (1 << USING_POWER_BOMB);}
+			if (aeionCooldownTimer > 0.0)					{_pSubStates |= (1 << AEION_COOLDOWN);}
 		}
 		
 		// Copy the updated floating point values into the HUD's variables for each piece of information that

@@ -68,8 +68,8 @@ state_default = function(){
 	hspd = maxHspd * movement;
 	var _yy = y;
 	with(PLAYER){ // Center target on middle of Samus whether she's in her morphball form or not.
-		if (IN_MORPHBALL)	{_yy = sign(PLAYER.y - 8 - _yy);}
-		else				{_yy = sign(PLAYER.y - 20 - _yy);}
+		if (PLYR_IN_MORPHBALL)	{_yy = sign(PLAYER.y - 8 - _yy);}
+		else					{_yy = sign(PLAYER.y - 20 - _yy);}
 	}
 	vspd = maxVspd * _yy;
 	
@@ -77,7 +77,8 @@ state_default = function(){
 	// that, check for a horizontal collision relative to the Mumbo's movement direction so it can flip said
 	// direction of movement.
 	apply_frame_movement(entity_world_collision);
-	if (place_meeting(x + movement, y, par_collider)) {movement *= -1;}
+	if (place_meeting(x + movement, y, par_collider)) 
+		movement *= -1;
 }
 
 #endregion

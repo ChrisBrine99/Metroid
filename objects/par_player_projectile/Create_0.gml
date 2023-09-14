@@ -102,21 +102,24 @@ set_initial_position = function(_x, _y, _imageXScale){
 	// First, grab some state bits from Samus, which are then used to determine the offset used to reach the
 	// beam's position in her current sprite/animation.
 	var _stateFlags = 0;
-	with(PLAYER) {_stateFlags |= (stateFlags & ((1 << CROUCHING) | (1 << MOVING)  | (1 << GROUNDED) | (1 << AIMING_DOWN) | (1 << AIMING_UP)));}
+	with(PLAYER){
+		_stateFlags |= (stateFlags & (PLYR_CROUCHED | PLYR_MOVING | (1 << GROUNDED) 
+								| PLYR_AIMING_DOWN | PLYR_AIMING_UP));
+	}
 	
 	// Determine the direction Samus is aiming in by checking the "aiming up" and "aiming down" flags, 
 	// respectively. The "aiming front" flag is ignored because if this variable doesn't return true for the
 	// other two options, Samus's beam has to be aiming forward.
-	var _aimDirection = (_stateFlags & ((1 << AIMING_DOWN) | (1 << AIMING_UP)));
+	var _aimDirection = (_stateFlags & (PLYR_AIMING_DOWN | PLYR_AIMING_UP));
 	switch(_aimDirection){
 		default: // Aiming forward (Can be standing, walking, crouching, or airbourne).
 			if ((_stateFlags & (1 << GROUNDED)) != 0){
-				if ((_stateFlags & (1 << CROUCHING)) != 0){
+				if ((_stateFlags & PLYR_CROUCHED) != 0){
 					// Crouching Offset // 
 					x = _x + (14 * _imageXScale);
 					y = _y - 13;
 				} else{
-					if ((_stateFlags & (1 << MOVING)) != 0){
+					if ((_stateFlags & PLYR_MOVING) != 0){
 						// Walking Offset //
 						x = _x + (17 * _imageXScale);
 						y = _y - 26;
@@ -137,9 +140,9 @@ set_initial_position = function(_x, _y, _imageXScale){
 			else					{stateFlags |= (1 << PROJ_MOVE_LEFT);}
 			image_xscale = _imageXScale;
 			break;
-		case (1 << AIMING_UP): // Aiming upward (Can be standing, walking, or airbourne).
+		case PLYR_AIMING_UP: // Aiming upward (Can be standing, walking, or airbourne).
 			if ((_stateFlags & (1 << GROUNDED)) != 0){
-				if ((_stateFlags & (1 << MOVING)) != 0){
+				if ((_stateFlags & PLYR_MOVING) != 0){
 					// Walking Offset //
 					x = _x + (2 * _imageXScale);
 					y = _y - 42;
@@ -156,7 +159,7 @@ set_initial_position = function(_x, _y, _imageXScale){
 			stateFlags |= (1 << PROJ_MOVE_UP);
 			image_angle = 90;
 			break;
-		case (1 << AIMING_DOWN): // Aiming downward (Only possible while airbourne).
+		case PLYR_AIMING_DOWN: // Aiming downward (Only possible while airbourne).
 			x = _x + (4 * _imageXScale);
 			y = _y - 9;
 			stateFlags |= (1 << PROJ_MOVE_DOWN);

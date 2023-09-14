@@ -201,7 +201,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		var _length = ds_list_size(global.lightSources);
 		for (var i = 0; i < _length; i++){
 			with(global.lightSources[| i]){
-				if (!isActive) {continue;}
+				if (!isActive || radius == 0 || strength <= 0.0) {continue;}
 				
 				_x = x - _cameraX;
 				_y = y - _cameraY;

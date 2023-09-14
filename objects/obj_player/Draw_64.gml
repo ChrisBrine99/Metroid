@@ -1,0 +1,1 @@
+draw_text(5, 45, "lightOffsetX: " + string(lightOffsetX) + "\nlightOffsetY: " + string(lightOffsetY));

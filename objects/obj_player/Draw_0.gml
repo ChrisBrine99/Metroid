@@ -10,11 +10,11 @@ entity_draw();
 if (CAN_DRAW_SPRITE) {armCannon.draw();}
 
 // Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase.
-if (!IS_HIT_STUNNED) {return;}
+if (!PLYR_CAN_SPRITE_FLICKER) {return;}
 
 flickerTimer += DELTA_TIME;
-if (flickerTimer >= SPRITE_FLICKER_INTERVAL){
+if (flickerTimer >= PLYR_HIT_INTERVAL){
 	if (CAN_DRAW_SPRITE) {stateFlags &= ~(1 << DRAW_SPRITE);}
 	else				 {stateFlags |=	 (1 << DRAW_SPRITE);}
-	flickerTimer -= SPRITE_FLICKER_INTERVAL;
+	flickerTimer -= PLYR_HIT_INTERVAL;
 }

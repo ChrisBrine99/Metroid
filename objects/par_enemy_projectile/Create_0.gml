@@ -68,7 +68,7 @@ projectile_player_collision = function(){
 		var _damage		= damage;
 		var _hitstun	= stunDuration;
 		with(PLAYER){
-			if (IS_JUMP_ATTACK)
+			if (PLYR_IN_SCREWATK)
 				return;
 			entity_apply_hitstun(_hitstun, _damage);
 		}

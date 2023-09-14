@@ -68,7 +68,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_senjoo, -1);
-	object_add_light_component(x, y, 0, -2, 14, HEX_LIGHT_RED, 0.5);
+	//object_add_light_component(x, y, 0, -2, 14, HEX_LIGHT_RED, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
 	spriteSpeed /= ANIMATION_FPS; // Divide by required value once since the Senjoo's sprite never changes.

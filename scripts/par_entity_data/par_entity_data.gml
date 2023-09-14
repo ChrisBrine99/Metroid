@@ -125,10 +125,10 @@ function entity_set_sprite(_sprite, _mask, _speed = 1, _start = -1, _loopOffset 
 /// @param {Real}	width	The size of the viewport (In pixels) along the x-axis.
 /// @param {Real}	height	The size of the viewport (In pixels) along the y-axis.
 function entity_is_on_screen(_x, _y, _width, _height){
-	if (_x				> bbox_right	+ CULL_PADDING	||
-		_x + _width		< bbox_left		- CULL_PADDING	||
-		_y				> bbox_bottom	+ CULL_PADDING	||
-		_y + _height	< bbox_top		- CULL_PADDING)
+	if (_x				> bbox_right	+ RENDER_CULL_PADDING	||
+		_x + _width		< bbox_left		- RENDER_CULL_PADDING	||
+		_y				> bbox_bottom	+ RENDER_CULL_PADDING	||
+		_y + _height	< bbox_top		- RENDER_CULL_PADDING)
 			{stateFlags &= ~(1 << ON_SCREEN);}
 	else	{stateFlags |= (1 << ON_SCREEN);}
 }

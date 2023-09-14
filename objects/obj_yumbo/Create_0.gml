@@ -36,11 +36,6 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Set the proper sprite, and add a dim ambient light for the Yumbo's eyes; the light matching the eye color
-// in the sprite itself. Finally, the Yumbo is set to be susceptible to every weapon Samus has access to.
-entity_set_sprite(spr_yumbo, -1);
-object_add_light_component(x, y, -4, -2, 6, HEX_LIGHT_ORANGE, 0.5);
-initialize_weak_to_all();
 
 // Set maximum velocity for the Yumbo, which is slightly slower than Samus herself. These values will be used
 // to determine the Yumbo's actual speed relative to the direction found between it and Samus's position while
@@ -99,6 +94,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yumbo, -1);
+	//object_add_light_component(x, y, -4, -2, 6, HEX_LIGHT_ORANGE, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
 	

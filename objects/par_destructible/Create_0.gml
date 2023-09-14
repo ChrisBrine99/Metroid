@@ -133,7 +133,7 @@ step_screw_attack_check = function(){
 	with(PLAYER){
 		// Don't process the rest of the function's logic if Samus isn't currently utilizing her Screw Attack
 		// because she's either in a standard jump or doesn't have acess to the ability yet.
-		if (!IS_JUMP_ATTACK) {return;}
+		if (!PLYR_IN_SCREWATK) {return;}
 	
 		// Since Samus's position is actually at her feet, the position of her bounding box is used instead,
 		// and centered within that area along the y axis (The x axis is already centered about said area).
@@ -142,7 +142,8 @@ step_screw_attack_check = function(){
 		// Once the proper y value is calculated, Samus and the destructible's positions are compared to see
 		// if the resulting lengths are within 16 pixels along the x and 24 pixels along the y, respectively.
 		// If so, the block will be destroyed by the screw attack.
-		if (point_distance(x, 0, _x, 0) <= SCREW_ATTACK_XBOUNDS && point_distance(0, _pY, 0, _y) <= SCREW_ATTACK_YBOUNDS){
+		if (point_distance(x, 0, _x, 0) <= SCREW_ATTACK_XBOUNDS && 
+				point_distance(0, _pY, 0, _y) <= SCREW_ATTACK_YBOUNDS){
 			with(other) {destructible_destroy_self();}
 		}
 	}

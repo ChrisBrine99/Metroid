@@ -23,7 +23,8 @@
 
 // Determines distance that the entity's bounding box must be from the edges of the camera in order to have
 // itself culled from the rendering process for the current frame.
-#macro	CULL_PADDING			12
+#macro	RENDER_CULL_PADDING		12
+#macro	OBJECT_CULL_PADDING		80
 
 #endregion
 
@@ -100,9 +101,33 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	}
 	
 	/// @description A function the mimics GameMaker's own "Room Start" event within its own objects. As such,
-	/// it should be called in that event by this struct's management object. All it does is enable the view
-	/// within the newly loaded room; using the settings applied to the Camera's GML camera itself.
+	/// it should be called in that event by this struct's management object. 
 	room_start = function(){
+		// 
+		var _x			= x;
+		var _y			= y;
+		var _boundaryID = noone;
+		with(targetObject){
+			_x			= x;
+			_y			= y;
+			_boundaryID = instance_place(x, y, obj_camera_boundary);
+		}
+		
+		// 
+		prevBoundaryID = _boundaryID;
+		if (_boundaryID != noone){
+			with(_boundaryID){
+				if (viewTargetX != -1) {_x = viewTargetX;}
+				if (viewTargetY != -1) {_y = viewTargetY;}
+			}
+		} else{
+			stateFlags	  &= ~((1 << LOCK_CAMERA_X)  | (1 << LOCK_CAMERA_Y) |
+							   (1 << RESET_TARGET_X) | (1 << RESET_TARGET_Y));
+		}
+		x = _x;
+		y = _y;
+		
+		// 
 		view_set_camera(0, camera);
 		view_set_visible(0, true);
 		view_enabled = true;
@@ -147,15 +172,15 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		// boundary of said axis. No movement to the deadzone is processed if the camera isn't currently locked
 		// along its horizontal.
 		if (!IS_CAMERA_X_LOCKED){
-			if (_targetX < x - DEADZONE_WIDTH)		{x = _targetX + DEADZONE_WIDTH;}
-			else if (_targetX > x + DEADZONE_WIDTH)	{x = _targetX - DEADZONE_WIDTH;}
+			if (_targetX < x - DEADZONE_WIDTH)		 {x = _targetX + DEADZONE_WIDTH;}
+			else if (_targetX > x + DEADZONE_WIDTH)	 {x = _targetX - DEADZONE_WIDTH;}
 		}
 		
 		// Performing the same movement as the x-axis, but for the y-axis. No movement occurs if the camera is
 		// currently considered "unlocked" along the vertical axis; much like what happens along the horizontal.
 		if (!IS_CAMERA_Y_LOCKED){
-			if (_targetY < y - DEADZONE_HEIGHT)			{y = _targetY + DEADZONE_HEIGHT;}
-			else if (_targetY > y + DEADZONE_HEIGHT)	{y = _targetY - DEADZONE_HEIGHT;}
+			if (_targetY < y - DEADZONE_HEIGHT)		 {y = _targetY + DEADZONE_HEIGHT;}
+			else if (_targetY > y + DEADZONE_HEIGHT) {y = _targetY - DEADZONE_HEIGHT;}
 		}
 	}
 	
@@ -165,9 +190,9 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	process_camera_boundaries = function(){
 		if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
 		
-		var _targetX = -1;
-		var _targetY = -1;
-		var _stateFlags = stateFlags;
+		var _targetX		= -1;
+		var _targetY		= -1;
+		var _stateFlags		= stateFlags;
 		var _prevBoundaryID = prevBoundaryID;
 		with(targetObject){ // Collision check occurs within the instance that the camera is currently following.
 			var _boundary = instance_place(x, y, obj_camera_boundary);
@@ -177,7 +202,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 				if (viewTargetX != -1){
 					_stateFlags &= ~(1 << RESET_TARGET_X);
 					_stateFlags |= (1 << LOCK_CAMERA_X);
-					_targetX = viewTargetX;
+					_targetX	 = viewTargetX;
 				}
 				
 				// The same process that occurred for the x axis also occurs for the y axis; apply boundary
@@ -185,7 +210,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 				if (viewTargetY != -1){
 					_stateFlags &= ~(1 << RESET_TARGET_Y);
 					_stateFlags |= (1 << LOCK_CAMERA_Y);
-					_targetY = viewTargetY;
+					_targetY	 = viewTargetY;
 				}
 			}
 			
@@ -199,34 +224,34 @@ function obj_camera(_index) : base_struct(_index) constructor{
 				if (_stateFlags & (1 << LOCK_CAMERA_Y)) {_stateFlags |= (1 << RESET_TARGET_Y);}
 			}
 		}
-		prevBoundaryID = _prevBoundaryID;
-		stateFlags = _stateFlags;
+		prevBoundaryID	= _prevBoundaryID;
+		stateFlags		= _stateFlags;
 		
 		// Moves the camera to the x position it will be locked to if the view is currently locked along its
 		// axis OR will smoothly move the camera back to following the target object's x position if the camera
 		// has been told to reset its x position.
 		if (_targetX != -1 && !CAN_RESET_TARGET_X){
-			x = value_set_relative(x, _targetX, 0.25);
+			x				= value_set_relative(x, _targetX, 0.25);
 		} else if (CAN_RESET_TARGET_X){
-			var _oTargetX = targetObject.x + targetOffsetX;
-			x = value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.2));
-			if (abs(x - _oTargetX) <= DEADZONE_WIDTH) {stateFlags &= ~((1 << RESET_TARGET_X) | (1 << LOCK_CAMERA_X));}
+			var _oTargetX	= targetObject.x + targetOffsetX;
+			x				= value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.2));
+			if (abs(x - _oTargetX) <= DEADZONE_WIDTH) 
+				stateFlags &= ~((1 << RESET_TARGET_X) | (1 << LOCK_CAMERA_X));
 		}
 		
 		// Moves the camera using the same parameters and conditions as when it moves along the x axis, but
 		// for the vertical position of the camera/view instead.
 		if (_targetY != -1 && !CAN_RESET_TARGET_Y){
-			y = value_set_relative(y, _targetY, 0.25);
+			y				= value_set_relative(y, _targetY, 0.25);
 		} else if (CAN_RESET_TARGET_Y){
-			var _oTargetY = targetObject.y + targetOffsetY;
-			y = value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.2));
-			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT) {stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));}
+			var _oTargetY	= targetObject.y + targetOffsetY;
+			y				= value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.2));
+			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT)
+				stateFlags &= ~((1 << RESET_TARGET_Y) | (1 << LOCK_CAMERA_Y));
 		}
 	}
 	
-	/// @description Loops through all existing dynamic and static entity objects to test their visibility on
-	/// screen. All entities considered off-screen after this check will have their draw events ignored for the
-	/// current frame.
+	/// @description 
 	/// @param {Real}	x		Current x-position for the camera's viewport.
 	/// @param {Real}	y		Current y-position for the camera's viewport.
 	/// @param {Real}	width	Width of the camera's viewport (In pixels).
@@ -240,6 +265,18 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			if (!CAN_DRAW_SPRITE) {continue;} // Ignore invisible static entities.
 			entity_is_on_screen(_x, _y, _width, _height);
 		}
+		
+		// 
+		instance_deactivate_object(par_dynamic_entity);
+		instance_deactivate_object(par_static_entity);
+		instance_activate_region(
+			_x			 - OBJECT_CULL_PADDING,
+			_y			 - OBJECT_CULL_PADDING,
+			_x + _width  + OBJECT_CULL_PADDING,
+			_y + _height + OBJECT_CULL_PADDING,
+			true // Signifies that the region within the bounds is where entities are reactivated.
+		);
+		instance_activate_object(PLAYER);	// Player is always an active object
 	}
 }
 
