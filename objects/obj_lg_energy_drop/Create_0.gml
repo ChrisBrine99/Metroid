@@ -38,7 +38,7 @@ maxHitpoints	= (hitpoints * 0.25);
 /// points of energy upon collection and then destroy itself.
 item_drop_collect_self = function() {
 	with(PLAYER) {update_hitpoints(LG_ENERGY_RESTORATION);}
-	stateFlags |= (1 << DESTROYED);
+	stateFlags |= ENTT_DESTROYED;
 }
 
 #endregion

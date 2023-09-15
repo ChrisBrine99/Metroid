@@ -56,7 +56,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
 					_visible = (PLYR_IS_AIMING && !PLYR_IN_MORPHBALL) || 
-								(!IS_GROUNDED && jumpStartTimer < PLYR_JUMP_START_TIME);
+								(!DNTT_IS_GROUNDED && jumpStartTimer < PLYR_JUMP_START_TIME);
 					break;
 				case state_default: // Beam position for when samus is standing or walking on the floor.
 					if (PLYR_IS_AIMING_UP){
@@ -148,7 +148,8 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	/// its visibility flag being true.
 	draw = function(){
 		if (!visible) {return;}
-		draw_sprite_ext(spr_samus_cannon0, imageIndex, playerX + x, playerY + y, image_xscale, 1, 0, c_white, 1);
+		draw_sprite_ext(spr_samus_cannon0, imageIndex, playerX + x, playerY + y, 
+			image_xscale, 1, 0, c_white, 1);
 	}
 }
 

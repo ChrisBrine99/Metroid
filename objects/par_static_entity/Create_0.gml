@@ -8,7 +8,7 @@ visible = false;
 
 // 32-bits that can each represent their own functionality within any children of this object. However, the 
 // top eight bits are reserved for generic flags that are required for an entity to function properly.
-stateFlags = (1 << ACTIVE);
+stateFlags = ENTT_ACTIVE;
 
 // Variables for keeping track of and manipulating an audio component that can optionally be attached to an
 // entity. The first variable stores the pointer to the attached component, whereas the last two variables

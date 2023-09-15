@@ -132,7 +132,7 @@ entity_apply_hitstun = function(_duration, _damage){
 state_default = function(){
 	// Check that prevents accidental execution of this function if the Hornoard is hit by one of Samus's
 	// weapons before its state function happens to be executed.
-	if (IS_HIT_STUNNED) {return;}
+	if (ENTT_IS_HIT_STUNNED) {return;}
 	
 	// Keep incrementing the jump timer until it exceeds the required amount, which will instantly switch the
 	// Hornoad into its airbourne state. Depending on the situation, the Hornoad can be prevented from jumping
@@ -155,7 +155,7 @@ state_default = function(){
 		// and the proper sprite is set. Its resulting jump velocity is determined below.
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(spr_hornoad1, -1);
-		stateFlags &= ~(1 << GROUNDED);
+		stateFlags &= ~DNTT_GROUNDED;
 		jumpTimer	= 0.0;
 		
 		// The hornoad will jump higher and further when altered, and will perform small hops when in its
@@ -230,7 +230,7 @@ state_default = function(){
 state_airbourne = function(){
 	// Apply gravity's effect on the Hornoad for the frame, and then check to see if it has landed on the ground.
 	apply_gravity(HRND_MAX_FALL_SPEED);
-	if (IS_GROUNDED){ // Hit the ground; return to default state.
+	if (DNTT_IS_GROUNDED){ // Hit the ground; return to default state.
 		object_set_next_state(state_default);
 		entity_set_sprite(spr_hornoad0, -1);
 		stateFlags |= HRND_FLIP_DIRECTION;

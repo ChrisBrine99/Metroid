@@ -13,7 +13,7 @@ if (place_meeting(x + _xx, y + _yy, PLAYER)){
 	// be added here if required (Allows the door to close behind Samus since she just traveled through it).
 	var _id = id;
 	with(SCREEN_FADE) {ds_list_add(prevAnimationFlags, [_id, false]);}
-	stateFlags |= (1 << FREEZE_ANIMATION);
+	stateFlags |= ENTT_PAUSE_ANIM;
 }
 
 // Properly offset the light such that it is always in the center of the sprite; regardless of what angle the
@@ -22,6 +22,7 @@ lightComponent.set_position(x - _yy + (4 * _x), y + _xx + (4 * _y));
 
 // FOR DOORS WITH LOCKS ONLY -- Check if the flag tied to the door has already been set. If so, switch this door
 // to a general door as it is now considered unlocked.
-if (object_index == obj_general_door || !event_get_flag(flagID)) {return;}
-lightComponent.set_properties(LIGHT_DEFAULT_RADIUS, GENERAL_LIGHT_COLOR, LIGHT_DEFAULT_STRENGTH);
+if (object_index == obj_general_door || !event_get_flag(flagID)) 
+	return;
+lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_LIGHT_BLUE, LGHT_ACTIVE_STRENGTH);
 flagID = EVENT_FLAG_INVALID;

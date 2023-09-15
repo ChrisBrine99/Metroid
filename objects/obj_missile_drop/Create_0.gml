@@ -39,9 +39,10 @@ maxHitpoints	= (hitpoints * 0.25);
 item_drop_collect_self = function() {
 	with(PLAYER){
 		numMissiles += MISSILE_DROP_RESTORATION;
-		if (numMissiles > maxMissiles) {numMissiles = maxMissiles;}
+		if (numMissiles > maxMissiles) 
+			numMissiles = maxMissiles;
 	}
-	stateFlags |= (1 << DESTROYED);
+	stateFlags |= ENTT_DESTROYED;
 }
 
 #endregion

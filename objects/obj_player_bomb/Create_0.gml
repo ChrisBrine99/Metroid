@@ -16,8 +16,8 @@ event_inherited();
 // value reaches or goes below 0. The "maxHitpoints" variable stores the total time it takes for the bomb to
 // detonate; used for comparing against the time remaining in order to speed up the bomb animation after a
 // certain point.
-maxHitpoints = BOMB_EXPLOSION_TIME;
-hitpoints = maxHitpoints;
+maxHitpoints	= BOMB_EXPLOSION_TIME;
+hitpoints		= maxHitpoints;
 // Apply a unique light source to the bomb.
 object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
 
@@ -45,7 +45,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb, spr_empty_mask);
-	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 }
 
 #endregion
@@ -65,16 +65,17 @@ state_default = function(){
 		
 		// Remove the state from this object and let the game know to destroy it at the start of the next frame.
 		object_set_next_state(NO_STATE);
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 		visible = false;
 	}
 	
 	// Increasing the speed of the bomb's animation to signify it's close to exploding. Also applying the
 	// flashing to the light sources that will link up with the two-frame animation for the bomb.
-	if (hitpoints < ANIM_SPEEDUP_TIME && animSpeed == 1) {animSpeed = 3;}
-	var _imageIndex = floor(imageIndex);
-	var _baseRadius = baseRadius;
-	var _baseStrength = baseStrength;
+	if (hitpoints < ANIM_SPEEDUP_TIME && animSpeed == 1)
+		animSpeed = 3;
+	var _imageIndex		= floor(imageIndex);
+	var _baseRadius		= baseRadius;
+	var _baseStrength	= baseStrength;
 	with(lightComponent){
 		if (_imageIndex == 1)	{set_properties(_baseRadius * 1.5, color, _baseStrength * 1.5);}
 		else					{set_properties(_baseRadius, color, _baseStrength);}

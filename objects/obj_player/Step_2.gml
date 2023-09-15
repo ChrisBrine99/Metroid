@@ -4,18 +4,16 @@
 event_inherited();
 if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
 
-// Loop through all existing ghost effect structs to decrement their alpha levels by a pre-set amount; destroying
-// that struct if its alpha level has reached or gone below a value of zero.
-var _ghostEffect = ghostEffectID;
-var _length = ds_list_size(ghostEffectID);
-for (var i = 0; i < _length; i++){
-	with(_ghostEffect[| i]){
-		alpha -= 0.03 * DELTA_TIME;
-		if (alpha <= 0.0){ // Removing the effect once its alpha goes below 0.
-			instance_destroy_struct(_ghostEffect[| i]);
-			ds_list_delete(_ghostEffect, i);
-			_length--; // Subtract one from "i" and the length to accommodate for the newly removed struct.
-			i--;
+// 
+var _deltaTime = DELTA_TIME;
+for (var i = 0; i < PLYR_NUM_GHOST_EFFECTS; i++){
+	with(ghostEffectIDs[i]){
+		if (!visible) {continue;}
+		
+		alpha -= 0.03 * _deltaTime;
+		if (alpha < 0.0){
+			visible = false;
+			alpha	= 0.0;
 		}
 	}
 }
@@ -23,9 +21,9 @@ for (var i = 0; i < _length; i++){
 // Decrement the cooldown timer, which will begin filling the aeion gauge once the value goes below -60. After
 // that, the aeion will slowly restore itself until the gauge is full again.
 if (curAeion < maxAeion){
-	aeionCooldownTimer -= DELTA_TIME;
+	aeionCooldownTimer -= _deltaTime;
 	if (aeionCooldownTimer < -60.0){
-		aeionFillTimer += DELTA_TIME * 0.3;
+		aeionFillTimer += 0.3 * _deltaTime;
 		if (aeionFillTimer >= 1.0){
 			aeionFillTimer -= 1.0;
 			curAeion++;

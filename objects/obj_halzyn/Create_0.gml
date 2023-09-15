@@ -167,7 +167,7 @@ state_default = function(){
 			
 			// Stop the Halzyn from looping any animations during its attacking states; reset the main attack
 			// timer to 0 as well.
-			stateFlags &= ~(1 << LOOP_ANIMATION);
+			stateFlags &= ~ENTT_LOOP_ANIM;
 			attackTimer = 0.0;
 			shiftBaseX	= x;
 			preAttackY	= y;	// Store pre-attack y position so the Halzyn knows where to return to after attacking.
@@ -246,7 +246,8 @@ state_attack = function(){
 	// Horizontal movement isn't needed for the frame, so only update vertical movement. Once the Halzyn's
 	// vspd reaches its "max" (Which is borrowed from obj_player), it will remain at that speed.
 	vspd += vAccel * _deltaTime;
-	if (vspd >= HLZN_MAX_FALL_SPEED) {vspd = HLZN_MAX_FALL_SPEED;}
+	if (vspd >= HLZN_MAX_FALL_SPEED) 
+		vspd = HLZN_MAX_FALL_SPEED;
 	
 	// Removing fractional values from the Halzyn's vspd value; storing those fractional values into a buffer
 	// variable until a whole number can be parsed out of that variable.
@@ -275,7 +276,7 @@ state_attack = function(){
 /// main attack state. It starts by remaining in the ground for a set interval of time before it resets itself
 /// back to the position is was at prior to executing an attack.
 state_end_attack = function(){
-	if (!CAN_LOOP_ANIMATION){
+	if (!ENTT_CAN_LOOP_ANIM){
 		// Begin the Halzyn's ascent back to where it was during its default/dormant state only once its shell
 		// opening animation has been completed (The animation is just the attack begin animation in reverse,
 		// so frame 0 is the "end" of the animation, in this case).
@@ -296,7 +297,7 @@ state_end_attack = function(){
 			
 			// ALlow the Halzyn to loop its sprite animation once again; return its damage back to normal; set
 			// its vspd to its "rising" velocity; and clear out the attack state's various timers.
-			stateFlags |= (1 << LOOP_ANIMATION);
+			stateFlags |= ENTT_LOOP_ANIM;
 			damage		= HLZN_BASE_DAMAGE;
 			vspd		= HLZN_ATK_RETURN_VSPD;
 			attackTimer = 0.0;

@@ -16,8 +16,6 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// Apply a light to the bomb explosion.
-object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
 
 #endregion
 
@@ -40,7 +38,8 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb_explode, -1);
-	stateFlags |= (1 << DRAW_SPRITE) | (1 << TYPE_BOMB);
+	object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
+	stateFlags |= ENTT_DRAW_SELF | (1 << TYPE_BOMB);
 }
 
 #endregion
@@ -54,7 +53,7 @@ state_default = function(){
 	// Keep checking to see if the flag for the animation's completion has been set. If so, the bomb explosion
 	// will be flagged for deletion and no longer have a collision mask until that deletion has occurred.
 	if (imageIndex == spriteLength - 1){
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 		mask_index = spr_empty_mask;
 		visible = false;
 		return; // Object flagged for destruction, exit the state function prematurely.
@@ -65,20 +64,21 @@ state_default = function(){
 	var _length = instance_place_list(x, y, par_destructible, collisionList, false);
 	for (var i = 0; i < _length; i++){
 		with(collisionList[| i]){
-			if (IS_DESTROYED || (object_index != obj_destructible_collectible_ball && 
-								 object_index != obj_destructible_all && 
-								 object_index != obj_destructible_bomb)) {continue;}
+			if (ENTT_DESTROYED || (object_index != obj_destructible_collectible_ball && 
+					object_index != obj_destructible_all && object_index != obj_destructible_bomb)) 
+				continue;
 			destructible_destroy_self();
 		}
 	}
-	if (_length > 0){ds_list_clear(collisionList);}
+	if (_length > 0) {ds_list_clear(collisionList);}
 	
 	// Check for collision with enemies that come into contact with this explosion. If a collision is found, 
 	// the enemy instance in question will be damaged if they are not immune to damage from standard bombs.
 	var _stateFlags = stateFlags;
 	var _enemy		= instance_place(x, y, par_enemy);
 	with(_enemy){
-		if (IS_HIT_STUNNED || !is_weak_to_weapon(_stateFlags)) {break;}
+		if (ENTT_IS_HIT_STUNNED || !is_weak_to_weapon(_stateFlags))
+			break;
 		entity_apply_hitstun(BOMB_DAMAGE, BOMB_STUN_DURATION);
 	}
 	
@@ -96,7 +96,8 @@ state_default = function(){
 		// If the local flag is set to true after the switch statement has been processed, the door will
 		// be opened by the bomb's explosion. Otherwise, nothing will happen to the door.
 		if (_isDestroyed){
-			if (flagID != EVENT_FLAG_INVALID) {event_set_flag(flagID, true);}
+			if (flagID != EVENT_FLAG_INVALID) 
+				event_set_flag(flagID, true);
 			animSpeed = 1;
 		}
 	}

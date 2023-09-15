@@ -434,7 +434,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			});
 			
 			// 
-			stateFlags |= (1 << FREEZE_ANIMATION);
+			stateFlags |= ENTT_PAUSE_ANIM;
 			curState	= NO_STATE;
 			nextState	= NO_STATE;
 			lastState	= NO_STATE;
@@ -480,7 +480,7 @@ function obj_console(_index) : base_struct(_index) constructor{
 			// Jump into the instance ID's scope that these state variables belong to. The flag bit for pausing 
 			// the entity's animation (If one was even playing) is cleared to enable animation yet again.
 			with(_key){
-				stateFlags &= ~(1 << FREEZE_ANIMATION);
+				stateFlags &= ~ENTT_PAUSE_ANIM;
 				curState	= _curState;
 				nextState	= _nextState;
 				lastState	= _lastState;

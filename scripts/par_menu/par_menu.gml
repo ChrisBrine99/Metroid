@@ -5,15 +5,16 @@
 // cursor, highlighting the current option or not, or if its even active.
 #macro	AUTO_SCROLLING				27
 #macro	MOVE_CURSOR					28
-#macro	HIGHLIGHT_OPTION			29
-#macro	MENU_ACTIVE					30
-// UNSEEN -- The marco "DESTROYED" is borrowed from the entity flags, which is the 31st bit.
+#macro	MENU_HIGHLIGHT_OPTION		0x20000000
+#macro	MENU_ACTIVE					0x40000000
+#macro	MENU_DESTROYED				0x80000000
 
 // Allows the check of the states of the four default flag bits though simplified macro values.
 #macro	IS_AUTO_SCROLLING			stateFlags & (1 << AUTO_SCROLLING) != 0
 #macro	CAN_MOVE_CURSOR				stateFlags & (1 << MOVE_CURSOR) != 0
-#macro	CAN_HIGHLIGHT_OPTION		stateFlags & (1 << HIGHLIGHT_OPTION) != 0
-#macro	IS_MENU_ACTIVE				stateFlags & (1 << MENU_ACTIVE) != 0
+#macro	MENU_CAN_HIGHLIGHT			(stateFlags & MENU_HIGHLIGHT_OPTION)
+#macro	MENU_IS_ACTIVE				(stateFlags & MENU_ACTIVE)
+#macro	MENU_IS_DESTROYED			(stateFlags & MENU_DESTROYED)
 
 // The position within the "inputFlags" variable that a given input's boolean flag is located.
 // They will store the values return by "keyboard_check" for each input on every frame.
@@ -174,7 +175,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 				nextState	:	_nextState,
 				lastState	:	_lastState,
 			});
-			stateFlags |= (1 << FREEZE_ANIMATION);
+			stateFlags |= ENTT_PAUSE_ANIM;
 			curState	= NO_STATE;	// Reset all copied variables to their defaults.
 			nextState	= NO_STATE;
 			lastState	= NO_STATE;
@@ -215,7 +216,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// of the cleanup event's code can be skipped if the menu doesn't have a valid data structure within
 		// said variable. The other check will prevent any menu except the last menu from restoring dynamic
 		// entities to their previous states while also restoring the game's original state.
-		if (!ds_exists(entityStates, ds_type_map) || ds_list_size(global.menuInstances) > 1) {return;}
+		if (!ds_exists(entityStates, ds_type_map) || ds_list_size(global.menuInstances) > 1)
+			return;
 
 		// Return all dynamic entities back to their states from before the menu was opened; cleaning up the
 		// structs and ds_map that temporarily stored those values for the duration of the menu's existence.
@@ -234,7 +236,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 			// The key is the id for the instance that the state data belongs to, so it's what is used to jump
 			// into said entity's scope. Unfreeze the animation state for all entities alonside state reset.
 			with(_key){
-				stateFlags &= ~(1 << FREEZE_ANIMATION);
+				stateFlags &= ~ENTT_PAUSE_ANIM;
 				curState	= _curState;
 				nextState	= _nextState;
 				lastState	= _lastState;
@@ -270,7 +272,9 @@ function par_menu(_index) : base_struct(_index) constructor{
 		highlightTimer -= DELTA_TIME;
 		if (highlightTimer <= 0){
 			highlightTimer = OPTION_FLASH_INTERVAL;
-			stateFlags = CAN_HIGHLIGHT_OPTION ? stateFlags & ~(1 << HIGHLIGHT_OPTION) : stateFlags | (1 << HIGHLIGHT_OPTION);
+			stateFlags = MENU_CAN_HIGHLIGHT ? 
+				stateFlags & ~MENU_HIGHLIGHT_OPTION : 
+				stateFlags |  MENU_HIGHLIGHT_OPTION;
 		}
 	}
 	
@@ -338,8 +342,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// Gather cursor inputs by taking the values returned by the macros for their respective inputs (1 if
 		// the input(s) are held, 0 if they are not) and throw the results into two local variables (0 = both
 		// or none of the inputs are being held for that axis). After that, the auto scroll timer is handled.
-		var _magnitudeX = IS_RIGHT_HELD - IS_LEFT_HELD;
-		var _magnitudeY = IS_DOWN_HELD - IS_UP_HELD;
+		var _magnitudeX = IS_MENU_RIGHT_HELD - IS_MENU_LEFT_HELD;
+		var _magnitudeY = IS_MENU_DOWN_HELD - IS_MENU_UP_HELD;
 		if (_magnitudeX != 0 || _magnitudeY != 0){
 			autoScrollTimer -= DELTA_TIME;
 			// When the timer has reached or gone below zero, the menu will determine if this is the first 
@@ -424,7 +428,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// the newly highlighted option.
 		if (curOption != _curOption){
 			highlightTimer = OPTION_FLASH_INTERVAL;
-			stateFlags |= (1 << HIGHLIGHT_OPTIONS);
+			stateFlags |= MENU_HIGHLIGHT_OPTION;
 		}
 	}
 	
@@ -583,7 +587,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// Remove all the structs that previously existed in the list at the desired position, but don't actually
 		// remove the index from the list; doing so would completely screw up the original option order.
 		with(optionData[| _index]){
-			if (!is_undefined(optionInfo)) {delete optionInfo;}
+			if (!is_undefined(optionInfo)) 
+				delete optionInfo;
 			delete iconData;
 		}
 		delete optionData[| _index];
@@ -598,7 +603,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 	static delete_option = function(_index){
 		if (_index < 0 || _index >= ds_list_size(optionData)) {return;}
 		with(optionData[_index]){
-			if (!is_undefined(optionInfo)) {delete optionInfo;}
+			if (!is_undefined(optionInfo)) 
+				delete optionInfo;
 			delete iconData;
 		}
 		delete optionData[| _index];

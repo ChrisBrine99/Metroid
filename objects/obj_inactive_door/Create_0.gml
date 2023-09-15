@@ -2,11 +2,8 @@
 
 // Since this door is inactive, it will be emitting a light that is much smaller and dimmer than a standard
 // doorway. These macros will store those characteristic values for the radius and strength, repsectively.
-#macro	INACTIVE_LIGHT_RADIUS	32
-#macro	INACTIVE_LIGHT_STRENGTH	0.4
-
-// The light that is utilized by the inactive doorway and only that doorway type.
-#macro	INACTIVE_LIGHT_COLOR	HEX_LIGHT_GRAY
+#macro	LGHT_INACTIVE_RADIUS	32
+#macro	LGHT_INACTIVE_STRENGTH	0.4
 
 // 
 #macro	GENERAL_DOOR			0
@@ -28,7 +25,7 @@
 event_inherited();
 // Alter the ambient light source to match the plasma door's color scheme, while preserving its size and strength.
 // Also swap the sprite to the one that represents the plasma door instead of the default general door.
-lightComponent.set_properties(INACTIVE_LIGHT_RADIUS, INACTIVE_LIGHT_COLOR, INACTIVE_LIGHT_STRENGTH);
+lightComponent.set_properties(LGHT_INACTIVE_RADIUS, HEX_LIGHT_GRAY, LGHT_INACTIVE_STRENGTH);
 entity_set_sprite(spr_inactive_door, -1, 0, 0);
 
 #endregion
@@ -50,39 +47,42 @@ activate_door = function(){
 	switch(trueType){
 		default: // By default the inactive door will become a blue door.
 		case GENERAL_DOOR:
-			lightComponent.set_properties(ACTIVE_LIGHT_RADIUS, GENERAL_LIGHT_COLOR, ACTIVE_LIGHT_STRENGTH);
+			lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_LIGHT_BLUE, LGHT_ACTIVE_STRENGTH);
 			entity_set_sprite(spr_general_door, -1, 0, 0);
 			break;
 		case ICE_DOOR:
-			lightComponent.set_properties(ACTIVE_LIGHT_RADIUS, ICE_LIGHT_COLOR, ACTIVE_LIGHT_STRENGTH);
+			lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_WHITE, LGHT_ACTIVE_STRENGTH);
 			entity_set_sprite(spr_icebeam_door, -1, 0, 0);
 			break;
 		case WAVE_DOOR:
-			lightComponent.set_properties(ACTIVE_LIGHT_RADIUS, WAVE_LIGHT_COLOR, ACTIVE_LIGHT_STRENGTH);
+			lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_LIGHT_PURPLE, LGHT_ACTIVE_STRENGTH);
 			entity_set_sprite(spr_wavebeam_door, -1, 0, 0);
 			break;
 		case PLASMA_DOOR:
-			lightComponent.set_properties(ACTIVE_LIGHT_RADIUS, PLASMA_LIGHT_COLOR, ACTIVE_LIGHT_STRENGTH);
+			lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_LIGHT_RED, LGHT_ACTIVE_STRENGTH);
 			entity_set_sprite(spr_plasmabeam_door, -1, 0, 0);
 			break;
 	}
-	if (activeID != EVENT_FLAG_INVALID) {event_set_flag(activeID, true);}
+	if (activeID != EVENT_FLAG_INVALID) 
+		event_set_flag(activeID, true);
 }
 
 /// @desrciption Alters the door's sprite and its ambient light characteristics to match what they should be
 /// whenever a door is deactivated. Flips the flag that determines if the door will remain active even after
 /// the player has left the room and come back.
 deactivate_door = function(){
-	lightComponent.set_properties(INACTIVE_LIGHT_RADIUS, INACTIVE_LIGHT_COLOR, INACTIVE_LIGHT_STRENGTH);
+	lightComponent.set_properties(LGHT_INACTIVE_RADIUS, HEX_LIGHT_GRAY, LGHT_INACTIVE_STRENGTH);
 	entity_set_sprite(spr_inactive_door, -1, 0, 0);
-	if (activeID != EVENT_FLAG_INVALID) {event_set_flag(activeID, false);}
+	if (activeID != EVENT_FLAG_INVALID) 
+		event_set_flag(activeID, false);
 }
 
 /// @description 
 /// @param {Id.Instance}	projectile	The object that has collided with the door instance in question.
 inactive_door_collision = function(_projectile){
 	// Don't even bother processing collision if the door is still inactive.
-	if (sprite_index == spr_inactive_door) {return false;}
+	if (sprite_index == spr_inactive_door) 
+		return false;
 	
 	var _doorType = trueType;
 	with(_projectile){

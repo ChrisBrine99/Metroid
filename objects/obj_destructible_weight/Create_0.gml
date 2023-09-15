@@ -5,7 +5,7 @@
 event_inherited();
 // Set the overall time that the block will remain "destroyed" for to the value determined in the macro and the
 // sprite index to match what it is in the object editor, which is only set to make it easy to place in rooms.
-timeToRespawn = RESPAWN_TIMER_WEIGHT;
-sprite_index = spr_destructible_weight;
+timeToRespawn	= DEST_RESPAWN_WEIGHT;
+sprite_index	= spr_destructible_weight;
 
 #endregion

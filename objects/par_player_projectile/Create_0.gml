@@ -77,7 +77,7 @@ __initialize = initialize;
 initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	__initialize(_state); // Calls initialize function found in "par_dynamic_entity".
 	set_initial_position(_x, _y, _imageXScale);
-	stateFlags |= (1 << DRAW_SPRITE);
+	stateFlags |= ENTT_DRAW_SELF;
 	
 	// Damage is always quadrupled for a charged projectile and the bit flag is flipped in case the fact that 
 	// the projectile is charged needs to be referenced after creation.
@@ -103,7 +103,7 @@ set_initial_position = function(_x, _y, _imageXScale){
 	// beam's position in her current sprite/animation.
 	var _stateFlags = 0;
 	with(PLAYER){
-		_stateFlags |= (stateFlags & (PLYR_CROUCHED | PLYR_MOVING | (1 << GROUNDED) 
+		_stateFlags |= (stateFlags & (PLYR_CROUCHED | PLYR_MOVING | DNTT_GROUNDED 
 								| PLYR_AIMING_DOWN | PLYR_AIMING_UP));
 	}
 	
@@ -113,7 +113,7 @@ set_initial_position = function(_x, _y, _imageXScale){
 	var _aimDirection = (_stateFlags & (PLYR_AIMING_DOWN | PLYR_AIMING_UP));
 	switch(_aimDirection){
 		default: // Aiming forward (Can be standing, walking, crouching, or airbourne).
-			if ((_stateFlags & (1 << GROUNDED)) != 0){
+			if ((_stateFlags & DNTT_GROUNDED) != 0){
 				if ((_stateFlags & PLYR_CROUCHED) != 0){
 					// Crouching Offset // 
 					x = _x + (14 * _imageXScale);
@@ -141,7 +141,7 @@ set_initial_position = function(_x, _y, _imageXScale){
 			image_xscale = _imageXScale;
 			break;
 		case PLYR_AIMING_UP: // Aiming upward (Can be standing, walking, or airbourne).
-			if ((_stateFlags & (1 << GROUNDED)) != 0){
+			if ((_stateFlags & DNTT_GROUNDED) != 0){
 				if ((_stateFlags & PLYR_MOVING) != 0){
 					// Walking Offset //
 					x = _x + (2 * _imageXScale);
@@ -191,7 +191,7 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 		}
 		projectile_door_collision(_collider);
 		projectile_destructible_collision(_collider);
-		if (IS_DESTROYED)
+		if (ENTT_IS_DESTROYED)
 			break;
 	}
 
@@ -207,8 +207,8 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	// There was one or more collisions found along the projectile's line of movement, so it will be destroyed
 	// at the start of the next frame and its movement that should've occurred during this frame will be ignored.
 	if (_length > 0){
-		stateFlags &= ~(1 << DRAW_SPRITE);
-		stateFlags |= (1 << DESTROYED);
+		stateFlags &= ~ENTT_DRAW_SELF;
+		stateFlags |=  ENTT_DESTROYED;
 		_deltaHspd = 0;
 		_deltaVspd = 0;
 		return;
@@ -230,7 +230,7 @@ projectile_destructible_collision = function(_instance){
 		// the game will crash trying to access variables that don't exist on the object as the collision list
 		// stores children of ANY collision object and not just the group this function processes. Also, ignore
 		// the collision if the destructible is already destroyed.
-		if (!object_is_ancestor(object_index, par_destructible) || IS_DESTROYED) {return;}
+		if (!object_is_ancestor(object_index, par_destructible) || ENTT_IS_DESTROYED) {return;}
 		
 		// Check the index of this destructible against all possible destructilbe objects that can be destroyed
 		// by one of the player's many projectile weapons. If the index matchs, another check will be performed
@@ -244,11 +244,11 @@ projectile_destructible_collision = function(_instance){
 		// If the destruction of the object was a success, trigger it to destroy and play the animation for that
 		// while also setting its hidden flag to false so it will be visible even after it has regenerated.
 		if (_isDestroyed) {destructible_destroy_self();}
-		stateFlags &= ~(1 << HIDDEN);
+		stateFlags &= ~(1 << DEST_HIDDEN);
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
+	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= ENTT_DESTROYED;}
 }
 
 /// @description Checks the projectile against the various door types that exist within the game to see if it
@@ -261,7 +261,8 @@ projectile_door_collision = function(_instance){
 	with(_instance){
 		// Make sure the instance that is being checked is a child of the generic door object. Otherwise, the 
 		// object will try to reference objects that don't exist in it and the game will crash due to the error.
-		if (!object_is_ancestor(object_index, obj_general_door) && object_index != obj_general_door) {break;}
+		if (!object_is_ancestor(object_index, obj_general_door) && object_index != obj_general_door)
+			break
 		
 		// Check the door instance against all possible door objects to see which it matches up with; performing
 		// a check against the projectile to see if it matches what is required to open the door.
@@ -280,13 +281,14 @@ projectile_door_collision = function(_instance){
 		// it to animate at full speed. Optionally, the flag for the door is set so it won't have to be unlocked
 		// by the player again even after leaving the room.
 		if (_isDestroyed){
-			if (flagID != EVENT_FLAG_INVALID) {event_set_flag(flagID, true);}
+			if (flagID != EVENT_FLAG_INVALID) 
+				event_set_flag(flagID, true);
 			animSpeed = 1;
 		}
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= (1 << DESTROYED);}
+	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= ENTT_DESTROYED;}
 }
 
 /// @description Checks collision against any enemy colliders the projectile instance may have come into contact
@@ -315,7 +317,7 @@ projectile_enemy_collision = function(_x2, _y2){
 			// the projectile not have its "IGNORE_ENTITIES" flags set to 1.
 			if (isImmunityArea){
 				if (!_ignoreEntities){
-					_stateFlags |= (1 << DESTROYED);
+					_stateFlags |= ENTT_DESTROYED;
 					break;
 				}
 				continue; // Move onto next collider if the projectile wasn't destroyed.
@@ -327,7 +329,7 @@ projectile_enemy_collision = function(_x2, _y2){
 				// Check if the entity has already been hit by the projectile. This ensures that a single
 				// projectile can't deal damage to an entity more than once if that situation were to ever
 				// occur during runtime. A current hitstunned Enemy will also not take damage.
-				if (ds_list_find_index(_hitEntityIDs, id) != -1 || IS_HIT_STUNNED)
+				if (ds_list_find_index(_hitEntityIDs, id) != -1 || ENTT_IS_HIT_STUNNED)
 					continue;
 				ds_list_add(_hitEntityIDs, id);
 			
@@ -340,7 +342,7 @@ projectile_enemy_collision = function(_x2, _y2){
 		// After the collider has been processed, a check to see if the projectile should be deleted is
 		// performed. The only projectile weapon that bypasses this is the Plasma Beam.
 		if (!_ignoreEntities){
-			_stateFlags |= (1 << DESTROYED);
+			_stateFlags |= ENTT_DESTROYED;
 			break; // Projectile was destroyed; break out of the loop early.
 		}
 	}

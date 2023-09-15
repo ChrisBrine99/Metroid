@@ -68,7 +68,8 @@ initialize = function(_state){
 state_default = function(){
 	// Prevent the spawner from incrementing its spawn timer if it is currently off-screen, deactivated, has
 	// the maximum amount of instances it can create alive in the world OR it doesn't have a object to spawn.
-	if (!IS_ON_SCREEN || !IS_ACTIVE || curInstances == maxInstances || objToSpawn == noone) {return;}
+	if (!ENTT_ON_SCREEN || curInstances == maxInstances || objToSpawn == noone) 
+		return;
 	
 	spawnTimer += DELTA_TIME;
 	if (spawnTimer > timeToSpawn){ // Spawn Enemy object and link it to the spawner that created it.

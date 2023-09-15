@@ -47,8 +47,8 @@ state_default = function(){
 	hitpoints += DELTA_TIME;
 	if (hitpoints >= maxHitpoints){
 		object_set_next_state(NO_STATE);
-		stateFlags &= ~(1 << DRAW_SPRITE);
-		stateFlags |=  (1 << DESTROYED);
+		stateFlags &= ~ENTT_DRAW_SELF;
+		stateFlags |=  ENTT_DESTROYED;
 		return;
 	}
 	
@@ -56,7 +56,7 @@ state_default = function(){
 	// handling. After that process is completed, a collision check against the player object is performed if
 	// the bullet instance wasn't destroyed by colliding with the world.
 	apply_frame_movement(entity_world_collision, false);
-	if (!IS_DESTROYED) {projectile_player_collision();}
+	if (!ENTT_IS_DESTROYED) {projectile_player_collision();}
 }
 
 #endregion

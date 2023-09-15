@@ -14,7 +14,7 @@ event_inherited();
 // Set the collectibles up so that can draw their sprites to the screen for the player to see. Reset the value
 // within "sprite_index" to its default so the function "entity_set_sprite" can be properly used to initialize
 // the sprite within code.
-stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+stateFlags	   |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 sprite_index	= NO_SPRITE;
 visible			= true;
 
@@ -71,7 +71,7 @@ collectible_collect_self = function(){
 	
 	// Triggers the collectible to delete itself once it's collected by the player. Its visibility is
 	// set to false to prevent the object from being drawn after it's technically been "destroyed".
-	stateFlags |= (1 << DESTROYED);
+	stateFlags |= ENTT_DESTROYED;
 	visible = false;
 	
 	// 
@@ -81,7 +81,9 @@ collectible_collect_self = function(){
 	with(MAP_MANAGER){
 		_cellX += rOriginX;	// Offset based on room's current origin on the map.
 		_cellY += rOriginY;
-		if (_cellX < 0 || _cellX >= MAP_GRID_WIDTH || _cellY < 0 || _cellY >= MAP_GRID_HEIGHT) {return;}
+		if (_cellX < 0 || _cellX >= MAP_GRID_WIDTH || _cellY < 0 || _cellY >= MAP_GRID_HEIGHT) 
+			return;
+			
 		with(cells[# _cellX, _cellY]) {icon = ICON_ITEM_COLLECTED;}
 	}
 }

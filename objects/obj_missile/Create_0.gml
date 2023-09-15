@@ -35,11 +35,11 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	if (event_get_flag(FLAG_SUPER_MISSILES)){
 		entity_set_sprite(spr_super_missile, -1);
 		stateFlags |= (1 << TYPE_SUPER_MISSILE);
-		damage = 16;	// Damage is quadruplued.
-		maxHspd = 12;	// Maximum speed is increased.
-		maxVspd = 12;
-		hAccel = 0.75;	// Start-up acceleration is heavily improved.
-		vAccel = 0.75;
+		damage		= 16;	// Damage is quadruplued.
+		maxHspd		= 12;	// Maximum speed is increased.
+		maxVspd		= 12;
+		hAccel		= 0.75;	// Start-up acceleration is heavily improved.
+		vAccel		= 0.75;
 	} else{ // Missile not upgraded; remains standard.
 		entity_set_sprite(spr_missile, -1);
 		stateFlags |= (1 << TYPE_MISSILE);
@@ -75,7 +75,7 @@ state_default = function(){
 	// go along with that missile explosion in the super missile's case. That is done here and not the destroy
 	// event in order to prevent the explosion for being created by the missile being destroyed by just going
 	// off-screen.
-	if (IS_DESTROYED){
+	if (ENTT_IS_DESTROYED){
 		if (stateFlags & (1 << TYPE_SUPER_MISSILE)){ // Super missile's destruction effects.
 			// -- Create super missile explosion effect here -- // 
 			camera_set_shake(5, 15);

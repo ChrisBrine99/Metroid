@@ -196,16 +196,37 @@
 //	light component at. These values are swapped in and out as required based on what Samus is doing.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
+// --- Coordinates for Visor While Standing/Walking --- //
 #macro	LGHT_VISOR_X_GENERAL	4 * image_xscale
 #macro	LGHT_VISOR_Y_GENERAL   -33
+// --- Coordinates for Visor While Aiming Down --- //
 #macro	LGHT_VISOR_X_DOWN		7 * image_xscale
 #macro	LGHT_VISOR_Y_DOWN	   -28
+// --- Coordinates for Visor While Crouching --- //
 #macro	LGHT_VISOR_X_CROUCH		3 * image_xscale
 #macro	LGHT_VISOR_Y_CROUCH	   -23
+// --- Coordinates for Visor During Morphball Enter/Exit Animation --- //
 #macro	LGHT_VISOR_X_TRANSFORM	2 * image_xscale
 #macro	LGHT_VISOR_Y_TRANSFORM -18
+// --- Coordinates for Visor During Somersault Animation --- //
+#macro	LGHT_VISOR_X_FLIP0		3 * image_xscale
+#macro	LGHT_VISOR_Y_FLIP0	   -26
+#macro	LGHT_VISOR_X_FLIP1		6 * image_xscale
+#macro	LGHT_VISOR_Y_FLIP1	   -16
+#macro	LGHT_VISOR_X_FLIP2	   -5 * image_xscale
+#macro	LGHT_VISOR_Y_FLIP2	   -14
+#macro	LGHT_VISOR_X_FLIP3	   -7 * image_xscale
+#macro	LGHT_VISOR_Y_FLIP3	   -24
+// --- Coordinates for Screw Attack Flashes --- //
 #macro	LGHT_SCREWATK_X			0
 #macro	LGHT_SCREWATK_Y		   -20
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Simply holds the value for the length of the array storing "obj_player_ghost_effect" structs so the	   //
+//	number isn't hardcoded all over the place.
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_NUM_GHOST_EFFECTS	8
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Characteristics about the Phase Shift aeion ability; its speed (Only applies to the x axis since the   //
@@ -365,7 +386,10 @@ liquidData = {
 };
 
 // 
-ghostEffectID	= ds_list_create();
+ghostEffectIndex	= 0;
+ghostEffectIDs		= array_create(PLYR_NUM_GHOST_EFFECTS, noone);
+for (var i = 0; i < PLYR_NUM_GHOST_EFFECTS; i++)
+	ghostEffectIDs[i] = instance_create_struct(obj_player_ghost_effect);
 
 // 
 warpID = noone;
@@ -434,7 +458,8 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 	if (movement != 0){ // Player is moving; apply acceleration in required direction.
 		// Optionally snapping Samus's current velocity to zero if she changes directions without coming to
 		// a complete stop beforehand.
-		if (_snapToZero && ((movement == MOVE_DIR_LEFT && hspd > 0.0) || (movement == MOVE_DIR_RIGHT && hspd < 0.0))){
+		if (_snapToZero && ((movement == MOVE_DIR_LEFT && hspd > 0.0) || 
+				(movement == MOVE_DIR_RIGHT && hspd < 0.0))){
 			hspdFraction = 0.0;
 			hspd = 0.0;
 		}
@@ -470,7 +495,7 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 	// player was holding either the right or left movement inputs; making her run while against walls due
 	// to that "moving" flag never being set to false despite any actual movement being obstructed.
 	var _movement = x + movement;
-	if (movement != 0 && IS_GROUNDED && place_meeting(_movement, y, par_collider)){
+	if (movement != 0 && DNTT_IS_GROUNDED && place_meeting(_movement, y, par_collider)){
 		var _yOffset = 0;
 		while(place_meeting(_movement, y - _yOffset, par_collider) && _yOffset < maxHspd) 
 			_yOffset++;
@@ -486,7 +511,7 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 /// @description 
 /// @param {Bool}	skipAnimTime	Optional skip over start up animation that plays after the player presses the jump button.
 grounded_to_airbourne = function(_skipAnimTime = true){
-	if (!IS_GROUNDED && !PLYR_IN_MORPHBALL){
+	if (!DNTT_IS_GROUNDED && !PLYR_IN_MORPHBALL){
 		object_set_next_state(state_airbourne);
 		entity_set_sprite(jumpSpriteFw, jumpingMask);
 		stateFlags	   &= ~PLYR_MOVING;
@@ -612,6 +637,55 @@ update_arm_cannon = function(_movement){
 	}
 }
 
+/// @description 
+/// @param {Real}	color		Hue to blend the ghost sprite with.
+/// @param {Real}	alpha		Total opacity of the ghosting effect (Higher == longer last effect).
+/// @param {Bool}	drawCannon	Determines whether or not the ghosting effect should render Samus's arm cannon or not.
+create_ghosting_effect = function(_color, _alpha, _drawCannon){
+	// 
+	var _x			= x;
+	var _y			= y;
+	var _sprite		= sprite_index;
+	var _xScale		= image_xscale;
+	var _image		= floor(imageIndex);
+	var _armCannon	= armCannon;
+	with(ghostEffectIDs[ghostEffectIndex]){
+		visible		 = true;	// Set visiblity to "true" to enable effect's processing.
+		x			 = _x;
+		y			 = _y;
+		sprite_index = _sprite;
+		image_xscale = _xScale;
+		image_blend	 = _color;
+		imageIndex	 = _image;
+		alpha		 = _alpha;
+		
+		// Skip accessing the arm cannon struct that exists within this effect object instance if it doesn't
+		// need to be drawn for the given sprite. Otherwise, copy all required sprite flipping and position
+		// offset data so it matches how Samus's normal sprite should look.
+		if (!_drawCannon) {break;}
+		drawArmCannon = _drawCannon;
+		with(armCannon){
+			var _xx = 0;
+			var _yy = 0;
+			with(_armCannon){
+				_xx		= x;
+				_yy		= y;
+				_image	= imageIndex;
+			}
+			x			 = _xx;
+			y			 = _yy;
+			image_xscale = _xScale;
+			imageIndex	 = _image;
+		}
+	}
+	
+	// Increment value stored by one so the next instance within the array is reset upon calling this function
+	// again. The value is wrapped back around to 0 once it exceeds the limit of the array.
+	ghostEffectIndex++;
+	if (ghostEffectIndex == PLYR_NUM_GHOST_EFFECTS)
+		ghostEffectIndex = 0;
+}
+
 /// @description Resets Samus's ambient light source to match the settings it had when it was being used to
 /// represent the light coming from her helmet's visor. It will assume Samus is standing, and will place the
 /// light at the offset that matches such a state.
@@ -714,7 +788,7 @@ activate_phase_shift = function(_movement){
 	// Apply the correct state and flags to Samus to signify to other objects she's executing her phase shift.
 	// Change required variables to values they need to be during the ability's effect.
 	object_set_next_state(state_phase_shift);
-	stateFlags		   &= ~((1 << DRAW_SPRITE) | PLYR_SOMERSAULT | PLYR_SCREWATK);
+	stateFlags		   &= ~ENTT_DRAW_SELF | PLYR_SOMERSAULT | PLYR_SCREWATK;
 	stateFlags		   |= PLYR_PHASE_SHIFT;
 	effectTimer			= PLYR_SHIFT_INTERVAL;
 	aeionCooldownTimer	= PLYR_PSHIFT_COOLDOWN;
@@ -963,13 +1037,11 @@ initialize = function(_state){
 	entity_set_position(480, 320);
 	object_add_light_component(x, y, 0, 
 		LGHT_VISOR_Y_GENERAL, LGHT_VISOR_RADIUS, HEX_LIGHT_GREEN, LGHT_VISOR_STRENGTH, true);
-	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << INVINCIBLE);
+	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM | ENTT_INVINCIBLE;
 	
-	// 
+	// FOR TESTING
 	var _hitpoints = hitpoints;
 	with(GAME_HUD) {pCurEnergy = _hitpoints;}
-	
-	// 
 	game_set_state(GSTATE_NORMAL, true);
 }
 
@@ -997,8 +1069,8 @@ update_hitpoints = function(_modifier){
 		// no longer show up on screen. The destroyed flag is flipped, but since the player object is set
 		// to "invincible" they won't be deleted from the game.
 		curState	= NO_STATE;
-		stateFlags &= ~((1 << DRAW_SPRITE) | (1 << HIT_STUNNED));
-		stateFlags |= (1 << DESTROYED);
+		stateFlags &= ~(ENTT_DRAW_SELF | ENTT_HIT_STUNNED);
+		stateFlags |= ENTT_DESTROYED;
 		
 		// TODO -- Trigger death effect here.
 	}
@@ -1029,7 +1101,7 @@ update_aeion = function(_modifier){
 fallthrough_floor_collision = function(){
 	var _floorCollapsed = false;
 	with(instance_place(x, y + 1, obj_destructible_weight)){
-		if (!IS_DESTROYED){
+		if (!ENTT_IS_DESTROYED){
 			destructible_destroy_self();
 			_floorCollapsed = true;
 		}
@@ -1048,7 +1120,7 @@ fallthrough_floor_collision = function(){
 player_collectible_collision = function(){
 	with(instance_nearest(x, y, par_collectible)){
 		mask_index = -1; // Temporarily enable the collectible's collision box to check again the player's.
-		if (!IS_HIDDEN && place_meeting(x, y, PLAYER)) 
+		if (!DEST_IS_HIDDEN && place_meeting(x, y, PLAYER)) 
 			collectible_collect_self();
 		mask_index = spr_empty_mask;
 	}
@@ -1132,7 +1204,7 @@ player_liquid_collision = function(){
 		}
 		
 		// 
-		if (_damage != 0 && !IS_HIT_STUNNED){
+		if (_damage != 0 && !ENTT_IS_HIT_STUNNED){
 			stateFlags	   |= PLYR_SPRITE_FLICKER;
 			flickerTimer	= PLYR_HIT_INTERVAL;
 		}
@@ -1184,7 +1256,7 @@ player_warp_collision = function(){
 /// she is, the function will perform no collision check. If an enemy was collided with and Samus wasn't in
 /// that hitstun/recovery state, she'll be damaged and sent into said state.
 player_enemy_collision = function(){
-	if (IS_HIT_STUNNED) {return;}
+	if (ENTT_IS_HIT_STUNNED) {return;}
 	
 	var _enemy = instance_place(x, y, par_enemy);
 	if (_enemy != noone){
@@ -1261,7 +1333,7 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	// Regardless of if in her morhpball mode or not, Samus will always be set to move backwards horizontally
 	// and upward; resulting in an up-right or up-left trajectory depending on the direction she was facing
 	// at the time of the attack.
-	stateFlags	   &= ~(1 << GROUNDED);
+	stateFlags	   &= ~DNTT_GROUNDED;
 	flickerTimer	= PLYR_HIT_INTERVAL;
 	hspd			= get_max_hspd() * 0.5 * -image_xscale;
 	vspd			= -2.75;
@@ -1319,7 +1391,7 @@ state_room_warp = function(){
 					y			= _y;
 					// Properly offset Samus relative to how far she is off the ground relative to the
 					// target y of the warp IF the door is a horizontal doorway while she's jumping.
-					if ((_doorAngle == DIRECTION_EAST || _doorAngle == DIRECTION_WEST) && !IS_GROUNDED)
+					if ((_doorAngle == DIRECTION_EAST || _doorAngle == DIRECTION_WEST) && !DNTT_IS_GROUNDED)
 						y = _y - (_bottom - _prevY);
 					warpID = noone;
 					
@@ -1351,7 +1423,7 @@ state_room_warp = function(){
 		} else if (alpha == 0.0 && alphaTarget == 0.0){
 			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
 				object_set_next_state(lastState);
-				stateFlags &= ~(1 << FREEZE_ANIMATION);
+				stateFlags &= ~ENTT_PAUSE_ANIM;
 				warpID		= noone;
 			}
 		}
@@ -1386,7 +1458,7 @@ state_default = function(){
 			stateFlags |= PLYR_SOMERSAULT;
 			effectTimer = PLYR_JUMP_INTERVAL;
 		}
-		stateFlags &= ~((1 << GROUNDED) | PLYR_MOVING);
+		stateFlags &= ~(DNTT_GROUNDED | PLYR_MOVING);
 		vspd		= get_max_vspd();
 		return; // State changed; don't process movement/animation within this function.
 	}
@@ -1442,7 +1514,8 @@ state_default = function(){
 	if (PLYR_PSHIFT_PRESSED && activate_phase_shift(movement)) 
 		return;
 		
-	// 
+	// Apply the correct horizontal light offset for the visor based on what direction Samus is currently
+	// facing (This is determines by a 1 (Right) or -1 (Left) within "image_xscale".
 	lightOffsetX = LGHT_VISOR_X_GENERAL;
 	
 	// Call the functions that update Samus's arm cannon; counting down its timers for the currently in-use 
@@ -1500,7 +1573,7 @@ state_airbourne = function(){
 	// has touched the floor. If she did, she will return from her airborune state to her default state, and
 	// her horizontal velocity is reset as well as any jumping-specific substate flags.
 	apply_gravity(PLYR_MAX_FALL_SPEED);
-	if (IS_GROUNDED){
+	if (DNTT_IS_GROUNDED){
 		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
 		// Samus's horizontal velocity to make it add to the impact of Samus landing. Also reset the light
 		// source to act as the visor once again.
@@ -1663,20 +1736,20 @@ state_airbourne = function(){
 		// Update offset of the light to match where Samus's visor is for each frame of her somersault.
 		switch(floor(imageIndex)){
 			case 0: // Visor is on top of the image.
-				lightOffsetX = 3 * image_xscale;
-				lightOffsetY = -26;
+				lightOffsetX = LGHT_VISOR_X_FLIP0;
+				lightOffsetY = LGHT_VISOR_Y_FLIP0;
 				break;
 			case 1: // Visor is to the right of the image.
-				lightOffsetX = 6 * image_xscale;
-				lightOffsetY = -16;
+				lightOffsetX = LGHT_VISOR_X_FLIP1;
+				lightOffsetY = LGHT_VISOR_Y_FLIP1;
 				break;
 			case 2: // Visor is on the bottom of the image.
-				lightOffsetX = -5 * image_xscale;
-				lightOffsetY = -14;
+				lightOffsetX = LGHT_VISOR_X_FLIP2;
+				lightOffsetY = LGHT_VISOR_Y_FLIP2;
 				break;
 			case 3: // Visor is on the left of the image.
-				lightOffsetX = -7 * image_xscale;
-				lightOffsetY = -24;
+				lightOffsetX = LGHT_VISOR_X_FLIP3;
+				lightOffsetY = LGHT_VISOR_Y_FLIP3;
 		}
 	}
 	
@@ -1686,7 +1759,6 @@ state_airbourne = function(){
 	apply_frame_movement(entity_world_collision);
 	player_collectible_collision();
 	player_item_drop_collision();
-	fallthrough_floor_collision();
 	player_liquid_collision();
 	player_enemy_collision();
 	player_warp_collision();
@@ -1696,9 +1768,7 @@ state_airbourne = function(){
 	if (sprite_index == jumpSpriteSpin){
 		effectTimer += DELTA_TIME;
 		if (effectTimer >= PLYR_JUMP_INTERVAL){
-			ds_list_add(ghostEffectID, 
-				create_player_ghost_effect(x, y, sprite_index, 
-					floor(imageIndex), image_xscale, c_white, 0.5));
+			create_ghosting_effect(c_white, 0.5, false);
 			effectTimer = 0.0;
 		}
 	}
@@ -1830,7 +1900,7 @@ state_enter_morphball = function(){
 		// mode, or her crouching state if she was on the ground.
 		stateFlags &= ~PLYR_MORPHBALL;
 		reset_light_source();
-		if (!IS_GROUNDED){
+		if (!DNTT_IS_GROUNDED){
 			object_set_next_state(state_airbourne);
 			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(jumpSpriteFw, jumpingMask);
@@ -1868,9 +1938,9 @@ state_morphball = function(){
 	// morphball airborune again until that velocity threshold is passed.
 	if (vspd >= 4.5 && !PLYR_SUBMERGED) {vspdRecoil = vspd * 0.5;}
 	apply_gravity(PLYR_MAX_FALL_SPEED);
-	if (IS_GROUNDED){
+	if (DNTT_IS_GROUNDED){
 		if (vspdRecoil > 0){ // Causes the morphball recoil bounce.
-			stateFlags &= ~(1 << GROUNDED);
+			stateFlags &= ~DNTT_GROUNDED;
 			vspd		= -vspdRecoil;
 			vspdRecoil	= 0.0;
 		} else if (hspd != 0 && vspd == 0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
@@ -1881,8 +1951,8 @@ state_morphball = function(){
 	// Handling the morphball's jumping capabilities, which are unlocked after Samus collects the "Spring Ball"
 	// upgrade. Once acquired, Samus can press the jump input while grounded to jump into the air as she would
 	// while in her suit form.
-	if (PLYR_JUMP_PRESSED && IS_GROUNDED && vspdRecoil == 0.0 && event_get_flag(FLAG_SPRING_BALL)){
-		stateFlags &= ~(1 << GROUNDED);
+	if (PLYR_JUMP_PRESSED && DNTT_IS_GROUNDED && vspdRecoil == 0.0 && event_get_flag(FLAG_SPRING_BALL)){
+		stateFlags &= ~DNTT_GROUNDED;
 		vspd		= PLYR_BASE_JUMP * maxVspdFactor;
 	}
 	if (PLYR_JUMP_RELEASED && vspd < 0.0) 
@@ -1891,7 +1961,7 @@ state_morphball = function(){
 	// Handling horizontal movement while in morphball mode, which functions very similar to how said movement
 	// works in Samus's default suit form. Holding left or right (But not both at once) will result in her
 	// moving in the desired direction; releasing said key will slow her down until she is no longer moving.
-	process_horizontal_movement(1.0, 0.6, IS_GROUNDED, IS_GROUNDED);
+	process_horizontal_movement(1.0, 0.6, DNTT_IS_GROUNDED, DNTT_IS_GROUNDED);
 	
 	// Exiting out of morphball mode, which will call the function that checks for a collision directly above
 	// Samus's head. If there's a collision, she'll be unable to transform back into her standard form.
@@ -2005,7 +2075,7 @@ state_phase_shift = function(){
 		
 		reset_light_source();
 		stateFlags	   &= ~PLYR_PHASE_SHIFT;
-		stateFlags	   |= (1 << DRAW_SPRITE);
+		stateFlags	   |=  ENTT_DRAW_SELF;
 		curShiftDist	= 0;
 		hspd			= 0.0;
 		maxHspd			= prevMaxHspd;
@@ -2017,7 +2087,7 @@ state_phase_shift = function(){
 	// a "ghost" of Samus will be created as part of the phase shift's animation.
 	effectTimer += DELTA_TIME;
 	if (effectTimer >= PLYR_SHIFT_INTERVAL){
-		ds_list_add(ghostEffectID, create_player_ghost_effect(x, y, sprite_index, floor(imageIndex), image_xscale, HEX_LIGHT_BLUE, 0.75, armCannon.visible));
+		create_ghosting_effect(HEX_LIGHT_BLUE, 0.75, armCannon.visible);
 		effectTimer -= PLYR_SHIFT_INTERVAL;
 	}
 	

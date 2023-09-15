@@ -11,7 +11,7 @@ var _length = ds_list_size(global.menuInstances);
 for (var i = 0; i < _length; i++){
 	with(global.menuInstances[| i]){
 		end_step();
-		if (IS_DESTROYED){
+		if (MENU_IS_DESTROYED){
 			instance_destroy_menu_struct(object_index);
 			_length--; // Decrement i and length since an index in the list was removed.
 			i--;

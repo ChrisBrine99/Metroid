@@ -1,19 +1,25 @@
 #region Macros utilized by all dynamic entities
 
-// Positions for the bits that toggle on and off these main entity "states" stored within the "stateFlags"
-// variable found in each child of this object. These are unique to "par_dynamic_entity" and its children.
-#macro	DESTRUCTIBLE			21
-#macro	GROUNDED				22
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the bits within the "stateFlags" variable. They represent substates for bits that are       //
+//	unique to dynamic entities; altering their general functionality based on the value stored at these	   //
+//	bit position in the variable.																		   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Simplified checks of each default "state" flags condensed into macros that explain what they functionally
-// do. Otherwise, there would be a bunch of the same bitwise operations all over the code, which is messy.
-#macro	DESTROY_WALL_COLLIDE	(stateFlags & (1 << DESTRUCTIBLE) != 0)
-#macro	IS_GROUNDED				(stateFlags & (1 << GROUNDED) != 0)
+#macro	DNTT_DESTRUCTIBLE			0x00200000
+#macro	DNTT_GROUNDED				0x00400000
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check for these general Entity substates.					   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	DNTT_IS_DESTRUCTIBLE	(stateFlags & DNTT_DESTRUCTIBLE)
+#macro	DNTT_IS_GROUNDED		(stateFlags & DNTT_GROUNDED)
 
 // Flags for the Entity slope collision function to let it know which direction a slope is so the function
 // can calculate collisions according to that direction.
-#macro	SLOPE_UPWARD		   -1
-#macro	SLOPE_DOWNWARD			1
+#macro	DNTT_SLOPE_UPWARD	   -1
+#macro	DNTT_SLOPE_DOWNWARD		1
 
 #endregion
 
@@ -29,27 +35,27 @@ visible			= false;
 // The three state variables, which will store the currently execution state function, the previous state
 // state function that was in use, and the next available state function to swap too at the beginning of the
 // next frame (The state won't change whenever "curState" and "nextState" store the same function pointer).
-curState	= NO_STATE;
-lastState	= NO_STATE;
-nextState	= NO_STATE;
+curState		= NO_STATE;
+lastState		= NO_STATE;
+nextState		= NO_STATE;
 
 // 32-bits that can each represent their own functionality within any children of this object. However, the 
 // top eight bits are reserved for generic flags that are required for an entity to function properly.
-stateFlags = (1 << ACTIVE);
+stateFlags = ENTT_ACTIVE;
 
 // Variables for keeping track of and manipulating an audio component that can optionally be attached to an
 // entity. The first variable stores the pointer to the attached component, whereas the last two variables
 // allow the component to be offset from the entity's position based on their respective values.
-audioComponent = noone;
-audioOffsetX = 0;
-audioOffsetY = 0;
+audioComponent	= noone;
+audioOffsetX	= 0;
+audioOffsetY	= 0;
 
 // Much like above, this group of variables will keep track of and manipulate a component, but its focus is
 // the optional light component that can be attached to an entity. The first variable stores the pointer,
 // and the last two store the offset position to place the light at relative to the entity's position.
-lightComponent = noone;
-lightOffsetX = 0;
-lightOffsetY = 0;
+lightComponent	= noone;
+lightOffsetX	= 0;
+lightOffsetY	= 0;
 
 // Unused variables that's a holdover from Project Dread since both projects use the same base functionalities.
 // interactComponent = noone;
@@ -72,18 +78,18 @@ vspd = 0.0;
 
 // The current horizontal and vertical acceleration values for the entity, as well as their factors to allow
 // real-time adjustments to their values without actually overwriting those values.
-hAccel = 0.0;
-vAccel = 0.0;
-hAccelFactor = 1.0;
-vAccelFactor = 1.0;
+hAccel			= 0.0;
+vAccel			= 0.0;
+hAccelFactor	= 1.0;
+vAccelFactor	= 1.0;
 
 // The maximum possible horizontal movement speed, and the maximum falling speed OR vertical movement speed
 // (This can change depending on the entity in question). Much like acceleration, the maximum velocity values
 // allow for real-time adjustment of said values without having to overwrite those values.
-maxHspd = 0.0;
-maxVspd = 0.0;
-maxHspdFactor = 1.0;
-maxVspdFactor = 1.0;
+maxHspd			= 0.0;
+maxVspd			= 0.0;
+maxHspdFactor	= 1.0;
+maxVspdFactor	= 1.0;
 
 // Variables that are responsible for storing the decimal values of the horizontal and vertical celocities,
 // respectively. Once a whole number exists within these values, they will be parsed out and used for entity
@@ -94,8 +100,8 @@ vspdFraction = 0.0;
 // The number of hitpoints the entity has currently, as well as the maximum possible value they can have. Once
 // the entity's hitpoints reach or go below a value of zero, they will be destroyed at the start of the next 
 // frame (If the flag for invulnerability isn't set to 1).
-hitpoints = 0;
-maxHitpoints = 0;
+hitpoints		= 0;
+maxHitpoints	= 0;
 
 // Variables for tracking the current duration of a hitstun and the total length required for the hitstun to
 // end its effects, repsectively. The final variables determine how long AFTER the hitstun that the entity will
@@ -137,7 +143,7 @@ initialize = function(_state){
 /// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage = 0){
 	update_hitpoints(-_damage);
-	stateFlags	   |= (1 << HIT_STUNNED);
+	stateFlags	   |= ENTT_HIT_STUNNED;
 	hitstunLength	= _duration;
 	hitstunTimer	= 0.0;
 	recoveryTimer	= 0.0;
@@ -173,9 +179,9 @@ apply_gravity = function(_maxFallSpeed){
 	// flag to true or false while removing gravity's effect, respectively.
 	var _onGround		= place_meeting(x, y + 1, par_collider);
 	if (!_onGround){
-		stateFlags	   &= ~(1 << GROUNDED);
-	} else if (!IS_GROUNDED && vspd >= 0.0 && _onGround){
-		stateFlags	   |= (1 << GROUNDED);
+		stateFlags	   &= ~DNTT_GROUNDED;
+	} else if (!DNTT_IS_GROUNDED && vspd >= 0.0 && _onGround){
+		stateFlags	   |= DNTT_GROUNDED;
 		vspdFraction	= 0.0;
 		vspd			= 0.0;
 	}
@@ -244,7 +250,7 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 			// First, a check for a potential upward slope is processed prior to any horizontal movement
 			// occurring. If there is, the Entity will be moved along it if allowed, and the main chunk of the
 			// horizontal collision processing will occur if a collision is still occurring.
-			if (!_ignoreSlopes) {entity_world_slope_collision(_destX, y, SLOPE_UPWARD, false);}
+			if (!_ignoreSlopes) {entity_world_slope_collision(_destX, y, DNTT_SLOPE_UPWARD, false);}
 			if (place_meeting(_destX, y, par_collider)){
 				// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
 				// direction of their current horizontal velocity.
@@ -255,8 +261,8 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 				// If the Entity is destroyed by wall collisions, it will be destroyed here. Then, the function 
 				// is exited early since the remaining code doesn't need to be processed for a new destroyed 
 				// Entity. Otherwise, "_destX" is set to X to prevent further movement and "hspd" is set to 0.
-				if (DESTROY_WALL_COLLIDE){
-					stateFlags |= (1 << DESTROYED);
+				if (DNTT_IS_DESTRUCTIBLE){
+					stateFlags |= ENTT_DESTROYED;
 					return;
 				}
 				
@@ -264,10 +270,10 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 				hspdFraction = 0.0;
 				hspd		 = 0.0;
 			}
-		} else if (!_ignoreSlopes && IS_GROUNDED){
+		} else if (!_ignoreSlopes && DNTT_IS_GROUNDED){
 			// If there is no horizontal collision, a check still needs to be made to see if there is a downward
 			// slope instead. If there is, this function call will move the Entity properly as a result.
-			entity_world_slope_collision(_destX, y + 1, SLOPE_DOWNWARD, true);
+			entity_world_slope_collision(_destX, y + 1, DNTT_SLOPE_DOWNWARD, true);
 		}
 		x = _destX;
 	}
@@ -280,7 +286,7 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 		// will be processed.
 		var _destY = y + _deltaVspd;
 		if (place_meeting(x, _destY, par_collider)){
-			if (_destY > y) {stateFlags |= (1 << GROUNDED);}
+			if (_destY > y) {stateFlags |= DNTT_GROUNDED;}
 			
 			// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
 			// direction of their current vertical velocity.
@@ -291,8 +297,8 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 			// If the Entity is destroyed by wall collisions, it will be destroyed here. Then, the function is 
 			// exited early since the remaining code doesn't need to be processed for a new destroyed Entity.
 			// Otherwise, "_destY" is set to Y to prevent further movement and "vspd" is set to 0.
-			if (DESTROY_WALL_COLLIDE){
-				stateFlags |= (1 << DESTROYED);
+			if (DNTT_IS_DESTRUCTIBLE){
+				stateFlags |= ENTT_DESTROYED;
 				return;
 			}
 			
@@ -322,8 +328,8 @@ entity_world_slope_collision = function(_x, _y, _slopeDirection, _desiredOutcome
 	// for the collision was met prior to the final collision check. Either outcome will exit the loop.
 	while(place_meeting(_x, _y + _curSlopeOffset, par_collider) != _desiredOutcome){
 		_curSlopeOffset += _slopeDirection;
-		if ((_slopeDirection == SLOPE_UPWARD	&& _curSlopeOffset <= _maxSlopeOffset) ||
-			(_slopeDirection == SLOPE_DOWNWARD	&& _curSlopeOffset >= _maxSlopeOffset)) 
+		if ((_slopeDirection == DNTT_SLOPE_UPWARD	&& _curSlopeOffset <= _maxSlopeOffset) ||
+			(_slopeDirection == DNTT_SLOPE_DOWNWARD	&& _curSlopeOffset >= _maxSlopeOffset)) 
 				break;
 	}
 	

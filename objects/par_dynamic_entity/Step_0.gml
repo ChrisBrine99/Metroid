@@ -1,12 +1,14 @@
 // Prevent the object from processing anything if it has been destroyed OR it is currently inactive.
-if (IS_DESTROYED || !IS_ACTIVE) {return;}
+if (ENTT_IS_DESTROYED || !ENTT_IS_ACTIVE)
+	return;
 
 // Execute the entity's current state if there is a valid function index within the variable.
 if (curState != NO_STATE) {curState();}
 
 // Don't bother manipulating any hitstun/recovery timers if the entity isn't hitstunned OR the game's state isn't
 // set to the normal state.
-if (!IS_HIT_STUNNED || GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
+if (!ENTT_IS_HIT_STUNNED || GAME_CURRENT_STATE != GSTATE_NORMAL) 
+	return;
 
 // Once the initial hitstun timer has reached its required value, it will be set to -1.0. After that, the "recovery"
 // phase of the hit is triggered to give the entity some time to recovery and move without worry of being hit again.
@@ -14,8 +16,8 @@ if (!IS_HIT_STUNNED || GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
 if (hitstunTimer == -1.0){
 	recoveryTimer += DELTA_TIME;
 	if (recoveryTimer >= recoveryLength){
-		stateFlags	   &= ~(1 << HIT_STUNNED);
-		stateFlags	   |= (1 << DRAW_SPRITE);
+		stateFlags	   &= ~ENTT_HIT_STUNNED;
+		stateFlags	   |= ENTT_DRAW_SELF;
 		recoveryTimer	= -1.0;
 	}
 	return; // The hitstun timer no longer needs to be incremented.

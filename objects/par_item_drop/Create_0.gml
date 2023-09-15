@@ -7,7 +7,7 @@ event_inherited();
 // Default values for the drop's sprite, which allows the rendering of sprites should a child object have a
 // sprite assigned to it; looping whatever its animation may be. The "sprite_index" is set to "NO_SPRITE" to
 // prevent the entity rendering from occurring.
-stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+stateFlags	   |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 sprite_index	= NO_SPRITE;
 visible			= true;
 
@@ -31,7 +31,7 @@ flickerTimer	= 0.0;
 /// @description Default function for item drop collection. It will simply destroy the item drop without doing
 /// anything else, as the functionality of the item drop is determined by the child object itself.
 item_drop_collect_self = function() {
-	stateFlags |= (1 << DESTROYED);
+	stateFlags |= ENTT_DESTROYED;
 }
 
 #endregion

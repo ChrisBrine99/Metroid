@@ -5,7 +5,7 @@
 event_inherited();
 // Set the overall time that the block will remain "destroyed" for to the value determined in the macro and the
 // sprite index to match what it is in the object editor, which is only set to make it easy to place in rooms.
-timeToRespawn = RESPAWN_TIMER_SATTACK;
-sprite_index = spr_destructible_screw_attack;
+timeToRespawn	= DEST_RESPAWN_SCREWATK;
+sprite_index	= spr_destructible_screw_attack;
 
 #endregion

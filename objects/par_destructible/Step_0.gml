@@ -1,7 +1,8 @@
 // Don't process the respawning logic for the destructible if any of the three conditions are met: the object isn't
 // set to respawn based on its "timeToRespawn" value, it isn't considered "destroyed", or its effect variable has
 // a valid instance ID stored in it currently.
-if (timeToRespawn == RESPAWN_TIMER_INFINITE || !IS_DESTROYED || effectID != noone) {return;}
+if (timeToRespawn == DEST_RESPAWN_INFINITE || !ENTT_IS_DESTROYED || effectID != noone) 
+	return;
 
 // Increment the respawn timer by the current value of delta time until it surpasses the required time interval
 // After this, the block will "rebuild" itself; playing the blcok regeneration animation if it has its flag for
@@ -9,11 +10,12 @@ if (timeToRespawn == RESPAWN_TIMER_INFINITE || !IS_DESTROYED || effectID != noon
 respawnTimer += DELTA_TIME;
 if (respawnTimer > timeToRespawn){
 	// Reset the object's "DESTROYED" flag, and reset the respawn timer to its default value.
-	stateFlags	&= ~(1 << DESTROYED);
+	stateFlags	&= ~ENTT_DESTROYED;
 	respawnTimer = 0.0;
 	
 	// Don't continue executing this event's code if the object isn't allows to use destruction/regen effects.
-	if (!CAN_USE_EFFECTS) {return;}
+	if (!DEST_CAN_USE_EFFECTS)
+		return;
 	
 	// Create some local values that will store the current position of the destructible object, as well as
 	// its ID value so the effect struct can reference its creator when necessary.
@@ -28,7 +30,7 @@ if (respawnTimer > timeToRespawn){
 		x			= _x;
 		y			= _y;
 		parentID	= _id;
-		imageIndex	= REGEN_ANIM_EFFECT - 1;	// Set the animation to play in reverse.
+		imageIndex	= DEST_REGEN_ANIM_EFFECT - 1;	// Set the animation to play in reverse.
 		animSpeed	= -1.0;
 	}
 }

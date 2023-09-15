@@ -63,7 +63,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	// being applied to the camera, and the total duration of the effect.
 	shakeSetStrength = 0.0;
 	shakeCurStrength = 0.0;
-	shakeDuration = 0.0;
+	shakeDuration	 = 0.0;
 	
 	/// @description The standard cleanup function for the Camera, which mimics how GameMaker's own "cleanup"
 	/// event. As such, it should be called within the "cleanup" event by the controller object that manages
@@ -89,7 +89,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		
 		// Checking if the camera's shaking effect is active or not. If so, the current strength of the effect
 		// will be decayed relative to its duration and starting strength.
-		if (shakeCurStrength <= 0.0) {return;}
+		if (shakeCurStrength <= 0.0) 
+			return;
 		shakeCurStrength -= shakeSetStrength / shakeDuration * DELTA_TIME;
 		
 		// Choose a random whole-pixel position within the range of (-strength, +strength) for the camera to
@@ -258,11 +259,13 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// @param {Real}	height	Height of the camera's viewport (In pixels).
 	cull_off_screen_entities = function(_x, _y, _width, _height){
 		with(par_dynamic_entity){
-			if (!CAN_DRAW_SPRITE) {continue;} // Ignore invisible dynamic entities.
+			if (!ENTT_CAN_DRAW_SELF) 
+				continue; // Ignore invisible dynamic entities.
 			entity_is_on_screen(_x, _y, _width, _height);
 		}
 		with(par_static_entity){
-			if (!CAN_DRAW_SPRITE) {continue;} // Ignore invisible static entities.
+			if (!ENTT_CAN_DRAW_SELF) 
+				continue; // Ignore invisible static entities.
 			entity_is_on_screen(_x, _y, _width, _height);
 		}
 		

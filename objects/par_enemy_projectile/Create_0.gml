@@ -32,7 +32,7 @@ startY = 0;
 /// @param {Function}	state	The function to use for this entity's initial state.
 initialize = function(_state){
 	object_set_next_state(_state);
-	stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION) | (1 << DESTRUCTIBLE);
+	stateFlags	   |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM | DNTT_DESTRUCTIBLE;
 	visible			= true;
 }
 
@@ -51,7 +51,7 @@ projectile_player_collision = function(){
 	
 	// Also ignore checking for collision if Samus is already recovering or stunned from a previous attack.
 	with(PLAYER){
-		if (IS_HIT_STUNNED)
+		if (ENTT_IS_HIT_STUNNED)
 			return;
 	}
 	
@@ -59,8 +59,8 @@ projectile_player_collision = function(){
 	// currently at against the unique player object instance (Samus). If it returns its instance ID value, the
 	// collision will have occurred and the projectile should be destroyed; damaging Samus if possible.
 	if (collision_line(startX, startY, x, y, PLAYER, false, true) != noone){
-		stateFlags &= ~(1 << DRAW_SPRITE);
-		stateFlags |=  (1 << DESTROYED);
+		stateFlags &= ~ENTT_DRAW_SELF;
+		stateFlags |=  ENTT_DESTROYED;
 		
 		// Copy over the projectile's damage and stun duration values by storing them in local values. These
 		// values go unused if Samus is performing a screw attack, as that ability's use makes her invulnerable

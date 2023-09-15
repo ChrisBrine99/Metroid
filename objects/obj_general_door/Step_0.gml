@@ -1,8 +1,8 @@
 // Once the animation has finished itself, the ANIMATION_END flag will be set to true; causing the door to be
 // destroyed since it doesn't close itself again until the room is re-entered.
 if (imageIndex == spriteLength - 1 && animSpeed > 0.0){
-	stateFlags &= ~(1 << DRAW_SPRITE);
-	stateFlags |= (1 << DESTROYED);
+	stateFlags &= ~ENTT_DRAW_SELF;
+	stateFlags |=  ENTT_DESTROYED;
 	mask_index = spr_empty_mask;
 }
 

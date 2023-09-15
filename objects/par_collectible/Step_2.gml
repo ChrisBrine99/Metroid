@@ -12,23 +12,27 @@ if (lightComponent != noone){
 
 // Don't continue onto the code below if there's no collectible ball/destructible collider object obscuring
 // the collectible in question. If that is the case, the code will continue as normal.
-if (destructibleID == noone) {return;}
+if (destructibleID == noone) 
+	return;
 
 // Determine the visibilty of the collectible itself and the light it produces based on if the dectructible
 // object that exists on top of the collectible has been destroyed by the player or not yet. If the block is
 // solid, hide the collectible; if not, allow it to produce light and show up on screen to see.
 var _stateFlags = stateFlags;
 with(destructibleID){
-	if (IS_DESTROYED){
-		if (timeToRespawn == RESPAWN_TIMER_INFINITE) {other.destructibleID = noone;}
+	if (ENTT_IS_DESTROYED){
+		if (timeToRespawn == DEST_RESPAWN_INFINITE) 
+			other.destructibleID = noone;
 		// Activate the light produced by the collectible and allow it to render itself once again.
-		if (_stateFlags & (1 << HIDDEN) != 0){
-			with(other.lightComponent) {isActive = true;}
-			_stateFlags &= ~(1 << HIDDEN);
+		if (_stateFlags & DEST_HIDDEN != 0){
+			with(other.lightComponent) 
+				isActive = true;
+			_stateFlags &= ~DEST_HIDDEN;
 		}
 	} else{ // Hide the collectible and its light source.
-		with(other.lightComponent) {isActive = false;}
-		_stateFlags |= (1 << HIDDEN);
+		with(other.lightComponent) 
+			isActive = false;
+		_stateFlags |= DEST_HIDDEN;
 	}
 }
 stateFlags = _stateFlags;

@@ -115,7 +115,7 @@ shiftTimer		= 0.0;
 /// @param {Function}	state	The function to use for this entity's initial state.
 initialize = function(_state){
 	object_set_next_state(_state);
-	stateFlags	   |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+	stateFlags	   |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 	recoveryLength	= 1.0;
 	visible			= true;
 }
@@ -343,7 +343,8 @@ inflict_freeze = function(_damage, _isColdBased){
 	// the status ailment, their HP is  greater than one, OR their current hitpoint ratio is higher than the 
 	// required threshold percentage.
 	var _hitpoints = hitpoints - _damage;
-	if (!_isColdBased || IMMUNE_TO_FREEZE || (_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) {return false;}
+	if (!_isColdBased || IMMUNE_TO_FREEZE || (_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) 
+		return false;
 	
 	if (curAilment != AIL_NONE) {remove_active_ailment();} // Remove previous ailment.
 	
@@ -380,7 +381,7 @@ remove_active_ailment = function(){
 	switch(curAilment){
 		case AIL_FROZEN:
 			with(platformID) {instance_destroy(self);}
-			stateFlags |= (1 << DRAW_SPRITE);
+			stateFlags |= ENTT_DRAW_SELF;
 			animSpeed	= prevAnimSpeed;
 			image_blend	= c_white;
 			break;
@@ -400,7 +401,7 @@ remove_active_ailment = function(){
 state_hitstun = function(){
 	if (hitstunTimer == -1.0){ // Return to previous state; reposition to origin of shake range.
 		object_set_next_state(lastState);
-		stateFlags |= (1 << DRAW_SPRITE);
+		stateFlags |= ENTT_DRAW_SELF;
 		x = stunX;
 		y = stunY;
 		return;

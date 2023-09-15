@@ -1,2 +1,3 @@
-if (effectID != noone) {instance_destroy_struct(effectID);}
+if (effectID != noone) 
+	instance_destroy_struct(effectID);
 entity_cleanup();

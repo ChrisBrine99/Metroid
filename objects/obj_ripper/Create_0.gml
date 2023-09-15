@@ -72,7 +72,8 @@ initialize = function(_state){
 state_default = function(){
 	var _deltaTime = DELTA_TIME;
 	hspd += movement * hAccel * _deltaTime;		// Update horizontal velocity.
-	if (hspd > maxHspd || hspd < -maxHspd) {hspd = maxHspd * movement;}
+	if (hspd > maxHspd || hspd < -maxHspd) 
+		hspd = maxHspd * movement;
 	
 	var _deltaHspd	= hspd * _deltaTime;						// Remove decimal values from velocity.
 	var _signHspd	= sign(_deltaHspd);
@@ -81,7 +82,7 @@ state_default = function(){
 	_deltaHspd	   -= hspdFraction;
 	
 	if (place_meeting(x + _deltaHspd, y, par_collider)){	// Handling collision.
-		while(!place_meeting(x + _signHspd, y, par_collider)) {x++;}
+		while(!place_meeting(x + _signHspd, y, par_collider)) {x += _signHspd;}
 		lightOffsetX   *= -1;	// Flip eye light's position
 		movement	   *= -1;	// Flip movement direction
 		hspd			= 0.0;

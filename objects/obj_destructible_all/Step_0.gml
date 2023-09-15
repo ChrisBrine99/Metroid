@@ -1,4 +1,4 @@
 event_inherited();
 
-if (IS_DESTROYED) {return;}
-step_screw_attack_check();
+if (!ENTT_IS_DESTROYED)
+	step_screw_attack_check();

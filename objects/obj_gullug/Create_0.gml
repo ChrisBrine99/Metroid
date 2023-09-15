@@ -191,7 +191,8 @@ state_end_attack = function(){
 	// 
 	var _deltaTime	= DELTA_TIME;
 	attackTimer	   += _deltaTime;
-	if (attackTimer < GLLG_ATK_END_TIME) {return;}
+	if (attackTimer < GLLG_ATK_END_TIME) 
+		return;
 	
 	// 
 	apply_frame_movement(NO_FUNCTION);

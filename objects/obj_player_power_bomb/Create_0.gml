@@ -15,8 +15,8 @@ event_inherited();
 // value reaches or goes below 0. The "maxHitpoints" variable stores the total time it takes for the bomb to
 // detonate; used for comparing against the time remaining in order to speed up the bomb animation after a
 // certain point.
-maxHitpoints = 30;
-hitpoints = maxHitpoints;
+maxHitpoints	= 30;
+hitpoints		= maxHitpoints;
 // Apply a unique light source to the power bomb.
 object_add_light_component(x, y, 0, 0, 60, HEX_LIGHT_YELLOW, 0.7);
 
@@ -28,7 +28,7 @@ object_add_light_component(x, y, 0, 0, 60, HEX_LIGHT_YELLOW, 0.7);
 // brighter for the bright image and dimmer for the dimmer image of the bomb, repsectively. These variables
 // will store the initial radius and strength of the light so it can be increased and returned to it for said
 // flickering effect.
-baseRadius = 75;
+baseRadius	 = 75;
 baseStrength = 0.7;
 
 #endregion
@@ -44,7 +44,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_power_bomb, spr_empty_mask);
-	stateFlags |= (1 << DRAW_SPRITE) | (1 << LOOP_ANIMATION);
+	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 }
 
 #endregion
@@ -63,7 +63,7 @@ state_default = function(){
 		
 		// Remove the state from this object and let the game know to destroy it at the start of the next frame.
 		object_set_next_state(NO_STATE);
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 		visible = false;
 	}
 }

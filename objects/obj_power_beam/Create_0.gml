@@ -59,8 +59,8 @@ initialize = function(_state, _x, _y, _imageXScale, _isCharged){
 	stateFlags |= (1 << TYPE_POWER_BEAM);
 	
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
-	if (IS_MOVING_HORIZONTAL) {hspd = (image_xscale == -1) ? -maxHspd : maxHspd;}
-	else if (IS_MOVING_VERTICAL) {vspd = (image_angle == 90) ? -maxVspd : maxVspd;}
+	if (IS_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
+	else if (IS_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}
 	
 	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
 	// by if the beam is charged or not charged prior to being fired.

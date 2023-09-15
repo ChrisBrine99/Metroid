@@ -3,29 +3,29 @@
 // Bit flags that are unique to a destructible object. The first will toggle the destruction and rebuild
 // effects for the block on and off, and the second will determine if the block is masked by a tile in the
 // world instead of being shown to the player by default.
-#macro	USE_EFFECTS				19
-#macro	HIDDEN					20
+#macro	DEST_USE_EFFECTS		0x00080000
+#macro	DEST_HIDDEN				0x00100000
 
 // Condenses the check for the state of each bit flag that is unique to a destructible object into two macros.
-#macro	CAN_USE_EFFECTS			(stateFlags & (1 << USE_EFFECTS))
-#macro	IS_HIDDEN				(stateFlags & (1 << HIDDEN))
+#macro	DEST_CAN_USE_EFFECTS	(stateFlags & DEST_USE_EFFECTS)
+#macro	DEST_IS_HIDDEN			(stateFlags & DEST_HIDDEN)
 
 // Macro values storing the amount of time a given block will remain destroyed for; measured in 60 equalling
 // one second of real-time due to how my delta timing implementation is determined.
-#macro	RESPAWN_TIMER_INFINITE -255.0
-#macro	RESPAWN_TIMER_GENERAL	600.0
-#macro	RESPAWN_TIMER_BOMB		1200.0
-#macro	RESPAWN_TIMER_WEIGHT	30.0
-#macro	RESPAWN_TIMER_SATTACK	450.0
+#macro	DEST_RESPAWN_INFINITE  -255.0
+#macro	DEST_RESPAWN_GENERAL	600.0
+#macro	DEST_RESPAWN_BOMB		1200.0
+#macro	DEST_RESPAWN_WEIGHT		30.0
+#macro	DEST_RESPAWN_SCREWATK	450.0
 
 // Since the animation for regenerating the block doesn't change, its length in frames can be set in this macro
 // and used in place of calling "sprite_get_number({sprite's name})".
-#macro	REGEN_ANIM_EFFECT		4
+#macro	DEST_REGEN_ANIM_EFFECT	4
 
 // The distance Samus needs to be from the center of a destructible object along both the x and y axis before 
 // it is destroyed by her screw attack.
-#macro	SCREW_ATTACK_XBOUNDS	24
-#macro	SCREW_ATTACK_YBOUNDS	16
+#macro	DEST_SCREWATK_XBOUNDS	24
+#macro	DEST_SCREWATK_YBOUNDS	16
 
 #endregion
 
@@ -37,7 +37,7 @@ event_inherited();
 // Make the entity visible within the room and set its state bits up so it draws the sprite that is set for 
 // any child destructible object. Also, set the sprite index so it doesn't trigger the drawing code for the
 // object until "entity_set_sprite" is called. Otherwise, the game will crash trying to draw an invalid sprite.
-stateFlags	   |= (1 << DRAW_SPRITE) | (1 << USE_EFFECTS);
+stateFlags	   |= ENTT_DRAW_SELF | DEST_USE_EFFECTS;
 sprite_index	= NO_SPRITE;
 visible			= true;
 
@@ -74,12 +74,12 @@ respawnTimer	= 0.0;
 destructible_destroy_self = function(){
 	// Update the state flags for the block so that it is no longer visible or interactable (Collision) with
 	// the player object. These states are reversed if the block can rebuild itself.
-	stateFlags &= ~((1 << DRAW_SPRITE) | (1 << HIDDEN));
-	stateFlags |= (1 << DESTROYED);
+	stateFlags &= ~(ENTT_DRAW_SELF | DEST_HIDDEN);
+	stateFlags |= ENTT_DESTROYED;
 	mask_index	= spr_empty_mask;
 	
 	// Don't process destructible effect logic if the instance in question doesn't have effect enabled.
-	if (!CAN_USE_EFFECTS) {return;}
+	if (!DEST_CAN_USE_EFFECTS) {return;}
 	
 	// Copy over the coordinates and instance ID for the destructible so it can be copied over to the effect
 	// instance all at once instead of needing to jump back and forth to get the same data.
@@ -120,7 +120,7 @@ destructible_rebuild_self = function(){
 		destructible_destroy_self();
 		return;
 	}
-	stateFlags |= (1 << DRAW_SPRITE);
+	stateFlags |= ENTT_DRAW_SELF;
 }
 
 /// @description A function that can be placed into the step event in any child of this parent destructible;
@@ -142,8 +142,8 @@ step_screw_attack_check = function(){
 		// Once the proper y value is calculated, Samus and the destructible's positions are compared to see
 		// if the resulting lengths are within 16 pixels along the x and 24 pixels along the y, respectively.
 		// If so, the block will be destroyed by the screw attack.
-		if (point_distance(x, 0, _x, 0) <= SCREW_ATTACK_XBOUNDS && 
-				point_distance(0, _pY, 0, _y) <= SCREW_ATTACK_YBOUNDS){
+		if (point_distance(x, 0, _x, 0) <= DEST_SCREWATK_XBOUNDS && 
+				point_distance(0, _pY, 0, _y) <= DEST_SCREWATK_YBOUNDS){
 			with(other) {destructible_destroy_self();}
 		}
 	}

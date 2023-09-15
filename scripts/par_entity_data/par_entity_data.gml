@@ -1,37 +1,47 @@
 #region Macros used by both entity classes
 
-// Positions for the bit flags that allow or restrict specific functionalities of the entity, whether they be
-// a dynamic or static one. These four highest positioned bits are shared by both entity types; any others will
-// be unique to one type or the other.
-#macro	HIT_STUNNED				23
-#macro	DRAW_SPRITE				24
-#macro	FREEZE_ANIMATION		25
-#macro	LOOP_ANIMATION			26
-#macro	ANIMATION_END			27
-#macro	ON_SCREEN				28
-#macro	ACTIVE					29
-#macro	INVINCIBLE				30
-#macro	DESTROYED				31
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the bits within the "stateFlags" variable. These represent substates that can alter how an  //
+//	entity functions without it having to be exclusive to a single function like their main state does.	   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Condenses the code required to check any of the four shared bit flags' current states into macro values.
-#macro	IS_HIT_STUNNED			(stateFlags & (1 << HIT_STUNNED) != 0)
-#macro	CAN_DRAW_SPRITE			(stateFlags & (1 << DRAW_SPRITE) != 0)
-#macro	IS_ANIMATION_FROZEN		(stateFlags & (1 << FREEZE_ANIMATION) != 0)
-#macro	CAN_LOOP_ANIMATION		(stateFlags & (1 << LOOP_ANIMATION) != 0)
-#macro	DID_ANIMATION_END		(stateFlags & (1 << ANIMATION_END) != 0)
-#macro	IS_ON_SCREEN			(stateFlags & (1 << ON_SCREEN) != 0)
-#macro	IS_ACTIVE				(stateFlags & (1 << ACTIVE) != 0)
-#macro	IS_INVINCIBLE			(stateFlags & (1 << INVINCIBLE) != 0)
-#macro	IS_DESTROYED			(stateFlags & (1 << DESTROYED) != 0)
+// --- Damage Taken Substate --- //
+#macro	ENTT_HIT_STUNNED		0x00800000
+// --- Animation/Rendering Substates --- //
+#macro	ENTT_DRAW_SELF			0x01000000
+#macro	ENTT_PAUSE_ANIM			0x02000000
+#macro	ENTT_LOOP_ANIM			0x04000000
+#macro	ENTT_ANIM_END			0x08000000
+#macro	ENTT_ON_SCREEN			0x10000000
+// --- Main Functionality Substates --- //
+#macro	ENTT_ACTIVE				0x20000000
+#macro	ENTT_INVINCIBLE			0x40000000
+#macro	ENTT_DESTROYED			0x80000000
 
-// Useful marcos for the angle values of the four cardinal directions.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check for these general Entity substates.					   //
+// ------------------------------------------------------------------------------------------------------- //
+
+// --- Damage Taken Substate Check --- //
+#macro	ENTT_IS_HIT_STUNNED		(stateFlags & ENTT_HIT_STUNNED)
+// --- Animation/Rendering Substate Checks --- //
+#macro	ENTT_CAN_DRAW_SELF		(stateFlags & ENTT_DRAW_SELF)
+#macro	ENTT_IS_ANIM_PAUSED		(stateFlags & ENTT_PAUSE_ANIM)
+#macro	ENTT_CAN_LOOP_ANIM		(stateFlags & ENTT_LOOP_ANIM)
+#macro	ENTT_ANIMATION_ENDED	(stateFlags & ENTT_ANIM_END)
+#macro	ENTT_IS_ON_SCREEN		(stateFlags & ENTT_ON_SCREEN)
+// --- Main Functionality Substate Checks --- //
+#macro	ENTT_IS_ACTIVE			(stateFlags & ENTT_ACTIVE)
+#macro	ENTT_IS_INVINCIBLE		(stateFlags & ENTT_INVINCIBLE)
+#macro	ENTT_IS_DESTROYED		(stateFlags & ENTT_DESTROYED)
+
+
+
+// TODO -- Move to general macro script
 #macro	DIRECTION_NORTH			90.0
 #macro	DIRECTION_SOUTH			270.0
 #macro	DIRECTION_EAST			0.0
 #macro	DIRECTION_WEST			180.0
-
-// Some more useful macros for determining the current "movement direction" of a given entity (Enemy AI like
-// the "Ripper", "Halzyn", and "Mumbo" utilize these values.
 #macro	MOVE_DIR_RIGHT			1
 #macro	MOVE_DIR_LEFT			-1
 
@@ -55,35 +65,35 @@ function entity_draw(){
 	// Don't process any code within this event if there isn't a valid sprite to draw. The default value for a 
 	// sprite before it is initialized by an object (Which is done using the "set_sprite" function that is 
 	// found in the  "Create" event of this parent object) should be the constant NO_SPRITE.
-	if (sprite_index == NO_SPRITE || !IS_ACTIVE) {return;}
+	if (sprite_index == NO_SPRITE || !ENTT_IS_ACTIVE) {return;}
 
 	// Animate the sprite as long as the game isn't paused AND the length of the sprite is greater than one 
 	// image. Otherwise, the sprite will only render whatever image is found at the "imageIndex" number. After 
 	// that number exceeds the length of the sprite's animation, it will automatically loop, set the "animation 
 	// end" flag, and reset the value within "imageIndex".
-	if (!IS_ANIMATION_FROZEN && spriteLength > 1){
+	if (!ENTT_IS_ANIM_PAUSED && spriteLength > 1){
 		imageIndex += spriteSpeed / ANIMATION_FPS * DELTA_TIME * animSpeed;
 		if (imageIndex >= spriteLength && animSpeed > 0.0){
-			if (CAN_LOOP_ANIMATION){ // Flip "animation end" bit; reset animation when animation limit reached.
-				stateFlags |= (1 << ANIMATION_END);
+			if (ENTT_CAN_LOOP_ANIM){ // Flip "animation end" bit; reset animation when animation limit reached.
+				stateFlags |= ENTT_ANIM_END;
 				imageIndex -= spriteLength - loopOffset;
 			} else{ // Animation cannot loop; lock it at the end of the sprite.
 				imageIndex = spriteLength - 1;
 			}
 		} else if (imageIndex <= 0 && animSpeed < 0.0){
-			if (CAN_LOOP_ANIMATION){ // Animation is reversed; reset back to end, which is the start in this case.
+			if (ENTT_CAN_LOOP_ANIM){ // Animation is reversed; reset back to end, which is the start in this case.
 				imageIndex += spriteLength - loopOffset;
 			} else{ // Animation does not loop; set it to the zeroth indexed frame of the animation and freeze it.
 				imageIndex = 0;
 			}
 		} else{ // Clear the "animation end" otherwise.
-			stateFlags &= ~(1 << ANIMATION_END);
+			stateFlags &= ~ENTT_ANIM_END;
 		}
 	}
 
 	// After the new animation logic has been updated; draw the sprite to the screen using all the other 
 	// default image/sprite manipulation variables that are built into every Game Maker object.
-	if (!CAN_DRAW_SPRITE || !IS_ON_SCREEN) {return;}
+	if (!ENTT_CAN_DRAW_SELF || !ENTT_IS_ON_SCREEN) {return;}
 	draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 }
 
@@ -129,8 +139,8 @@ function entity_is_on_screen(_x, _y, _width, _height){
 		_x + _width		< bbox_left		- RENDER_CULL_PADDING	||
 		_y				> bbox_bottom	+ RENDER_CULL_PADDING	||
 		_y + _height	< bbox_top		- RENDER_CULL_PADDING)
-			{stateFlags &= ~(1 << ON_SCREEN);}
-	else	{stateFlags |= (1 << ON_SCREEN);}
+			{stateFlags &= ~ENTT_ON_SCREEN;}
+	else	{stateFlags |=  ENTT_ON_SCREEN;}
 }
 
 #endregion

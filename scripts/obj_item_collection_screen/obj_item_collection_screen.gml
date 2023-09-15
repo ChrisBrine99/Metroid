@@ -39,9 +39,9 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	}
 	
 	/// @description 
-	/// @param {Asset.GMFont}	font
-	/// @param {Real}			x
-	/// @param {Real}			y
+	/// @param {Asset.GMFont}	font	
+	/// @param {Real}			x		
+	/// @param {Real}			y		
 	draw_item_info = function(_font, _x, _y){
 		outline_set_font(_font);
 		draw_set_text_align(fa_center, fa_middle);
@@ -73,7 +73,7 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	state_destroy_menu = function(){
 		event_set_flag(flag, true);
 		GAME_HUD.alphaTarget = hudAlphaTarget;
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 	}
 	
 	/// @description 

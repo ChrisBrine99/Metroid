@@ -180,7 +180,7 @@ state_kill_self = function(){
 		// 
 		object_set_next_state(state_post_death);
 		entity_set_sprite(spr_empty_mask, -1);
-		stateFlags &= ~(1 << DRAW_SPRITE);
+		stateFlags &= ~ENTT_DRAW_SELF;
 		attackTimer = 0.0;
 		visible		= false;
 		
@@ -214,7 +214,7 @@ state_post_death = function(){
 	// 
 	attackTimer += _deltaTime;
 	if (attackTimer >= SKRE_POST_DEATH_TIME){
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 		return;
 	}
 	
