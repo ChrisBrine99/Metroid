@@ -76,7 +76,7 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 					_data = prevAnimationFlags[| i];
 					with(_data[0]){ // 0th index should always be the entity's unique ID value.
 						if (_data[1] != 0) {continue;} // Ignore any entities that already had their animations frozen.
-						stateFlags &= ~(1 << FREEZE_ANIMATION);
+						stateFlags &= ~ENTT_PAUSE_ANIM;
 					}
 				}
 				ds_list_clear(prevAnimationFlags);
@@ -179,12 +179,12 @@ function effect_create_screen_fade(_fadeColor, _fadeSpeed, _fadeDuration, _drawP
 		
 		var _animationFlags = prevAnimationFlags;
 		with(par_dynamic_entity){ // Freezes animations for all dynamic entities (They can move around the world).
-			ds_list_add(_animationFlags, [id, IS_ANIMATION_FROZEN]);
-			stateFlags |= (1 << FREEZE_ANIMATION);
+			ds_list_add(_animationFlags, [id, ENTT_IS_ANIM_PAUSED]);
+			stateFlags |= ENTT_PAUSE_ANIM;
 		}
 		with(par_static_entity){ // Freezes animations of all static entities (They almost never move around the game world).
-			ds_list_add(_animationFlags, [id, IS_ANIMATION_FROZEN]);
-			stateFlags |= (1 << FREEZE_ANIMATION);
+			ds_list_add(_animationFlags, [id, ENTT_IS_ANIM_PAUSED]);
+			stateFlags |= ENTT_PAUSE_ANIM;
 		}
 	}
 	

@@ -1,31 +1,46 @@
 #region Macro value initializations
 
-// Bit flags that are unique to a destructible object. The first will toggle the destruction and rebuild
-// effects for the block on and off, and the second will determine if the block is masked by a tile in the
-// world instead of being shown to the player by default.
-#macro	DEST_USE_EFFECTS		0x00080000
-#macro	DEST_HIDDEN				0x00100000
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the bits within the "stateFlags" variable. They represent substates for bits that are	   //
+//	unique to all destructible objects, which are similar to standard colliders aside from the fact that   //
+//	they can be destroyed by Samus or the environment.													   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Condenses the check for the state of each bit flag that is unique to a destructible object into two macros.
+#macro	DEST_USE_EFFECTS		0x00080000	// Toggles use of destruction/rebuild effect for the object.
+#macro	DEST_HIDDEN				0x00100000	// Enables ability to hide the object behind a tile within the room's tileset.
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check for these general Destructible substates.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	DEST_CAN_USE_EFFECTS	(stateFlags & DEST_USE_EFFECTS)
 #macro	DEST_IS_HIDDEN			(stateFlags & DEST_HIDDEN)
 
-// Macro values storing the amount of time a given block will remain destroyed for; measured in 60 equalling
-// one second of real-time due to how my delta timing implementation is determined.
-#macro	DEST_RESPAWN_INFINITE  -255.0
-#macro	DEST_RESPAWN_GENERAL	600.0
-#macro	DEST_RESPAWN_BOMB		1200.0
-#macro	DEST_RESPAWN_WEIGHT		30.0
-#macro	DEST_RESPAWN_SCREWATK	450.0
+// ------------------------------------------------------------------------------------------------------- //
+//	Values here represent the time in "frames" (60 units == 1 second) that a destructible will remain in   //
+//	its "destroyed" (Isn't the same as flipping the ENTT_DESTROYED bit to one) state until it regenerates. //
+//	The value -255.0 means the block will not regenerate and will flip that substate bit to one.		   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Since the animation for regenerating the block doesn't change, its length in frames can be set in this macro
-// and used in place of calling "sprite_get_number({sprite's name})".
+#macro	DEST_RESPAWN_INFINITE  -255.0	//	inf
+#macro	DEST_RESPAWN_GENERAL	600.0	//	10.0s
+#macro	DEST_RESPAWN_BOMB		1200.0	//	20.0s
+#macro	DEST_RESPAWN_WEIGHT		30.0	//	 0.5s
+#macro	DEST_RESPAWN_SCREWATK	450.0	//	 7.0s
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the length of the regeneration effect's animation in frames/images within the sprite.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	DEST_REGEN_ANIM_EFFECT	4
 
-// The distance Samus needs to be from the center of a destructible object along both the x and y axis before 
-// it is destroyed by her screw attack.
-#macro	DEST_SCREWATK_XBOUNDS	24
-#macro	DEST_SCREWATK_YBOUNDS	16
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that store the minimum distance both horizontally and vertically that Samus needs to meet or	   //
+//	be within relative to the destructible before it can be "destroyed" by her Screw Attack ability.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	DEST_SCREWATK_XBOUNDS	16
+#macro	DEST_SCREWATK_YBOUNDS	24
 
 #endregion
 
@@ -108,8 +123,7 @@ destructible_rebuild_self = function(){
 	// Remove the effect struct that plays the block destruction animation in reverse in order to have it
 	// "rebuild" itself before instantly reappearing in the world.
 	instance_destroy_struct(effectID);
-	delete effectID;
-	effectID = noone;
+	delete effectID; effectID = noone;
 	
 	// In order to properly rebuild, a collision check is done with the area occupied by the block and any
 	// dynamic entities. If there is an entity within the space, the block will be unable to rebuild and will
@@ -121,32 +135,6 @@ destructible_rebuild_self = function(){
 		return;
 	}
 	stateFlags |= ENTT_DRAW_SELF;
-}
-
-/// @description A function that can be placed into the step event in any child of this parent destructible;
-/// enabling it to be destroyed by Samus's somersault jump if she has acquired the Screw Attack.
-step_screw_attack_check = function(){
-	// Get the coordinates for the center of the destructible block. Otherwise, the distance when calculated
-	// from the left vs. the right will differ; the same would apply between the top vs. the bottom.
-	var _x = x + 8;
-	var _y = y + 8;
-	with(PLAYER){
-		// Don't process the rest of the function's logic if Samus isn't currently utilizing her Screw Attack
-		// because she's either in a standard jump or doesn't have acess to the ability yet.
-		if (!PLYR_IN_SCREWATK) {return;}
-	
-		// Since Samus's position is actually at her feet, the position of her bounding box is used instead,
-		// and centered within that area along the y axis (The x axis is already centered about said area).
-		var _pY = bbox_bottom - ((bbox_bottom - bbox_top) >> 1);
-		
-		// Once the proper y value is calculated, Samus and the destructible's positions are compared to see
-		// if the resulting lengths are within 16 pixels along the x and 24 pixels along the y, respectively.
-		// If so, the block will be destroyed by the screw attack.
-		if (point_distance(x, 0, _x, 0) <= DEST_SCREWATK_XBOUNDS && 
-				point_distance(0, _pY, 0, _y) <= DEST_SCREWATK_YBOUNDS){
-			with(other) {destructible_destroy_self();}
-		}
-	}
 }
 
 #endregion

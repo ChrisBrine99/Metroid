@@ -159,7 +159,7 @@ update_hitpoints = function(_modifier){
 		hitpoints	= maxHitpoints;
 	} else if (hitpoints <= 0){ // Set the entity to "destroyed" by flipping that respective flag.
 		object_set_next_state(NO_STATE);
-		stateFlags |= (1 << DESTROYED);
+		stateFlags |= ENTT_DESTROYED;
 		hitpoints	= 0;
 	}
 }

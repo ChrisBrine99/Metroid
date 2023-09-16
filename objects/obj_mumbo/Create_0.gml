@@ -60,7 +60,7 @@ initialize = function(_state){
 state_default = function(){
 	// Don't update the Mumbo's position if it isn't on screen to prevent it from reaching Samus's y position
 	// before it is actually first seen on camera by the player within the current room.
-	if (!IS_ON_SCREEN) {return;}
+	if (!ENTT_IS_ON_SCREEN) {return;}
 	
 	// Process horizontal and vertical movement. The horizontal velocity being determined by the Mumbo's current
 	// movement direction; with the vertical velocity determined by Samus's y position relative to the Mumbo's

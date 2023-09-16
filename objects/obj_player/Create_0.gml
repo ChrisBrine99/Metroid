@@ -131,8 +131,8 @@
 #macro	PLYR_AIM_BUFFER_TIME	8.0		// Time before Samus can aim upward after standing up from a crouch.
 #macro	PLYR_STAND_UP_TIME		10.0	// How long a horizontal movement input must be pressed while crouching to make Samus stand.
 // --- Animation Values --- //
-#macro	PLYR_JUMP_START_TIME	4.0		// Time that the first "frame" of the jump animation will last for.
-#macro	PLYR_FLIP_START_TIME	9.0		// How long in frames before Samus begins somersaulting after starting a jump.
+#macro	PLYR_JUMP_START_TIME	3.0		// Time that the first "frame" of the jump animation will last for.
+#macro	PLYR_FLIP_START_TIME	7.0		// How long in frames before Samus begins somersaulting after starting a jump.
 #macro	PLYR_CHARGE_LOOP_TIME	80.0	// Time before Samus's charge effect begins its two frame loop.
 #macro	PLYR_ENTER_BALL_TIME	2.0		// How long Samus will be in her "enter/exit" morphball sprite for.
 // --- Weapon Values --- //
@@ -179,6 +179,24 @@
 #macro	PLYR_MAX_BOMBS			3
 
 // ------------------------------------------------------------------------------------------------------- //
+//	Simply holds the value for the length of the array storing "obj_player_ghost_effect" structs so the	   //
+//	number isn't hardcoded all over the place.
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_NUM_GHOST_EFFECTS	8
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Characteristics about the Phase Shift aeion ability; its speed (Only applies to the x axis since the   //
+//	phase shift moves Samus horizontally), cooldown before another aeion ability can be used, distance 	   //
+//	that Samus moves because of the ability's use, and the aeion energy cost to activate the ability.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_PSHIFT_SPEED		12.0
+#macro	PLYR_PSHIFT_COOLDOWN	30.0
+#macro	PLYR_PSHIFT_DISTANCE	80
+#macro	PLYR_PSHIFT_COST		50
+
+// ------------------------------------------------------------------------------------------------------- //
 //	Macros that store values for Samus's light source struct, which swaps between representing her visor,  //
 //	the screw attack, and so on. The radius, color (Doesn't need a macro to represent its value(s) as 	   //
 //  there are already a plethora of macros for various colors), and strength are altered for each one.	   //
@@ -220,24 +238,6 @@
 // --- Coordinates for Screw Attack Flashes --- //
 #macro	LGHT_SCREWATK_X			0
 #macro	LGHT_SCREWATK_Y		   -20
-
-// ------------------------------------------------------------------------------------------------------- //
-//	Simply holds the value for the length of the array storing "obj_player_ghost_effect" structs so the	   //
-//	number isn't hardcoded all over the place.
-// ------------------------------------------------------------------------------------------------------- //
-
-#macro	PLYR_NUM_GHOST_EFFECTS	8
-
-// ------------------------------------------------------------------------------------------------------- //
-//	Characteristics about the Phase Shift aeion ability; its speed (Only applies to the x axis since the   //
-//	phase shift moves Samus horizontally), cooldown before another aeion ability can be used, distance 	   //
-//	that Samus moves because of the ability's use, and the aeion energy cost to activate the ability.	   //
-// ------------------------------------------------------------------------------------------------------- //
-
-#macro	PLYR_PSHIFT_SPEED		12.0
-#macro	PLYR_PSHIFT_COOLDOWN	30.0
-#macro	PLYR_PSHIFT_DISTANCE	80
-#macro	PLYR_PSHIFT_COST		50
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Maximum values for Samus's active + reserve energy, aeion, missile ammunition, and held power bombs.   //
@@ -690,10 +690,14 @@ create_ghosting_effect = function(_color, _alpha, _drawCannon){
 /// represent the light coming from her helmet's visor. It will assume Samus is standing, and will place the
 /// light at the offset that matches such a state.
 reset_light_source = function(){
+	var _visorColor	= HEX_LIGHT_GREEN;
 	var _isAimingUp = PLYR_IS_AIMING_UP;
 	with(lightComponent){
-		set_properties(LGHT_VISOR_RADIUS, HEX_LIGHT_GREEN, LGHT_VISOR_STRENGTH);
-		isActive = !_isAimingUp;
+		radius		= LGHT_VISOR_RADIUS;
+		baseRadius	= LGHT_VISOR_RADIUS;
+		strength	= LGHT_VISOR_STRENGTH;
+		color		= _visorColor;
+		isActive	= !_isAimingUp;
 	}
 	lightOffsetX = LGHT_VISOR_X_GENERAL;
 	lightOffsetY = LGHT_VISOR_Y_GENERAL;
@@ -703,9 +707,10 @@ reset_light_source = function(){
 /// There is a limit of 1299 for available energy, so the amount will not increase if that value is reached.
 /// @param {Real}	modifier	Value to add to the current energy capacity.
 update_maximum_energy = function(_modifier){
-	if (maxHitpoints == ENERGY_LIMIT || _modifier <= 0) {return;}
-	hitpoints	 = (hitpoints + _modifier	 > ENERGY_LIMIT) ? ENERGY_LIMIT : hitpoints + _modifier;
-	maxHitpoints = (maxHitpoints + _modifier > ENERGY_LIMIT) ? ENERGY_LIMIT : maxHitpoints + _modifier;
+	if (maxHitpoints == ENERGY_LIMIT || _modifier <= 0)
+		return;
+	hitpoints		= (hitpoints + _modifier > ENERGY_LIMIT)	? ENERGY_LIMIT : hitpoints + _modifier;
+	maxHitpoints	= (maxHitpoints + _modifier > ENERGY_LIMIT) ? ENERGY_LIMIT : maxHitpoints + _modifier;
 	with(GAME_HUD) // Update HUD's stored value for player's maximum energy capacity.
 		pMaxEnergyTanks = floor(other.maxHitpoints * 0.01);
 }
@@ -714,7 +719,8 @@ update_maximum_energy = function(_modifier){
 /// There is a limit of 100 for available aeion, so the amount will not increase if that value is reached.
 /// @param {Real}	modifier	Value to add to the maximum aeion capacity.
 update_maximum_aeion = function(_modifier){
-	if (maxAeion == AEION_LIMIT || _modifier <= 0) {return;}
+	if (maxAeion == AEION_LIMIT || _modifier <= 0)
+		return;
 	curAeion = (curAeion + _modifier > AEION_LIMIT) ? AEION_LIMIT : curAeion + _modifier;
 	maxAeion = (maxAeion + _modifier > AEION_LIMIT) ? AEION_LIMIT : maxAeion + _modifier;
 	with(GAME_HUD){ // Update HUD's stored value for player's max aeion capacity.
@@ -728,7 +734,8 @@ update_maximum_aeion = function(_modifier){
 /// argument. There is a limit of 250 for the capacity, so the count will not increase if that value is reached.
 /// @param {Real}	modifier	Value to add to the current missile ammunition capacity.
 update_maximum_missiles = function(_modifier){
-	if (maxMissiles == MISSILE_LIMIT || _modifier <= 0) {return;}
+	if (maxMissiles == MISSILE_LIMIT || _modifier <= 0) 
+		return;
 	numMissiles = (numMissiles + _modifier > MISSILE_LIMIT) ? MISSILE_LIMIT : numMissiles + _modifier;
 	maxMissiles = (maxMissiles + _modifier > MISSILE_LIMIT) ? MISSILE_LIMIT : maxMissiles + _modifier;
 	with(GAME_HUD){ // Update HUD's stored value for player's max missile ammo count.
@@ -742,13 +749,14 @@ update_maximum_missiles = function(_modifier){
 /// There is a limit of 15 for power bombs, so the count will not increase if that value is reached.
 /// @param {Real}	modifier	Value to add to the current power bomb supply.
 update_maximum_power_bombs = function(_modifier){
-	if (maxPowerBombs == POWER_BOMB_LIMIT || _modifier <= 0) {return;}
+	if (maxPowerBombs == POWER_BOMB_LIMIT || _modifier <= 0) 
+		return;
 	numPowerBombs = (numPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : numPowerBombs + _modifier;
 	maxPowerBombs = (maxPowerBombs + _modifier > POWER_BOMB_LIMIT) ? POWER_BOMB_LIMIT : maxPowerBombs + _modifier;
 	with(GAME_HUD){ // Update HUD's stored value for player's max power bomb count.
 		pMaxPowerBombs = other.maxPowerBombs;
-		//if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS)) {
-		stateFlags |= (1 << SHOW_PBOMBS);//}
+		if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS))
+			stateFlags |= (1 << SHOW_PBOMBS);
 	}
 }
 
@@ -1114,6 +1122,23 @@ fallthrough_floor_collision = function(){
 	}
 }
 
+/// @description Handles collisions between Samus and destructible blocks. These blocks must be weak to the
+/// Screw Attack in order to be processed by this function, and will be destroyed if they are close enough to
+/// Samus while she is executing the Screw Attack while jumping.
+destructible_screw_attack_collision = function(){
+	var _x = x; // X value is already in the center of Samus's sprite on screen; y must be calculated.
+	var _y = bbox_bottom - ((bbox_bottom - bbox_top) >> 1);	
+	with(par_destructible){
+		if (!ENTT_IS_ON_SCREEN || ENTT_IS_DESTROYED || (object_index != obj_destructible_all 
+				&& object_index != obj_destructible_screw_attack))
+			continue;
+			
+		if (point_distance(x + 8, 0, _x, 0) <= DEST_SCREWATK_XBOUNDS &&
+				point_distance(0, y + 8, 0, _y) <= DEST_SCREWATK_YBOUNDS)
+			destructible_destroy_self();
+	}
+}
+
 /// @description Checks for collision between the player and a collectible. It does so by temporarily enabling
 /// the collider for the item (If one exists) and checking those collision bounds with the player's. If they
 /// are intersecting, the collectible will be given to the player.
@@ -1256,7 +1281,8 @@ player_warp_collision = function(){
 /// she is, the function will perform no collision check. If an enemy was collided with and Samus wasn't in
 /// that hitstun/recovery state, she'll be damaged and sent into said state.
 player_enemy_collision = function(){
-	if (ENTT_IS_HIT_STUNNED) {return;}
+	if (ENTT_IS_HIT_STUNNED)
+		return;
 	
 	var _enemy = instance_place(x, y, par_enemy);
 	if (_enemy != noone){
@@ -1285,7 +1311,8 @@ player_enemy_collision = function(){
 
 		// A frozen enemy OR one that doesn't deal any damage will also prevent the hitstun function from
 		// being called; negating any hitstun or damage they may have inflicted otherwise.
-		if (_curAilment == AIL_FROZEN || _damage == 0) {return;}
+		if (_curAilment == AIL_FROZEN || _damage == 0)
+			return;
 		entity_apply_hitstun(_stunDuration, _damage);
 	}
 }
@@ -1753,6 +1780,10 @@ state_airbourne = function(){
 		}
 	}
 	
+	// This collision function happens before any movement does, and will destroy blocks that are affected by
+	// the Screw Attack if Samus happens to be executing that item's effect while in the air.
+	if (PLYR_IN_SCREWATK) {destructible_screw_attack_collision();}
+	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
 	// throughout the state.
@@ -2100,3 +2131,7 @@ state_phase_shift = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
+
+event_set_flag(FLAG_SCREW_ATTACK, true);
+maxVspd = PLYR_UPGRADED_JUMP;
+jumpSpriteSpin = spr_power_jump0b;

@@ -1,2 +1,2 @@
-stateFlags |= (1 << DESTROYED);
+stateFlags |= ENTT_DESTROYED;
 visible = false;

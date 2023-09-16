@@ -1,29 +1,48 @@
 #region Macro initialization
 
-// 
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that represent one of the 32 bits stored within the Hornoad's "stateFlags" variable. These bits //
+//	determine whether or not the Hornoad is altered to Samus's presence or not, and if it should change	   //
+//	the direction it's currnetly facing.																   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HRND_ALERTED			0x00000001
 #macro	HRND_FLIP_DIRECTION		0x00000002
 
-// 
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check for the Hornoad's substates.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HRND_IS_ALERTED			(stateFlags & HRND_ALERTED)
 #macro	HRND_CAN_FLIP_DIRECTION	(stateFlags & HRND_FLIP_DIRECTION)
 
-// 
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores distance in pixels that Samus must be within relative to the Hornoad's current position for the //
+//	Hornoad to become altered by her.																	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HRND_ALERT_RADIUS		56.0
 
-// 
+// ------------------------------------------------------------------------------------------------------- //
+//	Various physics constants relating to the Hornoad's maximum horizontal and vertical velocities		   //
+//	relative to its non-altered and altered states, respectively. The last value simply determines how	   //
+//	fast it can fall while airbourne.																	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HRND_DEFAULT_HSPD		1.0
 #macro	HRND_DEFAULT_VSPD	   -2.5
 #macro	HRND_ALERTED_HSPD		1.8
 #macro	HRND_ALERTED_VSPD	   -4.0
 #macro	HRND_MAX_FALL_SPEED		8.0
 
-// 
+// ------------------------------------------------------------------------------------------------------- //
+//	Constants for intervals of time that the Hornoad uses as a buffer between triggering and actually	   //
+//	performing various actions.	A value of 60 is equal to one real-world second.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HRND_JMP_COOLDOWN_TIME	100.0
 #macro	HRND_FACING_LOCK_TIME	25.0
-
-// 
-#macro	HRND_CD_REDUCTION		40.0
+#macro	HRND_CD_REDUCTION		40.0	// How much is reduced from the Hornoad's jump cooldown when getting attacked by the player.
 
 #endregion
 
@@ -110,7 +129,7 @@ entity_apply_hitstun = function(_duration, _damage){
 	
 	// Ignore snapping facing direction to which side the projectile hit the Hornoad on if they're already
 	// in the air, as turning around while airbourne looks weird.
-	if (!IS_GROUNDED) {return;}
+	if (!DNTT_IS_GROUNDED) {return;}
 	
 	// Instantly snap the Hornoad to face the direction of the projectile that hit it, which should also be
 	// the direction that Samus is in relative to the Hornoad's position.
