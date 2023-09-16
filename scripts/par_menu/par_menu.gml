@@ -1,65 +1,87 @@
 #region Initializing any macros that are useful/related to par_menu
 
-// Flag values that are required for all menus. These five bits will determine the characteristics
-// of the menu at the current moment; whether its automatically scrolling in a direction, moving its
-// cursor, highlighting the current option or not, or if its even active.
-#macro	AUTO_SCROLLING				27
-#macro	MOVE_CURSOR					28
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+// --- Cursor Substates --- //
+#macro	MENU_AUTO_SCROLL			0x08000000
+#macro	MENU_MOVE_CURSOR			0x10000000
+// --- Option Highlight Substate --- //
 #macro	MENU_HIGHLIGHT_OPTION		0x20000000
+// --- Main Functionality Substates --- //
 #macro	MENU_ACTIVE					0x40000000
 #macro	MENU_DESTROYED				0x80000000
 
-// Allows the check of the states of the four default flag bits though simplified macro values.
-#macro	IS_AUTO_SCROLLING			stateFlags & (1 << AUTO_SCROLLING) != 0
-#macro	CAN_MOVE_CURSOR				stateFlags & (1 << MOVE_CURSOR) != 0
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+// --- Cursor Substate Checks --- //
+#macro	MENU_IN_AUTO_SCROLL			(stateFlags & MENU_AUTO_SCROLL)
+#macro	MENU_CAN_MOVE_CURSOR		(stateFlags & MENU_MOVE_CURSOR)
+// --- Option Highlight Substate Check --- //
 #macro	MENU_CAN_HIGHLIGHT			(stateFlags & MENU_HIGHLIGHT_OPTION)
+// --- Main Functionality Substate Checks --- //
 #macro	MENU_IS_ACTIVE				(stateFlags & MENU_ACTIVE)
 #macro	MENU_IS_DESTROYED			(stateFlags & MENU_DESTROYED)
 
-// The position within the "inputFlags" variable that a given input's boolean flag is located.
-// They will store the values return by "keyboard_check" for each input on every frame.
-#macro	MENU_RIGHT					0
-#macro	MENU_LEFT					1
-#macro	MENU_UP						2
-#macro	MENU_DOWN					3
-#macro	SELECT						4
-#macro	RETURN						5
-#macro	DELETE_FILE					6
-#macro	AUX_RIGHT					7
-#macro	AUX_LEFT					8
-#macro	AUX_SELECT					9
-#macro	AUX_RETURN					10
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
 
-// Determine how the input was utilized by the user. Was it held? Pressed? Released? A combination
-// of the current input flags and the last flag states will help determine the player's input, and
-// these macros will perform those checks to satisfy the press, hold, or release of said inputs.
-#macro	IS_MENU_RIGHT_HELD			inputFlags & (1 << MENU_RIGHT) != 0 && prevInputFlags & (1 << MENU_RIGHT) != 0
-#macro	IS_MENU_RIGHT_RELEASED		inputFlags & (1 << MENU_RIGHT) == 0 && prevInputFlags & (1 << MENU_RIGHT) != 0
-#macro	IS_MENU_LEFT_HELD			inputFlags & (1 << MENU_LEFT) != 0 && prevInputFlags & (1 << MENU_LEFT) != 0
-#macro	IS_MENU_LEFT_RELEASED		inputFlags & (1 << MENU_LEFT) == 0 && prevInputFlags & (1 << MENU_LEFT) != 0
-#macro	IS_MENU_UP_HELD				inputFlags & (1 << MENU_UP) != 0 && prevInputFlags & (1 << MENU_UP) != 0
-#macro	IS_MENU_UP_RELEASED			inputFlags & (1 << MENU_UP) == 0 && prevInputFlags & (1 << MENU_UP) != 0
-#macro	IS_MENU_DOWN_HELD			inputFlags & (1 << MENU_DOWN) != 0 && prevInputFlags & (1 << MENU_DOWN) != 0
-#macro	IS_MENU_DOWN_PRESSED		inputFlags & (1 << MENU_DOWN) == 0 && prevInputFlags & (1 << MENU_DOWN) != 0
-#macro	IS_SELECT_PRESSED			inputFlags & (1 << SELECT) != 0 && prevInputFlags & (1 << SELECT) == 0
-#macro	IS_RETURN_PRESSED			inputFlags & (1 << RETURN) != 0 && prevInputFlags & (1 << RETURN) == 0
-#macro	IS_AUX_RIGHT_HELD			inputFlags & (1 << AUX_RIGHT) != 0 && prevInputFlags & (1 << AUX_RIGHT) != 0
-#macro	IS_AUX_RIGHT_RELEASED		inputFlags & (1 << AUX_RIGHT) == 0 && prevInputFlags & (1 << AUX_RIGHT) != 0
-#macro	IS_AUX_LEFT_HELD			inputFlags & (1 << AUX_LEFT) != 0 && prevInputFlags & (1 << AUX_LEFT) != 0
-#macro	IS_AUX_LEFT_RELEASED		inputFlags & (1 << AUX_LEFT) == 0 && prevInputFlags & (1 << AUX_LEFT) != 0
-#macro	IS_AUX_SELECT_PRESSED		inputFlags & (1 << AUX_SELECT) != 0 && prevInputFlags & (1 << AUX_SELECT) == 0
-#macro	IS_AUX_RETURN_PRESSED		inputFlags & (1 << AUX_RETURN) != 0 && prevInputFlags & (1 << AUX_RETURN) == 0
+// --- Menu Cursor Movement Inputs --- //
+#macro	MENU_RIGHT					0x00000001
+#macro	MENU_LEFT					0x00000002
+#macro	MENU_UP						0x00000004
+#macro	MENU_DOWN					0x00000008
+// --- Menu Manipulation Inputs --- //
+#macro	MENU_SELECT					0x00000010
+#macro	MENU_RETURN					0x00000020
+#macro	MENU_DELETE_FILE			0x00000040
+// --- Optional Menu Cursor Movement Inputs --- //
+#macro	MENU_AUX_RIGHT				0x00000080
+#macro	MENU_AUX_LEFT				0x00000100
+// --- Option Menu Manipulation Inputs --- //
+#macro	MENU_AUX_SELECT				0x00000200
+#macro	MENU_AUX_RETURN				0x00000400
 
-// A macro value that determines how many "frames" the highlighted option will be its highlighted color
-// before it swaps over to the default color for that same number of frames; repreating indefinitely. The
-// "frame" in this case is equal to 1/60th of a second of real-time.
-#macro	OPTION_FLASH_INTERVAL		8
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
 
-// Macros that store the intervals between cursor updates whenever the player has any of the menu cursor 
-// inputs held down. The first macro is the interval that occurs for every cursor update aside from the first,
-// which uses the slower interval macro found below that.
-#macro	AUTO_SCROLL_INTERVAL		10
-#macro	FIRST_AUTO_SCROLL_INTERVAL	30
+// --- Cursor Right Inputs (Hold/Release) --- //
+#macro	MENU_RIGHT_HELD				(inputFlags & MENU_RIGHT && prevInputFlags & MENU_RIGHT)
+#macro	MENU_RIGHT_RELEASED			(!(inputFlags & MENU_RIGHT) && prevInputFlags & MENU_RIGHT)
+// --- Cursor Left Inputs (Hold/Release) --- //
+#macro	MENU_LEFT_HELD				(inputFlags & MENU_LEFT && prevInputFlags & MENU_LEFT)
+#macro	MENU_LEFT_RELEASED			(!(inputFlags & MENU_LEFT) && prevInputFlags & MENU_LEFT)
+// --- Cursor Up Inputs (Hold/Release) --- //
+#macro	MENU_UP_HELD				(inputFlags & MENU_UP && prevInputFlags & MENU_UP)
+#macro	MENU_UP_RELEASED			(!(inputFlags & MENU_UP) && prevInputFlags & MENU_UP)
+// --- Cursor Down Inputs (Hold/Release) --- //
+#macro	MENU_DOWN_HELD				(inputFlags & MENU_DOWN && prevInputFlags & MENU_DOWN)
+#macro	MENU_DOWN_RELEASED			(!(inputFlags & MENU_DOWN) && prevInputFlags & MENU_DOWN)
+// --- Menu Manipulation Inputs (Press) --- //
+#macro	MENU_SELECT_PRESSED			(inputFlags & MENU_SELECT && !(prevInputFlags & MENU_SELECT))
+#macro	MENU_RETURN_PRESSED			(inputFlags & MENU_RETURN && !(prevInputFlags & MENU_RETURN))
+// --- Optional Input [Aux Right] (Hold/Release) --- //
+#macro	MENU_AUX_RIGHT_HELD			(inputFlags & MENU_AUX_RIGHT && prevInputFlags & MENU_AUX_RIGHT)
+#macro	MENU_AUX_RIGHT_RELEASED		(!(inputFlags & MENU_AUX_RIGHT) && prevInputFlags & MENU_AUX_RIGHT)
+// --- Optional Input [Aux Left] (Hold/Release) --- //
+#macro	MENU_AUX_LEFT_HELD			(inputFlags & MENU_AUX_LEFT && prevInputFlags & MENU_AUX_LEFT)
+#macro	MENU_AUX_LEFT_RELEASED		(!(inputFlags & MENU_AUX_LEFT) && prevInputFlags & MENU_AUX_LEFT)
+// --- Optional Inputs [Aux Select/Return] (Press) --- //
+#macro	MENU_AUX_SELECT_PRESSED		(inputFlags & MENU_AUX_SELECT && prevInputFlags & MENU_AUX_SELECT)
+#macro	MENU_AUX_RETURN_PRESSED		(inputFlags & MENU_AUX_RETURN && prevInputFlags & MENU_AUX_RETURN)
+
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	MENU_OPTION_HLGHT_INTERVAL	8.0
+#macro	MENU_FAST_SCROLL_INTERVAL	10.0
+#macro	MENU_SLOW_SCROLL_INTERVAL	30.0
 
 #endregion
 
@@ -76,9 +98,9 @@ function par_menu(_index) : base_struct(_index) constructor{
 	// Determines what code is actively being executed on during the menu's step event; if there's any
 	// function actually being called at all. The variables will store the currently executed function,
 	// the function to switch to from the next frame onward, and the last state that was being called.
-	curState = NO_STATE;
-	nextState = NO_STATE;
-	lastState = NO_STATE;
+	curState	= NO_STATE;
+	nextState	= NO_STATE;
+	lastState	= NO_STATE;
 	
 	// An array that can be used to add arguments to a menu's state. This is mostly useful for animation
 	// states that required certain values that aren't required outside of the functions; making arguments
@@ -93,51 +115,51 @@ function par_menu(_index) : base_struct(_index) constructor{
 	// Stores the input data for the current frame, and a snapshot of the input data from the last frame.
 	// Used in order to only required one "keyboard_check" call for each input; using "prevInputFlags" to
 	// determine if that input was pressed, held, or released for the current frame.
-	inputFlags = 0;
-	prevInputFlags = 0;
+	inputFlags		= 0;
+	prevInputFlags	= 0;
 	
 	// Values that can be adjusted on a per-menu basis to allow for additional inputs to perform certain
 	// events in said menu. The auxiliary right and left inputs are unique in that they allow two other
 	// inputs to alter some kind of movement in the menu that isn't the cursor, so they're optional.
-	auxRightIndex = -1;
-	auxLeftIndex = -1;
-	auxSelectIndex = -1;
-	auxReturnIndex = -1;
+	auxRightIndex	= -1;
+	auxLeftIndex	= -1;
+	auxSelectIndex	= -1;
+	auxReturnIndex	= -1;
 	
 	// Stores the index of option that is currently being highlighted by the menu cursor, the option
 	// that was selected by the player, and another variable that can store a previously selected option
 	// if that is required by the menu.
-	curOption = 0;
-	selOption = -1;
-	auxSelOption = -1;
+	curOption		= 0;
+	selOption		= -1;
+	auxSelOption	= -1;
 	
 	// Variables that store the given width and current height of the menu. The height is
 	// dynamically determined by the current number of options in the menu relative to its
 	// given width, which needs to be set explicitly by each menu.
-	menuWidth = 0;
-	menuHeight = 0;
+	menuWidth	= 0;
+	menuHeight	= 0;
 	
 	// Determines what region of the menu is visible to the user at the current moment, and
 	// how that view will shift based on the position of the cursor, the movement direciton of
 	// it, and how far that next option is from the four borders of the visible region relative
 	// to the two "shift offset" variables.
-	numVisibleRows = 0;
-	numVisibleColumns = 0;
-	firstRowOffset = 0;
-	firstColumnOffset = 0;
-	rowShiftOffset = 0;
-	columnShiftOffset = 0;
+	numVisibleRows		= 0;
+	numVisibleColumns	= 0;
+	firstRowOffset		= 0;
+	firstColumnOffset	= 0;
+	rowShiftOffset		= 0;
+	columnShiftOffset	= 0;
 	
 	// Timers that the menu utilizes for flashing the currently highlighted option, and for
 	// creating a pause between cursor movements whenever a cursor movement direction is held
 	// by the player.
-	highlightTimer = 0;
-	autoScrollTimer = 0;
+	highlightTimer	= 0.0;
+	autoScrollTimer = 0.0;
 	
 	// Variables for the main contents that will exist in all menus; the title and option structs
 	// that contain all the necessary information about a given option within said menu.
-	title = "";
-	optionData = ds_list_create();
+	title		= "";
+	optionData	= ds_list_create();
 	
 	// Color data for the various states a menu option (And sometimes its visible information) can
 	// be found in. There are color pairs for an inactive option (Info as well), a highlighted option,
@@ -155,7 +177,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 	
 	// Determines the visibility of the menu's contents outside of any additional adjustments that can
 	// occur on a per-object basis (Ex. title, options, option info, etc.).
-	alpha = 0;
+	alpha = 0.0;
 	
 	// Initialize the variable that will store the states  for all dynamic entities prior to this menu's 
 	// creation. It will only become a ds_map that stores said data if there  wasn't any menus in existence 
@@ -163,8 +185,10 @@ function par_menu(_index) : base_struct(_index) constructor{
 	entityStates = -1;
 	if (GAME_CURRENT_STATE != GSTATE_MENU){
 		entityStates = ds_map_create(); // Instantiate the list for the menu that is the first in the list.
-		var _curState, _nextState, _lastState;
-		var _entityStates = entityStates;
+		var _curState		= NO_STATE;
+		var _nextState		= NO_STATE;
+		var _lastState		= NO_STATE;
+		var _entityStates	= entityStates;
 		with(par_dynamic_entity){ // Store all important dynamic entity variables until the menu is closed.
 			if (curState == NO_STATE) {continue;}
 			_curState	= curState;	// Place into local variables for quick copying into entity state storage struct.
@@ -191,7 +215,9 @@ function par_menu(_index) : base_struct(_index) constructor{
 	/// @description The only non-static function found within the menu object. It's not static like the
 	/// rest because it is inherited on a per-object basis in order to render each menu uniquely. For the
 	/// parent iteration of this function it is empty.
-	draw_gui = function() {}
+	/// @param {Real}	width	Stores the width of the GUI surface in pixels.
+	/// @param {Real}	height	Stores the height of the GUI surface in pixels.
+	draw_gui = function(_width, _height) {}
 	
 	/// @description Code that should be placed into the "Cleanup" event of whatever object is controlling
 	/// par_menu or its children. In short, it will cleanup any data that needs to be freed from memory that 
@@ -203,7 +229,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 			var _length = ds_list_size(optionData);
 			for (var i = 0; i < _length; i++){
 				with(optionData[| i]){ // Removes inner structs before the main struct is freed from memory.
-					if (!is_undefined(optionInfo)) {delete optionInfo;}
+					if (!is_undefined(optionInfo)) 
+						delete optionInfo;
 					delete iconData;
 				}
 				delete optionData[| i];
@@ -221,8 +248,10 @@ function par_menu(_index) : base_struct(_index) constructor{
 
 		// Return all dynamic entities back to their states from before the menu was opened; cleaning up the
 		// structs and ds_map that temporarily stored those values for the duration of the menu's existence.
-		var _curState, _nextState, _lastState;
-		var _key = ds_map_find_first(entityStates);
+		var _curState	= NO_STATE;
+		var _nextState	= NO_STATE;
+		var _lastState	= NO_STATE;
+		var _key		= ds_map_find_first(entityStates);
 		while(!is_undefined(_key)){
 			// Grab the copy of the entity states that were stored when the menu was created. Doing this saves
 			// the program from having to jump between the entity's scope and the struct's scope multiple times
@@ -270,11 +299,10 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// Updating the timer that allows the highlighted option to flicker between a unique color for
 		// highlighting versus the standard color for all currently visible options.
 		highlightTimer -= DELTA_TIME;
-		if (highlightTimer <= 0){
-			highlightTimer = OPTION_FLASH_INTERVAL;
-			stateFlags = MENU_CAN_HIGHLIGHT ? 
-				stateFlags & ~MENU_HIGHLIGHT_OPTION : 
-				stateFlags |  MENU_HIGHLIGHT_OPTION;
+		if (highlightTimer <= 0.0){
+			highlightTimer	= MENU_OPTION_HLGHT_INTERVAL;
+			if (MENU_CAN_HIGHLIGHT)	{stateFlags &= ~MENU_HIGHLIGHT_OPTION;}
+			else					{stateFlags |=  MENU_HIGHLIGHT_OPTION;}
 		}
 	}
 	
@@ -283,33 +311,34 @@ function par_menu(_index) : base_struct(_index) constructor{
 	/// regarding a potential state swap.
 	static end_step = function(){
 		if (curState != nextState){
-			nextState = method_get_index(nextState);
-			curState = nextState;
+			nextState	= method_get_index(nextState);
+			curState	= nextState;
 		}
 	}
 	
 	/// @description 
 	static process_input = function(){
-		prevInputFlags = inputFlags;
-		if (GAMEPAD_IS_ACTIVE){ // Getting input from the connected gamepad
-			
-		} else{ // Getting input from the keyboard (Default input device)
-			inputFlags = 
-				(keyboard_check(KEYCODE_MENU_RIGHT)		<<	MENU_RIGHT) |
-				(keyboard_check(KEYCODE_MENU_LEFT)		<<	MENU_LEFT) |
-				(keyboard_check(KEYCODE_MENU_UP)		<<	MENU_UP) |
-				(keyboard_check(KEYCODE_MENU_DOWN)		<<	MENU_DOWN) |
-				(keyboard_check(KEYCODE_SELECT)			<<	SELECT) |
-				(keyboard_check(KEYCODE_RETURN)			<<	RETURN) |
-				(keyboard_check(KEYCODE_DELETE_FILE)	<<	DELETE_FILE);
-			
-			// Grabbing any of the auxilliary inputs if they've been set to a valid keycode value. Otherwise,
-			// the check for these inputs will be completely skipped by the given menu.
-			if (auxRightIndex != -1)	{inputFlags |= keyboard_check(auxRightIndex) << AUX_RIGHT;}
-			if (auxLeftIndex != -1)		{inputFlags |= keyboard_check(auxLeftIndex) << AUX_LEFT;}
-			if (auxReturnIndex != -1)	{inputFlags |= keyboard_check(auxReturnIndex) << AUX_RETURN;}
-			if (auxSelectIndex != -1)	{inputFlags |= keyboard_check(auxSelectIndex) << AUX_SELECT;}
+		inputFlags		= 0;
+		prevInputFlags	= inputFlags;
+		if (GAMEPAD_IS_ACTIVE){
+			return;
 		}
+		
+		// --- Cursor Movement Input Checks --- //
+		if (keyboard_check(KEYCODE_MENU_RIGHT))		{inputFlags |= MENU_RIGHT;}
+		if (keyboard_check(KEYCODE_MENU_LEFT))		{inputFlags |= MENU_LEFT;}
+		if (keyboard_check(KEYCODE_MENU_UP))		{inputFlags |= MENU_UP;}
+		if (keyboard_check(KEYCODE_MENU_DOWN))		{inputFlags |= MENU_DOWN;}
+		// --- Menu Manipulation Input Checks --- //
+		if (keyboard_check(KEYCODE_SELECT))			{inputFlags |= MENU_SELECT;}
+		if (keyboard_check(KEYCODE_RETURN))			{inputFlags |= MENU_RETURN;}
+		if (keyboard_check(KEYCODE_DELETE_FILE))	{inputFlags |= MENU_DELETE_FILE;}
+		// --- Optional Movement Input Checks --- //
+		if (auxRightIndex != -1	&& keyboard_check(auxRightIndex))	{inputFlags |= MENU_AUX_RIGHT;}
+		if (auxLeftIndex != -1 && keyboard_check(auxLeftIndex))		{inputFlags |= MENU_AUX_LEFT;}
+		// --- Optional Menu Manipulation Input Checks --- //
+		if (auxSelectIndex != -1 && keyboard_check(auxSelectIndex))	{inputFlags |= MENU_AUX_SELECT;}
+		if (auxReturnIndex != -1 && keyboard_check(auxReturnIndex))	{inputFlags |= MENU_AUX_RETURN;}
 	}
 	
 	/// @description Processes the input state for the menu during a given frame. This function will only
@@ -320,12 +349,13 @@ function par_menu(_index) : base_struct(_index) constructor{
 	static execute_menu_input = function(){
 		// Don't bother updating the cursor or selection/deselection if the menu's dimensions haven't been 
 		// properly initialized OR if the player has an option already selected.
-		if (menuWidth * menuHeight == 0 || selOption == curOption) {return;}
+		if (menuWidth * menuHeight == 0 || selOption == curOption) 
+			return;
 		
 		// The player selects an option, which will cause any cursor movement to be ingored on this frame;
 		// selecting whatever option is currently highlighted instead. This locks the cursor in place until
 		// the value for "selOption" is reset back to its default of -1.
-		if (IS_SELECT_PRESSED || IS_AUX_SELECT_PRESSED){
+		if (MENU_SELECT_PRESSED || MENU_AUX_SELECT_PRESSED){
 			// TODO -- Play menu selection sound effect here.
 			selOption = curOption;
 			return;
@@ -334,7 +364,7 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// Pressing the return key will play the sound assigned to the menu's deselection/closing action
 		// (Depending on what is required in the context of the menu's state when the input(s) were pressed).
 		// All cursor movement is ignored for the frame this code is triggered.
-		if (IS_RETURN_PRESSED || IS_AUX_RETURN_PRESSED){
+		if (MENU_RETURN_PRESSED || MENU_AUX_RETURN_PRESSED){
 			// TODO -- Play menu closing OR deselection sound effect here.
 			return;
 		}
@@ -342,26 +372,27 @@ function par_menu(_index) : base_struct(_index) constructor{
 		// Gather cursor inputs by taking the values returned by the macros for their respective inputs (1 if
 		// the input(s) are held, 0 if they are not) and throw the results into two local variables (0 = both
 		// or none of the inputs are being held for that axis). After that, the auto scroll timer is handled.
-		var _magnitudeX = IS_MENU_RIGHT_HELD - IS_MENU_LEFT_HELD;
-		var _magnitudeY = IS_MENU_DOWN_HELD - IS_MENU_UP_HELD;
+		var _magnitudeX = sign(MENU_RIGHT_HELD - MENU_LEFT_HELD);
+		var _magnitudeY = sign(MENU_DOWN_HELD - MENU_UP_HELD);
 		if (_magnitudeX != 0 || _magnitudeY != 0){
 			autoScrollTimer -= DELTA_TIME;
 			// When the timer has reached or gone below zero, the menu will determine if this is the first 
 			// auto scroll; making that one slightly longer than all subsequent auto scroll movements.
-			if (autoScrollTimer <= 0){
-				autoScrollTimer = IS_AUTO_SCROLLING ? AUTO_SCROLL_INTERVAL : FIRST_AUTO_SCROLL_INTERVAL;
-				stateFlags |= (1 << AUTO_SCROLLING) | (1 << MOVE_CURSOR);
+			if (autoScrollTimer <= 0.0){
+				if (MENU_IN_AUTO_SCROLL)	{autoScrollTimer = MENU_FAST_SCROLL_INTERVAL;}
+				else						{autoScrollTimer = MENU_SLOW_SCROLL_INTERVAL;}
+				stateFlags |= MENU_AUTO_SCROLL | MENU_MOVE_CURSOR;
 			}
 		} else{ // Reset the menu's auto scrolling when no cursor inputs are being held.
-			stateFlags |= (1 << MOVE_CURSOR);
-			stateFlags &= ~(1 << AUTO_SCROLLING);
-			autoScrollTimer = 0;
+			stateFlags &= ~MENU_AUTO_SCROLL;
+			stateFlags |=  MENU_MOVE_CURSOR;
+			autoScrollTimer = 0.0;
 		}
 		
 		// Skip movement for the frame if the menu isn't allowed to move. If the flag for movement is toggled,
 		// it will allow the function to continue on, and will instantly flip its bit back to zero.
-		if (!CAN_MOVE_CURSOR) {return;}
-		stateFlags &= ~(1 << MOVE_CURSOR);
+		if (!MENU_CAN_MOVE_CURSOR) {return;}
+		stateFlags &= ~MENU_MOVE_CURSOR;
 		var _curOption = curOption; // Used for resetting the menu highlight flag after cursor movement.
 		
 		// Handling horizontal cursor movement and scrolling whenever required.
@@ -378,7 +409,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 				// Value is clamped to fix an issues with the last row potentially not being the full menu's
 				// width. It places the viewable region at the correct place for that option instead of just
 				// moving it all the way to the opposite side of the menu.
-				firstColumnOffset = clamp(firstColumnOffset + menuWidth - numVisibleColumns, 0, curOption % menuWidth - columnShiftOffset);
+				firstColumnOffset = clamp(firstColumnOffset + menuWidth - numVisibleColumns, 
+											0, curOption % menuWidth - columnShiftOffset);
 			} else{
 				curOption += _magnitudeX;
 				
@@ -393,8 +425,12 @@ function par_menu(_index) : base_struct(_index) constructor{
 				// offset for the view based on the cursor's column. Shifting doesn't occur if the the edge
 				// of the menu's visible region is already on the first or last columns, respectively.
 				if (menuWidth > 1){
-					if (firstColumnOffset + numVisibleColumns < menuWidth && _curColumn >= firstColumnOffset + numVisibleColumns - columnShiftOffset) {firstColumnOffset++;}
-					else if (firstColumnOffset > 0 && _curColumn < firstColumnOffset + columnShiftOffset) {firstColumnOffset--;}
+					if (firstColumnOffset + numVisibleColumns < menuWidth && 
+							_curColumn >= firstColumnOffset + numVisibleColumns - columnShiftOffset){
+						firstColumnOffset++;
+					} else if (firstColumnOffset > 0 && _curColumn < firstColumnOffset + columnShiftOffset){
+						firstColumnOffset--;
+					}
 				}
 			}
 		}
@@ -419,16 +455,20 @@ function par_menu(_index) : base_struct(_index) constructor{
 				// cursor is on relative to the visible region AND the buffer from those edges that 
 				// causes the region shift early.
 				var _curRow = floor(curOption / menuWidth);
-				if (firstRowOffset + numVisibleRows < menuHeight && _curRow >= firstRowOffset + numVisibleRows - rowShiftOffset) {firstRowOffset++;}
-				else if (firstRowOffset > 0 && _curRow < firstRowOffset + rowShiftOffset) {firstRowOffset--;}
+				if (firstRowOffset + numVisibleRows < menuHeight && 
+						_curRow >= firstRowOffset + numVisibleRows - rowShiftOffset){
+					firstRowOffset++;
+				} else if (firstRowOffset > 0 && _curRow < firstRowOffset + rowShiftOffset){
+					firstRowOffset--;
+				}
 			}
 		}
 		
 		// Reset the timer for the highlighted option flash effect so it always starts in its "on" state on 
 		// the newly highlighted option.
 		if (curOption != _curOption){
-			highlightTimer = OPTION_FLASH_INTERVAL;
-			stateFlags |= MENU_HIGHLIGHT_OPTION;
+			highlightTimer	= MENU_OPTION_HLGHT_INTERVAL;
+			stateFlags	   |= MENU_HIGHLIGHT_OPTION;
 		}
 	}
 	
@@ -520,10 +560,12 @@ function par_menu(_index) : base_struct(_index) constructor{
 					_optionX += offsetX; // Apply whatever offset has been given to the menu option and icon prior to being drawn.
 					_optionY += offsetY;
 					if (!isActive){ // The option is inactive; overwrite the colors to use inactive colors instead.
-						draw_option_info(_curOption, _optionX, _optionY, _inactiveInColor, _inactiveOutColor, _alpha, _alpha);
+						draw_option_info(_curOption, _optionX, _optionY, _inactiveInColor, 
+							_inactiveOutColor, _alpha, _alpha);
 						continue;
 					}
-					draw_option_info(_curOption, _optionX, _optionY, _optionInColor, _optionOutColor, _alpha, _alpha);
+					draw_option_info(_curOption, _optionX, _optionY, _optionInColor, 
+						_optionOutColor, _alpha, _alpha);
 				}
 			}
 		}
@@ -547,7 +589,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 			var _optionY = _y + offsetY;
 			draw_text_outline(_optionX, _optionY, optionText, _inColor, _outColor, _alpha);
 			with(iconData){ // Icon is offset by 16 pixels so it doesn't overlap the text.
-				if (sprite == NO_SPRITE) {break;}
+				if (sprite == NO_SPRITE) 
+					break;
 				draw_sprite_ext(sprite, 0, _optionX - 16, _optionY, 1, 1, 0, c_white, _alpha);
 			}
 			with(optionInfo) {draw_text_outline(infoX, infoY, infoText, _inColor, _outColor, _infoAlpha);}
@@ -582,7 +625,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 	/// @param {Real}			iconY			Offset along the y axis relative to the option's text position on that same axis.
 	/// @param {Bool}			isActive		Determines if this option can be selected by the player or not.
 	static replace_option = function(_index, _optionText, _optionInfo = undefined, _optionIcon = undefined, _iconX = 0, _iconY = 0, _isActive = true){
-		if (_index < 0 || _index >= ds_list_size(optionData)) {return;}
+		if (_index < 0 || _index >= ds_list_size(optionData)) 
+			return;
 		
 		// Remove all the structs that previously existed in the list at the desired position, but don't actually
 		// remove the index from the list; doing so would completely screw up the original option order.
@@ -594,20 +638,24 @@ function par_menu(_index) : base_struct(_index) constructor{
 		delete optionData[| _index];
 		
 		// Finally, set the newly undefined index to a completely new option struct based on the arguments provided.
-		ds_list_set(optionData, _index, new_option(_optionText, _optionInfo, _optionIcon, _iconX, _iconY, _isActive));
+		ds_list_set(optionData, _index, new_option(_optionText, _optionInfo, _optionIcon, 
+			_iconX, _iconY, _isActive));
 	}
 	
 	/// @description Removes the desired index from the menu's available list of options. Unlike "replace_option"
 	/// this function will remove the index from the list completely; shifting all other options up by one.
 	/// @param {Real}	index	The index into the list where the desired option is positioned.
 	static delete_option = function(_index){
-		if (_index < 0 || _index >= ds_list_size(optionData)) {return;}
+		if (_index < 0 || _index >= ds_list_size(optionData)) 
+			return;
+			
 		with(optionData[_index]){
 			if (!is_undefined(optionInfo)) 
 				delete optionInfo;
 			delete iconData;
 		}
 		delete optionData[| _index];
+		
 		ds_list_delete(optionData, _index);
 		menuHeight = ceil(ds_list_size(optionData) / menuWidth); // Update height based on menu based on remaining number of inputs.
 	}
@@ -704,7 +752,8 @@ function par_menu(_index) : base_struct(_index) constructor{
 		alpha = value_set_linear(alpha, _alphaTarget, _animSpeed);
 		if (alpha == _alphaTarget){ // Animation is completed; execute any required additional code and switch states.
 			object_set_next_state(_nextState);
-			if (_endFunction != NO_FUNCTION) {_endFunction();}
+			if (_endFunction != NO_FUNCTION) 
+				_endFunction();
 		}
 	}
 	

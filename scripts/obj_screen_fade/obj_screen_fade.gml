@@ -64,14 +64,15 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 		alpha = value_set_linear(alpha, alphaTarget, fadeSpeed);
 		if (fadeDuration != FADE_PAUSE_FOR_TOGGLE && alpha == 1.0 && alphaTarget == 1.0){ // Count down the duration until the fade out can begin.
 			fadeDuration -= DELTA_TIME;
-			if (fadeDuration <= 0.0) {alphaTarget = 0.0;}
+			if (fadeDuration <= 0.0) 
+				alphaTarget = 0.0;
 		} else if (alpha == 0.0 && alphaTarget == 0.0){ // The fade has completed; clear its pointer from the singleton map.
 			// Reset the game's state back to what it was prior to the screen fade. All entities will have their
 			// "freeze animation" flags returned to whatever they were before the fade as well.
 			if (GAME_CURRENT_STATE == GSTATE_PAUSED){
 				game_set_state(GAME_PREVIOUS_STATE, true);
 				var _length = ds_list_size(prevAnimationFlags);
-				var _data = [noone, false]; // All elements in the list should match the format of this default value.
+				var _data	= [noone, false]; // All elements in the list should match the format of this default value.
 				for (var i = 0; i < _length; i++){
 					_data = prevAnimationFlags[| i];
 					with(_data[0]){ // 0th index should always be the entity's unique ID value.
@@ -104,13 +105,11 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	/// obj_screen_fade. It will draw a rectangle onto the screen in the color specified by the fade effect
 	/// parameters. The current opacity is determined by the alpha variable's current value. Optionally, the
 	/// player can be draw above the fade effect, which is normally only used during room transitions.
-	/// @param {Real}	cameraX		The camera's x position within the current room.
-	/// @param {Real}	cameraY		The camera's y position within the current room.
-	draw_gui = function(_cameraX, _cameraY){
+	/// @param {Real}	width		The width in pixels of the GUI surface.
+	/// @param {Real}	height		The height in pixels of the GUI surface.
+	draw_gui = function(_width, _height){
 		if (alpha == 0) {return;}
-		var _alpha = alpha;
-		var _camera = CAMERA.camera;
-		draw_sprite_ext(spr_rectangle, 0, 0, 0, camera_get_view_width(_camera), camera_get_view_height(_camera), 0, fadeColor, _alpha);
+		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, fadeColor, alpha);
 		
 		// 
 		if (drawPlayer){
@@ -135,7 +134,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 			surface_set_target(playerSurf);
 			draw_clear_alpha(c_black, 0);
 			with(PLAYER){
-				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
+				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, 
+					image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 				with(armCannon){
 					if (!visible) {break;}
 					draw_sprite_ext(spr_samus_cannon0, imageIndex, 

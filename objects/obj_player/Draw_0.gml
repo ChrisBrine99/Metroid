@@ -19,3 +19,8 @@ if (flickerTimer >= PLYR_HIT_INTERVAL){
 	else					{stateFlags |=	ENTT_DRAW_SELF;}
 	flickerTimer -= PLYR_HIT_INTERVAL;
 }
+
+if (hitstunTimer == -1.0 && recoveryTimer == -1.0){
+	stateFlags &= ~PLYR_SPRITE_FLICKER;
+	stateFlags |=  ENTT_DRAW_SELF;
+}

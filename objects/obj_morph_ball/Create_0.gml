@@ -12,8 +12,8 @@ flagID = FLAG_MORPHBALL;
 collectibleName = "Morph Ball";
 collectibleInfo = "Allows Samus to roll herself into a ball to gain access through narrow passageways.";
 // Setup the ambient light source to match the morph ball's color scheme.
-baseRadius = 32;
-baseStrength = 0.7;
+baseRadius		= 32;
+baseStrength	= 0.7;
 object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_ORANGE, baseStrength);
 
 #endregion

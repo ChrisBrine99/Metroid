@@ -1,8 +1,11 @@
 #region Macros utilized by all collectibles
 
-// Determines how close Samus needs to be in pixels from the center of a collectible item in order for it to
-// be acquired by her; granting the ability to her for that point onward.
-#macro COLLECTIBLE_RADIUS		8
+// ------------------------------------------------------------------------------------------------------- //
+// 
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	CLCT_SHOW_ITEM_INFO		0x00400000
+// NOTE -- Bits 0x00800000 and greater are already in use by default static entity substate flags.
 
 #endregion
 
@@ -47,37 +50,25 @@ baseStrength	= 0.0;
 
 #region Default collection function initialization
 
-/// @description A collectible object's default collection function, which create the screen that will display
-/// the item's name and its information onto the screen for the player to read; only allowing that menu to
-/// close once the collection theme being completed. Sets the event flag tied to the object. A collectible
-/// can override this function to have its own unique effects outside of the general tasks performed here.
+/// @description 
 collectible_collect_self = function(){
-	// Copy the data that tells the collection screen what item this is (name), its functionality (info)
-	// and the value that enables the use of the item (flag) after the collection screen is closed.
-	var _name = collectibleName;
-	var _info = collectibleInfo;
-	var _flag = flagID;
-	
-	// Create the instance for the "menu" that displays the item's name and functionality to the player.
-	// Apply a simple fade-in animation that ends with the menu being assigned its default state. Copy
-	// over the item information; the being automatically by the "set_item_data" function call.
-	var _menu = instance_create_menu_struct(obj_item_collection_screen);
+	// 
+	var _name	= collectibleName;
+	var _info	= collectibleInfo;
+	var _flag	= flagID;
+	var _id		= id;
+	var _menu	= instance_create_menu_struct(obj_item_collection_screen);
 	with(_menu){
 		menu_set_next_state(state_animation_alpha, [1.0, 0.1, state_default]);
-		set_item_data(_name, _info, _flag, camera_get_view_width(CAMERA.camera) - 20);
-		hudAlphaTarget = GAME_HUD.alphaTarget;
-		GAME_HUD.alphaTarget = 0.0;
+		set_item_data(_name, _info, _flag, display_get_gui_width() - 20);
+		hudAlphaTarget		 = GAME_HUD.alphaTarget;
+		itemInstance		 = _id;
+		GAME_HUD.alphaTarget = 0.0; // Fade HUD out until item is "collected" by the player.
 	}
 	
-	// Triggers the collectible to delete itself once it's collected by the player. Its visibility is
-	// set to false to prevent the object from being drawn after it's technically been "destroyed".
-	stateFlags |= ENTT_DESTROYED;
-	visible = false;
-	
 	// 
-	var _camera = CAMERA.camera;
-	var _cellX = floor(x / camera_get_view_width(_camera));
-	var _cellY = floor(y / camera_get_view_height(_camera));
+	var _cellX = floor(x / display_get_gui_width());
+	var _cellY = floor(y / display_get_gui_height());
 	with(MAP_MANAGER){
 		_cellX += rOriginX;	// Offset based on room's current origin on the map.
 		_cellY += rOriginY;

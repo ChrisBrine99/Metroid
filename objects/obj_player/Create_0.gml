@@ -1296,8 +1296,8 @@ player_enemy_collision = function(){
 			// them and they aren't immune to the Screw Attack.
 			if (_inJumpAttack){
 				if (!IS_IMMUNE_TO_SATTACK){
-					instance_destroy_object(id);
 					stateFlags |= (1 << DROP_ITEM);
+					instance_destroy_object(id);
 				}
 				return;
 			}
@@ -1361,6 +1361,7 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	// and upward; resulting in an up-right or up-left trajectory depending on the direction she was facing
 	// at the time of the attack.
 	stateFlags	   &= ~DNTT_GROUNDED;
+	stateFlags	   |= PLYR_SPRITE_FLICKER;
 	flickerTimer	= PLYR_HIT_INTERVAL;
 	hspd			= get_max_hspd() * 0.5 * -image_xscale;
 	vspd			= -2.75;
@@ -1680,14 +1681,11 @@ state_airbourne = function(){
 		aimReturnTimer = 0.0;
 	}
 	
-	// Determining Samus's aiming direction as well as if she can enter morphball mode or not. For aiming, it
-	// works a bit different to how her default state handles things; using button presses/releases instead of
-	// a simple holding of the respective aiming input to remain aiming in that direction. For upward aiming,
-	// it will seem identical to how it works in the default state despite this change, but the change allows
-	// for a single press of the down key to activate her downward aiming substate. From there, the player can
-	// press down again to enter morphball mode in the air, or they can press the up key to return to aiming
-	// forward.
+	// 
 	var _vInput = sign(PLYR_DOWN_PRESSED - PLYR_UP_PRESSED);
+	if (PLYR_IN_SOMERSAULT && _vInput != 0) {reset_light_source();}
+	
+	// 
 	if (_vInput == -1){
 		if (!PLYR_IS_AIMING_DOWN){ // Aiming upward until the player releases their up input.
 			stateFlags	&= ~(PLYR_FIRING_CANNON | PLYR_SOMERSAULT | PLYR_SCREWATK);
@@ -1717,11 +1715,6 @@ state_airbourne = function(){
 		stateFlags &= ~PLYR_AIMING_UP;
 		lightComponent.isActive = true;
 	}
-
-	// Stopping Samus's current horizontal velocity if the player isn't moving her at the time of this
-	// aiming code being executed, which 
-	if (PLYR_IN_SOMERSAULT && _vInput != 0 && movement == 0)
-		hspd = 0.0;
 	
 	// Activating the Phase Shift ability, which instantly exists the current state if the function returned
 	// true. Otherwise, the ability cannot be activated and won't cause the current state to prematurely end.
@@ -1739,18 +1732,14 @@ state_airbourne = function(){
 	// is replaced by this light.
 	var _jumpattack = PLYR_IN_SCREWATK;
 	var _jumpspin	= PLYR_IN_SOMERSAULT;
-	with(lightComponent){
-		if (_jumpattack){
-			set_properties(LGHT_SCREWATK_RADIUS + irandom_range(-10, 10), 
-							choose(HEX_LIGHT_GREEN, HEX_LIGHT_BLUE, HEX_LIGHT_PURPLE, HEX_WHITE), 
-							LGHT_SCREWATK_STRENGTH + random_range(-0.2, 0.1));
-		}
-	}
 	if (_jumpattack){ // Position for the screw attack's flashing light effect.
+		with(lightComponent){
+			set_properties(LGHT_SCREWATK_RADIUS + irandom_range(-10, 10), 
+				choose(HEX_LIGHT_GREEN, HEX_LIGHT_BLUE, HEX_LIGHT_PURPLE, HEX_WHITE), 
+				LGHT_SCREWATK_STRENGTH + random_range(-0.2, 0.1));
+		}
 		lightOffsetX = LGHT_SCREWATK_X;
 		lightOffsetY = LGHT_SCREWATK_Y;
-	} else if (lightOffsetX == 0){
-		reset_light_source();
 	}
 	
 	// When Samus isn't using her screw attack, the ambient light position is updated to match Samus's visor's
@@ -2131,7 +2120,3 @@ state_phase_shift = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
-
-event_set_flag(FLAG_SCREW_ATTACK, true);
-maxVspd = PLYR_UPGRADED_JUMP;
-jumpSpriteSpin = spr_power_jump0b;

@@ -137,8 +137,10 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// controlling obj_effect_handler. In short, it will render graphical effects to the screen that above 
 	/// the application surface, but BEFORE the game's GUI surface. For example, the screen blurring and
 	/// bloom effects are applied here.
-	draw_gui_begin = function(){
-		if (game_get_setting_flag(BLOOM_EFFECT))		{apply_screen_bloom();}
+	/// @param {Real}	width		The width in pixels of the GUI surface.
+	/// @param {Real}	height		The height in pixels of the GUI surface.
+	draw_gui_begin = function(_width, _height){
+		if (game_get_setting_flag(BLOOM_EFFECT))		{apply_screen_bloom(_width, _height);}
 		if (game_get_setting_flag(ABERRATION_EFFECT))	{apply_aberration(0.01);}
 		apply_screen_blurring(application_surface, round(blurRadius), blurAmount);
 	}
@@ -147,12 +149,11 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// obj_effect_handler. In short, it will render graphical effects to the screen that above both the
 	/// application surface AND the game's GUI surface. For example, both the scanlines and noise filter are
 	/// applied here to overlap the entire image.
-	draw_gui_end = function(){
-		//draw_set_font(font_gui_small);
-		//draw_text(5, 60, "Lights Drawn: " + string(global.lightsDrawn));
-		
+	/// @param {Real}	width		The width in pixels of the GUI surface.
+	/// @param {Real}	height		The height in pixels of the GUI surface.
+	draw_gui_end = function(_width, _height){
 		if (game_get_setting_flag(FILM_GRAIN_FILTER))	{apply_film_grain();}
-		if (game_get_setting_flag(SCANLINE_FILTER))		{apply_scanlines(0.15);}
+		if (game_get_setting_flag(SCANLINE_FILTER))		{apply_scanlines(_width, _height, 0.15);}
 	}
 	
 	/// @description Renders the world using the current global illumination parameters (brightness, contrast,
@@ -201,7 +202,8 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		var _length = ds_list_size(global.lightSources);
 		for (var i = 0; i < _length; i++){
 			with(global.lightSources[| i]){
-				if (!isActive || radius == 0 || strength <= 0.0) {continue;}
+				if (!isActive || radius == 0 || strength <= 0.0) 
+					continue;
 				
 				_x = x - _cameraX;
 				_y = y - _cameraY;
@@ -241,7 +243,8 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	apply_screen_blurring = function(_baseSurface, _blurRadius, _blurAmount){
 		// Don't waste time attempting to render the screen blur if there isn't a possibility of it being
 		// visible to the user due to either of these two parameters being zeroed out.
-		if (_blurRadius == 0 || _blurAmount == 0) {return;}
+		if (_blurRadius == 0 || _blurAmount == 0) 
+			return;
 		
 		// Make sure the buffer surface for the blurring effect exists within the GPU's memory before
 		// any processing of the effect has begun. It's dimensions are the same as the window's.
@@ -279,14 +282,15 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// @description The function that handles rendering the bloom effect in the game. This effect will
 	/// result in a bright blur on pixels that are already bright to begin with; increasing the overall
 	/// contrast of the image and also mimicking how our eyes and camera lenses react to very bright colors.
-	apply_screen_bloom = function(){
+	/// @param {Real}	width		The width in pixels of the GUI surface.
+	/// @param {Real}	height		The height in pixels of the GUI surface.
+	apply_screen_bloom = function(_width, _height){
 		// First, make sure the surface used to store the pixels on the screen that are bright enough to
 		// be altered by this screen blooming function. The ID given to that surface is also stored since
 		// it is required for the blending of the luminance surface and the application surface.
 		if (!surface_exists(surfBloomLum)){
-			var _camera = CAMERA.camera;
-			surfBloomLum = surface_create(camera_get_view_width(_camera), camera_get_view_height(_camera));
-			bloomTextureID = surface_get_texture(surfBloomLum);
+			surfBloomLum	= surface_create(_width, _height);
+			bloomTextureID	= surface_get_texture(surfBloomLum);
 		}
 		
 		// First, the luminance for the application surface is calculated using the respective shader for
@@ -347,16 +351,16 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// effect pipeline for the game. It will temporarily match the GUI's dimensions to the display that the
 	/// game is being rendered to in order to achieve this effect; ignoring the scaling factors of the game's
 	/// actual resolution.
+	/// @param {Real}	width		The width in pixels of the GUI surface.
+	/// @param {Real}	height		The height in pixels of the GUI surface.
 	/// @param {Real}	opacity		Determines how intense the scanlines are (0.0 = transparent, 1.0 = opaque).
-	apply_scanlines = function(_opacity){
+	apply_scanlines = function(_width, _height, _opacity){
 		// Local variables that store information about the GUI's width and height prior to the scanline effect
 		// being rendered onto the screen, as well as the temporary resolution that matches the resolution of
 		// the player's monitor.
 		var _scale		= RESOLUTION_SCALE;
-		var _prevWidth	= display_get_gui_width();
-		var _prevHeight = display_get_gui_height();
-		var _tempWidth	= _prevWidth * _scale;
-		var _tempHeight = _prevHeight * _scale;
+		var _tempWidth	= _width * _scale;
+		var _tempHeight = _height * _scale;
 		display_set_gui_size(_tempWidth, _tempHeight);
 		
 		// Activate the shader, and then simply draw a rectangle across the entire screen. The shader will turn
@@ -369,7 +373,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 		// After the scanlines have been rendered at the resolution matching the player's active monitor (The
 		// one displaying the game's window), return the size of the gui surface back to the same size as the
 		// game's world-space resolution (320 by 180).
-		display_set_gui_size(_prevWidth, _prevHeight);
+		display_set_gui_size(_width, _height);
 	}
 }
 

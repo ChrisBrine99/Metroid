@@ -1,1 +1,1 @@
-with(EFFECT_HANDLER) {draw_gui_begin();}
+with(EFFECT_HANDLER) {draw_gui_begin(display_get_gui_width(), display_get_gui_height());}

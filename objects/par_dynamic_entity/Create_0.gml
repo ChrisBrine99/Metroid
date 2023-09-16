@@ -8,6 +8,8 @@
 
 #macro	DNTT_DESTRUCTIBLE			0x00200000
 #macro	DNTT_GROUNDED				0x00400000
+// NOTE --	Bits 0x00800000 and greater are in use and can be found within "par_entity_data" as it shares 
+//			those substate flags with "par_static_entity" as well.
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Macros that condense the code required to check for these general Entity substates.					   //

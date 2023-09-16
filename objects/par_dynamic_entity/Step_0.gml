@@ -17,7 +17,6 @@ if (hitstunTimer == -1.0){
 	recoveryTimer += DELTA_TIME;
 	if (recoveryTimer >= recoveryLength){
 		stateFlags	   &= ~ENTT_HIT_STUNNED;
-		stateFlags	   |= ENTT_DRAW_SELF;
 		recoveryTimer	= -1.0;
 	}
 	return; // The hitstun timer no longer needs to be incremented.

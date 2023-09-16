@@ -6,8 +6,9 @@
 //	they can be destroyed by Samus or the environment.													   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	DEST_USE_EFFECTS		0x00080000	// Toggles use of destruction/rebuild effect for the object.
-#macro	DEST_HIDDEN				0x00100000	// Enables ability to hide the object behind a tile within the room's tileset.
+#macro	DEST_USE_EFFECTS		0x00200000	// Toggles use of destruction/rebuild effect for the object.
+#macro	DEST_HIDDEN				0x00400000	// Enables ability to hide the object behind a tile within the room's tileset.
+// NOTE -- Bits 0x00800000 and greater are already in use by default static entity substate flags.
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Macros that condense the code required to check for these general Destructible substates.			   //

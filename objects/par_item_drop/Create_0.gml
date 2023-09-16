@@ -30,7 +30,7 @@ flickerTimer	= 0.0;
 
 /// @description Default function for item drop collection. It will simply destroy the item drop without doing
 /// anything else, as the functionality of the item drop is determined by the child object itself.
-item_drop_collect_self = function() {
+item_drop_collect_self = function(){
 	stateFlags |= ENTT_DESTROYED;
 }
 
