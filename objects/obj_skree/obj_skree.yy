@@ -31,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_skree",
-    "path": "sprites/spr_skree/spr_skree.yy",
+    "name": "spr_skree0",
+    "path": "sprites/spr_skree0/spr_skree0.yy",
   },
   "spriteMaskId": null,
   "visible": false,

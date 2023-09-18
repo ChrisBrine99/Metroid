@@ -3,12 +3,12 @@ if (ENTT_IS_DESTROYED || !ENTT_IS_ACTIVE) {return;}
 
 hitpoints -= DELTA_TIME; // Countdown timer until destruction of the pickup.
 if (hitpoints <= 0.0){
-	stateFlags |= (1 << DESTROYED);
+	stateFlags |= ENTT_DESTROYED;
 } else if (hitpoints < maxHitpoints){ // NOTE: "maxHitpoints" is 25% of starting lifetime value.
 	flickerTimer += DELTA_TIME;
 	if (flickerTimer > 1.0){ // Apply flicker at a constant rate.
 		flickerTimer = 0.0;
-		if (CAN_DRAW_SPRITE)	{stateFlags &= ~ENTT_DRAW_SELF;}
+		if (ENTT_CAN_DRAW_SELF)	{stateFlags &= ~ENTT_DRAW_SELF;}
 		else					{stateFlags |=  ENTT_DRAW_SELF;}
 	}
 }

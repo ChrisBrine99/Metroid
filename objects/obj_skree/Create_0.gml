@@ -17,8 +17,8 @@
 // Important time values for the Skree's various attack state waiting times in "frames" (60 of those being one 
 // second of real-time), as well as the amount in "frames" that the Skree will shift back and forth horizontally
 // whenever this effect is required in each state.
-#macro	SKRE_ATK_BEGIN_TIME		10.0
-#macro	SKRE_ATK_END_TIME		30.0
+#macro	SKRE_ATK_BEGIN_TIME		18.0
+#macro	SKRE_ATK_END_TIME		32.0
 #macro	SKRE_POST_DEATH_TIME	8.0
 #macro	SKRE_SHIFT_INTERVAL		2.0
 
@@ -32,14 +32,14 @@ event_inherited();
 
 // Set the maximum horizontal speed and the Skree's maximum falling speed which are both utilized during the 
 // Skree's main attacking state.
-maxHspd = 1.5;
-maxVspd = 6.0;
+maxHspd = 1.8;
+maxVspd = 8.0;
 
 // Instead of having the maximum horizontal and vertical speeds set instantly for the Skree once it begins
 // falling towards Samus, the Skree will slowly accelerate towards each value's maximum until those values 
 // are reached; values they will remain at until the attack state ends.
 hAccel = 0.3;
-vAccel = 0.6;
+vAccel = 0.8;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Skree will be able to 
 // take four hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
@@ -80,7 +80,7 @@ __initialize = initialize;
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
-	entity_set_sprite(spr_skree, -1);
+	entity_set_sprite(spr_skree0, -1);
 	object_add_light_component(x, y, 0, 8, 0, HEX_LIGHT_RED, 0.5);
 	create_general_collider();
 	initialize_weak_to_all();
@@ -110,37 +110,31 @@ state_default = function(){
 	if (_playerX > x - SKRE_TRIGGER_DISTANCE && _playerX < x + SKRE_TRIGGER_DISTANCE && _playerY > y + 32){
 		object_set_next_state(state_begin_attack);
 		damage		= SKRE_ATK_DAMAGE;
-		shiftBaseX	= x;
+		imageIndex	= 0.0;
+		animSpeed	= 0.0;
 	}
 }
 
 /// @description The first of three different states that the Skree can find itself in during its main attack.
-/// This state will speed its animation up while also shaking the Skree back and forth for a short period of
-/// time to help the player know the Skree is about to go for an attack.
+/// Here it will wait for a pre-determined amount of time before the Skree can actually attack Samus.
 state_begin_attack = function(){
-	// First, increase the Skree's animation so it begins to spin rapidly before making its descent towards
-	// the player. Until this value reaches its required threshold, the Skree's attack begin timer will not
-	// be incremented.
-	if (animSpeed != SKRE_ATK_ANIM_SPEED){
-		animSpeed += SKRE_ANIM_SPD_INCREASE * DELTA_TIME;
-		if (animSpeed > SKRE_ATK_ANIM_SPEED)
-			animSpeed = SKRE_ATK_ANIM_SPEED;
-		return;
-	}
-	
 	// Wait until the attack timer exceeds the attack begin interval value; shaking the Skree back and forth
 	// throughout this wait time. If the interval value is met, the Skree will begin its main attacking state 
 	// where it quickly lunges downwards in Samus's direction.
 	attackTimer += DELTA_TIME;
 	if (attackTimer > SKRE_ATK_BEGIN_TIME){
 		object_set_next_state(state_attack);
-		x				= shiftBaseX;
-		attackTimer		= 0.0;
-		moveDirection	= (PLAYER.x > x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
+		sprite_index	= spr_skree0;
+		animSpeed		= SKRE_ATK_ANIM_SPEED;
 		damage			= SKRE_BASE_DAMAGE; // Return damage back to its default value.
+		moveDirection	= (PLAYER.x > x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
+		attackTimer		= 0.0;
 		return;
 	}
-	apply_horizontal_shift(SKRE_SHIFT_INTERVAL);
+	
+	// Switch the Skree over to its "pre-attack" sprite.
+	if (sprite_index == spr_skree0 && attackTimer > SKRE_ATK_BEGIN_TIME * 0.25)
+		sprite_index = spr_skree1;
 }
 
 /// @description The second and most important state for the Skree's attack. It's where the skree will actually
@@ -182,6 +176,7 @@ state_kill_self = function(){
 		entity_set_sprite(spr_empty_mask, -1);
 		stateFlags &= ~ENTT_DRAW_SELF;
 		attackTimer = 0.0;
+		mask_index	= spr_empty_mask;
 		visible		= false;
 		
 		// 

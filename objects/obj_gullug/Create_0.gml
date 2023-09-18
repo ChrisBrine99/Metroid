@@ -13,7 +13,7 @@
 // Macro values for various attack state parameters. The first is the radius that Samus is required to be within
 // relative to the Gullug's current position before it can attack her. The final two values are the speed the
 // Gullug moves at when it is attacking and returning from attacking to its regular movement, respectively.
-#macro	GLLG_ATK_DISTANCE		96.0
+#macro	GLLG_ATK_DISTANCE		48.0
 #macro	GLLG_ATK_SPEED			2.0
 #macro	GLLG_ATK_RETURN_SPEED	1.0
 
@@ -91,10 +91,10 @@ initialize = function(_state){
 	create_general_collider();
 	initialize_weak_to_all();
 	
-	// 
+	// Initialize all variables required by the Gullug for its AI to function. Moving clockwise or counter-
+	// clockwise is determined by a "coin flip" here and never changed.
 	startX			= x;
 	startY			= y;
-	moveSpeed		= 2.0;
 	moveDirection	= choose(1, -1);
 	attackTimer		= GLLG_ATK_COOLDOWN_TIME;	// Enables the Gullug to attack as soon as they area created.
 	
@@ -115,9 +115,13 @@ state_default = function(){
 	// Cache the current value for delta time since it is utilized multiple times throughout the state.
 	var _deltaTime = DELTA_TIME;
 	
-	// 
+	// The Gullug is ready to attack, so it will constantly check the distance in pixels against itself and
+	// Samus. If that distance is at or less than the set value for the Gullug's attacking range, it will begin
+	// its attacking sequence by changing to "state_begin_attack".
 	if (attackTimer == GLLG_ATK_COOLDOWN_TIME){
-		// 
+		// Grab the player's current position and store it into local variables for the x and y values,
+		// respectively. If the player's position cannot be retrieved for whatever reason, the default values
+		// of 0xFFFFFFFF are used to prevent the Gullug from ever being able to attack.
 		var _playerX = 0xFFFFFFFF;
 		var _playerY = 0xFFFFFFFF;
 		with(PLAYER){
@@ -125,13 +129,17 @@ state_default = function(){
 			_playerY = y - 16; // Offset by 16 so it is properly centered on Samus.
 		}
 	
-		// 
-		if (distance_to_point(_playerX, _playerY) <= GLLG_ATK_DISTANCE){
+		// Check the distance between Samus and the Gullug, but only if the Gullug is currently visible on the
+		// screen. If not, the check will not be performed. If the distance requirement is met, the Gullug will
+		// switch to its attacking sequence.
+		if (ENTT_IS_ON_SCREEN && point_distance(x, y, _playerX, _playerY) <= GLLG_ATK_DISTANCE){
 			object_set_next_state(state_begin_attack);
 			shiftBaseX	= x;
 			attackTimer	= 0.0;
 			
-			// 
+			// Determine the direction it needs to charge toward based on the direction of the line between the
+			// Gullug's and Samus's position. Then, radial-based hspd and vspd values are calculated relative to
+			// the Gullug's set movement speed which will be used during the main attacking state.
 			var _direction = point_direction(x, y, _playerX, _playerY);
 			hspd = lengthdir_x(GLLG_ATK_SPEED, _direction);
 			vspd = lengthdir_y(GLLG_ATK_SPEED, _direction);
@@ -143,58 +151,73 @@ state_default = function(){
 			attackTimer = GLLG_ATK_COOLDOWN_TIME;
 	}
 	
-	// 
+	// Calculate the position of the Gullug based on a circle with a pre-defined radius surrounding its 
+	// "startX" and "startY" values. The movement that the player sees is simply a result of the Gullug's
+	// "direction" value being shifted up or down a given amount per frame.
 	x = startX + floor(lengthdir_x(GLLG_MOVE_RADIUS, direction));
 	y = startY + floor(lengthdir_y(GLLG_MOVE_RADIUS, direction));
-	direction += moveDirection * moveSpeed * _deltaTime;
+	direction += moveDirection * 2.0 * _deltaTime;
 }
 
-/// @description 
+/// @description The Gullug "attack prep" state. It will simply wait for a specific amount of time before moving
+/// onto its main attacking state. The gullug will shake back and forth on the x axis throughout this state.
 state_begin_attack = function(){
-	// 
+	// Track how long the Gullug has spend prepping for attack. Once the time elapsed exceeds the required
+	// amount, the Gullug will switch into its main state for attacking.
 	attackTimer += DELTA_TIME;
 	if (attackTimer > GLLG_ATK_BEGIN_TIME){
 		object_set_next_state(state_attack);
 		x			= shiftBaseX;
 		returnX		= x;
 		returnY		= y;
-		damage		= GLLG_ATTACK_DAMAGE;
+		damage		= GLLG_ATTACK_DAMAGE;	// Damage output is increased during the Gullug's charge.
 		attackTimer	= 0.0;
 		return;
 	}
 	
-	// 
+	// Apply the horizontal shaking animation to the Gullug to signify that it is about to begin its attack.
 	apply_horizontal_shift(GLLG_SHAKE_SPEED);
 }
 
-/// @description 
+/// @description The Gullug's main attacking state, which is responsible for executed its charging movement.
+/// It keeps moving in the calculated direction until either the amount of time in this state exceeds its limit,
+/// or it collides with Samus.
 state_attack = function(){
-	// 
+	// Since "hspd" and "vspd" values are set prior to this attacking state, they don't need to be updated. All
+	// that needs to be done is a call to the default Entity movement function. No collision with the world
+	// occurs for the Gullug.
 	apply_frame_movement(NO_FUNCTION);
 	attackTimer += DELTA_TIME;
 	
-	// 
+	// Exit the attacking state if the current amount of time in this state has exceeded its limit or the 
+	// Gullug managed to hit Samus. This moves the Gullug onto its post-attacking state.
 	if (attackTimer > GLLG_ATK_TIME || place_meeting(x, y, PLAYER)){
 		object_set_next_state(state_end_attack);
 		damage		= GLLG_BASE_DAMAGE;
 		attackTimer	= 0.0;
 		
-		// 
+		// Determine the "hspd" and "vspd" for returning back to its default movement circle in the same way
+		// that the values are determined for its attacking "hspd" and "vspd". The only difference is the
+		// direction here is based on the line between the Gullug's position and its "pre-attack" position.
 		var _direction = point_direction(x, y, returnX, returnY);
 		hspd = lengthdir_x(GLLG_ATK_RETURN_SPEED, _direction);
 		vspd = lengthdir_y(GLLG_ATK_RETURN_SPEED, _direction);
 	}
 }
 
-/// @description 
+/// @description The Gullug's final state for its attack sequence. It will simply remain stationary for a set
+/// interval of time before moving back to the position it was at when it first began its attack sequence.
 state_end_attack = function(){
-	// 
+	// Keep track of how long the Gullug has been in this state for. If that value hasn't met the requirement
+	// for its "attack end waiting time", the function will prematurely exit. Otherwise, the Gullug will begin
+	// returning to its pre-attack position.
 	var _deltaTime	= DELTA_TIME;
 	attackTimer	   += _deltaTime;
 	if (attackTimer < GLLG_ATK_END_TIME) 
 		return;
 	
-	// 
+	// Move the Gullug until it is close enough to its "return" position. After that, it will be snapped to
+	// that stored position before returning the Gullug back to its default state.
 	apply_frame_movement(NO_FUNCTION);
 	if (point_distance(x, y, returnX, returnY) 
 			<= max(GLLG_ATK_RETURN_SPEED, GLLG_ATK_RETURN_SPEED * _deltaTime)){
