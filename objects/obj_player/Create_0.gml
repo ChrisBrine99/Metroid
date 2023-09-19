@@ -26,7 +26,7 @@
 // NOTE -- Bits 0x00200000 and greater are already in use by default dynamic entity substate flags.
 
 // ------------------------------------------------------------------------------------------------------- //
-//	Macros that condense the code required to check if Samus is currently wihtin one of these substates.   //
+//	Macros that condense the code required to check if Samus is currently within one of these substates.   //
 // ------------------------------------------------------------------------------------------------------- //
 
 // --- Movement Substate Checks --- //
@@ -121,6 +121,16 @@
 #macro	PLYR_PSHIFT_PRESSED		(inputFlags & PLYR_PHASE_SHIFT && !(prevInputFlags & PLYR_ENERGY_SHIELD))
 
 // ------------------------------------------------------------------------------------------------------- //
+//	Two unique "substate" flags that are only utilized when creating a projectile object based on the	   //
+//	beam/missile Samus currently has equipped. These can be the 31st and 32nd bits because only five bits  //
+//	from "stateFlags" (Moving, crouching, aiming up, aiming down, and grounded) are carried over into this //
+//	temporary substate flag variable.																	   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_FACING_RIGHT		0x40000000
+#macro	PLYR_FACING_LEFT		0x80000000
+
+// ------------------------------------------------------------------------------------------------------- //
 //	Values that correspond to various lengths of time that prevent/enable/disable certain characteristics  //
 //	for Samus, the legnth of state transitions and code-based animations, as well as any other logic that  //
 //	requires a specific interval of time for its functionality. Note that 60 units is roughly one second.  //
@@ -168,6 +178,7 @@
 #macro	WEAPON_REG_MISSILE		0x80000001
 #macro	WEAPON_ICE_MISSILE		0x80000002
 #macro	WEAPON_SHOCK_MISSILE	0x80000003
+// NOTE -- These values are used to represent a fired projectile's internal ID as well.
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Values that represent how long in "frames" (60 frames == 1 second) that the player must wait before	   //
@@ -587,8 +598,7 @@ update_arm_cannon = function(_movement){
 	// and they have the optional charge beam item collected.
 	var _isCharged = false;
 	if (curWeapon == curBeam){
-		var _chargeBeam = event_get_flag(FLAG_CHARGE_BEAM);
-		if (_useHeld && _chargeBeam){
+		if (_useHeld && event_get_flag(FLAG_CHARGE_BEAM)){
 			chargeTimer += DELTA_TIME;
 			if (chargeTimer >= PLYR_CHARGE_LOOP_TIME) 
 				chargeTimer = PLYR_CHARGE_LOOP_TIME;
@@ -602,7 +612,7 @@ update_arm_cannon = function(_movement){
 		
 		// Determine if the beam is fully charged relative to the timer's current value and if the player has
 		// released the fire button. The timer for charge is reset on this button's release.
-		_isCharged = (_useReleased && _chargeBeam && chargeTimer >= PLYR_CHARGE_TIME);
+		_isCharged = (_useReleased && chargeTimer >= PLYR_CHARGE_TIME);
 		if (_useReleased) {chargeTimer = 0.0;}
 	}
 	
@@ -611,7 +621,21 @@ update_arm_cannon = function(_movement){
 	var _tappingFire	= (_usePressed && fireRateTimer >= tapFireRate);
 	var _chargeFire		= (_useReleased && _isCharged);
 	if (_holdingFire || _tappingFire || _chargeFire){
-		create_projectile(_isCharged);
+		// 
+		var _flags		= (_isCharged) ? PROJ_CHRBEAM : 0;
+		var _aimingDown	= PLYR_IS_AIMING_DOWN;
+		if (!PLYR_IS_AIMING_UP && !_aimingDown) {_flags |= PROJ_MOVE_RIGHT;}
+		else if (_aimingDown)					{_flags |= PROJ_MOVE_DOWN;}
+		else									{_flags |= PROJ_MOVE_UP;}
+		
+		// 
+		var _playerFlags = stateFlags & (PLYR_MOVING | PLYR_CROUCHED | PLYR_AIMING_UP | 
+											PLYR_AIMING_DOWN | DNTT_GROUNDED);
+		if (image_xscale == MOVE_DIR_RIGHT)	{_playerFlags |= PLYR_FACING_RIGHT;}
+		else								{_playerFlags |= PLYR_FACING_LEFT;}
+		
+		// 
+		create_projectile(_playerFlags, _flags);
 		fireRateTimer	= 0.0;
 		aimReturnTimer	= 0.0;
 	}
@@ -830,23 +854,22 @@ activate_scan_pulse = function(){
 
 #region Projectile/bomb spawning functions
 
-/// @description Checks for the value currently stored in "curWeapon" to determine what projectile will be
-/// fired by Samus's arm cannon. Each bit in the variable represent a different one; from her various beams to 
-/// her missiles as well.
-/// @param {Bool}	charged		Determines if the beam/missile was properly charged up before firing.
-create_projectile = function(_charged){
+/// @description 
+/// @param {Real}	playerFlags 
+/// @param {Real}	flags
+create_projectile = function(_playerFlags, _flags){
 	var _splitBeam = event_get_flag(FLAG_BEAM_SPLITTER);
 	switch(curWeapon){
 		default: // By default the Power Beam will always be fired.
 		case WEAPON_POWER_BEAM:
-			if (_splitBeam)	{create_power_beam_split(x, y, image_xscale, _charged);}
-			else			{create_power_beam(x, y, image_xscale, _charged);}
+			if (_splitBeam)	{create_power_beam_split(x, y, _playerFlags, _flags);}
+			else			{create_power_beam(x, y, _playerFlags, _flags);}
 			tapFireRate		= 5;
 			holdFireRate	= 20;
 			break;
 		case WEAPON_ICE_BEAM:
-			if (_splitBeam)	{/*create_ice_beam_split(x, y, image_xscale, _charged);*/}
-			else			{create_ice_beam(x, y, image_xscale, _charged);}
+			if (_splitBeam)	{/*create_ice_beam_split(x, y, _playerFlags, _charged);*/}
+			else			{create_ice_beam(x, y, _playerFlags, _flags);}
 			tapFireRate		= 36;
 			holdFireRate	= 46;
 			break;
@@ -861,7 +884,7 @@ create_projectile = function(_charged){
 			holdFireRate	= 26;
 			break;
 		case WEAPON_REG_MISSILE:
-			create_missile(x, y, image_xscale); // No charge flag necessary.
+			create_missile(x, y, _playerFlags, _flags);
 			tapFireRate		= 24;
 			holdFireRate	= 38;
 			break;
@@ -884,11 +907,11 @@ create_projectile = function(_charged){
 /// projectile that can be fired in four unique directions: up, down, left, and right.
 /// @param {Real}	x				Samus's current horizontal position within the room.
 /// @param {Real}	y				Samus's current vertical position within the room.
-/// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
-/// @param {Real}	charged			Determines if the power beam will be its more powerful "charged" counterpart.
-create_power_beam = function(_x, _y, _imageXScale, _charged){
+/// @param {Real}	playerFlags		
+/// @param {Real}	flags			
+create_power_beam = function(_x, _y, _playerFlags, _flags){
 	var _projectile = instance_create_object(0, 0, obj_power_beam);
-	with(_projectile) {initialize(state_default, _x, _y, _imageXScale, _charged);}
+	with(_projectile) {initialize(state_default, _x, _y, _playerFlags, _flags);}
 }
 
 /// @description Creates the projectile for the power beam influenced by the Beam Splitter powerup. Instead
@@ -896,20 +919,20 @@ create_power_beam = function(_x, _y, _imageXScale, _charged){
 /// other before all moving parallel to each other; similar to how the Spazer Beam looked in Metroid II.
 /// @param {Real}	x				Samus's current horizontal position within the room.
 /// @param {Real}	y				Samus's current vertical position within the room.
-/// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
-/// @param {Real}	charged			Determines if the power beam projectiles were "charged" before being fired.
-create_power_beam_split = function(_x, _y, _imageXScale, _charged){
+/// @param {Real}	playerFlags		
+/// @param {Real}	flags			
+create_power_beam_split = function(_x, _y, _playerFlags, _flags){
 	// Two lines below are unchanged from the standard power beam's creation function; making this instance
 	// the middle of the three that are created for the beam splitter's variation.
 	var _projectile = instance_create_object(0, 0, obj_power_beam);
-	with(_projectile) {initialize(state_default, _x, _y, _imageXScale, _charged);}
+	with(_projectile) {initialize(state_default, _x, _y, _playerFlags, _flags);}
 	
 	// Creating the "upper" power beam, which is another way to describe that it will be the one moving in the
 	// negative direction of whatever axis is perpendicular to its moving axis.
 	_projectile = instance_create_object(0, 0, obj_power_beam);
 	with(_projectile){
 		stateFlags |= (1 << UPPER_POWER_BEAM); // Must be done before initialization.
-		initialize(state_beam_splitter, _x, _y, _imageXScale, _charged);
+		initialize(state_beam_splitter, _x, _y, _playerFlags, _flags);
 	}
 	
 	// Creating the "lower" power beam, which moves toward the positive direction of whatever axis is perpendicular
@@ -917,7 +940,7 @@ create_power_beam_split = function(_x, _y, _imageXScale, _charged){
 	_projectile = instance_create_object(0, 0, obj_power_beam);
 	with(_projectile){
 		stateFlags |= (1 << LOWER_POWER_BEAM); // Must be done before initialization.
-		initialize(state_beam_splitter, _x, _y, _imageXScale, _charged);
+		initialize(state_beam_splitter, _x, _y, _playerFlags, _flags);
 	}
 }
 
@@ -929,11 +952,11 @@ create_power_beam_split = function(_x, _y, _imageXScale, _charged){
 /// Beam with a single difference: the ability to freeze weaker enemies that it hits to use them as platforms.
 /// @param {Real}	x				Samus's current horizontal position within the room.
 /// @param {Real}	y				Samus's current vertical position within the room.
-/// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
-/// @param {Real}	charged			Determines if the power beam projectiles were "charged" before being fired.
-create_ice_beam = function(_x, _y, _imageXScale, _charged){
+/// @param {Real}	playerFlags		
+/// @param {Real}	flags			
+create_ice_beam = function(_x, _y, _playerFlags, _flags){
 	var _projectile = instance_create_object(0, 0, obj_ice_beam);
-	with(_projectile) {initialize(state_default, _x, _y, _imageXScale, _charged);}
+	with(_projectile) {initialize(state_default, _x, _y, _playerFlags, _flags);}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -945,27 +968,30 @@ create_ice_beam = function(_x, _y, _imageXScale, _charged){
 /// the screen when it collides with anything.
 /// @param {Real}	x				Samus's current horizontal position within the room.
 /// @param {Real}	y				Samus's current vertical position within the room.
-/// @param {Real}	imageXScale		Samus current facing direction along the horizontal axis.
-create_missile = function(_x, _y, _imageXScale){
-	if (numMissiles > 0){ // Can't use a missile without ammunition.
-		var _hspd		= hspd;
-		var _vspd		= vspd;
-		var _signsMatch = (sign(_hspd) == sign(image_xscale));
-		var _projectile = instance_create_object(0, 0, obj_missile);
-		with(_projectile){
-			initialize(state_default, _x, _y, _imageXScale, false);
-			// Preserve the player's velocity for whatever direction the missile is heading toward to prevent
-			// the missile from moving too slow relative to the player's movement.
-			if (IS_MOVING_HORIZONTAL){
-				if (_signsMatch) {hspd = _hspd;}
-				else			 {hspd = 0.0;} // Don't apply player's hspd if facing direction doesn't match horizontal movement direction.
-			} else if (_vspd >= 0 && IS_MOVING_DOWN){
-				vspd = _vspd;
-				vAccel *= 2.0; // Doubles acceleration to prevent Samus falling faster than the missile accelerates.
-			}
+/// @param {Real}	playerFlags		
+/// @param {Real}	flags			
+create_missile = function(_x, _y, _playerFlags, _flags){
+	if (numMissiles == 0) {return;}
+	
+	// 
+	var _hspd		= hspd;
+	var _vspd		= vspd;
+	var _signsMatch = (sign(_hspd) == sign(image_xscale));
+	var _projectile = instance_create_object(0, 0, obj_missile);
+	with(_projectile){
+		initialize(state_default, _x, _y, _playerFlags, _flags);
+		// Preserve the player's velocity for whatever direction the missile is heading toward to prevent
+		// the missile from moving too slow relative to the player's movement.
+		if (PROJ_MOVING_HORIZONTAL){
+			if (_signsMatch) {hspd = _hspd;}
+			else			 {hspd = 0.0;} // Don't apply player's hspd if facing direction doesn't match horizontal movement direction.
+		} else if (_vspd >= 0 && PROJ_MOVING_DOWN){
+			vspd	= _vspd;
+			vAccel *= 2.0; // Doubles acceleration to prevent Samus falling faster than the missile accelerates.
 		}
-		numMissiles--; // Subtracts one missile from the current ammo reserve.
 	}
+	numMissiles--; // Subtracts one missile from the current ammo reserve.
+	
 }
 
 /// @description 
@@ -1295,8 +1321,8 @@ player_enemy_collision = function(){
 			// by an enemy during collision. On top of that, the enemy will instantly be killed if she hits
 			// them and they aren't immune to the Screw Attack.
 			if (_inJumpAttack){
-				if (!IS_IMMUNE_TO_SATTACK){
-					stateFlags |= (1 << DROP_ITEM);
+				if (weaknessFlags & ENMY_SCREWATK_WEAK){
+					stateFlags |= ENMY_DROP_ITEM;
 					instance_destroy_object(id);
 				}
 				return;

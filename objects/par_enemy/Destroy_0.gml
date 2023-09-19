@@ -1,7 +1,8 @@
 // If the enemy was spawned from a spawner object, decrement the current number of instances that currently
 // exist due to said spawner, and then spawn an item if the enemy is able to actually drop an item.
 with(linkedSpawnerID) {curInstances--;}
-if (!CAN_DROP_ITEM) {return;}
+if (!ENMY_CAN_DROP_ITEM) 
+	return;
 
 // Generate a floating point number between 0.0 and 1.0, which will represent a percentage value between 0 and 100,
 // respectively. After that, check to see if the value generated is within the range to drop energy, aeion, ammunition,

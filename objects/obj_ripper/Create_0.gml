@@ -48,11 +48,10 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_ripper, -1);
-	//object_add_light_component(x, y, 7, 2, 8, HEX_LIGHT_BLUE, 0.6);
 	create_general_collider();
 	
-	// Only one weakness aside from being hit by a Power Bomb's explosion: Super Missiles.
-	ds_list_add(weaknesses, (1 << TYPE_SUPER_MISSILE));
+	// Only one weakness aside from a Power Bomb or an ice-based weapon: Super Missiles.
+	weaknessFlags |= ENMY_SUPMISSILE_WEAK | ENMY_POWBOMB_WEAK | ENMY_FREEZE_WEAK;
 	
 	// Randomly determine a starting direction: left (-1) or right (+1); flipping the Ripper's facing direction 
 	// if the chosen starting direction is to the left.

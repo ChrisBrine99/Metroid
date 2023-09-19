@@ -2,7 +2,13 @@
 // early if the game's state isn't currently set to its "normal" state, which pauses any updates to the existing
 // jump effect instances and the arm cannon's visibility/offset.
 event_inherited();
-if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
+
+// 
+with(armCannon) {end_step();}
+
+// 
+if (GAME_CURRENT_STATE != GSTATE_NORMAL) 
+	return;
 
 // 
 var _deltaTime = DELTA_TIME;
@@ -31,6 +37,3 @@ if (curAeion < maxAeion){
 		aeionCooldownTimer = -60.0;
 	}
 }
-
-// Finally, update the arm cannon's offset position and visibility depending on Samus's actions in the frame.
-with(armCannon) {end_step();}

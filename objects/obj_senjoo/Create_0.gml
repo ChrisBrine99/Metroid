@@ -69,14 +69,27 @@ flipTimer		= 0.0;
 __initialize = initialize;
 /// @description Initialize the Senjo; setting its sprite; creating its general collider for Samus's weapons,
 /// enable the Senjoo to be damaged by all beams/missiles/bombs/abilities, and initialize all other variables
-/// required for the Senjoo to function.
+/// required for the Senjoo at initialization.
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_senjoo, -1);
 	create_general_collider();
-	initialize_weak_to_all();
-	spriteSpeed /= ANIMATION_FPS; // Divide by required value once since the Senjoo's sprite never changes.
+	
+	// Set up weakness flags such that the Senjoo is weak to every type of weapon Samus can utilize.
+	weaknessFlags  |= (
+		// --- Beam Type Flags --- //
+		ENMY_POWBEAM_WEAK | ENMY_ICEBEAM_WEAK | ENMY_WAVBEAM_WEAK | ENMY_PLSBEAM_WEAK | ENMY_CHRBEAM_WEAK |
+		// --- Missile Flags --- //
+		ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK |
+		// --- Bomb/Screw Attack Flags --- //
+		ENMY_REGBOMB_WEAK | ENMY_POWBOMB_WEAK | ENMY_SCREWATK_WEAK |
+		// --- Ailment Flags --- //
+		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
+	);
+	
+	// Divide by required value once since the Senjoo's sprite never changes.
+	spriteSpeed /= ANIMATION_FPS;
 	
 	// Randomly choose a moving direction (Either clockwise or counter-clockwise depending on the chosen value)
 	// and then always set the Senjoo to be at its lowest point in terms of movment/direction.

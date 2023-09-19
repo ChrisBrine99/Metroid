@@ -107,8 +107,18 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_halzyn0, -1);
-	//object_add_light_component(x, y, 0, 2, 10, HEX_LIGHT_RED, 0.5);
-	initialize_weak_to_all();
+	
+	// Set up weakness flags such that the Halzyn is weak to every type of weapon Samus can utilize.
+	weaknessFlags  |= (
+		// --- Beam Type Flags --- //
+		ENMY_POWBEAM_WEAK | ENMY_ICEBEAM_WEAK | ENMY_WAVBEAM_WEAK | ENMY_PLSBEAM_WEAK | ENMY_CHRBEAM_WEAK |
+		// --- Missile Flags --- //
+		ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK |
+		// --- Bomb/Screw Attack Flags --- //
+		ENMY_REGBOMB_WEAK | ENMY_POWBOMB_WEAK | ENMY_SCREWATK_WEAK |
+		// --- Ailment Flags --- //
+		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
+	);
 	
 	// The Halzyn is unique in that is has two invulnerable colliders and then a smaller collider between the
 	// two that is vulnerable to weaponry. The first collider will also act as the singular invulnerable area
@@ -306,12 +316,6 @@ state_end_attack = function(){
 		
 		attackTimer += DELTA_TIME;
 		if (attackTimer >= HLZN_ATK_END_TIME){
-			// Slowly fade in the Halzyn's eye light by performing the reverse of what happened during the
-			// beginning of the attack state; increasing strength based on how close image index is to zero.
-			//var _imageIndex		= imageIndex;
-			//var _spriteLength	= spriteLength - 1;
-			//with(lightComponent) {strength = ((_spriteLength - _imageIndex) / _spriteLength) * 0.5;}
-			
 			animSpeed = -1.0; // Reverses shell's closing animation to open it.
 			return;
 		}

@@ -1,13 +1,9 @@
 #region Macro initialization
 
-// State flag that is used during collision with an enemy to determine if they should take damage
-// from it or not. Otherwise, the "ping" sound effect will be heard, and the enemy will be unharmed.
-#macro	TYPE_BOMB				10
-
 // Macros for the damage output of the standard bomb explosion as well as its stun duration on Enemies that
 // have been hit by said explosion.
 #macro	BOMB_DAMAGE				4
-#macro	BOMB_STUN_DURATION		10
+#macro	BOMB_STUN_DURATION		10.0
 
 #endregion
 
@@ -39,7 +35,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb_explode, -1);
 	object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
-	stateFlags |= ENTT_DRAW_SELF | (1 << TYPE_BOMB);
+	stateFlags |= ENTT_DRAW_SELF;
 }
 
 #endregion
@@ -77,7 +73,7 @@ state_default = function(){
 	var _stateFlags = stateFlags;
 	var _enemy		= instance_place(x, y, par_enemy);
 	with(_enemy){
-		if (ENTT_IS_HIT_STUNNED || !is_weak_to_weapon(_stateFlags))
+		if (ENTT_IS_HIT_STUNNED || ENTT_IS_DESTROYED || !(weaknessFlags & ENMY_REGBOMB_WEAK))
 			break;
 		entity_apply_hitstun(BOMB_DAMAGE, BOMB_STUN_DURATION);
 	}

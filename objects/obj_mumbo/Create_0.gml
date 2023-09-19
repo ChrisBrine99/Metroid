@@ -48,8 +48,21 @@ initialize = function(_state){
 	entity_set_sprite(spr_mumbo, -1);
 	object_add_light_component(x, y, 0, 0, 10, HEX_LIGHT_GREEN, 0.65);
 	create_general_collider();
-	initialize_weak_to_all();
-	movement = choose(-1, 1);
+	
+	// Set up weakness flags such that the Mumbo is weak to every type of weapon Samus can utilize.
+	weaknessFlags  |= (
+		// --- Beam Type Flags --- //
+		ENMY_POWBEAM_WEAK | ENMY_ICEBEAM_WEAK | ENMY_WAVBEAM_WEAK | ENMY_PLSBEAM_WEAK | ENMY_CHRBEAM_WEAK |
+		// --- Missile Flags --- //
+		ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK |
+		// --- Bomb/Screw Attack Flags --- //
+		ENMY_REGBOMB_WEAK | ENMY_POWBOMB_WEAK | ENMY_SCREWATK_WEAK |
+		// --- Ailment Flags --- //
+		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
+	);
+	
+	// Give the Mumbo a 50/50 chance of starting out moving right or left.
+	movement = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
 }
 
 #endregion

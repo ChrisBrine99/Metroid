@@ -1,37 +1,46 @@
 #region Macro value initializations
 
-// Macros for each of the bits in the variable "stateFlags". These bits will all determine how the projectile
-// functions and interacts with the world depending on which are set (1) and which are not (0).
-#macro	TYPE_POWER_BEAM			0
-#macro	TYPE_ICE_BEAM			1
-#macro	TYPE_WAVE_BEAM			2
-#macro	TYPE_PLASMA_BEAM		3
-#macro	TYPE_MISSILE			4
-#macro	TYPE_SUPER_MISSILE		5
-#macro	TYPE_ICE_MISSILE		6
-#macro	TYPE_SHOCK_MISSILE		7
-#macro	PROJ_CHARGED			14
-#macro	PROJ_MOVE_RIGHT			15
-#macro	PROJ_MOVE_LEFT			16
-#macro	PROJ_MOVE_UP			17
-#macro	PROJ_MOVE_DOWN			18
-#macro	IGNORE_WALLS			19
-#macro	IGNORE_ENTITIES			20
+// --- Beam Projectile Substates --- //
+#macro	PROJ_POWBEAM			0x00000001
+#macro	PROJ_ICEBEAM			0x00000002
+#macro	PROJ_WAVBEAM			0x00000004
+#macro	PROJ_PLSBEAM			0x00000008
+#macro	PROJ_CHRBEAM			0x00000010
+// --- Missile Projectile Substates --- //
+#macro	PROJ_REGMISSILE			0x00000020
+#macro	PROJ_SUPMISSILE			0x00000040
+#macro	PROJ_ICEMISSILE			0x00000080
+#macro	PROJ_SHKMISSILE			0x00000100
+// --- Movement Substates --- //
+#macro	PROJ_MOVE_RIGHT			0x00008000
+#macro	PROJ_MOVE_LEFT			0x00010000
+#macro	PROJ_MOVE_UP			0x00020000
+#macro	PROJ_MOVE_DOWN			0x00040000
+// --- Collision Behaviour Substates --- //
+#macro	PROJ_IGNORE_WALLS		0x00080000
+#macro	PROJ_IGNORE_ENTITIES	0x00100000
+// NOTE -- Bits 0x00200000 and greater are already in use by default dynamic entity substate flags.
 
-// Macro statements that condense the code required for checking each of the state flags found within the
-// player projectile's "stateFlags" variable; which vastly differ from those found in other dynamic entities.
-#macro	IS_MISSILE				(stateFlags & ((1 << TYPE_MISSILE) | (1 << TYPE_SUPER_MISSILE) | (1 << TYPE_ICE_MISSILE) | (1 << TYPE_SHOCK_MISSILE)) != 0)
-#macro	IS_COLD_BASED			(stateFlags & ((1 << TYPE_ICE_BEAM) | (1 << TYPE_ICE_MISSILE)) != 0)
-#macro	IS_SHOCK_BASED			(stateFlags & ((1 << TYPE_WAVE_BEAM) | (1 << TYPE_SHOCK_MISSILE)) != 0)
-#macro	IS_CHARGED				(stateFlags & (1 << PROJ_CHARGED) != 0)
-#macro	IS_MOVING_RIGHT			(stateFlags & (1 << PROJ_MOVE_RIGHT) != 0)
-#macro	IS_MOVING_LEFT			(stateFlags & (1 << PROJ_MOVE_LEFT) != 0)
-#macro	IS_MOVING_UP			(stateFlags & (1 << PROJ_MOVE_UP) != 0)
-#macro	IS_MOVING_DOWN			(stateFlags & (1 << PROJ_MOVE_DOWN) != 0)
-#macro	IS_MOVING_HORIZONTAL	(stateFlags & ((1 << PROJ_MOVE_RIGHT) | (1 << PROJ_MOVE_LEFT)) != 0)
-#macro	IS_MOVING_VERTICAL		(stateFlags & ((1 << PROJ_MOVE_UP) | (1 << PROJ_MOVE_DOWN)) != 0)
-#macro	CAN_IGNORE_WALLS		(stateFlags & (1 << IGNORE_WALLS) != 0)
-#macro	CAN_IGNORE_ENTITIES		(stateFlags & (1 << IGNORE_ENTITIES) != 0)
+
+
+// --- Projectile Type Checks --- //
+#macro	PROJ_IS_MISSILE			(stateFlags & (PROJ_REGMISSILE | PROJ_SUPMISSILE | PROJ_ICEMISSILE | PROJ_SHKMISSILE))
+#macro	PROJ_IS_CHARGED			(stateFlags & PROJ_CHRBEAM)
+// --- Ailment Infliction Checks --- //
+#macro	PROJ_CAN_STUN			(stateFlags & (PROJ_REGMISSILE | PROJ_SUPMISSILE))
+#macro	PROJ_CAN_SHOCK			(stateFlags & (PROJ_WAVBEAM | PROJ_SHKMISSILE))
+#macro	PROJ_CAN_FREEZE			(stateFlags & (PROJ_ICEBEAM | PROJ_ICEMISSILE))
+// --- Movement Substate Checks --- //
+#macro	PROJ_MOVING_RIGHT		(stateFlags & PROJ_MOVE_RIGHT)
+#macro	PROJ_MOVING_LEFT		(stateFlags & PROJ_MOVE_LEFT)
+#macro	PROJ_MOVING_UP			(stateFlags & PROJ_MOVE_UP)
+#macro	PROJ_MOVING_DOWN		(stateFlags & PROJ_MOVE_DOWN)
+#macro	PROJ_MOVING_HORIZONTAL	(stateFlags & (PROJ_MOVE_RIGHT | PROJ_MOVE_LEFT))
+#macro	PROJ_MOVING_VERTICAL	(stateFlags & (PROJ_MOVE_UP | PROJ_MOVE_DOWN))
+// --- Collision Behaviour Substate Checks --- //
+#macro	PROJ_IGNORES_WALLS		(stateFlags & PROJ_IGNORE_WALLS)
+#macro	PROJ_IGNORES_ENTITIES	(stateFlags & PROJ_IGNORE_ENTITIES)
+
 
 // Macro for the multiplier applied to a projectile if it happens to be charged.
 #macro	CHARGE_MULTIPLIER		4.0
@@ -72,99 +81,70 @@ __initialize = initialize;
 /// @param {Function}	state			The state to initially use for the projectile in question. 
 /// @param {Real}		x				Samus's horizontal position in the room.
 /// @param {Real}		y				Samus's vertical position in the room.
-/// @param {Real}		imageXScale		Samus's current facing direction (1 == right, -1 == left).
-/// @param {Bool}		isCharged		Determines if the projectile is charged or not.
-initialize = function(_state, _x, _y, _imageXScale, _isCharged){
+/// @param {Real}		playerFlags		
+/// @param {Real}		flags			
+initialize = function(_state, _x, _y, _playerFlags, _flags){
 	__initialize(_state); // Calls initialize function found in "par_dynamic_entity".
-	set_initial_position(_x, _y, _imageXScale);
-	stateFlags |= ENTT_DRAW_SELF;
-	
-	// Damage is always quadrupled for a charged projectile and the bit flag is flipped in case the fact that 
-	// the projectile is charged needs to be referenced after creation.
-	if (_isCharged){
-		stateFlags |= (1 << PROJ_CHARGED);
-		damage = damage * CHARGE_MULTIPLIER;
-	}
+	stateFlags |= ENTT_DRAW_SELF | _flags;
+	set_initial_position(_x, _y, _playerFlags);
 }
 
 #endregion
 
 #region Projectile utility functions
 
-/// @description Sets up the projectile to come from the position of the beam in Samus's current sprite/animation
-/// rather than her actual position in the room, which is located at the center of her feet. Also determines
-/// where the projectile will travel (up, down, left, or right) depending on the direction of the beam in the
-/// sprite.
-/// @param {Real}	x				Samus's current X position.
-/// @param {Real}	y				Samus's current Y position.
-/// @param {Real}	imageXScale		Samus's "image_xscale" value (Determines her facing direction).
-set_initial_position = function(_x, _y, _imageXScale){
-	// First, grab some state bits from Samus, which are then used to determine the offset used to reach the
-	// beam's position in her current sprite/animation.
-	var _stateFlags = 0;
-	with(PLAYER){
-		_stateFlags |= (stateFlags & (PLYR_CROUCHED | PLYR_MOVING | DNTT_GROUNDED 
-								| PLYR_AIMING_DOWN | PLYR_AIMING_UP));
+/// @description 
+/// @param {Real}	x				Samus's current X position within the room.
+/// @param {Real}	y				Samus's current Y position within the room.
+/// @param {Real}	playerFlags		Tracks Samus's substates that are required for properly positioning the projectile.
+set_initial_position = function(_x, _y, _playerFlags){
+	// 
+	var _facing = (_playerFlags & PLYR_FACING_RIGHT) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
+	
+	// 
+	if (PROJ_MOVING_HORIZONTAL){
+		image_xscale = _facing;	// Flips sprite horizontally if the projectile is moving left.
+		
+		// 
+		if (!(_playerFlags & DNTT_GROUNDED)){
+			x = _x + (15 * _facing);
+			y = _y - 23;
+			return;
+		}
+		
+		// 
+		if (_playerFlags & PLYR_CROUCHED){
+			x = _x + (14 * _facing);
+			y = _y - 13;
+			return;
+		}
+		
+		// 
+		if (_playerFlags & PLYR_MOVING){
+			x = _x + (14 * _facing);
+			y = _y - 26;
+			return;
+		}
+		
+		// 
+		x = _x + (15 * _facing);
+		y = _y - 23;
+		return;
 	}
 	
-	// Determine the direction Samus is aiming in by checking the "aiming up" and "aiming down" flags, 
-	// respectively. The "aiming front" flag is ignored because if this variable doesn't return true for the
-	// other two options, Samus's beam has to be aiming forward.
-	var _aimDirection = (_stateFlags & (PLYR_AIMING_DOWN | PLYR_AIMING_UP));
-	switch(_aimDirection){
-		default: // Aiming forward (Can be standing, walking, crouching, or airbourne).
-			if ((_stateFlags & DNTT_GROUNDED) != 0){
-				if ((_stateFlags & PLYR_CROUCHED) != 0){
-					// Crouching Offset // 
-					x = _x + (14 * _imageXScale);
-					y = _y - 13;
-				} else{
-					if ((_stateFlags & PLYR_MOVING) != 0){
-						// Walking Offset //
-						x = _x + (17 * _imageXScale);
-						y = _y - 26;
-					} else{
-						// Standing Offset //
-						x = _x + (15 * _imageXScale);
-						y = _y - 23;
-					}
-				}
-			} else{
-				// Jumping Offset // 
-				x = _x + (15 * _imageXScale);
-				y = _y - 23;
-			}
-			// Set movement direction flag based on the direction Samus is facing horizontally. Then, apply
-			// that facing direction to the beam's sprite itself so it matches Samus.
-			if (_imageXScale == 1)	{stateFlags |= (1 << PROJ_MOVE_RIGHT);}
-			else					{stateFlags |= (1 << PROJ_MOVE_LEFT);}
-			image_xscale = _imageXScale;
-			break;
-		case PLYR_AIMING_UP: // Aiming upward (Can be standing, walking, or airbourne).
-			if ((_stateFlags & DNTT_GROUNDED) != 0){
-				if ((_stateFlags & PLYR_MOVING) != 0){
-					// Walking Offset //
-					x = _x + (2 * _imageXScale);
-					y = _y - 42;
-				} else{
-					// Standing Offset // 
-					x = _x + (3 * _imageXScale);
-					y = _y - 42;
-				}
-			} else{
-				// Jumping Offset //
-				x = _x + (3 * _imageXScale);
-				y = _y - 42;
-			}
-			stateFlags |= (1 << PROJ_MOVE_UP);
-			image_angle = 90;
-			break;
-		case PLYR_AIMING_DOWN: // Aiming downward (Only possible while airbourne).
-			x = _x + (4 * _imageXScale);
-			y = _y - 9;
-			stateFlags |= (1 << PROJ_MOVE_DOWN);
-			image_angle = 270;
-			break;
+	// 
+	if (PROJ_MOVING_UP){
+		x = _x + (3 * _facing);
+		y = _y - 42;
+		image_angle = 90;	// Rotate the projectile so it is facing upward.
+		return;
+	}
+	
+	// 
+	if (PROJ_MOVING_DOWN){
+		x = _x + (4 * _facing);
+		y = _y - 9;
+		image_angle = 270; // Rotate the projectile so it is facing downward.
 	}
 }
 
@@ -180,15 +160,15 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	// line of movement for the projectile in question. After the initial collision_line check occurs, a check
 	// against any special colliders is performed.
 	ds_list_clear(colliderList);
-	var _length = collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, false, true, colliderList, true);
-	var _collider = noone;
+	var _length			= collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, true, true, colliderList, true);
+	var _collider		= noone;
 	for (var i = 0; i < _length; i++){
-		_collider = colliderList[| i];
-		if (_collider.object_index == obj_enemy_platform){ // Enemy collision should occur here; exit loop.
-			projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
-			ds_list_clear(colliderList);
-			return;
-		}
+		_collider		= colliderList[| i];
+		//if (_collider.object_index == obj_enemy_platform){ // Enemy collision should occur here; exit loop.
+			//projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
+			//ds_list_clear(colliderList);
+			//return;
+		//}
 		projectile_door_collision(_collider);
 		projectile_destructible_collision(_collider);
 		if (ENTT_IS_DESTROYED)
@@ -197,7 +177,7 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 
 	// The projectile doesn't collide with the walls, ceilings, and floors in the world; move it to its next
 	// position and exit the function early.
-	if (CAN_IGNORE_WALLS){
+	if (PROJ_IGNORES_WALLS){
 		projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 		x += _deltaHspd;
 		y += _deltaVspd;
@@ -224,13 +204,14 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 /// @param {Id.Instance}	instance
 projectile_destructible_collision = function(_instance){
 	var _isDestroyed = false;
-	var _isMissile = IS_MISSILE;
+	var _isMissile = PROJ_IS_MISSILE;
 	with(_instance){
 		// Check to make sure the instance that is being checked is a child of "par_destructible". Otherwise,
 		// the game will crash trying to access variables that don't exist on the object as the collision list
 		// stores children of ANY collision object and not just the group this function processes. Also, ignore
 		// the collision if the destructible is already destroyed.
-		if (!object_is_ancestor(object_index, par_destructible) || ENTT_IS_DESTROYED) {return;}
+		if (!object_is_ancestor(object_index, par_destructible) || ENTT_IS_DESTROYED) 
+			return;
 		
 		// Check the index of this destructible against all possible destructilbe objects that can be destroyed
 		// by one of the player's many projectile weapons. If the index matchs, another check will be performed
@@ -244,11 +225,11 @@ projectile_destructible_collision = function(_instance){
 		// If the destruction of the object was a success, trigger it to destroy and play the animation for that
 		// while also setting its hidden flag to false so it will be visible even after it has regenerated.
 		if (_isDestroyed) {destructible_destroy_self();}
-		stateFlags &= ~(1 << DEST_HIDDEN);
+		stateFlags &= ~DEST_HIDDEN;
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= ENTT_DESTROYED;}
+	if (_isDestroyed && !PROJ_IGNORES_WALLS) {stateFlags |= ENTT_DESTROYED;}
 }
 
 /// @description Checks the projectile against the various door types that exist within the game to see if it
@@ -257,24 +238,42 @@ projectile_destructible_collision = function(_instance){
 /// @param {Id.Instance}	instance
 projectile_door_collision = function(_instance){
 	var _isDestroyed = false;
-	var _isMissile = IS_MISSILE;
+	var _isMissile = PROJ_IS_MISSILE;
 	with(_instance){
 		// Make sure the instance that is being checked is a child of the generic door object. Otherwise, the 
 		// object will try to reference objects that don't exist in it and the game will crash due to the error.
 		if (!object_is_ancestor(object_index, obj_general_door) && object_index != obj_general_door)
-			break
+			break;
 		
 		// Check the door instance against all possible door objects to see which it matches up with; performing
 		// a check against the projectile to see if it matches what is required to open the door.
 		switch(object_index){
-			default:						/* Play "ping" sound effect. */ break;
-			case obj_general_door:			_isDestroyed = true;																			break;
-			case obj_icebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_ICE_BEAM) != 0;									break;
-			case obj_wavebeam_door:			_isDestroyed = other.stateFlags & (1 << TYPE_WAVE_BEAM) != 0;									break;
-			case obj_plasmabeam_door:		_isDestroyed = other.stateFlags & (1 << TYPE_PLASMA_BEAM) != 0;									break;
-			case obj_missile_door:			_isDestroyed = _isMissile || flagID == EVENT_FLAG_INVALID;										break;
-			case obj_super_missile_door:	_isDestroyed = other.stateFlags & (1 << TYPE_SUPER_MISSILE) || flagID == EVENT_FLAG_INVALID;	break;
-			case obj_inactive_door:			_isDestroyed = inactive_door_collision();														break;
+			case obj_general_door:			
+				_isDestroyed = true;
+				break;
+			case obj_icebeam_door:	
+				if (other.stateFlags & PROJ_ICEBEAM)
+					_isDestroyed = true;
+				break;
+			case obj_wavebeam_door:	
+				if (other.stateFlags & PROJ_WAVBEAM)
+					_isDestroyed = true;
+				break;
+			case obj_plasmabeam_door:		
+				if (other.stateFlags & PROJ_PLSBEAM)
+					_isDestroyed = true;
+				break;
+			case obj_missile_door:
+				if (_isMissile || flagID == EVENT_FLAG_INVALID)
+					_isDestroyed = true;
+				break;
+			case obj_super_missile_door:
+				if (other.stateFlags & PROJ_SUPMISSILE || flagID == EVENT_FLAG_INVALID)
+					_isDestroyed = true;
+				break;
+			case obj_inactive_door:			
+				_isDestroyed = inactive_door_collision();
+				break;
 		}
 		
 		// If the door was successfully opened by the projectile, it will trigger the door to open by allowing
@@ -283,12 +282,12 @@ projectile_door_collision = function(_instance){
 		if (_isDestroyed){
 			if (flagID != EVENT_FLAG_INVALID) 
 				event_set_flag(flagID, true);
-			animSpeed = 1;
+			animSpeed = 1.0;
 		}
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !CAN_IGNORE_WALLS) {stateFlags |= ENTT_DESTROYED;}
+	if (_isDestroyed && !PROJ_IGNORES_WALLS) {stateFlags |= ENTT_DESTROYED;}
 }
 
 /// @description Checks collision against any enemy colliders the projectile instance may have come into contact
@@ -303,8 +302,8 @@ projectile_enemy_collision = function(_x2, _y2){
 	var _hitEntityIDs	= hitEntityIDs;
 	var _damage			= damage;
 	var _stateFlags		= stateFlags;
-	var _ignoreEntities = CAN_IGNORE_ENTITIES;
-	var _isColdBased	= IS_COLD_BASED;
+	var _ignoreEntities = PROJ_IGNORES_ENTITIES;
+	var _canFreeze		= PROJ_CAN_FREEZE;
 	
 	// Perform a line check that orders all collisions based on distance from the (x1, y1) coordinate; storing
 	// it all in a ds_list that is then looped through to process what will happen to the projectile and the
@@ -328,14 +327,14 @@ projectile_enemy_collision = function(_x2, _y2){
 			with(parentID){
 				// Check if the entity has already been hit by the projectile. This ensures that a single
 				// projectile can't deal damage to an entity more than once if that situation were to ever
-				// occur during runtime. A current hitstunned Enemy will also not take damage.
-				if (ds_list_find_index(_hitEntityIDs, id) != -1 || ENTT_IS_HIT_STUNNED)
+				// occur during runtime.
+				if (ds_list_find_index(_hitEntityIDs, id) != -1)
 					continue;
 				ds_list_add(_hitEntityIDs, id);
 			
 				// 
-				if (!inflict_freeze(_damage, _isColdBased) && is_weak_to_weapon(_stateFlags))
-					entity_apply_hitstun(8, _damage);
+				if (!inflict_freeze(_damage, _canFreeze) && (weaknessFlags & _stateFlags))
+					entity_apply_hitstun(8.0, _damage);
 			}
 		}
 		

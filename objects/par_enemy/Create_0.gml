@@ -1,24 +1,44 @@
 #region Macros that are useful/related to par_enemy and its children
 
-// Macros for each of the bits in the variable "stateFlags". These bits will all determine how the enemy functions
-// and interacts with the world depending on which are set (1) and which are not (0).
-#macro	AILMENT_ACTIVE			14
-#macro	STUN_IMMUNITY			15
-#macro	SHOCK_IMMUNITY			16
-#macro	FREEZE_IMMUNITY			17
-#macro	POWER_BOMB_IMMUNITY		18
-#macro	SCREW_ATTACK_IMMUNITY	19
-#macro	DROP_ITEM				20
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
 
-// Simplified checks for an enemy's state flags, which determine what they can and can't do relative to the bits that
-// are set and those that aren't.
-#macro	AILMENT_INFLICTED		(stateFlags & (1 << AILMENT_ACTIVE))
-#macro	IMMUNE_TO_STUN			(stateFlags & (1 << STUN_IMMUNITY))
-#macro	IMMUNE_TO_FREEZE		(stateFlags & (1 << FREEZE_IMMUNITY))
-#macro	IMMUNE_TO_SHOCK			(stateFlags & (1 << SHOCK_IMMUNITY))
-#macro	IS_IMMUNE_TO_PBOMB		(stateFlags & (1 << POWER_BOMB_IMMUNITY))
-#macro	IS_IMMUNE_TO_SATTACK	(stateFlags & (1 << SCREW_ATTACK_IMMUNITY))
-#macro	CAN_DROP_ITEM			(stateFlags & (1 << DROP_ITEM))
+#macro	ENMY_AILMENT_ACTIVE		0x00080000
+#macro	ENMY_DROP_ITEM			0x00100000
+// NOTE -- Bits 0x00200000 and greater are already in use by default dynamic entity substate flags.
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check if an Enemy is using one of these substates.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ENMY_HAS_AILMENT		(stateFlags & ENMY_AILMENT_ACTIVE)
+#macro	ENMY_CAN_DROP_ITEM		(stateFlags & ENMY_DROP_ITEM)
+
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+// --- Beam Weakness Flags --- //
+#macro	ENMY_POWBEAM_WEAK		0x00000001
+#macro	ENMY_ICEBEAM_WEAK		0x00000002
+#macro	ENMY_WAVBEAM_WEAK		0x00000004
+#macro	ENMY_PLSBEAM_WEAK		0x00000008
+#macro	ENMY_CHRBEAM_WEAK		0x00000010
+// --- Missile Weakness Flags --- //
+#macro	ENMY_REGMISSILE_WEAK	0x00000020
+#macro	ENMY_SUPMISSILE_WEAK	0x00000040
+#macro	ENMY_ICEMISSILE_WEAK	0x00000080
+#macro	ENMY_SHKMISSILE_WEAK	0x00000100
+// --- Bomb Weakness Flags --- //
+#macro	ENMY_REGBOMB_WEAK		0x00000200
+#macro	ENMY_POWBOMB_WEAK		0x00000400
+// --- Screw Attack Weakness Flag --- //
+#macro	ENMY_SCREWATK_WEAK		0x00000800
+// --- Ailment Weakness Flags --- //
+#macro	ENMY_STUN_WEAK			0x00001000
+#macro	ENMY_SHOCK_WEAK			0x00002000
+#macro	ENMY_FREEZE_WEAK		0x00004000
 
 // Macros for the ailments based on their priority; where the higher number will overwrite the previous one
 // should it be inflicted while the enemy is already affected by some lower priority ailment.
@@ -33,13 +53,8 @@
 #macro	SHOCK_DURATION			60
 #macro	FROZEN_DURATION			600
 
-// Determines the chance of missile ammo being dropped by the enemy when it drops ammo upon death. The remaining amount
-// out of one is the chance of a power bomb charge dropping instead.
-#macro	MISSILE_DROP_CHANCE		0.75
 
-// Determines the base percentage chance that a small energy orb will be dropped instead of a large energy orb. This 
-// chance is altered depending on the percentage of energy Samus has remaining relative to her current maximum. The
-// remainder of 1.0 minus this value is the chance of dropping a large energy orb.
+#macro	MISSILE_DROP_CHANCE		0.75
 #macro	SM_ENERGY_DROP_CHANCE	0.85
 
 #endregion
@@ -77,9 +92,8 @@ energyDropChance = 0.0;
 aeionDropChance	 = 0.0;
 ammoDropChance	 = 0.0;
 
-// Keeps track of the weaponry Samus can utilize that the Enemy can be damaged by. Anything not found on this
-// list will simply be ignored if it happens to collide with the Enemy.
-weaknesses		= ds_list_create();
+// 
+weaknessFlags	= 0;
 
 // Stores the current ailment that has afflicted the Enemy. The last variable stores the timer that will cure
 // the Enemy of the ailment once its value reaches or goes below zero.
@@ -131,7 +145,7 @@ __update_hitpoints = update_hitpoints;
 /// "DROP_ITEM" to true, which actually allows the enemy to drop an item upon death from taking too much damage.
 update_hitpoints = function(_modifier){
 	__update_hitpoints(_modifier);
-	if (hitpoints == 0) {stateFlags |= (1 << DROP_ITEM);}
+	if (hitpoints == 0) {stateFlags |= ENMY_DROP_ITEM;}
 }
 
 /// Stores the parent object's function for applying a hitstun effect onto an entity so it can be called in
@@ -142,9 +156,11 @@ __entity_apply_hitstun = entity_apply_hitstun;
 /// @param {Real}	duration	Time in "frames" to apply the hitstun (Excluding the recovery) for (60 frames = 1 second).
 /// @param {Real}	damage		Damage to deduct to the entity's current hitpoints.
 entity_apply_hitstun = function(_duration, _damage){
-	if (curAilment != AIL_NONE){
+	// Don't set up the hitstun state if the Enemy in question currently has an ailment active OR if the Enemy
+	// is already considered hit stunned. Hit stunning an already hit stunned enemy causes it to softlock.
+	if (curAilment != AIL_NONE || nextState == state_hitstun){
 		update_hitpoints(-_damage);
-		return; // Don't allow standard hitstun effect whenever an enemy has an ailment active.
+		return;
 	}
 	__entity_apply_hitstun(_duration, _damage);
 	object_set_next_state(state_hitstun);
@@ -156,100 +172,6 @@ entity_apply_hitstun = function(_duration, _damage){
 #endregion
 
 #region Utility function initialization
-
-/// @description General function to call in the Create event of the Enemy object to make it weak to every
-/// projectile and bomb-based weapon. This is the default for many weaker enemies found throughout the world.
-initialize_weak_to_all = function(){
-	if (!ds_list_empty(weaknesses)) {ds_list_clear(weaknesses);}
-	// Ensure the enemy can be stunned, frozen, or shocked since they are considered weak to everything.
-	stateFlags &= ~((1 << STUN_IMMUNITY) | (1 << FREEZE_IMMUNITY) | (1 << SHOCK_IMMUNITY));
-	
-	ds_list_add(weaknesses, 
-		(1 << TYPE_POWER_BEAM), 
-		(1 << TYPE_ICE_BEAM),
-		(1 << TYPE_WAVE_BEAM),
-		(1 << TYPE_PLASMA_BEAM),
-		(1 << TYPE_MISSILE),
-		(1 << TYPE_SUPER_MISSILE),
-		(1 << TYPE_ICE_MISSILE),
-		(1 << TYPE_SHOCK_MISSILE),
-		(1 << TYPE_BOMB)
-	);
-	// Power bomb and screw attack aren't found here since they will always damage enemies unless two seperate 
-	// immunity flags are toggled to prevent damage from each.
-}
-
-/// @description General function to call in the Create event of the Enemy object to make it weak to beam
-/// projectiles and ONLY them. This means that being hit by any missile or a bomb will deal no damage.
-initialize_weak_to_beams = function(){
-	if (!ds_list_empty(weaknesses)) {ds_list_clear(weaknesses);}
-	
-	ds_list_add(weaknesses,
-		(1 << TYPE_POWER_BEAM),
-		(1 << TYPE_ICE_BEAM),
-		(1 << TYPE_WAVE_BEAM),
-		(1 << TYPE_PLASMA_BEAM),
-		// Note -- Enemy is still weak to Power Bombs.
-	);
-}
-
-/// @description General function to call in the Create event of the Enemy object to make it weak to missile
-/// projectiles and ONLY them. This means that being hit by any beam or a bomb will deal no damage.
-initialize_weak_to_missiles = function(){
-	if (!ds_list_empty(weaknesses)) {ds_list_clear(weaknesses);}
-	stateFlags &= ~(1 << STUN_IMMUNITY); // Ensure the enemy can be inflicted with stun.
-	
-	ds_list_add(weaknesses,
-		(1 << TYPE_MISSILE),
-		(1 << TYPE_SUPER_MISSILE),
-		(1 << TYPE_ICE_MISSILE),
-		(1 << TYPE_SHOCK_MISSILE),
-		// Note -- Enemy is still weak to Power Bombs.
-	);
-}
-
-/// @description General function to call in the Create event of the Enemy object to make it weak to ice-based
-/// projectiles and ONLY them. This means any other beam/missile/bomb (Excluding the Power Bomb) will deal no
-/// damage to the Enemy in question.
-/// @param {Real}	freezeThreshold		Determines percentage of HP the enemy needs to be at or below in order to be frozen.
-initialize_weak_to_ice = function(_freezeThreshold = 0.25){
-	freezeThreshold = _freezeThreshold;
-	
-	if (!ds_list_empty(weaknesses)) {ds_list_clear(weaknesses);}
-	stateFlags &= ~(1 << FREEZE_IMMUNITY); // Ensure the enemy can be inflicted with freeze.
-	
-	ds_list_add(weaknesses,
-		(1 << TYPE_ICE_BEAM),
-		(1 << TYPE_ICE_MISSILE)
-		// Note -- Enemy is still weak to Power Bombs.
-	);
-}
-
-/// @description General function to call in the Create event of the Enemy object to make it weak to shock-based
-/// projectiles and ONLY them. This means any other beam/missile/bomb (Excluding the Power Bomb) will deal no
-/// damage to the Enemy in question.
-initialize_weak_to_shock = function(){
-	if (!ds_list_empty(weaknesses)) {ds_list_clear(weaknesses);}
-	stateFlags &= ~(1 << SHOCK_IMMUNITY); // Ensure the enemy can be inflicted with shock.
-	
-	ds_list_add(weaknesses,
-		(1 << TYPE_WAVE_BEAM),
-		(1 << TYPE_SHOCK_MISSILE)
-		// Note -- Enemy is still weak to Power Bombs.
-	);
-}
-
-/// @description Detrermines if the weapon used against the Enemy should affect them or not. It does this by
-/// checking the list of weaknesses the enemy has, and if a match is found through a bitwise AND of a given 
-/// "weakness" value the function will return true to signify the Enemy is weak to said weapon.
-/// @param {Real}	stateFlags		Copy of the weapon's stateFlags variable in order to determine its type against the Enemy's weaknesses.
-is_weak_to_weapon = function(_stateFlags){
-	var _length = ds_list_size(weaknesses);
-	for(var i = 0; i < _length; i++){
-		if (_stateFlags & weaknesses[| i]) {return true;}
-	}
-	return false;
-}
 
 /// @description Creates a new weapon collider for the Enemy, which is a region that can only be collided with
 /// by Samus's weapons. Its position and size can be set independent of the Enemy's bounding box, and multiple
@@ -343,7 +265,8 @@ inflict_freeze = function(_damage, _isColdBased){
 	// the status ailment, their HP is  greater than one, OR their current hitpoint ratio is higher than the 
 	// required threshold percentage.
 	var _hitpoints = hitpoints - _damage;
-	if (!_isColdBased || IMMUNE_TO_FREEZE || (_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) 
+	if (!_isColdBased || !(weaknessFlags & ENMY_FREEZE_WEAK) || 
+			(_hitpoints > 1 && _hitpoints / maxHitpoints > freezeThreshold)) 
 		return false;
 	
 	if (curAilment != AIL_NONE) {remove_active_ailment();} // Remove previous ailment.
@@ -401,7 +324,6 @@ remove_active_ailment = function(){
 state_hitstun = function(){
 	if (hitstunTimer == -1.0){ // Return to previous state; reposition to origin of shake range.
 		object_set_next_state(lastState);
-		stateFlags |= ENTT_DRAW_SELF;
 		x = stunX;
 		y = stunY;
 		return;
@@ -427,8 +349,8 @@ state_shocked = function(){
 /// their sprite from a blue tint to no tint at all when the timer is below 25% of its starting value.
 state_frozen = function(){
 	if (ailmentTimer < FROZEN_DURATION * 0.25){
-		if (image_blend == HEX_LIGHT_BLUE)	{image_blend = c_white;}
-		else								{image_blend = HEX_LIGHT_BLUE;}
+		if (image_blend != c_white)	{image_blend = c_white;}
+		else						{image_blend = HEX_LIGHT_BLUE;}
 	}
 }
 

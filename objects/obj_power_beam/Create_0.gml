@@ -51,32 +51,32 @@ ___initialize = initialize;
 /// @param {Function}	state			The state to initially use for the projectile in question. 
 /// @param {Real}		x				Samus's horizontal position in the room.
 /// @param {Real}		y				Samus's vertical position in the room.
-/// @param {Real}		imageXScale		Samus's current facing direction (1 == right, -1 == left).
-/// @param {Bool}		isCharged		Determines if the beam is charged or not.
-initialize = function(_state, _x, _y, _imageXScale, _isCharged){
-	___initialize(_state, _x, _y, _imageXScale, _isCharged); // Calls initialize function found in "par_player_projectile".
-	entity_set_sprite(_isCharged ? spr_power_beam_charged : spr_power_beam, -1);
-	stateFlags |= (1 << TYPE_POWER_BEAM);
+/// @param {Real}		playerFlags
+/// @param {Real}		flags
+initialize = function(_state, _x, _y, _playerFlags, _flags){
+	___initialize(_state, _x, _y, _playerFlags, _flags); // Calls initialize function found in "par_player_projectile".
+	entity_set_sprite(PROJ_IS_CHARGED ? spr_power_beam_charged : spr_power_beam, -1);
+	stateFlags |= PROJ_POWBEAM;
 	
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
-	if (IS_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
-	else if (IS_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}
+	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
+	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}
 	
 	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
 	// by if the beam is charged or not charged prior to being fired.
-	if (_isCharged) {object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);}
-	else			{object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);}
+	if (PROJ_IS_CHARGED) {object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);}
+	else				 {object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);}
 	
 	// Determine the split beam velocities that will offset the upper and lower beams properly in order to 
 	// create the effect required for the power beam's beam splitter effect.
-	if (IS_MOVING_HORIZONTAL){
+	if (PROJ_MOVING_VERTICAL){
 		startOffset = y; // Start offset is y since the beams will split off on that axis.
 		
 		// Upper beam will be on top of the center beam regardless of the beam being shot to the left or the
 		// right; lower beam will be on the bottom of the center beam for the same reason as the upper beam.
 		if (IS_UPPER_POWER_BEAM)		{vspd = -SPLIT_MOVEMENT_SPEED;}
 		else if (IS_LOWER_POWER_BEAM)	{vspd = SPLIT_MOVEMENT_SPEED;}
-	} else if (IS_MOVING_VERTICAL){
+	} else if (PROJ_MOVING_VERTICAL){
 		startOffset = x; // Start offset is x since the beams will split off on that axis.
 		
 		// Upper beam will be to the left of the center beam regardless of the beam being fired up or down;
@@ -102,14 +102,14 @@ state_beam_splitter = function(){
 	// Continue moving the upper and lower power bomb bullets until they have hit their respective offset 
 	// limit (The offsets are increased when the power beam is charged prior to firing). Once they've hit
 	// their said limit, the split beam will be switched to its default state.
-	var _offsetLimit = IS_CHARGED ? SPLIT_CHARGE_OFFSET	: SPLIT_BEAM_OFFSET;
-	if (IS_MOVING_HORIZONTAL && abs(y - startOffset) >= _offsetLimit){
+	var _offsetLimit = PROJ_IS_CHARGED ? SPLIT_CHARGE_OFFSET : SPLIT_BEAM_OFFSET;
+	if (PROJ_MOVING_HORIZONTAL && abs(y - startOffset) >= _offsetLimit){
 		object_set_next_state(state_default);
 		y = startOffset + (_offsetLimit * sign(vspd));
 		vspdFraction = 0;
 		vspd = 0;
 		return; // State has changed; exit the function early.
-	} else if (IS_MOVING_VERTICAL && abs(x - startOffset) >= _offsetLimit){
+	} else if (PROJ_MOVING_VERTICAL && abs(x - startOffset) >= _offsetLimit){
 		object_set_next_state(state_default);
 		x = startOffset + (_offsetLimit * sign(hspd));
 		hspdFraction = 0;

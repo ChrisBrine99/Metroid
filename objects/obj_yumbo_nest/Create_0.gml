@@ -3,10 +3,6 @@
 // Ensures all variables that are created within the parent object's create event are also initialized through
 // this event, which overrides the former's create event outright.
 event_inherited();
-// All nests and "spawner" type objects will have inherent immunities to all status ailments that can be applied
-// by Samus's arsenal. On top of that, her Screw Attack is ineffective against spawners.
-stateFlags |= (1 << STUN_IMMUNITY) | (1 << SHOCK_IMMUNITY)
-		| (1 << FREEZE_IMMUNITY) | (1 << SCREW_ATTACK_IMMUNITY);
 
 // Maximum HP of the Yumbo Nest is set to one to ensure the weaponry that it's weak to (Missiles, Power Bombs,
 // etc.) will destroy it upon collision.
@@ -38,19 +34,24 @@ spawnTimer		= 0.0;
 
 #region Initialize function override
 
-/// Store the pointer for the parent's initialize function into a local variable for the Yodare, which is then
-/// called inside its own initialization function so the original functionality isn't ignored.
+/// Store the pointer for the parent's initialize function into a local variable for the Yumbo Nest, which is 
+/// then called inside its own initialization function so the original functionality isn't ignored.
 __initialize = initialize;
-/// @description Initialization function for the Yumbo Nest (Note that this function isn't called by any of its
-/// children since they'll utilize the initialize function stored in "__initialize" instead). It sets what Enemy
-/// to spawn in (The "Yumbo"), as well as the timer to spawn them in and the maximum number of instances (2) this
-/// spawner can have alive at any given time. On top of that, its sprite and weakness to missiles are set here.
+/// @description Initializes the Yumbo Nest with its sprite, a general weapon collider that matches the 
+/// bounding box of its sprite, weakness flags for all missiles, and its characteristics for number of Yumbo's
+/// spawned at any one time/time between spawns.
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yumbo_nest, -1);
 	create_general_collider();
-	initialize_weak_to_missiles();
+	
+	// Set up weakness flags such that the Yumbo Nest is only weak to missiles.
+	weaknessFlags  |= ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
+						ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK;
+	
+	// Set up the spawn so it spawns in a maximum of two Yumbos at any given time. The time between these
+	// instances being spawned is about two seconds of real-world time.
 	objToSpawn		= obj_yumbo;
 	maxInstances	= 2;
 	timeToSpawn		= 120.0;

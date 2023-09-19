@@ -74,7 +74,18 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_yodare, -1);
 	create_general_collider();
-	initialize_weak_to_all();
+	
+	// Set up weakness flags such that the Yodare is weak to every type of weapon Samus can utilize.
+	weaknessFlags  |= (
+		// --- Beam Type Flags --- //
+		ENMY_POWBEAM_WEAK | ENMY_ICEBEAM_WEAK | ENMY_WAVBEAM_WEAK | ENMY_PLSBEAM_WEAK | ENMY_CHRBEAM_WEAK |
+		// --- Missile Flags --- //
+		ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK |
+		// --- Bomb/Screw Attack Flags --- //
+		ENMY_REGBOMB_WEAK | ENMY_POWBOMB_WEAK | ENMY_SCREWATK_WEAK |
+		// --- Ailment Flags --- //
+		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
+	);
 	
 	// Consider whatever collider the Yodare first comes into contact with as the "ceiling". If there is no
 	// collision detected, the Yodare will instantly be destroyed.
