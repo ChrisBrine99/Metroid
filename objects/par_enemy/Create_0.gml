@@ -1,7 +1,8 @@
 #region Macros that are useful/related to par_enemy and its children
 
 // ------------------------------------------------------------------------------------------------------- //
-//	
+//	Values for the bits within the "stateFlags" variable. These represent states and properties that don't //
+//  need to be tied to a specific function due to these states being allowed across multiple main states.  //																						   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	ENMY_AILMENT_ACTIVE		0x00080000
@@ -16,7 +17,10 @@
 #macro	ENMY_CAN_DROP_ITEM		(stateFlags & ENMY_DROP_ITEM)
 
 // ------------------------------------------------------------------------------------------------------- //
-//	
+//	Values for bits within the "weaknessFlags" variable. They store a one (1) or a zero (0) to determine   //
+//	whether or not a given beam/missile/bomb/ability that Samus has available to her will damage the enemy //
+//	instance or not. The ability to inflict ailments on an enemy is also determines by bits stored within  //
+//	the same variable.																					   //
 // ------------------------------------------------------------------------------------------------------- //
 
 // --- Beam Weakness Flags --- //
@@ -42,18 +46,30 @@
 
 // Macros for the ailments based on their priority; where the higher number will overwrite the previous one
 // should it be inflicted while the enemy is already affected by some lower priority ailment.
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the various ailments that can potentially be inflicted on an enemy. The higher indexes have //
+//	a greater priority than the lower ones. This means a "stunned" enemy will become "frozen" if hit by	   //
+//	an ice-based weapon, but it can't go from "frozen" to "stunned" due to the latter having a lower	   //
+//	priority by comparison.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AIL_NONE				0
 #macro	AIL_STUNNED				1
 #macro	AIL_SHOCKED				2
 #macro	AIL_FROZEN				3
 
-// Macros that determine the duration of each ailment in "unit frames"; where 60 of those frames equal one
-// real-world second.
-#macro	STUN_DURATION			30
-#macro	SHOCK_DURATION			60
-#macro	FROZEN_DURATION			600
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that represent how long an enemy will be inflicted by its respective ailment. The units are	   //
+//	equivalent to roughly 60.0 per real-world second.													   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	STUN_DURATION			30.0
+#macro	SHOCK_DURATION			60.0
+#macro	FROZEN_DURATION			600.0
 
 
+// TODO -- Potentially replace these with variable chance values.
 #macro	MISSILE_DROP_CHANCE		0.75
 #macro	SM_ENERGY_DROP_CHANCE	0.85
 
@@ -92,7 +108,9 @@ energyDropChance = 0.0;
 aeionDropChance	 = 0.0;
 ammoDropChance	 = 0.0;
 
-// 
+// A 32-bit value that stores ones and zeros at various bits within the value. A one (1) allows the enemy to
+// be damaged by a certain piece of weaponry or inflicted by a given ailment. A azero (0) means the enemy has
+// complete immunity against the weapon/ailment in question.
 weaknessFlags	= 0;
 
 // Stores the current ailment that has afflicted the Enemy. The last variable stores the timer that will cure
@@ -142,7 +160,8 @@ initialize = function(_state){
 /// to call the logic from the base function despite overriding it to add more functionality.
 __update_hitpoints = update_hitpoints;
 /// @description A simple modification of the standard Entity "update_hitpoints" function that flips the flag
-/// "DROP_ITEM" to true, which actually allows the enemy to drop an item upon death from taking too much damage.
+/// "ENMY_DROP_ITEM" to true, which actually allows the enemy to drop an item upon death from taking too much 
+/// damage.
 update_hitpoints = function(_modifier){
 	__update_hitpoints(_modifier);
 	if (hitpoints == 0) {stateFlags |= ENMY_DROP_ITEM;}

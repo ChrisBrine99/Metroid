@@ -1,5 +1,10 @@
 #region Macro value initializations
 
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the bits within the "stateFlags" variable. These represent states and properties that don't //
+//  need to be tied to a specific function due to these states being allowed across multiple main states.  //																						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 // --- Beam Projectile Substates --- //
 #macro	PROJ_POWBEAM			0x00000001
 #macro	PROJ_ICEBEAM			0x00000002
@@ -21,7 +26,9 @@
 #macro	PROJ_IGNORE_ENTITIES	0x00100000
 // NOTE -- Bits 0x00200000 and greater are already in use by default dynamic entity substate flags.
 
-
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check what projectile substates are currently active.		   //
+// ------------------------------------------------------------------------------------------------------- //
 
 // --- Projectile Type Checks --- //
 #macro	PROJ_IS_MISSILE			(stateFlags & (PROJ_REGMISSILE | PROJ_SUPMISSILE | PROJ_ICEMISSILE | PROJ_SHKMISSILE))
@@ -40,10 +47,6 @@
 // --- Collision Behaviour Substate Checks --- //
 #macro	PROJ_IGNORES_WALLS		(stateFlags & PROJ_IGNORE_WALLS)
 #macro	PROJ_IGNORES_ENTITIES	(stateFlags & PROJ_IGNORE_ENTITIES)
-
-
-// Macro for the multiplier applied to a projectile if it happens to be charged.
-#macro	CHARGE_MULTIPLIER		4.0
 
 #endregion
 
