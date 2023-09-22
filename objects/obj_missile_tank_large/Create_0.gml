@@ -1,7 +1,9 @@
 #region Macro initialization
 
-// Macro that stores the constant value for the amount Samus's missile ammunition capacity increases by 
-// whenever she picks up this type of missile tank.
+// ------------------------------------------------------------------------------------------------------- //
+//	Amount added to Samus's missile ammunition reserve when she collects this type of missile tank.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	LARGE_MTANK_CAPACITY	10
 
 #endregion

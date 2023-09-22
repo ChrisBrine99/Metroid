@@ -20,8 +20,8 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	// the arm cannon will be drawn on the screen. The scaling value will always be either 1 or -1 depending
 	// on the direction Samus is facing, and the visibility of the arm cannon will be determined by Samus's
 	// various states (Ex. Morphball) and animations (Ex. Entering a jump).
-	image_xscale = 1;
-	visible = false;
+	image_xscale = 1.0;
+	visible		 = false;
 	
 	// Stores the image that will be drawn at the arm cannon's current position to respresent said weapon.
 	// The arm cannon will be facing different direction and look different depending on what Samus is doing,

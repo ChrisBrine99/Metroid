@@ -12,14 +12,14 @@
 #macro	PLYR_SOMERSAULT			0x00000008
 #macro	PLYR_MORPHBALL			0x00000010
 // --- Weapon Substates --- //
-#macro	PLYR_SCREWATK			0x00000020
-#macro	PLYR_FIRING_CANNON		0x00000040
+#macro	PLYR_SCREWATK			0x00000040
+#macro	PLYR_FIRING_CANNON		0x00000080
 // --- Aiming Substates --- //
-#macro	PLYR_AIMING_UP			0x00000080
-#macro	PLYR_AIMING_DOWN		0x00000100
+#macro	PLYR_AIMING_UP			0x00000100
+#macro	PLYR_AIMING_DOWN		0x00000200
 // --- Aeion Substates --- //
-#macro	PLYR_ESHIELD_ACTIVE		0x00000200
-#macro	PLYR_PSHIFT_ACTIVE		0x00000400
+#macro	PLYR_ESHIELD_ACTIVE		0x00000400
+#macro	PLYR_PSHIFT_ACTIVE		0x00000800
 // --- Miscellaneous Substates --- //
 #macro	PLYR_SPRITE_FLICKER		0x00080000
 #macro	PLYR_BEAM_VISIBLE		0x00100000
@@ -259,11 +259,6 @@
 #macro	AEION_LIMIT				100
 #macro	MISSILE_LIMIT			250
 #macro	POWER_BOMB_LIMIT		15
-
-
-
-#macro	ENERGY_TANK_CAPACITY	100		// TODO -- Move to more relevant objects
-#macro	NEEDED_ETANK_PIECES		4
 
 #endregion
 
@@ -1068,7 +1063,6 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(introSprite, spr_empty_mask);
-	entity_set_position(480, 320);
 	object_add_light_component(x, y, 0, 
 		LGHT_VISOR_Y_GENERAL, LGHT_VISOR_RADIUS, HEX_LIGHT_GREEN, LGHT_VISOR_STRENGTH, true);
 	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM | ENTT_INVINCIBLE;

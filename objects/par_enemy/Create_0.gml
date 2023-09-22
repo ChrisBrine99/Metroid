@@ -68,6 +68,17 @@
 #macro	SHOCK_DURATION			60.0
 #macro	FROZEN_DURATION			600.0
 
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ENMY_SMENERGY_DROP		0
+#macro	ENMY_LGENERGY_DROP		1
+#macro	ENMY_SMMISSILE_DROP		2
+#macro	ENMY_LGMISSILE_DROP		3
+#macro	ENMY_AEION_DROP			4
+#macro	ENMY_POWBOMB_DROP		5
+#macro	ENMY_TOTAL_DROPS		6
 
 // TODO -- Potentially replace these with variable chance values.
 #macro	MISSILE_DROP_CHANCE		0.75
@@ -99,14 +110,8 @@ colliderIDs		= ds_list_create();
 damage		 = 0;
 stunDuration = 0.0;
 
-// Stores the percentage drop chances (Ranging from 0.0 to 1.0 == 0% to 100% chance) for energy (small and large), aeion, 
-// and ammunition (missiles and power bombs), respectively. The enemy will check in the order: energy, aeion, and ammo, 
-// upon defeat, so if the previous value(s) equal or surpass 1.0; the remaining checks will be ignored. Another thing to 
-// note is that the aeion and ammo drops are converted into a 80/20 chance at spawning an small/large energy orb if Samus 
-// doesn't have access to her missile launcher/power bomb and aeion powers, respectively.
-energyDropChance = 0.0;
-aeionDropChance	 = 0.0;
-ammoDropChance	 = 0.0;
+// 
+dropChances	= array_create(ENMY_TOTAL_DROPS, 0);
 
 // A 32-bit value that stores ones and zeros at various bits within the value. A one (1) allows the enemy to
 // be damaged by a certain piece of weaponry or inflicted by a given ailment. A azero (0) means the enemy has
@@ -255,6 +260,35 @@ apply_horizontal_shift = function(_speed){
 		if (x == shiftBaseX) {x += choose(-1, 1);}
 		else				 {x	 = shiftBaseX + sign(shiftBaseX - x);}
 		shiftTimer -= _speed;
+	}
+}
+
+/// @description 
+/// @param {Real}	index	The type of drop to spawn into the world where the enemy died.
+spawn_item_drop = function(_index){
+	switch(_index){
+		case ENMY_SMENERGY_DROP:
+			instance_create_object(x, y, obj_sm_energy_drop, depth - 1);
+			break;
+		case ENMY_LGENERGY_DROP:
+			instance_create_object(x, y, obj_lg_energy_drop, depth - 1);
+			break;
+		case ENMY_SMMISSILE_DROP:	// NOTE -- Spawns a small energy orb until Samus has access to Missiles. 
+			if (event_get_flag(FLAG_MISSILES)) {instance_create_object(x, y, obj_missile_drop, depth - 1);}
+			else {instance_create_object(x, y, obj_sm_energy_drop, depth - 1);}
+			break;
+		case ENMY_LGMISSILE_DROP:	// NOTE -- Spawns a small energy orb until Samus has access to Missiles.
+			if (event_get_flag(FLAG_MISSILES)) {/* TODO -- Create large missile drop here. */}
+			else {instance_create_object(x, y, obj_sm_energy_drop, depth - 1);}
+			break;
+		case ENMY_AEION_DROP:		// NOTE -- Spawns a large energy orb until Samus has access to an Aeion ability.
+			if (PLAYER.maxAeion > 0) {instance_create_object(x, y, obj_aeion_drop, depth - 1);}
+			else {instance_create_object(x, y, obj_lg_energy_drop, depth - 1);}
+			break;
+		case ENMY_POWBOMB_DROP:		// NOTE -- Spawns a large energy orb until Samus has access to Power Bombs.
+			if (event_get_flag(FLAG_POWER_BOMBS)) {/* TODO -- Create power bomb drop here. */}
+			else {instance_create_object(x, y, obj_lg_energy_drop, depth - 1);}								
+			break;
 	}
 }
 

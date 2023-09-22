@@ -1,3 +1,14 @@
+#region Macros that are useful/related to obj_reserve_tank
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the value that the reserve tank adds onto Samus's current energy reserve capacity when		   //
+//	collected.																							   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	RESERVE_TANK_CAPACITY	100
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 
@@ -30,7 +41,7 @@ __collectible_collect_self = collectible_collect_self;
 /// 100 energy to the reserve like a standard energy tank does for Samus's main energy amount upon collection.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER) {maxReserveHitpoints += 100;}
+	with(PLAYER) {maxReserveHitpoints += RESERVE_TANK_CAPACITY;}
 }
 
 #endregion

@@ -14,21 +14,21 @@ event_inherited();
 /// its creation isn't required.
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
-	__initialize(_state); // Borrows the function pointer to "par_enemy" initialize function instead of the Yodare Nest's initialize function.
-	entity_set_sprite(spr_yodare_nest, -1);
+	__initialize(_state); // Borrows the function pointer to "par_enemy" initialize function instead of the Yumbo Nest's initialize function.
+	entity_set_sprite(spr_gawron_nest, -1);
 	create_general_collider();
 	
-	// Set up weakness flags such that the Yodare Nest is only weak to missiles.
+	// Set up weakness flags such that the Yumbo Nest is only weak to missiles.
 	weaknessFlags  |= ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
 						ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK;
 	
 	// Set up the nest so it only spawns a single Yodare at any given time; offset upwards by 20 pixels so it
 	// starts burrowed into the ceiling directly above this spawner.
-	objToSpawn		= obj_yodare;
-	spawnOffsetY	= -20;
+	objToSpawn		= obj_gawron;
+	spawnOffsetY	= 8;
 	maxInstances	= 1;
-	timeToSpawn		= 45.0;
-	spawnTimer		= timeToSpawn;	// Instantly spawn first Yodare.
+	timeToSpawn		= 75.0;
+	spawnTimer		= timeToSpawn * 0.5;
 }
 
 #endregion

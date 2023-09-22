@@ -1,6 +1,9 @@
 #region Macro initialization
 
-// Macro that stores the constant value for the amount Samus's power bomb supply will increase by when collected.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the value added to Samus's power bomb ammo capacity when she collects one of their tanks.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	PBOMB_TANK_CAPACITY		1
 
 #endregion

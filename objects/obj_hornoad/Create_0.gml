@@ -161,7 +161,8 @@ entity_apply_hitstun = function(_duration, _damage){
 state_default = function(){
 	// Check that prevents accidental execution of this function if the Hornoard is hit by one of Samus's
 	// weapons before its state function happens to be executed.
-	if (ENTT_IS_HIT_STUNNED) {return;}
+	if (ENTT_IS_HIT_STUNNED) 
+		return;
 	
 	// Keep incrementing the jump timer until it exceeds the required amount, which will instantly switch the
 	// Hornoad into its airbourne state. Depending on the situation, the Hornoad can be prevented from jumping

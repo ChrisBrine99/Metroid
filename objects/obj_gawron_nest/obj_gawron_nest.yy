@@ -1,20 +1,19 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_gawron",
+  "name": "obj_gawron_nest",
   "eventList": [
     {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,},
-    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","collisionObjectId":null,"eventNum":40,"eventType":7,"isDnD":false,},
   ],
-  "managed": true,
+  "managed": false,
   "overriddenProperties": [],
   "parent": {
-    "name": "General",
-    "path": "folders/Resources/Core/Entities/Dynamic/Enemies/General.yy",
+    "name": "Spawners",
+    "path": "folders/Resources/Core/Entities/Dynamic/Enemies/Spawners.yy",
   },
   "parentObjectId": {
-    "name": "par_enemy",
-    "path": "objects/par_enemy/par_enemy.yy",
+    "name": "obj_yumbo_nest",
+    "path": "objects/obj_yumbo_nest/obj_yumbo_nest.yy",
   },
   "persistent": false,
   "physicsAngularDamping": 0.1,
@@ -32,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_gawron",
-    "path": "sprites/spr_gawron/spr_gawron.yy",
+    "name": "spr_gawron_nest",
+    "path": "sprites/spr_gawron_nest/spr_gawron_nest.yy",
   },
   "spriteMaskId": null,
   "visible": false,

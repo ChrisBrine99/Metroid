@@ -1,3 +1,13 @@
+#region Macros that are useful/related to obj_energy_tank
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the value that the energy tank adds onto Samus's current energy capacity when collected.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ENERGY_TANK_CAPACITY	100
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 

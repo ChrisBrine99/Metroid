@@ -1,3 +1,14 @@
+#region
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the number of energy tank piece Samus will need to have collected before they can be converted  //
+//	into an energy tank, which gives her a 100 point boost to her current energy capacity.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	NEEDED_ETANK_PIECES		4
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 

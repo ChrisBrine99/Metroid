@@ -17,7 +17,11 @@ instance_create_singleton_struct(obj_debugger);
 instance_create_singleton_object(0, 0, obj_controller);
 instance_create_singleton_object(0, 0, obj_player);
 instance_create_singleton_object(0, 0, obj_controller);
-with(PLAYER) {initialize(state_intro);} // FOR TESTING PURPOSES
+with(PLAYER){ // FOR TESTING PURPOSES
+	initialize(state_intro);
+	//entity_set_position(480, 320);
+	entity_set_position(480, 336);
+}
 
 // Attempt to load in the game's settings from a saved .ini file. If no file currently exists, default settings
 // will be used instead.
@@ -28,7 +32,7 @@ game_load_settings();
 //CONTROL_INFO.initialize_input_icons();
 
 // Finally, once all the initialization has completed, move into the first true room of the game.
-room_goto(rm_test01);
+room_goto(rm_test_main);
 
 /// FOR TESTING
 camera_set_target_object(PLAYER, 0, -16);

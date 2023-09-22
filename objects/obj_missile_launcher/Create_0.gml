@@ -1,6 +1,11 @@
 #region Macro initialization
 
-// Macro that stores the value of missiles given to Samus when she collects the Missile Launcher.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the "starting" capacity for Samus upon unlocking the Missile Launcher. If she has collected //
+//	tanks prior to the actual launcher this value will be added to that pre-existing capacity from the	   //
+//	other missile tanks.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	START_MISSILE_AMOUNT	10
 
 #endregion
