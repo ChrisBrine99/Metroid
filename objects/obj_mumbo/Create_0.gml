@@ -19,12 +19,6 @@ hitpoints		= maxHitpoints;
 damage			= 8;
 stunDuration	= 8;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.45;	// 45%
-aeionDropChance		= 0.20;	// 20%
-ammoDropChance		= 0.30;	// 30%
-
 #endregion
 
 #region Unique variable initialization
@@ -60,6 +54,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Mumbo is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 60;
+	dropChances[ENMY_LGENERGY_DROP]		= 0;
+	dropChances[ENMY_SMMISSILE_DROP]	= 20;
+	dropChances[ENMY_LGMISSILE_DROP]	= 5;
+	dropChances[ENMY_AEION_DROP]		= 0;
+	dropChances[ENMY_POWBOMB_DROP]		= 0;
 	
 	// Give the Mumbo a 50/50 chance of starting out moving right or left.
 	movement = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);

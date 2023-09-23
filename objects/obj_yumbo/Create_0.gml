@@ -53,12 +53,6 @@ hitpoints		= maxHitpoints;
 damage			= YMBO_BASE_DAMAGE;
 stunDuration	= 12;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.5;	// 50%
-aeionDropChance		= 0.2;	// 20%
-ammoDropChance		= 0.2;	// 20%
-
 #endregion
 
 #region Unique variable initialization
@@ -107,6 +101,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Gullug is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 35;
+	dropChances[ENMY_LGENERGY_DROP]		= 10;
+	dropChances[ENMY_SMMISSILE_DROP]	= 20;
+	dropChances[ENMY_LGMISSILE_DROP]	= 0;
+	dropChances[ENMY_AEION_DROP]		= 15;
+	dropChances[ENMY_POWBOMB_DROP]		= 0;
 	
 	// By default, the center of the Yumbo's "territory" will be the coordinates it is found at during the
 	// call to this initialization function. The target position it stores will also be the same. However,

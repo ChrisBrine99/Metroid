@@ -29,7 +29,7 @@ __collectible_collect_self = collectible_collect_self;
 /// @description Updates Samus's "maxVspd" variable to reflect the new jump height allowed by this item.
 collectible_collect_self = function(){
 	__collectible_collect_self();
-	with(PLAYER) {maxVspd = HI_JUMP_HEIGHT;}
+	with(PLAYER) {maxVspd = PLYR_UPGRADED_JUMP;}
 }
 
 #endregion

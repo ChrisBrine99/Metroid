@@ -8,6 +8,9 @@ if (!ENMY_CAN_DROP_ITEM)
 var _dropChance = irandom_range(1, 100);
 var _baseChance = 0;
 for (var i = 0; i < ENMY_TOTAL_DROPS; i++){
+	if (dropChances[i] == 0) {continue;}
+	
+	// 
 	_baseChance += dropChances[i];
 	if (_dropChance <= _baseChance){
 		spawn_item_drop(i);

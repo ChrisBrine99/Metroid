@@ -60,7 +60,7 @@ state_default = function(){
 	var _length = instance_place_list(x, y, par_destructible, collisionList, false);
 	for (var i = 0; i < _length; i++){
 		with(collisionList[| i]){
-			if (ENTT_DESTROYED || (object_index != obj_destructible_collectible_ball && 
+			if (ENTT_IS_DESTROYED || (object_index != obj_destructible_collectible_ball && 
 					object_index != obj_destructible_all && object_index != obj_destructible_bomb)) 
 				continue;
 			destructible_destroy_self();
@@ -70,13 +70,15 @@ state_default = function(){
 	
 	// Check for collision with enemies that come into contact with this explosion. If a collision is found, 
 	// the enemy instance in question will be damaged if they are not immune to damage from standard bombs.
-	var _stateFlags = stateFlags;
-	var _enemy		= instance_place(x, y, par_enemy);
-	with(_enemy){
-		if (ENTT_IS_HIT_STUNNED || ENTT_IS_DESTROYED || !(weaknessFlags & ENMY_REGBOMB_WEAK))
-			break;
-		entity_apply_hitstun(BOMB_DAMAGE, BOMB_STUN_DURATION);
+	_length	= instance_place_list(x, y, par_enemy, collisionList, false);
+	for (var j = 0; j < _length; j++){
+		with(collisionList[| j]){
+			if (ENTT_IS_HIT_STUNNED || ENTT_IS_DESTROYED || !(weaknessFlags & ENMY_REGBOMB_WEAK))
+				break;
+			entity_apply_hitstun(BOMB_DAMAGE, BOMB_STUN_DURATION);
+		}
 	}
+	if (_length > 0) {ds_list_clear(collisionList);}
 	
 	// Check for collision with the general door and also the inactive door (In case it's active) to see
 	// if they should be opened by the bomb's explosion. Every other door type cannot be opened by the
@@ -92,7 +94,7 @@ state_default = function(){
 		// If the local flag is set to true after the switch statement has been processed, the door will
 		// be opened by the bomb's explosion. Otherwise, nothing will happen to the door.
 		if (_isDestroyed){
-			if (flagID != EVENT_FLAG_INVALID) 
+			if (flagID != EVENT_FLAG_INVALID)
 				event_set_flag(flagID, true);
 			animSpeed = 1;
 		}

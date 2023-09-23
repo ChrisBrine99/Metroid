@@ -52,12 +52,8 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// 
-maxHspd = HRND_ALERTED_HSPD;
-maxVspd = HRND_ALERTED_VSPD;
-
 // Set the force of gravity against the Hornoad, which is the same amount that is applied to Samus.
-vAccel = 0.25;
+vAccel			= 0.25;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Hornoad will be able to 
 // take four hits before dying. Other beams and missiles will change the amount of hits needed.
@@ -68,12 +64,6 @@ hitpoints		= maxHitpoints;
 // difficulty level selected by the player.
 damage			= 8;
 stunDuration	= 12;
-
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.40;	// 40%
-aeionDropChance		= 0.30;	// 30%
-ammoDropChance		= 0.25;	// 25%
 
 #endregion
 
@@ -113,6 +103,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Hornoad is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 40;
+	dropChances[ENMY_LGENERGY_DROP]		= 10;
+	dropChances[ENMY_SMMISSILE_DROP]	= 5;
+	dropChances[ENMY_LGMISSILE_DROP]	= 0;
+	dropChances[ENMY_AEION_DROP]		= 15;
+	dropChances[ENMY_POWBOMB_DROP]		= 0;
 	
 	// Randomly choose a starting direction upon initialization.
 	movement	 = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);

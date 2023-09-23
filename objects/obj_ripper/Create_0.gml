@@ -21,12 +21,6 @@ hitpoints		= maxHitpoints;
 damage			= 10;
 stunDuration	= 12;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here. Rippers will almost always drop ammunition.
-energyDropChance	= 0.0;	// 0%
-aeionDropChance		= 0.0;	// 0%
-ammoDropChance		= 0.9;	// 90%
-
 #endregion
 
 #region Unique variable initialization
@@ -52,6 +46,14 @@ initialize = function(_state){
 	
 	// Only one weakness aside from a Power Bomb or an ice-based weapon: Super Missiles.
 	weaknessFlags |= ENMY_SUPMISSILE_WEAK | ENMY_POWBOMB_WEAK | ENMY_FREEZE_WEAK;
+	
+	// Set the rates for item drops if the Ripper is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 0;
+	dropChances[ENMY_LGENERGY_DROP]		= 30;
+	dropChances[ENMY_SMMISSILE_DROP]	= 0;
+	dropChances[ENMY_LGMISSILE_DROP]	= 30;
+	dropChances[ENMY_AEION_DROP]		= 0;
+	dropChances[ENMY_POWBOMB_DROP]		= 20;
 	
 	// Randomly determine a starting direction: left (-1) or right (+1); flipping the Ripper's facing direction 
 	// if the chosen starting direction is to the left.

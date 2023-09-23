@@ -8,7 +8,7 @@
 #macro	GWRN_WAIT_TIME			20.0
 
 // ------------------------------------------------------------------------------------------------------- //
-//	
+//	Determines the speed at which the Gawron will shake horizontally before it charges toward Samus.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	GWRN_SHIFT_INTERVAL		1.5
@@ -77,6 +77,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Gawron is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 55;
+	dropChances[ENMY_LGENERGY_DROP]		= 5;
+	dropChances[ENMY_SMMISSILE_DROP]	= 20;
+	dropChances[ENMY_LGMISSILE_DROP]	= 0;
+	dropChances[ENMY_AEION_DROP]		= 0;
+	dropChances[ENMY_POWBOMB_DROP]		= 5;
 	
 	// 
 	var _playerX = 0;

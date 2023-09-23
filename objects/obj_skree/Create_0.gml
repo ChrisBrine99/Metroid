@@ -51,12 +51,6 @@ hitpoints		= maxHitpoints;
 damage			= SKRE_BASE_DAMAGE;
 stunDuration	= 8;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.45;	// 45%
-aeionDropChance		= 0.3;	// 30%
-ammoDropChance		= 0.25;	// 25%
-
 #endregion
 
 #region Unique variable initialization

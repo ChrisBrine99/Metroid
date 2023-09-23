@@ -25,7 +25,7 @@ initialize = function(_state){
 	// Set up the nest so it only spawns a single Yodare at any given time; offset upwards by 20 pixels so it
 	// starts burrowed into the ceiling directly above this spawner.
 	objToSpawn		= obj_yodare;
-	spawnOffsetY	= -20;
+	spawnOffsetY	= -12;
 	maxInstances	= 1;
 	timeToSpawn		= 45.0;
 	spawnTimer		= timeToSpawn;	// Instantly spawn first Yodare.

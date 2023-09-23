@@ -37,12 +37,6 @@ hitpoints		= maxHitpoints;
 damage			= SNJO_BASE_DAMAGE;
 stunDuration	= 15;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.3;	// 30%
-aeionDropChance		= 0.2;	// 20%
-ammoDropChance		= 0.2;	// 20%
-
 #endregion
 
 #region Unique variable initialization
@@ -87,6 +81,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Senjoo is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 15;
+	dropChances[ENMY_LGENERGY_DROP]		= 25;
+	dropChances[ENMY_SMMISSILE_DROP]	= 20;
+	dropChances[ENMY_LGMISSILE_DROP]	= 10;
+	dropChances[ENMY_AEION_DROP]		= 20;
+	dropChances[ENMY_POWBOMB_DROP]		= 5;
 	
 	// Divide by required value once since the Senjoo's sprite never changes.
 	spriteSpeed /= ANIMATION_FPS;

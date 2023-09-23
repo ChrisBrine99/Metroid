@@ -1,32 +1,47 @@
 #region Macro initialization
 
-// Determines how wide the Gullug's circle of movement is in its default state, as well as the speed it moves
-// along the circumference of that circle.
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that determine how the Gullug moves in its default/dormant state. The first value is the radius //
+//	of its circular movement and the second is the speed it follows that circle's circumference.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLLG_MOVE_RADIUS		48.0
 #macro	GLLG_MOVE_SPEED			2.0
 
-// Determines the amount of damage that the Gullug will apply to Samus when it comes into contact with her
-// during its regular and attacking states, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the Gullug's damage output during its default and attacking states, respectively.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLLG_BASE_DAMAGE		8
 #macro	GLLG_ATTACK_DAMAGE		16
 
-// Macro values for various attack state parameters. The first is the radius that Samus is required to be within
-// relative to the Gullug's current position before it can attack her. The final two values are the speed the
-// Gullug moves at when it is attacking and returning from attacking to its regular movement, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	Characteristics for the Gullug's attack execution parameters. The first determines the distance that   //
+//	Samus must be from it for the Gullug to initiate an attack against her. The final two values are the   //
+//	speeds the Gullug move at when attacking and returning from that attack, respectively.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLLG_ATK_DISTANCE		48.0
 #macro	GLLG_ATK_SPEED			2.0
 #macro	GLLG_ATK_RETURN_SPEED	1.0
 
-// Various timer that the Gullug utilizes for various actions that it can perform. In order, they determine
-// how long in unit frames (60 ufs = 1 second) before it can attack again, how long the Gullug can attack for
-// before giving up, the time between it detecting Samus and beginning its attack, and how long it must wait
-// between its attack and returning to its default state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for various intervals of time that are utilized by the Gullug is various states; each relating  //
+//	to an attack state in some form. The first being the cooldown before it can attack Samus again. The	   //
+//	second is how long the Gullug will attack for before giving up should it not hit Samus. Finally, the   //
+//	last two values determine the waiting time for the starting and end of the attack, respectively.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLLG_ATK_COOLDOWN_TIME	60.0
 #macro	GLLG_ATK_TIME			50.0
 #macro	GLLG_ATK_BEGIN_TIME		20.0
 #macro	GLLG_ATK_END_TIME		5.0
 
-// Determines how fast the Gullug shifts to the left and right during its attack begin state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the frequency that the Gullug will shake back and forth hotizontally directly prior to it   //
+//	charging toward Samus.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLLG_SHAKE_SPEED		2.0
 
 #endregion
@@ -46,12 +61,6 @@ hitpoints		= maxHitpoints;
 // difficulty level selected by the player.
 damage			= GLLG_BASE_DAMAGE;
 stunDuration	= 12;
-
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.35;	// 35%
-aeionDropChance		= 0.3;	// 30%
-ammoDropChance		= 0.3;	// 30%
 
 #endregion
 
@@ -100,6 +109,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Gullug is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 35;
+	dropChances[ENMY_LGENERGY_DROP]		= 15;
+	dropChances[ENMY_SMMISSILE_DROP]	= 10;
+	dropChances[ENMY_LGMISSILE_DROP]	= 3;
+	dropChances[ENMY_AEION_DROP]		= 10;
+	dropChances[ENMY_POWBOMB_DROP]		= 2;
 	
 	// Initialize all variables required by the Gullug for its AI to function. Moving clockwise or counter-
 	// clockwise is determined by a "coin flip" here and never changed.

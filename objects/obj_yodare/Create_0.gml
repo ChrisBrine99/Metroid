@@ -41,12 +41,6 @@ hitpoints		= maxHitpoints;
 damage			= 10;
 stunDuration	= 12;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.25;	// 25%
-aeionDropChance		= 0.25;	// 25%
-ammoDropChance		= 0.40;	// 40%
-
 #endregion
 
 #region Unique variable initialization
@@ -86,6 +80,14 @@ initialize = function(_state){
 		// --- Ailment Flags --- //
 		ENMY_STUN_WEAK | ENMY_SHOCK_WEAK | ENMY_FREEZE_WEAK
 	);
+	
+	// Set the rates for item drops if the Yodare is defeated by Samus here.
+	dropChances[ENMY_SMENERGY_DROP]		= 55;
+	dropChances[ENMY_LGENERGY_DROP]		= 5;
+	dropChances[ENMY_SMMISSILE_DROP]	= 8;
+	dropChances[ENMY_LGMISSILE_DROP]	= 2;
+	dropChances[ENMY_AEION_DROP]		= 13;
+	dropChances[ENMY_POWBOMB_DROP]		= 2;
 	
 	// Consider whatever collider the Yodare first comes into contact with as the "ceiling". If there is no
 	// collision detected, the Yodare will instantly be destroyed.
