@@ -58,6 +58,11 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	entity_set_sprite(PROJ_IS_CHARGED ? spr_power_beam_charged : spr_power_beam, -1);
 	stateFlags |= PROJ_POWBEAM;
 	
+	// 
+	if (audio_is_playing(snd_powerbeam))
+		audio_stop_sound(snd_powerbeam);
+	audio_play_sound(snd_powerbeam, 0, false, 0.3);
+	
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
 	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
 	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}

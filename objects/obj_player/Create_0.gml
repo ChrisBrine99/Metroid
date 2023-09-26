@@ -405,6 +405,9 @@ curShiftDist	= 0;
 prevMaxHspd		= 0.0;
 prevAnimSpeed	= 0.0;
 
+//
+footstepTimer	= 0.0;
+
 #endregion
 
 #region Utility function initialzations
@@ -1594,6 +1597,17 @@ state_default = function(){
 			case PLYR_FIRING_CANNON:	entity_set_sprite(walkSpriteFwExt, standingMask, _animSpeed);	break;
 			case PLYR_AIMING_UP:		entity_set_sprite(walkSpriteUp,	standingMask, _animSpeed);		break;
 		}
+		
+		
+		footstepTimer -= DELTA_TIME;
+		if (footstepTimer < 0.0){
+			footstepTimer += 16.0 - (5.0 * _animSpeed);
+			if (audio_is_playing(snd_footstep))
+				audio_stop_sound(snd_footstep);
+			audio_play_sound(snd_footstep, 0, false, random_range(0.08, 0.12), 
+				random(0.03), random_range(0.95, 1.05));
+		}	
+			
 		return;
 	}
 	
@@ -1631,6 +1645,9 @@ state_airbourne = function(){
 		hspdFraction	= 0.0;
 		hspd			= 0.0;
 		reset_light_source();
+		
+		// 
+		audio_play_sound(snd_land, 0, false, 0.2 + (0.05 * vspd), 0.03, random_range(0.9, 1.10));
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
