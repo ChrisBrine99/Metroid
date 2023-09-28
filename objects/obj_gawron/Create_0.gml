@@ -1,10 +1,11 @@
 #region Macro initialization
 
 // ------------------------------------------------------------------------------------------------------- //
-//	The amount of time in unit frames (60 == 1 second of real-time) that the Gawron waits after reaching   //
-//	its target position (20 pixels above Samus's true position) prior to charging towards her.			   //
+//	The amount of time in unit frames (60 == 1 second of real-time) that the Gawron must wait before it    //
+//	can try charging toward Samus and how long it waits after reaching its target prior to charging.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
+#macro	GWRN_SPAWN_TIME			24.0
 #macro	GWRN_WAIT_TIME			20.0
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -31,18 +32,13 @@ hitpoints		= maxHitpoints;
 damage			= 8;
 stunDuration	= 8;
 
-// Determine the chances of energy orbs, aeion, missile, and power bomb drops through setting the inherited
-// variables storing those chances here.
-energyDropChance	= 0.25;	// 25%
-aeionDropChance		= 0.25;	// 25%
-ammoDropChance		= 0.25;	// 25%
-
 #endregion
 
 #region Unique variable initializations
 
 // 
-waitTimer = 0.0;
+spawnTimer	= 0.0;
+waitTimer	= 0.0;
 
 #endregion
 
@@ -64,7 +60,7 @@ initialize = function(_state){
 	
 	// 
 	hAccel	= 0.5;
-	vAccel	= 0.2;
+	vAccel	= 0.1;
 	
 	// Set up weakness flags such that the Gawron is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (
@@ -87,7 +83,7 @@ initialize = function(_state){
 	dropChances[ENMY_POWBOMB_DROP]		= 5;
 	
 	// 
-	var _playerX = 0;
+	var _playerX = 0xFFFFFFFF;
 	with(PLAYER) {_playerX = x;}
 	image_xscale = (_playerX >= x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
 }
@@ -103,24 +99,33 @@ state_intro = function(){
 	if (vspd < maxVspd) {vspd = maxVspd;}
 	
 	// 
-	var _playerX = 0;
-	var _playerY = 0;
-	with(PLAYER){
-		_playerX = x;
-		_playerY = y - 24;
-	}
+	apply_frame_movement(NO_FUNCTION);
 	
 	// 
-	if (y <= _playerY && !collision_line(x, y, _playerX, y, par_collider, false, true)){
+	spawnTimer += DELTA_TIME;
+	if (spawnTimer > GWRN_SPAWN_TIME)
+		spawnTimer = GWRN_SPAWN_TIME;
+	
+	// 
+	if (spawnTimer == GWRN_SPAWN_TIME){
+		// 
+		var _playerY = 0xFFFFFFFF;
+		with(PLAYER){
+			if (PLYR_IN_MORPHBALL)		{_playerY = y - 8;}
+			else if (PLYR_IS_CROUCHED)	{_playerY = y - 14;}
+			else						{_playerY = y - 24;}
+		}
+		
+		// 
+		if (y > _playerY)
+			return;
+		
+		// 
 		object_set_next_state(state_begin_attack);
 		waitTimer	= GWRN_WAIT_TIME;
 		vspd		= 0.0;
 		shiftBaseX	= x;
-		return;
 	}
-	
-	// 
-	apply_frame_movement(NO_FUNCTION);
 }
 
 /// @description 

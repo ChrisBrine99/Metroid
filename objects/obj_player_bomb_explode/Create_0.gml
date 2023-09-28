@@ -35,6 +35,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb_explode, -1);
 	object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
+	play_sound_effect(snd_bombexplode, 0, false, true, 0.7);
 	stateFlags |= ENTT_DRAW_SELF;
 }
 

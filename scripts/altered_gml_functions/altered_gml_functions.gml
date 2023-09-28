@@ -32,6 +32,25 @@ function place_meeting_3d(_x, _y, _z, _object){
 
 #endregion
 
+#region Audio functions with extended functionality
+
+/// @description An extension of the "audio_play_sound" function that simply adds the ability to stop any
+/// previous instance of the sound effect that is being called to begin playing should that be necessary.
+/// @param {Asset.GMSound}	sound			The sound resource to play.
+/// @param {Real}			priority		Set the channel priority for the sound.
+/// @param {Bool}			loop			Toggle the sound to play once or repeat indefinitely.
+/// @param {Bool}			stopPrevious	Stop any previous instances of the sound from playing or not.
+/// @param {Real}			gain			Set the volume of the sound (Default is 1.0).
+/// @param {Real}			offset			The offset position (in seconds) of the sound to begin its playback at.
+/// @param {Real}			pitch			Set the pitch of the sound relative to its default value (1.0). 
+function play_sound_effect(_sound, _priority, _loop, _stopPrevious, _gain = 1.0, _offset = 0.0, _pitch = 1.0){
+	if (_stopPrevious && audio_is_playing(_sound))
+		audio_stop_sound(_sound);
+	return audio_play_sound(_sound, _priority, _loop, _gain, _offset, _pitch);
+}
+
+#endregion
+
 #region Text rendering functions with extended functionality
 
 /// @description A simple function that allows both axes of text alignment to be altered with a single line

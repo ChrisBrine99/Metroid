@@ -748,7 +748,7 @@ update_maximum_aeion = function(_modifier){
 	with(GAME_HUD){ // Update HUD's stored value for player's max aeion capacity.
 		pMaxAeion = other.maxAeion;
 		if (!CAN_SHOW_AEION_GAUGE && pMaxAeion != 0) 
-			stateFlags |= (1 << SHOW_AEION_GAUGE);
+			stateFlags |= SHOW_AEION_GAUGE;
 	}
 }
 
@@ -763,7 +763,7 @@ update_maximum_missiles = function(_modifier){
 	with(GAME_HUD){ // Update HUD's stored value for player's max missile ammo count.
 		pMaxMissiles = other.maxMissiles;
 		if (!CAN_SHOW_MISSILES && event_get_flag(FLAG_MISSILES)) 
-			stateFlags |= (1 << SHOW_MISSILES);
+			stateFlags |= SHOW_MISSILES;
 	}
 }
 
@@ -778,7 +778,7 @@ update_maximum_power_bombs = function(_modifier){
 	with(GAME_HUD){ // Update HUD's stored value for player's max power bomb count.
 		pMaxPowerBombs = other.maxPowerBombs;
 		if (!CAN_SHOW_PBOMBS && event_get_flag(FLAG_POWER_BOMBS))
-			stateFlags |= (1 << SHOW_PBOMBS);
+			stateFlags |= SHOW_PBOMBS;
 	}
 }
 
@@ -1504,6 +1504,7 @@ state_default = function(){
 	// somersault jump (Moving fast enough and not firing from Samus's arm cannon).
 	if (PLYR_JUMP_PRESSED && !place_meeting(x, y - 1, par_collider)){
 		object_set_next_state(state_airbourne);
+		play_sound_effect(snd_jumpstart, 0, false, true, 0.7);
 		if (abs(hspd) >= 1.0 && !PLYR_IS_AIMING){
 			if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= PLYR_SCREWATK;}
 			stateFlags |= PLYR_SOMERSAULT;
@@ -1598,16 +1599,15 @@ state_default = function(){
 			case PLYR_AIMING_UP:		entity_set_sprite(walkSpriteUp,	standingMask, _animSpeed);		break;
 		}
 		
-		
+		// On top of setting the proper walking animation, a footstep sound effect will be played whenever
+		// the timer reaches a value of zero or lower relative to whatever it was set to after playing the
+		// previous footstep. The interval between footsteps is relative to Samus's current animation speed.
 		footstepTimer -= DELTA_TIME;
 		if (footstepTimer < 0.0){
 			footstepTimer += 16.0 - (5.0 * _animSpeed);
-			if (audio_is_playing(snd_footstep))
-				audio_stop_sound(snd_footstep);
-			audio_play_sound(snd_footstep, 0, false, random_range(0.08, 0.12), 
-				random(0.03), random_range(0.95, 1.05));
-		}	
-			
+			play_sound_effect(snd_footstep, 0, false, true, 
+				random_range(0.08, 0.12), random(0.03), random_range(0.95, 1.05));
+		}
 		return;
 	}
 	
@@ -1646,8 +1646,8 @@ state_airbourne = function(){
 		hspd			= 0.0;
 		reset_light_source();
 		
-		// 
-		audio_play_sound(snd_land, 0, false, 0.2 + (0.05 * vspd), 0.03, random_range(0.9, 1.10));
+		// Play a "thump" sound for Samus hitting the floor.
+		audio_play_sound(snd_land, 0, false, 0.15, 0.03, random_range(0.9, 1.10));
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -2031,19 +2031,18 @@ state_morphball = function(){
 	// access to the power bombs yet) or power bombs if the player has access to them. Both require the
 	// timer for bomb use to be zero, and both will set the timer to different amount to differentiate
 	// how often each can be used.
-	if (PLYR_USE_PRESSED && bombDropTimer == 0){
+	if (PLYR_USE_PRESSED && bombDropTimer == 0.0){
 		if (PLYR_ALT_WEAPON_HELD && numPowerBombs > 0 && event_get_flag(FLAG_POWER_BOMBS)){ // Deploying a power bomb.
-			var _id = instance_create_object(x, y - 5, obj_player_power_bomb, depth - 1);
-			var _maxHitpoints = 0;
-			with(_id){ // Copy the value for maximum hitpoints for the bomb drop timer.
+			var _maxHitpoints = 0; // Copy the value for maximum hitpoints for the bomb drop timer.
+			with(instance_create_object(x, y - 5, obj_player_power_bomb, depth - 1)){
 				_maxHitpoints = maxHitpoints;
 				initialize(state_default);
 			}
 			bombDropTimer = _maxHitpoints + 30.0; // Lasts half a second longer than the power bomb explosion's full length.
 			numPowerBombs--;
 		} else if (event_get_flag(FLAG_BOMBS) && instance_number(obj_player_bomb) < PLYR_MAX_BOMBS){ // Deploying a standard bomb.
-			var _id = instance_create_object(x, y - 5, obj_player_bomb, depth - 1);
-			with(_id) {initialize(state_default);}
+			with(instance_create_object(x, y - 5, obj_player_bomb, depth - 1)) 
+				initialize(state_default);
 			bombDropTimer = PLYR_BOMB_SET_INTERVAL;
 		}
 	}
@@ -2157,3 +2156,9 @@ state_phase_shift = function(){
 
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
+
+event_set_flag(FLAG_MORPHBALL, true);
+event_set_flag(FLAG_BOMBS, true);
+event_set_flag(FLAG_POWER_BOMBS, true);
+
+update_maximum_power_bombs(2);

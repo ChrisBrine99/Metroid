@@ -57,20 +57,20 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	___initialize(_state, _x, _y, _playerFlags, _flags); // Calls initialize function found in "par_player_projectile".
 	entity_set_sprite(PROJ_IS_CHARGED ? spr_power_beam_charged : spr_power_beam, -1);
 	stateFlags |= PROJ_POWBEAM;
-	
-	// 
-	if (audio_is_playing(snd_powerbeam))
-		audio_stop_sound(snd_powerbeam);
-	audio_play_sound(snd_powerbeam, 0, false, 0.3);
-	
+
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
 	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
 	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}
 	
-	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
-	// by if the beam is charged or not charged prior to being fired.
-	if (PROJ_IS_CHARGED) {object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);}
-	else				 {object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);}
+	// Determine what characteristics to apply to the power beam bullet based on if it was charged or not.
+	// The light component and sound effect are altered relative to the charged state of the projectile.
+	if (PROJ_IS_CHARGED){
+		object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);
+		play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+	} else{
+		object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);
+		play_sound_effect(snd_powerbeam, 0, false, true, 0.3); // TODO: Change to charged powerbeam sound.
+	}
 	
 	// Determine the split beam velocities that will offset the upper and lower beams properly in order to 
 	// create the effect required for the power beam's beam splitter effect.

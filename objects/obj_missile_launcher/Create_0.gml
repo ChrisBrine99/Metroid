@@ -30,6 +30,12 @@ object_add_light_component(x, y, 0, 0, baseRadius, HEX_WHITE, baseStrength);
 
 #endregion
 
+#region
+
+
+
+#endregion
+
 #region Editing collection function
 
 // Stores the parent function in another variable so it can be called through the overrided version found

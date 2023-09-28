@@ -1,54 +1,72 @@
 #region	Initializing any macros that are useful/related to obj_player_hud
 
-// Bits that represent state flags utilized by the HUD; allowing it to enable or disable entire sections of 
-// the HUD without requiring complex logic to do so otherwise.
-#macro	SHOW_MISSILES			0
-#macro	SHOW_PBOMBS				1
-#macro	SHOW_AEION_GAUGE		2
+// ------------------------------------------------------------------------------------------------------- //
+//	Bits stored within "stateFlags" that determine whether or not the HUD can render certain information   //
+//	onto the screen for the player to see. Other general purpose switches/toggles/substates that are	   //
+//	relevant to the game HUD can also be found below.													   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Positions of the bits that the "_pSubStates" variable that only exists within the rendering function of the 
-// player's info to the HUD uses. Being set to 1 or 0 changing how certain pieces of that information are drawn.
-#macro	USING_MISSILE			0
-#macro	USING_POWER_BOMB		1
-#macro	AEION_COOLDOWN			2
+#macro	SHOW_MISSILES			0x00000001
+#macro	SHOW_PBOMBS				0x00000002
+#macro	SHOW_AEION_GAUGE		0x00000004
 
-// Condensed checks for flag bits being used by the HUD to enable/disable various parts of itself; returning
-// as "true" if the resulting bit is flipped to 1, and "false" if it's set to 0.
-#macro	CAN_SHOW_MISSILES		(stateFlags & (1 << SHOW_MISSILES))
-#macro	CAN_SHOW_PBOMBS			(stateFlags & (1 << SHOW_PBOMBS))
-#macro	CAN_SHOW_AEION_GAUGE	(stateFlags & (1 << SHOW_AEION_GAUGE))
+// ------------------------------------------------------------------------------------------------------- //
+//	Similar to the macro values above, the group below represents various bits for substates/toggles that  //
+//	relate to the HUD. These are specific to the variable "_pSubStates" which is local to the draw GUI	   //
+//	event; determining what should be highlighted relative to what the weaponry the player is utilizing.   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Constants for the speed that values shown on the HUD are shifted towards the actual values are internally.
-// The energy and aeion values are incremented faster the further they are from their targets, but the ammo
-// values are incremented as regular intervals no matter the gap between the values.
+#macro	USING_MISSILE			0x00000001
+#macro	USING_POWER_BOMB		0x00000002
+#macro	AEION_COOLDOWN			0x00000004
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check if Samus is currently within one of these substates.   //
+//	Note that no macros like these exist to check "_pSubStates" because it's a local variable.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	CAN_SHOW_MISSILES		(stateFlags & SHOW_MISSILES)
+#macro	CAN_SHOW_PBOMBS			(stateFlags & SHOW_PBOMBS)
+#macro	CAN_SHOW_AEION_GAUGE	(stateFlags & SHOW_AEION_GAUGE)
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that represent various animation values for the numerical values displayed on the HUD.		   //
+//	Specficially, they determine how fast that visual representation approaches the actual internal value  //
+//	relative to the displayed number's current value. The default speed for all equates to 60 units per	   //
+//	second and these increment constants increase/decrease that amount.									   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	ENERGY_INCREMENT_SPEED	0.3
 #macro	AEION_INCREMENT_SPEED	0.25
 #macro	MISSILE_INCREMENT_SPEED 0.75
 #macro	PBOMB_INCREMENT_SPEED	0.5
 
-// Stores the amount of remaining energy (Including any 100s that are normally represented as energy tank 
-// icons) Samus must have left before the HUD colors the energy number in a dark red hue to signify Samus is
-// very close to death.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the value that Samus's current energy must go below in order for the energy number on the HUD   //
+//	to turn from its default yellow color to a dark red.												   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	LOW_ENERGY_THRESHOLD	30.0
 
-// Constants relating to where and how the current energy number and energy tanks are rendered on the screen;
-// relative to the screen's top-left origin of (0, 0).
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that determine how each respective piece of the game's HUD is displayed on the screen. These    //
+//	are everything from padding values to row limits, dimensions, and so on.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
+// --- Dimension in pixels for energy numbers --- //
 #macro	ENERGY_NUMBER_WIDTH		10
 #macro	ENERGY_NUMBER_HEIGHT	12
+// --- Energy tank HUD display constants --- //
 #macro	ETANK_ROW_LIMIT			6
 #macro	ETANK_ICON_WIDTH		6
 #macro	ETANK_ICON_HEIGHT		6
-
-// Stores information about the width/height of the text used to display Samus's current missile and power bomb 
-// ammunition, as well as the width of both the missile and power bomb icons which are referenced throughout the
-// player info section of the HUD rendering.
+// --- Dimension of missile/power bomb ammo numbers --- //
 #macro	AMMO_NUMBER_WIDTH		5
 #macro	AMMO_NUMBER_HEIGHT		7
+// --- Width in pixels of missile/power bomb icons --- //
 #macro	MISSILE_ICON_WIDTH		12
 #macro	POWER_BOMB_ICON_WIDTH	10
-
-// Constants for the region that the aeion gauge is rendered on the game's GUI layer, which has its origin
-// (0, 0) at the top-left of the screen regardless of the viewport's position within the room.
+// --- Aeion guage position and dimensions --- //
 #macro	AEION_GAUGE_XOFFSET		9
 #macro	AEION_GAUGE_YOFFSET		17
 #macro	AEION_GUAGE_WIDTH		47
@@ -192,9 +210,9 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 			// Check some conditions that will be stored in the local "_pSubStates" variable, which will change
 			// how certain aspects of the HUD are shown to the player: highlighting ammo information for an 
 			// in-use weapon, to a temporary cooldown on an ability, and so on.
-			if (curWeapon == curMissile)					{_pSubStates |= (1 << USING_MISSILE);}
-			if (PLYR_IN_MORPHBALL && PLYR_ALT_WEAPON_HELD)	{_pSubStates |= (1 << USING_POWER_BOMB);}
-			if (aeionCooldownTimer > 0.0)					{_pSubStates |= (1 << AEION_COOLDOWN);}
+			if (curWeapon == curMissile)					{_pSubStates |= USING_MISSILE;}
+			if (PLYR_IN_MORPHBALL && PLYR_ALT_WEAPON_HELD)	{_pSubStates |= USING_POWER_BOMB;}
+			if (aeionCooldownTimer > 0.0)					{_pSubStates |= AEION_COOLDOWN;}
 		}
 		
 		// Copy the updated floating point values into the HUD's variables for each piece of information that
@@ -319,7 +337,7 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		if (CAN_SHOW_MISSILES){
 			_pCurMissiles	= floor(_pCurMissiles); // Discard any decimal value.
 			_ammoOffset	   += draw_ammunition_info(_ammoOffset, _y, _pCurMissiles, pMaxMissiles, 3, 
-								  spr_missile_icon, _pSubStates & (1 << USING_MISSILE), _alpha) + 2;
+								  spr_missile_icon, _pSubStates & USING_MISSILE, _alpha) + 2;
 		}
 		
 		// Render the player's current power bomb supply to the screen if the HUD is allowed to show that
@@ -327,7 +345,7 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 		if (CAN_SHOW_PBOMBS){
 			_pCurPowerBombs = floor(_pCurPowerBombs); // Discard any decimal value.
 			draw_ammunition_info(_ammoOffset, _y, _pCurPowerBombs, pMaxPowerBombs, 2, 
-				spr_power_bomb_icon, _pSubStates & (1 << USING_POWER_BOMB), _alpha);
+				spr_power_bomb_icon, _pSubStates & USING_POWER_BOMB, _alpha);
 		}
 	}
 	
@@ -370,7 +388,7 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	draw_minimap = function(_x, _y, _alpha){
 		var _width	= MAP_TILE_WIDTH * 5;
 		var _height	= MAP_TILE_HEIGHT * 3;
-		var _xx		= camera_get_view_width(CAMERA.camera) - _x - _width;
+		var _xx		= display_get_gui_width() - _x - _width;
 		
 		draw_sprite_ext(spr_rectangle, 0, _xx - 2, _y - 2, _width + 4, _height + 4, 0, HEX_DARK_GRAY,	_alpha * 0.6);
 		draw_sprite_ext(spr_rectangle, 0, _xx - 1, _y - 1, _width + 2, _height + 2, 0, HEX_BLACK,		_alpha * 0.4);

@@ -17,6 +17,9 @@ event_inherited();
 maxHitpoints	= 90.0;
 hitpoints		= maxHitpoints;
 
+// 
+play_sound_effect(snd_powerbombexplode, 0, false, true, 0.8);
+
 #endregion
 
 #region Unique varible initializations
@@ -31,8 +34,8 @@ surfHeight	= display_get_gui_height();
 // current opacity value of the explosion, which will fade in and out during the beginning and the end of
 // the explosion, respectively.
 pBombAlpha		 = 0.0;
-pBombRadius		 = 0;
-pBombRadiusSpeed = 3;
+pBombRadius		 = 0.0;
+pBombRadiusSpeed = 3.0;
 
 #endregion
 

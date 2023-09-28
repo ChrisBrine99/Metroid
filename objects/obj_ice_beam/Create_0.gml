@@ -18,8 +18,9 @@ maxVspd = 7.5;
 
 #region Unique variable initialization
 
-// 
-angleTimer = 0;
+// Stores the amount of time that has passed since the ice beam has shifted its angle, which occurs in 45 degree
+// intervals to fake an 8-frame animation.
+angleTimer = 0.0;
 
 #endregion
 
@@ -43,10 +44,15 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1) ?	-maxHspd : maxHspd;}
 	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90) ?	-maxVspd : maxVspd;}
 	
-	// Determine the brightness, color, and size of the light produced by the power beam bullet; determined
-	// by if the beam is charged or not charged prior to being fired.
-	if (PROJ_IS_CHARGED) {object_add_light_component(x, y, 0, 0, 48, HEX_WHITE, 1.0);}
-	else				 {object_add_light_component(x, y, 0, 0, 26, HEX_WHITE, 0.7);}
+	// Determine what characteristics to apply to the power beam bullet based on if it was charged or not.
+	// The light component and sound effect are altered relative to the charged state of the projectile.
+	if (PROJ_IS_CHARGED){
+		object_add_light_component(x, y, 0, 0, 48, HEX_WHITE, 1.0);
+		//play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+	} else{
+		object_add_light_component(x, y, 0, 0, 26, HEX_WHITE, 0.7);
+		//play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+	}
 	
 	// Randomize the starting angle for the sprite so each ice beam bullet looks different from the last.
 	// These angles are locked to 45 degree intervals instead of allowing all possible angles to mimick an

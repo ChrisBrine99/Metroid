@@ -2,8 +2,8 @@
 
 // Macro for the timer in frames (60 = 1 real-world second) that it takes for a bomb to detonate whenever
 // deployed by Samus and for the value that timer must ge below in order to speed up the blinking animation.
-#macro	BOMB_EXPLOSION_TIME		50
-#macro	ANIM_SPEEDUP_TIME		15
+#macro	BOMB_EXPLOSION_TIME		50.0
+#macro	ANIM_SPEEDUP_TIME		15.0
 
 #endregion
 
@@ -18,8 +18,6 @@ event_inherited();
 // certain point.
 maxHitpoints	= BOMB_EXPLOSION_TIME;
 hitpoints		= maxHitpoints;
-// Apply a unique light source to the bomb.
-object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
 
 #endregion
 
@@ -45,6 +43,8 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb, spr_empty_mask);
+	object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
+	play_sound_effect(snd_bombset, 0, false, true, 0.3);
 	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 }
 
@@ -57,7 +57,7 @@ initialize = function(_state){
 /// Also, once the timer goes below 25% its initial value, the sprite animation will speed up considerably.
 state_default = function(){
 	hitpoints -= DELTA_TIME;
-	if (hitpoints <= 0){
+	if (hitpoints <= 0.0){
 		// Create the explosion object, and the call its initialization function or else the explosion will
 		// exist, but not be visible or functional in the game world.
 		var _id = instance_create_object(x, y, obj_player_bomb_explode, depth);
@@ -71,8 +71,8 @@ state_default = function(){
 	
 	// Increasing the speed of the bomb's animation to signify it's close to exploding. Also applying the
 	// flashing to the light sources that will link up with the two-frame animation for the bomb.
-	if (hitpoints < ANIM_SPEEDUP_TIME && animSpeed == 1)
-		animSpeed = 3;
+	if (hitpoints < ANIM_SPEEDUP_TIME && animSpeed == 1.0)
+		animSpeed = 3.0;
 	var _imageIndex		= floor(imageIndex);
 	var _baseRadius		= baseRadius;
 	var _baseStrength	= baseStrength;
