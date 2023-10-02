@@ -182,12 +182,20 @@
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Values that represent how long in "frames" (60 frames == 1 second) that the player must wait before	   //
-//	Samus can deploy another standard bomb while she's in her morphball form and the maximum number of	   //
-//	those bombs that can be deployed at once.															   //
+//	Samus can deploy another standard bomb while she's in her morphball form, the maximum number of	those  //
+//	bombs that can be deployed at once, and how high Samus is sent vertically by the bomb's explosion.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	PLYR_BOMB_SET_INTERVAL	5.0
 #macro	PLYR_MAX_BOMBS			3
+#macro	PLYR_BOMB_JUMP_VSPD	   -4.0
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines how fast Samus must be falling downward in order to have the Morphball bounce back up on	   //
+//	impact with the ground (THis bounce doesn't occur while in water without the Gravity Suit equipped).   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_MBALL_BOUNCE_VSPD	4.5
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Simply holds the value for the length of the array storing "obj_player_ghost_effect" structs so the	   //
@@ -321,58 +329,39 @@ jumpingMask		= spr_power_jump1;
 crouchingMask	= spr_power_crouch0;
 morphballMask	= spr_power_mball0;
 
-// Variables that keep track of the various resources Samus can deplete throughout regular gameplay. The max
-// possible amount that can be stored of each can be upgrade through finding the relevant expansion tanks in
-// the game world.
+// Stores any energy that Samus has "in reserve" relative to her main pool of energy. The first value stores
+// the amount she has access to and the second value stores the maximum amount she can have at any given time.
 reserveHitpoints	= 0;
 maxReserveHitpoints = 0;
-energyTankPieces	= 0;
-curAeion			= 0;
-maxAeion			= 0;
-numMissiles			= 0;
-maxMissiles			= 0;
-numPowerBombs		= 0;
-maxPowerBombs		= 0;
+
+// Stores how many energy tank pieces Samus is currently holding. Once this value reaches four, Samus is given
+// an energy tank and the is reduced back to zero.
+energyTankPieces = 0;
+
+// Samus's aeion energy. The first value is how much she has access to for her various aion abilities, and the
+// second stores the maximum amount of aeion energy Samus can have access to at any given time.
+curAeion = 0;
+maxAeion = 0;
+
+// Samus's missile and power bomb reserves, respectively. The first values of each pair store how much ammo Samus
+// has of either type of wepaon, and the second values determine the maximum amount of ammunition Samus can store
+// for either one.
+numMissiles	= 0;
+maxMissiles	= 0;
+numPowerBombs = 0;
+maxPowerBombs = 0;
 
 // 
-standingTimer		= 0.0;
-aimReturnTimer		= 0.0;
-aimSwitchTimer		= 0.0;
-mBallEnterTimer		= 0.0;
-jumpStartTimer		= 0.0;
-aeionCooldownTimer	= 0.0;
-aeionFillTimer		= 0.0;
-flickerTimer		= 0.0;
-fireRateTimer		= 0.0;
-chargeTimer			= 0.0;
-effectTimer			= 0.0;
-
-// Keeps track of how high the morphball will bounce relative to its falling speed when it initially hits the
-// ground. A high enough value will make the morphball bounce into the air again.
-vspdRecoil = 0.0;
-
-// Variables for Samus's strandard bombs; determining how fast she can deploy them, how many she can deploy at
-// any given time, the power of the blast that allows for bomb jumping, and a variable to track the explosion
-// that hit her so it doesn't constantly collide with it every frame; skewing the true vertical velocity if
-// this was the case.
-bombDropTimer	=  0.0;
-bombJumpVspd	= -4.0;
-bombExplodeID	= noone;
-
-// The arm cannon is a separate object that is rendered on top of Samus's current sprite whenever it is needed.
-// So, its instance is created here and stored in a variable for easy reference and manipulation. The bottom
-// two variables store the offset position for the arm cannon at the time Samus got hit stunned since those
-// offsets do not change for the duration of the stunned state.
-armCannon	= instance_create_struct(obj_arm_cannon);
-armCannonX	= 0;
-armCannonY	= 0;
+curBeam	= WEAPON_POWER_BEAM;
+curMissile = WEAPON_REG_MISSILE;
+curWeapon = curBeam; // Makes current beam the active weapon by default.
+tapFireRate	= 1.0;
+holdFireRate = 1.0;
 
 // 
-curBeam			= WEAPON_POWER_BEAM;
-curMissile		= WEAPON_REG_MISSILE;
-curWeapon		= curBeam; // Makes current beam the active weapon by default.
-tapFireRate		= 1;
-holdFireRate	= 1;
+curShiftDist	= 0;
+prevMaxHspd		= 0.0;
+prevAnimSpeed	= 0.0;
 
 // 
 liquidData = {
@@ -392,21 +381,55 @@ liquidData = {
 };
 
 // 
+armCannon	= instance_create_struct(obj_arm_cannon);
+armCannonX	= 0;
+armCannonY	= 0;
+
+// Variables for the ghosting effect utilized by Samus during her somersault and phase shift abilities. It is
+// a cyclical buffer of eight ghost effect object instances the will be enabled/disabled/overwritten when
+// required as the effect is being executed.
 ghostEffectIndex	= 0;
 ghostEffectIDs		= array_create(PLYR_NUM_GHOST_EFFECTS, noone);
 for (var i = 0; i < PLYR_NUM_GHOST_EFFECTS; i++)
 	ghostEffectIDs[i] = instance_create_struct(obj_player_ghost_effect);
 
-// 
+// Stores the instance ID for the bomb explosion that last collided with Samus. This is required in order to
+// prevent that explosion from setting her vspd to -4.0 until it disappears instead of the intended logic of
+// the vspd only being set during the very first frame of the collision occurring.
+bombExplodeID = noone;
+
+// Stores the instance ID for the warp object that Samus had collided with in order to reference it for the info
+// it has regarding the room and position to send the game to.
 warpID = noone;
 
-// 
-curShiftDist	= 0;
-prevMaxHspd		= 0.0;
-prevAnimSpeed	= 0.0;
+// TIMER VARIABLES ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//
-footstepTimer	= 0.0;
+// Substate Timers
+standingTimer = 0.0;			// Counts time until Samus stands up from a crouch when left or right inputs held.
+aimReturnTimer = 0.0;			// Tracks amount of time before Samus can return to aiming forward in various cases.
+aimSwitchTimer = 0.0;			// Prevents Samus from aiming upward instantly after a crouch by waiting a small amount.
+
+// Animation Timers
+mBallEnterTimer	= 0.0;			// Tracks time that Samus's enter/exit morphball animation has been active.
+jumpStartTimer = 0.0;			// Interval used to swap between the two-frame animation that occurs at the beginning of a jump.
+flickerTimer = 0.0;				// Increments to a given value before flipping Samus from being invisible to seen.
+
+// Aeion Timers
+aeionCooldownTimer = 0.0;		// Tracks how much time has passed since the last Aeion ability was used; preventing another until the cooldown hits the needed value.
+aeionFillTimer = 0.0;			// Increments until it hits a value of 1.0 or greater in order to increment current aeion energy by one unit.
+
+// Arm Cannon Timers
+fireRateTimer = 0.0;			// Tracks amount of time since the last projectile was fired. Another projectile can't be fired until this value reaches its required amount.
+chargeTimer = 0.0;				// Prevents Samus from firing a charged beam from her cannon until the required value is surpassed.
+
+// Ghost Effect Timer
+effectTimer	= 0.0;				// Tracks time between ghost effects spawning during Samus's somersault and phase shift.
+
+// Repeating Sound Timers
+footstepTimer = 0.0;			// Determines amount of time since the last footstep sound was played to see if another one should play.
+screwAtkTimer = 0.0;			// Keeps track of the position into the screw attack sound that is played during the ability's used so it can seamlessly loop. 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endregion
 
@@ -421,7 +444,9 @@ process_input = function(){
 		return;
 	}
 	
-	// 
+	// Store the previous frame's input flags into "prevInputFlags" before clearing the "inputFlags" variable
+	// to zero before input is polled again. Then, a check against gamepad inputs occurs if a controller is
+	// in use by the player. Otherwise, keyboard inputs are checked instead.
 	prevInputFlags	= inputFlags;
 	inputFlags		= 0;
 	if (GAMEPAD_IS_ACTIVE){
@@ -558,7 +583,6 @@ morphball_to_crouch = function(){
 	if (!place_meeting(x, y, par_collider)){
 		object_set_next_state(state_enter_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
-		vspdRecoil		= 0.0;		// Reset variables related to the morphball to default values.
 		bombDropTimer	= 0.0;
 		bombExplodeID	= noone;
 		return; // Exit before mask can be reset by the line below.
@@ -1271,7 +1295,6 @@ player_liquid_collision = function(){
 		// themselves submerged, so the relevant flag for that is flipped, and the player's hspd and vspd
 		// are drastically reduced to really sell the impact with the liquid.
 		stateFlags	|= PLYR_SUBMERGED;
-		vspdRecoil	 = 0.0;
 		hspd		*= 0.35;
 		vspd		*= 0.15;
 	}
@@ -1993,14 +2016,12 @@ state_morphball = function(){
 	// Applying gravity and also the recoil that can occur when the morphball hits the ground especially hard.
 	// If the vertical velocity is low enough, no bounce will occur, but until then a bounce will make the
 	// morphball airborune again until that velocity threshold is passed.
-	if (vspd >= 4.5 && !PLYR_SUBMERGED) {vspdRecoil = vspd * 0.5;}
 	apply_gravity(PLYR_MAX_FALL_SPEED);
 	if (DNTT_IS_GROUNDED){
-		if (vspdRecoil > 0){ // Causes the morphball recoil bounce.
+		if (vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
 			stateFlags &= ~DNTT_GROUNDED;
-			vspd		= -vspdRecoil;
-			vspdRecoil	= 0.0;
-		} else if (hspd != 0 && vspd == 0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
+			vspd		= -(vspd * 0.5);
+		} else if (hspd != 0.0 && vspd == 0.0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
 			stateFlags |= PLYR_MOVING;
 		}
 	}
@@ -2008,7 +2029,7 @@ state_morphball = function(){
 	// Handling the morphball's jumping capabilities, which are unlocked after Samus collects the "Spring Ball"
 	// upgrade. Once acquired, Samus can press the jump input while grounded to jump into the air as she would
 	// while in her suit form.
-	if (PLYR_JUMP_PRESSED && DNTT_IS_GROUNDED && vspdRecoil == 0.0 && event_get_flag(FLAG_SPRING_BALL)){
+	if (PLYR_JUMP_PRESSED && DNTT_IS_GROUNDED && event_get_flag(FLAG_SPRING_BALL)){
 		stateFlags &= ~DNTT_GROUNDED;
 		vspd		= PLYR_BASE_JUMP * maxVspdFactor;
 	}
@@ -2062,7 +2083,7 @@ state_morphball = function(){
 	if (bombExplodeID != _id && _id != noone && y <= _id.y + 10){
 		stateFlags	   &= ~PLYR_MOVING; // Allows preservation of velocity from bomb jump.
 		bombExplodeID	= _id;
-		vspd			= bombJumpVspd;
+		vspd			= PLYR_BOMB_JUMP_VSPD;
 		hspd			= ((x - _id.x) / 12.0) * maxHspd;
 	}
 	

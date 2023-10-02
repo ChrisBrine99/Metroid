@@ -13,6 +13,8 @@ if (ENTT_CAN_DRAW_SELF)
 // Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase.
 if (!PLYR_CAN_SPRITE_FLICKER) {return;}
 
+// Increment timer until the required amount of time has passed to create a uniform flicker that isn't tied to the
+// current frame rate, which is heavily variable.
 flickerTimer += DELTA_TIME;
 if (flickerTimer >= PLYR_HIT_INTERVAL){
 	if (ENTT_CAN_DRAW_SELF) {stateFlags &= ~ENTT_DRAW_SELF;}
@@ -20,6 +22,8 @@ if (flickerTimer >= PLYR_HIT_INTERVAL){
 	flickerTimer -= PLYR_HIT_INTERVAL;
 }
 
+// Rest Samus back to visible and clear the flag that causes Samus to flicker whenever she is no longer hitstunned
+// or in her damage recovery phase.
 if (hitstunTimer == -1.0 && recoveryTimer == -1.0){
 	stateFlags &= ~PLYR_SPRITE_FLICKER;
 	stateFlags |=  ENTT_DRAW_SELF;
