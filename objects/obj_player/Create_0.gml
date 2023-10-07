@@ -422,6 +422,9 @@ aeionFillTimer = 0.0;			// Increments until it hits a value of 1.0 or greater in
 fireRateTimer = 0.0;			// Tracks amount of time since the last projectile was fired. Another projectile can't be fired until this value reaches its required amount.
 chargeTimer = 0.0;				// Prevents Samus from firing a charged beam from her cannon until the required value is surpassed.
 
+// Morphball Timers
+bombDropTimer = 0.0;			// Tracks the amount of time that has passed since Samus last deployed a standard bomb. When equal to 0.0, another bomb can be dropped.
+
 // Ghost Effect Timer
 effectTimer	= 0.0;				// Tracks time between ghost effects spawning during Samus's somersault and phase shift.
 

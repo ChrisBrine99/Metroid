@@ -47,7 +47,8 @@ waitTimer	= 0.0;
 /// Store the pointer for the parent's initialize function into a local variable for the Gawron, which is then
 /// called inside its own initialization function so the original functionality isn't ignored.
 __initialize = initialize;
-/// @description Initialization function for the Gawron.
+/// @description Initialization function for the Gawron. Determines the direction the Gawron will face towards
+/// and move in alongside all other enemy initialization code.
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
@@ -82,7 +83,9 @@ initialize = function(_state){
 	dropChances[ENMY_AEION_DROP]		= 0;
 	dropChances[ENMY_POWBOMB_DROP]		= 5;
 	
-	// 
+	// Determines the direction that Gawron faces, which is based on Samus's horizontal position relative to
+	// its own. It will always face towards Samus unless she doesn't exist. In that case, the Gawron will
+	// always move to the right.
 	var _playerX = 0xFFFFFFFF;
 	with(PLAYER) {_playerX = x;}
 	image_xscale = (_playerX >= x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
@@ -92,43 +95,53 @@ initialize = function(_state){
 
 #region State function initialization
 
-/// @description 
+/// @description The Gawron's "introduction" state, which causes it to rise upwards until its "spawnTimer"
+/// variable is equal to the value stored in the macro GWRN_SPAWN_TIME and Samus's vertical position is equal
+/// to or below the Gawron's own vertical position (That target y relative to Samus is dependant on if she's 
+/// standing, crouching, or in her morphball form, so it's not a constant value).
 state_intro = function(){
-	// 
+	// Accelerate vertically until the Gawron hits its maximum upward vertical velocity; giving it a brief
+	// acceleration period instead of the Gawron spawning in a max speed.
 	vspd -= vAccel;
 	if (vspd < maxVspd) {vspd = maxVspd;}
 	
-	// 
+	// Process movement for the frame since only vertical velocity matters at the moment. No collisions against
+	// the world are checked for.
 	apply_frame_movement(NO_FUNCTION);
 	
-	// 
+	// Increment time since spawn until it reaches the required value. Once that occurs, the Gawron will be
+	// able to charge at Samus should she be at or below the current target y position.
 	spawnTimer += DELTA_TIME;
-	if (spawnTimer > GWRN_SPAWN_TIME)
-		spawnTimer = GWRN_SPAWN_TIME;
-	
-	// 
-	if (spawnTimer == GWRN_SPAWN_TIME){
-		// 
-		var _playerY = 0xFFFFFFFF;
-		with(PLAYER){
-			if (PLYR_IN_MORPHBALL)		{_playerY = y - 8;}
-			else if (PLYR_IS_CROUCHED)	{_playerY = y - 14;}
-			else						{_playerY = y - 24;}
-		}
-		
-		// 
-		if (y > _playerY)
-			return;
-		
-		// 
-		object_set_next_state(state_begin_attack);
-		waitTimer	= GWRN_WAIT_TIME;
-		vspd		= 0.0;
-		shiftBaseX	= x;
+	if (spawnTimer < GWRN_SPAWN_TIME)
+		return;
+
+	// Calculate the target y position based on Samus's current y position and an offset that is applied to
+	// ensure the target is at the center of the sprite that represents her currently on the screen.
+	var _playerY = 0xFFFFFFFF;
+	with(PLAYER){
+		if (PLYR_IN_MORPHBALL)		{_playerY = y - 8;}
+		else if (PLYR_IS_CROUCHED)	{_playerY = y - 14;}
+		else						{_playerY = y - 24;}
 	}
+	
+	// Don't shift to the next state if the target y position hasn't been met or surpassed.
+	if (y > _playerY)
+		return;
+	
+	// The target position was hit by Samus, the Gawron will instantly switch into its attacking states. The
+	// first of those being the brief "beginning attack" state to let the player know the Gawron is about to
+	// do something else.
+	object_set_next_state(state_begin_attack);
+	waitTimer	= GWRN_WAIT_TIME;
+	vspd		= 0.0;
+	shiftBaseX	= x;
 }
 
-/// @description 
+/// @description A very simple state for the Gawron. It occurs before the Gawron actually charges towards Samus 
+/// along the x axis and after Samus has hit the required target position for the Gawron to attack. All the
+/// Gawron will do in this state is wait for a small amount of time doing nothing, shake back and forth 
+/// horizontally until the "waitTimer" is passed half the required value, and then swap into the main attack
+/// state after that required value is met.
 state_begin_attack = function(){
 	waitTimer -= DELTA_TIME;
 	if (waitTimer <= 0.0){
@@ -141,14 +154,17 @@ state_begin_attack = function(){
 		apply_horizontal_shift(GWRN_SHIFT_INTERVAL);
 }
 
-/// @description 
+/// @description Another very simple state for the Gawron. All it will do in this state is charge forward until
+/// the Gawron is deleted by going off screen (This is done in the "Outside View 0" event).
 state_attack = function(){
-	// 
+	// Accelerate along the horizontal axis until the Garwon reaches its maximum possible velocity on said axis.
+	// The direction is dependant on the direction the Gawron is facing, which is either right (+1) or left (-1).
 	hspd += hAccel * image_xscale;
 	if (hspd > maxHspd || hspd < -maxHspd)
 		hspd = maxHspd * image_xscale;
 		
-	// 
+	// Just like the intro state, the Gawron will simply apply its horizontal velocity to its current position
+	// and not process any collision with the world.
 	apply_frame_movement(NO_FUNCTION);
 }
 

@@ -46,8 +46,8 @@ initialize = function(_state){
 	entity_set_sprite(spr_yumbo_nest, -1);
 	create_general_collider();
 	
-	// Set up weakness flags such that the Yumbo Nest is only weak to missiles.
-	weaknessFlags  |= ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
+	// Set up weakness flags such that the Yumbo Nest is only weak to missiles (And the power bomb).
+	weaknessFlags  |= ENMY_POWBEAM_WEAK | ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
 						ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK;
 	
 	// Set up the spawn so it spawns in a maximum of two Yumbos at any given time. The time between these
@@ -69,8 +69,17 @@ initialize = function(_state){
 state_default = function(){
 	// Prevent the spawner from incrementing its spawn timer if it is currently off-screen, deactivated, has
 	// the maximum amount of instances it can create alive in the world OR it doesn't have a object to spawn.
-	if (!ENTT_ON_SCREEN || curInstances == maxInstances || objToSpawn == noone) 
+	if (!ENTT_ON_SCREEN || curInstances == maxInstances || objToSpawn == noone)
 		return;
+		
+	// Don't allow anything to spawn until the spawner in question is no longer colliding with the Player
+	// object. The timer to spawn the enemy in is also reset upon the collision happening.
+	mask_index = -1;
+	if (place_meeting(x, y, PLAYER)){
+		spawnTimer = 0.0;
+		return;
+	}
+	mask_index = spr_empty_mask;
 	
 	spawnTimer += DELTA_TIME;
 	if (spawnTimer > timeToSpawn){ // Spawn Enemy object and link it to the spawner that created it.
