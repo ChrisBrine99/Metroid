@@ -236,6 +236,7 @@
     {"id":{"name":"spr_gullug","path":"sprites/spr_gullug/spr_gullug.yy",},},
     {"id":{"name":"obj_music_handler","path":"scripts/obj_music_handler/obj_music_handler.yy",},},
     {"id":{"name":"obj_player_ghost_effect","path":"scripts/obj_player_ghost_effect/obj_player_ghost_effect.yy",},},
+    {"id":{"name":"obj_chute_leech","path":"objects/obj_chute_leech/obj_chute_leech.yy",},},
     {"id":{"name":"obj_screen_fade","path":"scripts/obj_screen_fade/obj_screen_fade.yy",},},
     {"id":{"name":"obj_textbox_handler","path":"scripts/obj_textbox_handler/obj_textbox_handler.yy",},},
     {"id":{"name":"spr_skree0","path":"sprites/spr_skree0/spr_skree0.yy",},},
