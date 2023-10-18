@@ -305,7 +305,7 @@ function game_load_settings(){
 	var _aspectRatio = ASPECT_RATIO;
 	var _width = game_get_aspect_ratio_width(_aspectRatio);
 	var _height = game_get_aspect_ratio_height(_aspectRatio);
-	camera_initialize(0, 0, _width, _height, RESOLUTION_SCALE, (1 << VIEW_BOUNDARY));
+	camera_initialize(0, 0, _width, _height, RESOLUTION_SCALE, CAM_VIEW_BOUNDS);
 }
 
 /// @description Saves the current configuration for the game's settings to the "settings.ini" file

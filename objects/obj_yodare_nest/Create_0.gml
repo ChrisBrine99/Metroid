@@ -18,14 +18,14 @@ initialize = function(_state){
 	entity_set_sprite(spr_yodare_nest, -1);
 	create_general_collider();
 	
-	// Set up weakness flags such that the Yumbo Nest is only weak to missiles (And the power bomb).
-	weaknessFlags  |= ENMY_POWBEAM_WEAK | ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
+	// Set up weakness flags such that the Yodare Nest is only weak to missiles.
+	weaknessFlags  |= ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
 						ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK;
 	
 	// Set up the nest so it only spawns a single Yodare at any given time; offset upwards by 20 pixels so it
 	// starts burrowed into the ceiling directly above this spawner.
 	objToSpawn		= obj_yodare;
-	spawnOffsetY	= -12;
+	spawnOffsetY	= -8;
 	maxInstances	= 1;
 	timeToSpawn		= 45.0;
 	spawnTimer		= timeToSpawn;	// Instantly spawn first Yodare.

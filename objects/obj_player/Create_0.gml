@@ -1552,8 +1552,8 @@ state_default = function(){
 		stateFlags	   &= ~(PLYR_AIMING_UP | PLYR_MOVING);
 		stateFlags	   |= PLYR_CROUCHED;
 		aimReturnTimer	= 0.0;
-		hspdFraction	= 0.0;
 		hspd			= 0.0;
+		hspdFraction	= 0.0;
 		lightOffsetX	= LGHT_VISOR_X_CROUCH;
 		lightOffsetY	= LGHT_VISOR_Y_CROUCH;
 		return; // State changed; don't bother continuing with this state function.
@@ -1678,9 +1678,9 @@ state_airbourne = function(){
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
 		// beneath her.
-		var _bboxBottom = bbox_bottom;
+		var _bboxBottom	= bbox_bottom;
 		mask_index = standingMask;
-		y -= (bbox_bottom - _bboxBottom);
+		y -= bbox_bottom - _bboxBottom;
 		
 		// Check collision to see if Samus has something above her head and directly below her. If she does, 
 		// switch over to her crouching state instead of her default.
@@ -1766,12 +1766,13 @@ state_airbourne = function(){
 			lightOffsetX = LGHT_VISOR_X_DOWN;
 			lightOffsetY = LGHT_VISOR_Y_DOWN;
 		} else if (event_get_flag(FLAG_MORPHBALL)){ // Entering morphball mode while in the air.
+			var _bboxBottom		= bbox_bottom; // Store previous coordinate for southern edge of the bounding box.
 			object_set_next_state(state_enter_morphball);
-			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(ballEnterSprite, morphballMask);
-			y			   -= bbox_bottom - _bboxBottom;
-			stateFlags	   &= ~(PLYR_AIMING_DOWN);
-			jumpStartTimer	= 0.0;
+			CAMERA.viewOffsetY  = bbox_bottom - _bboxBottom;	// Apply camera offset before updating position.
+			y				   -= bbox_bottom - _bboxBottom;
+			stateFlags		   &= ~(PLYR_AIMING_DOWN);
+			jumpStartTimer		= 0.0;
 			return;
 		}
 	} else if (PLYR_UP_RELEASED){ // Stopping Samus from aiming upward.
@@ -1910,9 +1911,7 @@ state_crouching = function(){
 	// code on this frame when it really shouldn't have.
 	process_input();
 	
-	// Call Samus's gravity function. Then, call the check to see if Samus should transition from grounded to
-	// airbourne. This function will return true when she is no longer grounded to signify the substate change.
-	apply_gravity(PLYR_MAX_FALL_SPEED);
+	// 
 	if (grounded_to_airbourne()) {return;}
 	
 	// By pressing the up OR the jump input, Samus will exit her crouching state.
@@ -2019,11 +2018,12 @@ state_morphball = function(){
 	// Applying gravity and also the recoil that can occur when the morphball hits the ground especially hard.
 	// If the vertical velocity is low enough, no bounce will occur, but until then a bounce will make the
 	// morphball airborune again until that velocity threshold is passed.
+	var _vspd = vspd;
 	apply_gravity(PLYR_MAX_FALL_SPEED);
 	if (DNTT_IS_GROUNDED){
-		if (vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
+		if (_vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
 			stateFlags &= ~DNTT_GROUNDED;
-			vspd		= -(vspd * 0.5);
+			vspd		= -(_vspd * 0.5);
 		} else if (hspd != 0.0 && vspd == 0.0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
 			stateFlags |= PLYR_MOVING;
 		}
@@ -2184,5 +2184,3 @@ collisionMaskColor = HEX_LIGHT_BLUE;
 event_set_flag(FLAG_MORPHBALL, true);
 event_set_flag(FLAG_BOMBS, true);
 event_set_flag(FLAG_POWER_BOMBS, true);
-
-update_maximum_power_bombs(2);

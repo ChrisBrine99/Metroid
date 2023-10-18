@@ -122,7 +122,7 @@
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
-    "IDEVersion": "2023.8.2.106",
+    "IDEVersion": "2023.8.2.108",
   },
   "resources": [
     {"id":{"name":"font_gui_medium","path":"fonts/font_gui_medium/font_gui_medium.yy",},},

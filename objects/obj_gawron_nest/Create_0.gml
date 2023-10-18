@@ -18,12 +18,12 @@ initialize = function(_state){
 	entity_set_sprite(spr_gawron_nest, -1);
 	create_general_collider();
 	
-	// Set up weakness flags such that the Yumbo Nest is only weak to missiles (And the power bomb).
-	weaknessFlags  |= ENMY_POWBEAM_WEAK | ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
+	// Set up weakness flags such that the Gawron Nest is only weak to missiles.
+	weaknessFlags  |= ENMY_REGMISSILE_WEAK | ENMY_SUPMISSILE_WEAK | 
 						ENMY_ICEMISSILE_WEAK | ENMY_SHKMISSILE_WEAK;
 	
-	// Set up the nest so it only spawns a single Yodare at any given time; offset upwards by 20 pixels so it
-	// starts burrowed into the ceiling directly above this spawner.
+	// Set up the nest so it only spawns a single Gawron at any given time; offset down by 16 pixels so it
+	// is hidden by the environment when it spawns into the world.
 	objToSpawn		= obj_gawron;
 	spawnOffsetY	= 16;
 	maxInstances	= 1;
