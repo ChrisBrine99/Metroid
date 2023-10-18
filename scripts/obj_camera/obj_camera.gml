@@ -1,13 +1,19 @@
 #region	Initializing any macros that are useful/related to obj_camera
 
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the flags found within obj_camera's "stateFlags" variable, which allows for various parts   //
+//	of the Camera's functionality to be enabled/disabled regardless of its current state.				   //
+// ------------------------------------------------------------------------------------------------------- //
 
-#macro	CAM_LOCK_X				0x08000000	
-#macro	CAM_LOCK_Y				0x10000000	
-#macro	CAM_RESET_TARGET_X		0x20000000	
-#macro	CAM_RESET_TARGET_Y		0x40000000	
-#macro	CAM_VIEW_BOUNDS			0x80000000	
+#macro	CAM_LOCK_X				0x08000000
+#macro	CAM_LOCK_Y				0x10000000
+#macro	CAM_RESET_TARGET_X		0x20000000
+#macro	CAM_RESET_TARGET_Y		0x40000000
+#macro	CAM_VIEW_BOUNDS			0x80000000
 
-
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that condense the code required to check each of the Camera's different substate flags.		   //
+// ------------------------------------------------------------------------------------------------------- //
 
 #macro	CAM_IS_XPOS_LOCKED		(stateFlags & CAM_LOCK_X)
 #macro	CAM_IS_YPOS_LOCKED		(stateFlags & CAM_LOCK_Y)
@@ -15,12 +21,18 @@
 #macro	CAM_CAN_RESET_YPOS		(stateFlags & CAM_RESET_TARGET_Y)
 #macro	CAM_VIEW_BOUNDS_ACTIVE	(stateFlags & CAM_VIEW_BOUNDS)
 
-
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the size of the square region found in the middle of the screen that will prevent the	   //
+//	camera from moving so long as its target object only moves within that area.						   //
+// ------------------------------------------------------------------------------------------------------- //
 
 #macro	DEADZONE_WIDTH			4
 #macro	DEADZONE_HEIGHT			3
 
-
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the distance from the edge of the camera's viewport that an object must exceed for it to	   //
+//	be skipped in the rendering process or have its existence deactivated entirely, respectively.		   //
+// ------------------------------------------------------------------------------------------------------- //
 
 #macro	RENDER_CULL_PADDING		12
 #macro	OBJECT_CULL_PADDING		80
@@ -55,11 +67,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	targetOffsetX	= 0;
 	targetOffsetY	= 0;
 	
-	// 
-	viewOffsetX		= 0.0;
-	viewOffsetY		= 0.0;
-	//viewOffsetDelay	= 0.0;
-	
 	// Keeps track of the current instance of "obj_camera_boundary" that the target object is colliding with.
 	prevBoundaryID = noone;
 	
@@ -87,15 +94,10 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		
 		// Once the camera's position has been updated to its target position for the frame, the view will be
 		// updated to that position; the camera's position being the center of the resulting view.
-		var _x = floor(x + viewOffsetX - (camera_get_view_width(camera) * 0.5));
-		var _y = floor(y + viewOffsetY - (camera_get_view_height(camera) * 0.5));
+		var _x = floor(x - (camera_get_view_width(camera) * 0.5));
+		var _y = floor(y - (camera_get_view_height(camera) * 0.5));
 		update_view_position(_x, _y);
-		
-		// 
-		var _viewOffsetSpeed = DELTA_TIME * 0.05;
-		viewOffsetX -= viewOffsetX * _viewOffsetSpeed;
-		viewOffsetY -= viewOffsetY * _viewOffsetSpeed;
-		
+
 		// Checking if the camera's shaking effect is active or not. If so, the current strength of the effect
 		// will be decayed relative to its duration and starting strength.
 		if (shakeCurStrength <= 0.0) 

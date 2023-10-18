@@ -1769,7 +1769,6 @@ state_airbourne = function(){
 			var _bboxBottom		= bbox_bottom; // Store previous coordinate for southern edge of the bounding box.
 			object_set_next_state(state_enter_morphball);
 			entity_set_sprite(ballEnterSprite, morphballMask);
-			CAMERA.viewOffsetY  = bbox_bottom - _bboxBottom;	// Apply camera offset before updating position.
 			y				   -= bbox_bottom - _bboxBottom;
 			stateFlags		   &= ~(PLYR_AIMING_DOWN);
 			jumpStartTimer		= 0.0;
@@ -1986,7 +1985,9 @@ state_enter_morphball = function(){
 			object_set_next_state(state_airbourne);
 			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(jumpSpriteFw, jumpingMask);
-			y -= bbox_bottom - _bboxBottom;
+			y			   -= bbox_bottom - _bboxBottom;
+			vspd			= 0.0;
+			jumpStartTimer	= PLYR_JUMP_START_TIME;
 			return;
 		}
 		object_set_next_state(state_crouching);
