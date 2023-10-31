@@ -164,6 +164,13 @@
 #macro	PLYR_MAX_FALL_SPEED		8.0
 
 // ------------------------------------------------------------------------------------------------------- //
+//	Stores the volume of the Screw Attack's sound effect relative to the true volume of the sound		   //
+//	resource it utilizes.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_SCREWATK_VOLUME	0.2
+
+// ------------------------------------------------------------------------------------------------------- //
 //	The values here correspond to Samus's currently equipped weapon for her arm cannon. When the value 	   //
 //	stored within the "curWeapon" variable is equal to a given value, it will cause that beam/missile to   //
 //	be fired when the player uses Samus's arm cannon.													   //
@@ -350,6 +357,9 @@ numMissiles	= 0;
 maxMissiles	= 0;
 numPowerBombs = 0;
 maxPowerBombs = 0;
+
+//
+jumpSoundID = NO_SOUND;
 
 // 
 curBeam	= WEAPON_POWER_BEAM;
@@ -612,6 +622,10 @@ update_arm_cannon = function(_movement){
 			stateFlags &= ~(PLYR_SOMERSAULT | PLYR_SCREWATK);
 			reset_light_source();
 			
+			// Stop the somersaulting/screw attack sound effects from playing.
+			audio_stop_sound(jumpSoundID);
+			jumpSoundID = NO_SOUND;
+			
 			// Remove horizontal velocity if no movement inputs are currently held.
 			if (movement == 0) {hspd = 0.0;} 
 		}
@@ -641,25 +655,33 @@ update_arm_cannon = function(_movement){
 		if (_useReleased) {chargeTimer = 0.0;}
 	}
 	
-	// 
+	// Create local variables that store the conditions required for creating a projectile at the proper
+	// intervals of time. It can handle either tapping the fire button or holding it (This can only be done
+	// prior to acquiring the Charge Beam); basing the required time between shots based on them.
 	var _holdingFire	= (_useHeld && !_isCharged && fireRateTimer == holdFireRate);
 	var _tappingFire	= (_usePressed && fireRateTimer >= tapFireRate);
 	var _chargeFire		= (_useReleased && _isCharged);
 	if (_holdingFire || _tappingFire || _chargeFire){
-		// 
-		var _flags		= (_isCharged) ? PROJ_CHRBEAM : 0;
+		// Create a local variable that will store the value that will be copid into the projectile's substate
+		// variable "stateFlags". It will flip the appropriate flag for the projectile's movement such that
+		// it moves in the direction that the arm cannon is currently facing.
+		var _flags		= (_isCharged) ? PROJ_CHRBEAM : 0; // Flip flag bit if the projectile was charged.
 		var _aimingDown	= PLYR_IS_AIMING_DOWN;
 		if (!PLYR_IS_AIMING_UP && !_aimingDown) {_flags |= PROJ_MOVE_RIGHT;}
 		else if (_aimingDown)					{_flags |= PROJ_MOVE_DOWN;}
 		else									{_flags |= PROJ_MOVE_UP;}
 		
-		// 
+		// Create a copy of all the important substate bits for the arm cannon's projectile. These are then
+		// used to determine the position to move the projectile to so it comes out of Samus's arm cannon.
 		var _playerFlags = stateFlags & (PLYR_MOVING | PLYR_CROUCHED | PLYR_AIMING_UP | 
 											PLYR_AIMING_DOWN | DNTT_GROUNDED);
-		if (image_xscale == MOVE_DIR_RIGHT)	{_playerFlags |= PLYR_FACING_RIGHT;}
+		if (image_xscale == MOVE_DIR_RIGHT)	{_playerFlags |= PLYR_FACING_RIGHT;} // Flip bit for current facing direction.
 		else								{_playerFlags |= PLYR_FACING_LEFT;}
 		
-		// 
+		// Finally, create the projectile; passing in the local copy of the player's current substate flags
+		// (As well as her current facing direction in the 0th or 1st bit, respectively) and the flags that
+		// will be assigned to the projectile's own substate variable. Reset the firing timer and the aim
+		// return timer, respectively.
 		create_projectile(_playerFlags, _flags);
 		fireRateTimer	= 0.0;
 		aimReturnTimer	= 0.0;
@@ -686,12 +708,16 @@ update_arm_cannon = function(_movement){
 	}
 }
 
-/// @description 
+/// @description Creates the "ghosting" effect that is created by Samus during the use of various movements
+/// or abilities (Ex. Phase Shift and Somersaulting). Since all the ghost effect instances are already in
+/// memory, the "creation" actually just reactivates the next instance within the cyclical "buffer" or
+/// overwrites what that instance was previously representing if it was still active.
 /// @param {Real}	color		Hue to blend the ghost sprite with.
 /// @param {Real}	alpha		Total opacity of the ghosting effect (Higher == longer last effect).
 /// @param {Bool}	drawCannon	Determines whether or not the ghosting effect should render Samus's arm cannon or not.
 create_ghosting_effect = function(_color, _alpha, _drawCannon){
-	// 
+	// Store all the variables from Samus that are required by the effect instance to copy exactly where she
+	// is, what she is doing, AND if her separated arm cannon sprite is currently visible or not.
 	var _x			= x;
 	var _y			= y;
 	var _sprite		= sprite_index;
@@ -1389,6 +1415,7 @@ __entity_apply_hitstun = entity_apply_hitstun;
 /// @param {Real}	damage		Total amount of damage to apply to Samus's current energy.
 entity_apply_hitstun = function(_duration, _damage = 0){
 	__entity_apply_hitstun(_duration, _damage);
+	play_sound_effect(snd_damaged, 0, false, true, 0.5, 0.0, random_range(0.95, 1.05));
 	if (!PLYR_IN_MORPHBALL){ // Make Samus airbourne if she isn't in her morphball at the time of the hitstun.
 		object_set_next_state(state_airbourne);
 		
@@ -1532,7 +1559,11 @@ state_default = function(){
 		object_set_next_state(state_airbourne);
 		play_sound_effect(snd_jumpstart, 0, false, true, 0.7);
 		if (abs(hspd) >= 1.0 && !PLYR_IS_AIMING){
-			if (event_get_flag(FLAG_SCREW_ATTACK)) {stateFlags |= PLYR_SCREWATK;}
+			if (event_get_flag(FLAG_SCREW_ATTACK)){
+				jumpSoundID = play_sound_effect(snd_screwattack, 0, false, true, 0);
+				audio_sound_gain(jumpSoundID, PLYR_SCREWATK_VOLUME, 150);
+				stateFlags |= PLYR_SCREWATK;
+			}
 			stateFlags |= PLYR_SOMERSAULT;
 			effectTimer = PLYR_JUMP_INTERVAL;
 		}
@@ -1672,8 +1703,13 @@ state_airbourne = function(){
 		hspd			= 0.0;
 		reset_light_source();
 		
-		// Play a "thump" sound for Samus hitting the floor.
+		// Play a "thump" sound for Samus hitting the floor. On top of that, stop the "jump sound" if one
+		// was currently playing (Only during somersault jump).
 		audio_play_sound(snd_land, 0, false, 0.15, 0.03, random_range(0.9, 1.10));
+		if (jumpSoundID != NO_SOUND){
+			audio_stop_sound(jumpSoundID);
+			jumpSoundID = NO_SOUND;
+		}
 		
 		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
@@ -1702,13 +1738,20 @@ state_airbourne = function(){
 	// somersaulting jump; allowing her to jump again indefinitely while in that same jump.
 	if (PLYR_JUMP_PRESSED && jumpStartTimer == PLYR_FLIP_START_TIME){
 		// Samus cannot be aiming in any direction to enable somersaulting in the air and her space jump.
+		var _hasScrewAttack = event_get_flag(FLAG_SCREW_ATTACK);
 		if (!PLYR_IS_AIMING_DOWN && !PLYR_IS_AIMING_UP){
 			if (!PLYR_IN_SOMERSAULT){ // Entering a somersault jump when airbourne.
-				if (event_get_flag(FLAG_SCREW_ATTACK))	{stateFlags |= PLYR_SCREWATK;}
-				if (vspd < 0.0)							{vspd = 0.0;}
+				if (_hasScrewAttack){ // Toggle screw attack and play its sound effect.
+					jumpSoundID = play_sound_effect(snd_screwattack, 0, false, true, 0);
+					audio_sound_gain(jumpSoundID, PLYR_SCREWATK_VOLUME, 150);
+					stateFlags |= PLYR_SCREWATK;
+				} else{ // Play standard somersault sound effect.
+					
+				}
 				stateFlags	   &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN);
 				stateFlags	   |= PLYR_SOMERSAULT;
 				hspd			= get_max_hspd() * image_xscale;
+				vspd			= 0.0;
 				aimReturnTimer	= 0.0;
 				effectTimer		= PLYR_JUMP_INTERVAL;
 			} else if (vspd >= 2.0 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
@@ -1723,12 +1766,14 @@ state_airbourne = function(){
 		vspd *= 0.5;
 	
 	// Process horizontal movement while airbourne, which functions a bit different to how Samus moves while
-	// on the ground. Her maximum velocity will be reduced to 70% if she isn't somersaulting, and her acceleration
-	// is cut if half. On top of that, switching directions doesn't zero out her velocity.
+	// on the ground. Her maximum velocity will be reduced to 40% if she isn't somersaulting -- 65% if she is, 
+	// and her acceleration is reduced to 35%. On top of that, switching directions doesn't zero out her velocity.
 	var _hspdFactor = 1.0;
-	if (abs(hspd) < get_max_hspd() && !PLYR_SOMERSAULT) 
-		_hspdFactor = 0.7;
-	process_horizontal_movement(_hspdFactor, 0.5, false, false);
+	if (abs(hspd) < get_max_hspd()){
+		if (!PLYR_SOMERSAULT)	{_hspdFactor = 0.40;}
+		else					{_hspdFactor = 0.65;}
+	}
+	process_horizontal_movement(_hspdFactor, 0.35, false, false);
 	
 	// Determine if Samus's downward aim should end depending on how long the player holds either the left
 	// or right movement inputs for; much like how aiming down in the air functions in Super Metroid.
@@ -1746,7 +1791,11 @@ state_airbourne = function(){
 	
 	// 
 	var _vInput = sign(PLYR_DOWN_PRESSED - PLYR_UP_PRESSED);
-	if (PLYR_IN_SOMERSAULT && _vInput != 0) {reset_light_source();}
+	if (PLYR_IN_SOMERSAULT && _vInput != 0){
+		audio_stop_sound(jumpSoundID);
+		reset_light_source();
+		jumpSoundID = NO_SOUND;
+	}
 	
 	// 
 	if (_vInput == -1){
@@ -1809,7 +1858,7 @@ state_airbourne = function(){
 	// position during her somersaulting jump animation depending on the current frame of the animation that
 	// is visible on-screen.
 	var _animFinished = jumpStartTimer == PLYR_FLIP_START_TIME;
-	if (!_jumpspin && !PLYR_IS_AIMING){
+	if (!_jumpspin){
 		lightOffsetX = LGHT_VISOR_X_GENERAL;
 	} else if (_animFinished && _jumpspin && !_jumpattack){
 		// Update offset of the light to match where Samus's visor is for each frame of her somersault.
@@ -1845,6 +1894,13 @@ state_airbourne = function(){
 	player_liquid_collision();
 	player_enemy_collision();
 	player_warp_collision();
+	
+	// 
+	if (jumpSoundID != NO_SOUND){
+		var _position = audio_sound_get_track_position(jumpSoundID);
+		if (_position >= audio_sound_length(jumpSoundID) * 0.5)
+			audio_sound_set_track_position(jumpSoundID, 0.05);
+	}
 	
 	// Producing the ghosting effect for Samus's somersault, which leaves an instance of Samus that quickly
 	// fades out. This effect is created at a regular interval until she is no longer somersaulting.
@@ -2185,3 +2241,4 @@ collisionMaskColor = HEX_LIGHT_BLUE;
 event_set_flag(FLAG_MORPHBALL, true);
 event_set_flag(FLAG_BOMBS, true);
 event_set_flag(FLAG_POWER_BOMBS, true);
+event_set_flag(FLAG_SPACE_JUMP, true);

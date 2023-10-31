@@ -100,7 +100,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 
 		// Checking if the camera's shaking effect is active or not. If so, the current strength of the effect
 		// will be decayed relative to its duration and starting strength.
-		if (shakeCurStrength <= 0.0) 
+		if (shakeCurStrength <= 0.0)
 			return;
 		shakeCurStrength -= shakeSetStrength / shakeDuration * DELTA_TIME;
 		

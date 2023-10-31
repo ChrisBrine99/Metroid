@@ -44,8 +44,8 @@ initialize = function(_state){
 	entity_set_sprite(spr_ripper, -1);
 	create_general_collider();
 	
-	// Only one weakness aside from a Power Bomb or an ice-based weapon: Super Missiles.
-	weaknessFlags |= ENMY_SUPMISSILE_WEAK | ENMY_POWBOMB_WEAK | ENMY_FREEZE_WEAK;
+	// Only one weakness aside from a Power Bomb, Screw Attack, or an ice-based weapon: Super Missiles.
+	weaknessFlags |= ENMY_SUPMISSILE_WEAK | ENMY_POWBOMB_WEAK | ENMY_SCREWATK_WEAK | ENMY_FREEZE_WEAK;
 	
 	// Set the rates for item drops if the Ripper is defeated by Samus here.
 	dropChances[ENMY_SMENERGY_DROP]		= 0;

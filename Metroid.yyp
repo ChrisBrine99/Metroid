@@ -290,6 +290,7 @@
     {"id":{"name":"obj_enemy_platform","path":"objects/obj_enemy_platform/obj_enemy_platform.yy",},},
     {"id":{"name":"spr_cutscene_trigger","path":"sprites/spr_cutscene_trigger/spr_cutscene_trigger.yy",},},
     {"id":{"name":"spr_destructible_all","path":"sprites/spr_destructible_all/spr_destructible_all.yy",},},
+    {"id":{"name":"snd_damaged","path":"sounds/snd_damaged/snd_damaged.yy",},},
     {"id":{"name":"obj_yodare","path":"objects/obj_yodare/obj_yodare.yy",},},
     {"id":{"name":"obj_gawron_nest","path":"objects/obj_gawron_nest/obj_gawron_nest.yy",},},
     {"id":{"name":"spr_destructible_bomb","path":"sprites/spr_destructible_bomb/spr_destructible_bomb.yy",},},
