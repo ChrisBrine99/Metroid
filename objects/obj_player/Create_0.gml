@@ -21,6 +21,7 @@
 #macro	PLYR_ESHIELD_ACTIVE		0x00000400
 #macro	PLYR_PSHIFT_ACTIVE		0x00000800
 // --- Miscellaneous Substates --- //
+#macro	PLYR_SLOW_AIR_MOVEMENT	0x00040000
 #macro	PLYR_SPRITE_FLICKER		0x00080000
 #macro	PLYR_BEAM_VISIBLE		0x00100000
 // NOTE -- Bits 0x00200000 and greater are already in use by default dynamic entity substate flags.
@@ -49,6 +50,7 @@
 /// --- Miscellaneous Substate Checks --- //
 #macro	PLYR_CAN_SPRITE_FLICKER	(stateFlags	& PLYR_SPRITE_FLICKER)
 #macro	PLYR_IS_BEAM_VISIBLE	(stateFlags & PLYR_BEAM_VISIBLE)
+#macro	PLYR_IS_MOVING_SLOW		(stateFlags & PLYR_SLOW_AIR_MOVEMENT)
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Values for the bits within the variables "inputFlags" and "prevInputFlags" that correspond to the	   //
@@ -164,11 +166,11 @@
 #macro	PLYR_MAX_FALL_SPEED		8.0
 
 // ------------------------------------------------------------------------------------------------------- //
-//	Stores the volume of the Screw Attack's sound effect relative to the true volume of the sound		   //
-//	resource it utilizes.																				   //
+//	
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PLYR_SCREWATK_VOLUME	0.2
+#macro	PLYR_JUMP_HSPD_FACTOR	0.45
+#macro	PLYR_SPIN_HSPD_FACTOR	0.75
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The values here correspond to Samus's currently equipped weapon for her arm cannon. When the value 	   //
@@ -266,6 +268,20 @@
 #macro	LGHT_SCREWATK_Y		   -20
 
 // ------------------------------------------------------------------------------------------------------- //
+//
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PLYR_STEP_MIN_VOLUME	0.12
+#macro	PLYR_STEP_MAX_VOLUME	0.18
+#macro	PLYR_TRANSFORM_VOLUME	0.5
+#macro	PLYR_AIMCANNON_VOLUME	0.2
+#macro	PLYR_JUMPSTART_VOLUME	0.7
+#macro	PLYR_SOMERSAULT_VOLUME	0.3
+#macro	PLYR_SCREWATK_VOLUME	0.2
+#macro	PLYR_LAND_VOLUME		0.15
+#macro	PLYR_MORPHLAND_VOLUME	0.35
+
+// ------------------------------------------------------------------------------------------------------- //
 //	Maximum values for Samus's active + reserve energy, aeion, missile ammunition, and held power bombs.   //
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -353,20 +369,21 @@ maxAeion = 0;
 // Samus's missile and power bomb reserves, respectively. The first values of each pair store how much ammo Samus
 // has of either type of wepaon, and the second values determine the maximum amount of ammunition Samus can store
 // for either one.
-numMissiles	= 0;
-maxMissiles	= 0;
-numPowerBombs = 0;
-maxPowerBombs = 0;
-
-//
-jumpSoundID = NO_SOUND;
+numMissiles		= 0;
+maxMissiles		= 0;
+numPowerBombs	= 0;
+maxPowerBombs	= 0;
 
 // 
-curBeam	= WEAPON_POWER_BEAM;
-curMissile = WEAPON_REG_MISSILE;
-curWeapon = curBeam; // Makes current beam the active weapon by default.
-tapFireRate	= 1.0;
-holdFireRate = 1.0;
+jumpHspdFactor	= 1.0;
+jumpSoundID		= NO_SOUND;
+
+// 
+curBeam			= WEAPON_POWER_BEAM;
+curMissile		= WEAPON_REG_MISSILE;
+curWeapon		= curBeam; // Makes current beam the active weapon by default.
+tapFireRate		= 1.0;
+holdFireRate	= 1.0;
 
 // 
 curShiftDist	= 0;
@@ -626,8 +643,10 @@ update_arm_cannon = function(_movement){
 			audio_stop_sound(jumpSoundID);
 			jumpSoundID = NO_SOUND;
 			
-			// Remove horizontal velocity if no movement inputs are currently held.
-			if (movement == 0) {hspd = 0.0;} 
+			// Remove horizontal velocity if no movement inputs are currently held and always remove Samus's
+			// current vertical velocity.
+			if (movement == 0) {hspd = 0.0;}
+			vspd = 0.0;
 		}
 		stateFlags	   |= PLYR_FIRING_CANNON;
 		aimReturnTimer	= 0.0;
@@ -1419,6 +1438,13 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 	if (!PLYR_IN_MORPHBALL){ // Make Samus airbourne if she isn't in her morphball at the time of the hitstun.
 		object_set_next_state(state_airbourne);
 		
+		// During a somersault, a sound will be looping. This sound must be stopped upon incurring a hit by
+		// an enemy, damaging, liquid, or environmental hazard since Samus gets forced out of her somersault.
+		if (jumpSoundID != NO_SOUND){
+			audio_stop_sound(jumpSoundID);
+			jumpSoundID = NO_SOUND;
+		}
+		
 		// Make sure the light moves itself to where the visor is since Samus's somersault is interrupted by
 		// sustaining damage from an enemy or enemy projectile. Any animation timers are also skipped over.
 		// Note that the light source is also reset if she was previously crouching as well.
@@ -1557,15 +1583,17 @@ state_default = function(){
 	// somersault jump (Moving fast enough and not firing from Samus's arm cannon).
 	if (PLYR_JUMP_PRESSED && !place_meeting(x, y - 1, par_collider)){
 		object_set_next_state(state_airbourne);
-		play_sound_effect(snd_jumpstart, 0, false, true, 0.7);
+		play_sound_effect(snd_jumpstart, 0, false, true, PLYR_JUMPSTART_VOLUME);
 		if (abs(hspd) >= 1.0 && !PLYR_IS_AIMING){
 			if (event_get_flag(FLAG_SCREW_ATTACK)){
-				jumpSoundID = play_sound_effect(snd_screwattack, 0, false, true, 0);
+				jumpSoundID = play_sound_effect(snd_screwattack, 0, false, true, 0.0);
 				audio_sound_gain(jumpSoundID, PLYR_SCREWATK_VOLUME, 150);
 				stateFlags |= PLYR_SCREWATK;
+			} else{ // Standard somersaulting results in a different sound from the Screw Attack.
+				jumpSoundID = play_sound_effect(snd_somersault, 0, true, true, PLYR_SOMERSAULT_VOLUME);
 			}
 			stateFlags |= PLYR_SOMERSAULT;
-			effectTimer = PLYR_JUMP_INTERVAL;
+			effectTimer	= PLYR_JUMP_INTERVAL;
 		}
 		stateFlags &= ~(DNTT_GROUNDED | PLYR_MOVING);
 		vspd		= get_max_vspd();
@@ -1593,6 +1621,7 @@ state_default = function(){
 	// The aiming logic for Samus's default state, which only allows her to aim upward and forward; the latter
 	// being the default aiming direction for her when aiming inputs (Up/down, respectively) aren't pressed.
 	if (PLYR_UP_PRESSED){
+		play_sound_effect(snd_aimcannon, 0, false, true, PLYR_AIMCANNON_VOLUME);
 		stateFlags &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN);
 		stateFlags |=  PLYR_AIMING_UP;
 		lightComponent.isActive = false;
@@ -1663,7 +1692,8 @@ state_default = function(){
 		if (footstepTimer < 0.0){
 			footstepTimer += 16.0 - (5.0 * _animSpeed);
 			play_sound_effect(snd_footstep, 0, false, true, 
-				random_range(0.08, 0.12), random(0.03), random_range(0.95, 1.05));
+				random_range(PLYR_STEP_MIN_VOLUME, PLYR_STEP_MAX_VOLUME), 
+					random(0.03), random_range(0.95, 1.05));
 		}
 		return;
 	}
@@ -1696,16 +1726,17 @@ state_airbourne = function(){
 		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
 		// Samus's horizontal velocity to make it add to the impact of Samus landing. Also reset the light
 		// source to act as the visor once again.
-		stateFlags	   &= ~(PLYR_SOMERSAULT | PLYR_SCREWATK | PLYR_AIMING_DOWN);
+		stateFlags	   &= ~(PLYR_SOMERSAULT | PLYR_SCREWATK | PLYR_AIMING_DOWN | PLYR_SLOW_AIR_MOVEMENT);
 		jumpStartTimer	= 0.0;
 		aimReturnTimer	= 0.0;
 		hspdFraction	= 0.0;
 		hspd			= 0.0;
+		jumpHspdFactor	= 1.0;
 		reset_light_source();
 		
 		// Play a "thump" sound for Samus hitting the floor. On top of that, stop the "jump sound" if one
 		// was currently playing (Only during somersault jump).
-		audio_play_sound(snd_land, 0, false, 0.15, 0.03, random_range(0.9, 1.10));
+		audio_play_sound(snd_land, 0, false, PLYR_LAND_VOLUME, 0.0, random_range(0.9, 1.10));
 		if (jumpSoundID != NO_SOUND){
 			audio_stop_sound(jumpSoundID);
 			jumpSoundID = NO_SOUND;
@@ -1746,12 +1777,13 @@ state_airbourne = function(){
 					audio_sound_gain(jumpSoundID, PLYR_SCREWATK_VOLUME, 150);
 					stateFlags |= PLYR_SCREWATK;
 				} else{ // Play standard somersault sound effect.
-					
+					jumpSoundID = play_sound_effect(snd_somersault, 0, true, true, PLYR_SOMERSAULT_VOLUME);
 				}
-				stateFlags	   &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN);
+				stateFlags	   &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN | PLYR_SLOW_AIR_MOVEMENT);
 				stateFlags	   |= PLYR_SOMERSAULT;
 				hspd			= get_max_hspd() * image_xscale;
 				vspd			= 0.0;
+				jumpHspdFactor	= 1.0;
 				aimReturnTimer	= 0.0;
 				effectTimer		= PLYR_JUMP_INTERVAL;
 			} else if (vspd >= 2.0 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
@@ -1768,12 +1800,12 @@ state_airbourne = function(){
 	// Process horizontal movement while airbourne, which functions a bit different to how Samus moves while
 	// on the ground. Her maximum velocity will be reduced to 40% if she isn't somersaulting -- 65% if she is, 
 	// and her acceleration is reduced to 35%. On top of that, switching directions doesn't zero out her velocity.
-	var _hspdFactor = 1.0;
-	if (abs(hspd) < get_max_hspd()){
-		if (!PLYR_SOMERSAULT)	{_hspdFactor = 0.40;}
-		else					{_hspdFactor = 0.65;}
+	if (!PLYR_IS_MOVING_SLOW && abs(hspd) < 1.0){
+		stateFlags |= PLYR_SLOW_AIR_MOVEMENT;
+		if (PLYR_SOMERSAULT)	{jumpHspdFactor = PLYR_SPIN_HSPD_FACTOR;}
+		else					{jumpHspdFactor = PLYR_JUMP_HSPD_FACTOR;}
 	}
-	process_horizontal_movement(_hspdFactor, 0.35, false, false);
+	process_horizontal_movement(jumpHspdFactor, 0.35, false, false);
 	
 	// Determine if Samus's downward aim should end depending on how long the player holds either the left
 	// or right movement inputs for; much like how aiming down in the air functions in Super Metroid.
@@ -1799,6 +1831,7 @@ state_airbourne = function(){
 	
 	// 
 	if (_vInput == -1){
+		play_sound_effect(snd_aimcannon, 0, false, true, PLYR_AIMCANNON_VOLUME);
 		if (!PLYR_IS_AIMING_DOWN){ // Aiming upward until the player releases their up input.
 			stateFlags	&= ~(PLYR_FIRING_CANNON | PLYR_SOMERSAULT | PLYR_SCREWATK);
 			stateFlags	|= PLYR_AIMING_UP;
@@ -1810,6 +1843,7 @@ state_airbourne = function(){
 		lightOffsetY = LGHT_VISOR_Y_GENERAL;
 	} else if (_vInput == 1){
 		if (!PLYR_IS_AIMING_DOWN){ // Entering a downward aiming state.
+			play_sound_effect(snd_aimcannon, 0, false, true, PLYR_AIMCANNON_VOLUME);
 			stateFlags	&= ~(PLYR_FIRING_CANNON | PLYR_AIMING_UP | PLYR_SOMERSAULT | PLYR_SCREWATK);
 			stateFlags	|= PLYR_AIMING_DOWN;
 			lightOffsetX = LGHT_VISOR_X_DOWN;
@@ -1818,6 +1852,7 @@ state_airbourne = function(){
 			var _bboxBottom		= bbox_bottom; // Store previous coordinate for southern edge of the bounding box.
 			object_set_next_state(state_enter_morphball);
 			entity_set_sprite(ballEnterSprite, morphballMask);
+			play_sound_effect(snd_transform, 0, false, true, PLYR_TRANSFORM_VOLUME);
 			y				   -= bbox_bottom - _bboxBottom;
 			stateFlags		   &= ~(PLYR_AIMING_DOWN);
 			jumpStartTimer		= 0.0;
@@ -1881,9 +1916,17 @@ state_airbourne = function(){
 		}
 	}
 	
-	// This collision function happens before any movement does, and will destroy blocks that are affected by
-	// the Screw Attack if Samus happens to be executing that item's effect while in the air.
-	if (PLYR_IN_SCREWATK) {destructible_screw_attack_collision();}
+	// 
+	if (PLYR_IN_SCREWATK){
+		destructible_screw_attack_collision();
+		
+		// 
+		if (jumpSoundID != NO_SOUND){
+			var _position = audio_sound_get_track_position(jumpSoundID);
+			if (_position >= audio_sound_length(jumpSoundID) * 0.5)
+				audio_sound_set_track_position(jumpSoundID, 0.05);
+		}
+	}
 	
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
@@ -1894,13 +1937,6 @@ state_airbourne = function(){
 	player_liquid_collision();
 	player_enemy_collision();
 	player_warp_collision();
-	
-	// 
-	if (jumpSoundID != NO_SOUND){
-		var _position = audio_sound_get_track_position(jumpSoundID);
-		if (_position >= audio_sound_length(jumpSoundID) * 0.5)
-			audio_sound_set_track_position(jumpSoundID, 0.05);
-	}
 	
 	// Producing the ghosting effect for Samus's somersault, which leaves an instance of Samus that quickly
 	// fades out. This effect is created at a regular interval until she is no longer somersaulting.
@@ -1967,7 +2003,8 @@ state_crouching = function(){
 	process_input();
 	
 	// 
-	if (grounded_to_airbourne()) {return;}
+	if (grounded_to_airbourne())
+		return;
 	
 	// By pressing the up OR the jump input, Samus will exit her crouching state.
 	if (PLYR_UP_PRESSED || PLYR_JUMP_PRESSED){
@@ -1981,6 +2018,7 @@ state_crouching = function(){
 	if (PLYR_DOWN_PRESSED && event_get_flag(FLAG_MORPHBALL)){
 		object_set_next_state(state_enter_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
+		play_sound_effect(snd_transform, 0, false, true, PLYR_TRANSFORM_VOLUME);
 		return; // State was changed; don't process any more code in this function.
 	}
 	
@@ -2075,14 +2113,19 @@ state_morphball = function(){
 	// Applying gravity and also the recoil that can occur when the morphball hits the ground especially hard.
 	// If the vertical velocity is low enough, no bounce will occur, but until then a bounce will make the
 	// morphball airborune again until that velocity threshold is passed.
-	var _vspd = vspd;
+	var _vspd			= vspd;
+	var _wasAirbourne	= !DNTT_IS_GROUNDED;
 	apply_gravity(PLYR_MAX_FALL_SPEED);
-	if (DNTT_IS_GROUNDED){
+	if (_wasAirbourne && DNTT_IS_GROUNDED){
+		play_sound_effect(snd_morphland, 0, false, true, PLYR_MORPHLAND_VOLUME, 0.0, random_range(0.95, 1.05));
 		if (_vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
 			stateFlags &= ~DNTT_GROUNDED;
 			vspd		= -(_vspd * 0.5);
-		} else if (hspd != 0.0 && vspd == 0.0){ // Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement inputs are pressed in that time).
-			stateFlags |= PLYR_MOVING;
+		} else{ 
+			// Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement 
+			// inputs are pressed in that time).
+			if (hspd != 0.0 && vspd == 0.0)
+				stateFlags |= PLYR_MOVING;
 		}
 	}
 	
@@ -2090,8 +2133,9 @@ state_morphball = function(){
 	// upgrade. Once acquired, Samus can press the jump input while grounded to jump into the air as she would
 	// while in her suit form.
 	if (PLYR_JUMP_PRESSED && DNTT_IS_GROUNDED && event_get_flag(FLAG_SPRING_BALL)){
-		stateFlags &= ~DNTT_GROUNDED;
+		play_sound_effect(snd_jumpstart, 0, false, true, PLYR_JUMPSTART_VOLUME);
 		vspd		= PLYR_BASE_JUMP * maxVspdFactor;
+		stateFlags &= ~DNTT_GROUNDED;
 	}
 	if (PLYR_JUMP_RELEASED && vspd < 0.0) 
 		vspd /= 2;
@@ -2240,5 +2284,6 @@ collisionMaskColor = HEX_LIGHT_BLUE;
 
 event_set_flag(FLAG_MORPHBALL, true);
 event_set_flag(FLAG_BOMBS, true);
+event_set_flag(FLAG_SPRING_BALL, true);
 event_set_flag(FLAG_POWER_BOMBS, true);
 event_set_flag(FLAG_SPACE_JUMP, true);
