@@ -12,11 +12,11 @@
 #macro	YDRE_IS_IN_FLOOR		(stateFlags & YDRE_IN_FLOOR)
 
 // Determines the maximum vertical speed that the Yodare will move at when it is moving through any collider.
-#macro	YDRE_BURROW_SPEED		0.2
+#macro	YDRE_BURROW_SPEED		0.1
 
 // Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to what
 // it originally started at; making it look like another Yodare is burrowing out of the nest.
-#macro	YDRE_RETURN_TIME		80.0
+#macro	YDRE_RETURN_TIME		160.0
 
 #endregion
 
@@ -143,7 +143,7 @@ state_default = function(){
 		if (returnTimer >= YDRE_RETURN_TIME){
 			// UNIQUE CASE -- Perform a check to see if the nest that the Yodare originally came from has been
 			// destroyed or not. If so, the Yodare will destroy itself alongside the spawner.
-			if (!instance_exists(linkedSpawnerID)){
+			if (linkedSpawnerID == noone){
 				stateFlags |= ENTT_DESTROYED;
 				return;
 			}
