@@ -1,7 +1,7 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_collider_slope4",
+  "name": "obj_collider_slope",
   "eventList": [],
   "managed": true,
   "overriddenProperties": [],
@@ -29,8 +29,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_collider_slope4",
-    "path": "sprites/spr_collider_slope4/spr_collider_slope4.yy",
+    "name": "spr_collider_slope2",
+    "path": "sprites/spr_collider_slope2/spr_collider_slope2.yy",
   },
   "spriteMaskId": null,
   "visible": true,

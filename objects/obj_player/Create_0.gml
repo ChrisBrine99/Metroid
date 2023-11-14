@@ -1601,7 +1601,8 @@ state_default = function(){
 	}
 	
 	// Handling horizontal movement for both directions.
-	process_horizontal_movement(1.0, 1.0, true, true);
+	var _hspdFactor = place_meeting(x + sign(movement), y, obj_collider_slope) ? 0.7 : 1.0;
+	process_horizontal_movement(_hspdFactor, 1.0, true, true);
 	
 	// Entering Samus's crouching state, which lowers her down; shrinking her hitbox a bit vertically and 
 	// moving her beam low enough to hit smaller targets. It's accessed by simply pressing the down input.
