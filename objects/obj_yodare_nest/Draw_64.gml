@@ -1,1 +1,0 @@
-draw_text(5, 100, string(curInstances));

@@ -2144,8 +2144,10 @@ state_morphball = function(){
 	// Handling horizontal movement while in morphball mode, which functions very similar to how said movement
 	// works in Samus's default suit form. Holding left or right (But not both at once) will result in her
 	// moving in the desired direction; releasing said key will slow her down until she is no longer moving.
-	process_horizontal_movement(1.0, 0.6, DNTT_IS_GROUNDED, DNTT_IS_GROUNDED);
-	
+	var _hspdFactor = place_meeting(x + sign(movement), y, obj_collider_slope) ? 0.7 : 1.0;
+	var _isGrounded = DNTT_IS_GROUNDED;
+	process_horizontal_movement(_hspdFactor, 0.6, _isGrounded, _isGrounded);
+
 	// Exiting out of morphball mode, which will call the function that checks for a collision directly above
 	// Samus's head. If there's a collision, she'll be unable to transform back into her standard form.
 	if (PLYR_UP_PRESSED){

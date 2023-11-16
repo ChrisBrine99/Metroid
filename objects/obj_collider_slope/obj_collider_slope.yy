@@ -29,8 +29,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_collider_slope2",
-    "path": "sprites/spr_collider_slope2/spr_collider_slope2.yy",
+    "name": "spr_collider_slope",
+    "path": "sprites/spr_collider_slope/spr_collider_slope.yy",
   },
   "spriteMaskId": null,
   "visible": true,

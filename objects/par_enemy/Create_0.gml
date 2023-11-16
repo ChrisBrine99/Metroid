@@ -80,10 +80,6 @@
 #macro	ENMY_POWBOMB_DROP		5
 #macro	ENMY_TOTAL_DROPS		6
 
-// TODO -- Potentially replace these with variable chance values.
-#macro	MISSILE_DROP_CHANCE		0.75
-#macro	SM_ENERGY_DROP_CHANCE	0.85
-
 #endregion
 
 #region Editing inherited variables
