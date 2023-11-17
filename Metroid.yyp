@@ -283,6 +283,7 @@
     {"id":{"name":"spr_yodare","path":"sprites/spr_yodare/spr_yodare.yy",},},
     {"id":{"name":"spr_charge_beam","path":"sprites/spr_charge_beam/spr_charge_beam.yy",},},
     {"id":{"name":"spr_collider","path":"sprites/spr_collider/spr_collider.yy",},},
+    {"id":{"name":"obj_collider_moving","path":"objects/obj_collider_moving/obj_collider_moving.yy",},},
     {"id":{"name":"spr_collider_slope","path":"sprites/spr_collider_slope/spr_collider_slope.yy",},},
     {"id":{"name":"obj_enemy_platform","path":"objects/obj_enemy_platform/obj_enemy_platform.yy",},},
     {"id":{"name":"spr_cutscene_trigger","path":"sprites/spr_cutscene_trigger/spr_cutscene_trigger.yy",},},

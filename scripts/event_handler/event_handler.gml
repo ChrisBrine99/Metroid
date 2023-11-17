@@ -39,7 +39,7 @@
 #macro	FLAG_ICE_MISSILES		21
 #macro	FLAG_SHOCK_MISSILES		22
 #macro	FLAG_LOCK_ON_MISSILES	23
-// Bits 24 to 31 are left unused in case new upgraded items are added throughout development.
+// Bits 24 to 31 are left unused in case new items are added throughout development.
 
 // Missile tank flags; collecting one in the world will flip this flag and prevent it from spawning again.
 // There are 60 total to find in the game, and will occupy the bits 32-91 as a reault. Each small missile tank
@@ -151,7 +151,8 @@ function event_get_item_percentage(){
 	var _totalItems = AEION_TANK0 + 3; // 145th bit is the final item ("AEION_TANK0" represents bit 142)
 	var _collectedItems = 0;
 	for (var i = 0; i < _totalItems; i++){
-		if (i > FLAG_LOCK_ON_MISSILES && i < SMALL_MISSILE_TANK0) {continue;} // Skip over unused bits
+		if (i > FLAG_LOCK_ON_MISSILES && i < SMALL_MISSILE_TANK0) // Skip over unused bits
+			continue;
 		_collectedItems += event_get_flag(i);
 	}
 	// Remove the unnecessary bits after the loop to avoid missing the last few bits if done before.

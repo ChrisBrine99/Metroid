@@ -1,0 +1,1 @@
+if (moveParams != noone) {delete moveParams;}
