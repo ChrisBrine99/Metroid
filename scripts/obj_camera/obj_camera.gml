@@ -67,6 +67,9 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	targetOffsetX	= 0;
 	targetOffsetY	= 0;
 	
+	// 
+	noCullLayer		= -1;
+	
 	// Keeps track of the current instance of "obj_camera_boundary" that the target object is colliding with.
 	prevBoundaryID = noone;
 	
@@ -137,6 +140,9 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		}
 		x = _x;
 		y = _y;
+		
+		// 
+		noCullLayer = layer_get_id("Entities_NO_CULL");
 		
 		// 
 		view_set_camera(0, camera);
@@ -289,7 +295,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			_y + _height + OBJECT_CULL_PADDING,
 			true // Signifies that the region within the bounds is where entities are reactivated.
 		);
-		instance_activate_object(PLAYER);	// Player is always an active object
+		instance_activate_object(PLAYER);		// Player is always an active object
+		instance_activate_layer(noCullLayer);	// Also enabled any other objects that shouldn't be culled.
 	}
 }
 

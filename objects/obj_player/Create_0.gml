@@ -1689,9 +1689,9 @@ state_default = function(){
 		// On top of setting the proper walking animation, a footstep sound effect will be played whenever
 		// the timer reaches a value of zero or lower relative to whatever it was set to after playing the
 		// previous footstep. The interval between footsteps is relative to Samus's current animation speed.
-		footstepTimer -= DELTA_TIME;
+		footstepTimer -= DELTA_TIME * _animSpeed;
 		if (footstepTimer < 0.0){
-			footstepTimer += 16.0 - (5.0 * _animSpeed);
+			footstepTimer += 11.0;
 			play_sound_effect(snd_footstep, 0, false, true, 
 				random_range(PLYR_STEP_MIN_VOLUME, PLYR_STEP_MAX_VOLUME), 
 					random(0.03), random_range(0.95, 1.05));
