@@ -46,27 +46,40 @@ destructibleID = noone;
 baseRadius		= 0.0;
 baseStrength	= 0.0;
 
+// Determines the fanfare that is played upon collection of the item. This can be changed from the default to
+// whatever the item requires (Ex. shorter fanfares for tank pickups, etc.) for its collection music.
+fanfare		= mus_major_item_found;
+
 #endregion
 
 #region Default collection function initialization
 
-/// @description 
+/// @description The function that is called upon collecting the item. It handles the creation of the screen
+/// that details what the collected item is and how it affects Samus's abilities. On top of that, the map tile
+/// where the item is located within has its "empty" icon set to a "collected" icon to signify the item in that
+/// tile has been collected by the player.
 collectible_collect_self = function(){
-	// 
+	// Stores the item's name, description, and flag into local variables so they can be quickly copied over
+	// to the item collection screen menu object. The collectible's unique instance ID and the sound ID for 
+	// the fanfare that was played are also copied over to the menu instance.
 	var _name	= collectibleName;
 	var _info	= collectibleInfo;
 	var _flag	= flagID;
 	var _id		= id;
+	var _sound	= audio_play_sound(fanfare, 0, false);
 	var _menu	= instance_create_menu_struct(obj_item_collection_screen);
 	with(_menu){
 		menu_set_next_state(state_animation_alpha, [1.0, 0.1, state_default]);
-		set_item_data(_name, _info, _flag, display_get_gui_width() - 20);
+		set_item_data(_name, _info, _flag, display_get_gui_width() - 40);
 		hudAlphaTarget		 = GAME_HUD.alphaTarget;
 		itemInstance		 = _id;
+		soundID				 = _sound;
 		GAME_HUD.alphaTarget = 0.0; // Fade HUD out until item is "collected" by the player.
 	}
 	
-	// 
+	// Finally, determine the current map tile that the item occupies within the level. Once found, the tile's
+	// icon is set to the icon to signify the item has been collected by the player. It's important to note that
+	// this ignores other items in the same tile, so placing multiple items per single map cell should be avoided.
 	var _cellX = floor(x / display_get_gui_width());
 	var _cellY = floor(y / display_get_gui_height());
 	with(MAP_MANAGER){
@@ -74,7 +87,7 @@ collectible_collect_self = function(){
 		_cellY += rOriginY;
 		if (_cellX < 0 || _cellX >= MAP_GRID_WIDTH || _cellY < 0 || _cellY >= MAP_GRID_HEIGHT) 
 			return;
-			
+		
 		with(cells[# _cellX, _cellY]) {icon = ICON_ITEM_COLLECTED;}
 	}
 }

@@ -22,6 +22,8 @@ flagID = ENERGY_TANK_PIECE0;
 // Set the collectible's name and information to match what this child object represents in the code.
 collectibleName = "Energy Tank Piece";
 collectibleInfo = "A small energy piece. When four are combined, Samus's maximum energy will be increased by 100 units.";
+// Change the fanfare to a shortened version for all energy tank pieces.
+fanfare = mus_minor_item_found;
 // Setup the ambient light source to match the energy tank piece's color scheme.
 baseRadius = 24;
 baseStrength = 0.4;

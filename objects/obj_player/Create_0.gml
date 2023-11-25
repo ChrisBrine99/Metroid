@@ -637,16 +637,10 @@ update_arm_cannon = function(_movement){
 	if ((_useHeld || _usePressed) && !_isAiming){
 		if (PLYR_IN_SOMERSAULT || PLYR_IN_SCREWATK){
 			stateFlags &= ~(PLYR_SOMERSAULT | PLYR_SCREWATK);
+			hspd		= 0.0;
 			reset_light_source();
-			
-			// Stop the somersaulting/screw attack sound effects from playing.
 			audio_stop_sound(jumpSoundID);
 			jumpSoundID = NO_SOUND;
-			
-			// Remove horizontal velocity if no movement inputs are currently held and always remove Samus's
-			// current vertical velocity.
-			if (movement == 0) {hspd = 0.0;}
-			vspd = 0.0;
 		}
 		stateFlags	   |= PLYR_FIRING_CANNON;
 		aimReturnTimer	= 0.0;
@@ -658,7 +652,7 @@ update_arm_cannon = function(_movement){
 	if (curWeapon == curBeam){
 		if (_useHeld && event_get_flag(FLAG_CHARGE_BEAM)){
 			chargeTimer += DELTA_TIME;
-			if (chargeTimer >= PLYR_CHARGE_LOOP_TIME) 
+			if (chargeTimer >= PLYR_CHARGE_LOOP_TIME)
 				chargeTimer = PLYR_CHARGE_LOOP_TIME;
 		
 			// Prevent any normal beam projectile from being created while the charge timer is increasing.
@@ -1783,7 +1777,6 @@ state_airbourne = function(){
 				stateFlags	   &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN | PLYR_SLOW_AIR_MOVEMENT);
 				stateFlags	   |= PLYR_SOMERSAULT;
 				hspd			= get_max_hspd() * image_xscale;
-				vspd			= 0.0;
 				jumpHspdFactor	= 1.0;
 				aimReturnTimer	= 0.0;
 				effectTimer		= PLYR_JUMP_INTERVAL;

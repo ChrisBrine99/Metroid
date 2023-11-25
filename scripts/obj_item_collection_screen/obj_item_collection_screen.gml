@@ -20,32 +20,61 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	
 	// 
 	itemInstance	= noone;
+	soundID			= NO_SOUND;
 	
 	// Stores whatever the in-game HUD's opacity level target was prior to the item collection screen 
 	// opening. It will reset the HUD's target back to this value once the menu is closed.
 	hudAlphaTarget	= 0.0;
+	
+	// 
+	auxAlpha = 0.0;
+	
+	// 
+	infoHeight = 0.0;
 	
 	/// @description 
 	/// @param {Real}	width	
 	/// @param {Real}	height	
 	draw_gui = function(_width, _height){
 		// 
-		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, HEX_BLACK, alpha * 0.5);
-		
-		// 
 		var _screenCenterX = (_width >> 1);
 		var _screenCenterY = (_height >> 1);
-		shader_set_outline(font_gui_medium, RGB_DARK_GREEN);
-		draw_menu_title(font_gui_medium, _screenCenterX, _screenCenterY - 10, fa_center, fa_middle, 
-			HEX_GREEN, RGB_DARK_GREEN, alpha);
 		
+		// 
+		var _backAlpha = alpha * 0.5;
+		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, HEX_BLACK, _backAlpha);
+		draw_sprite_ext(spr_rectangle, 0, 0, _screenCenterY - 14, _width, 13, 0, 
+			HEX_VERY_DARK_BLUE, _backAlpha);
+		
+		// 
+		if (infoHeight != 0.0){
+			draw_sprite_ext(spr_rectangle, 0, 0, _screenCenterY + 2, _width, infoHeight + 8, 
+				0, HEX_VERY_DARK_BLUE, _backAlpha);
+			draw_sprite_ext(spr_rectangle, 0, 0, _screenCenterY + 4, _width, infoHeight + 4, 
+				0, HEX_VERY_DARK_BLUE, _backAlpha);
+		}
+	
+		// 
+		shader_set_outline(font_gui_medium, RGB_DARK_GREEN);
+		draw_menu_title(font_gui_medium, _screenCenterX, _screenCenterY - 14, fa_center, fa_top, 
+			HEX_LIGHT_YELLOW, RGB_DARK_YELLOW, alpha);
+
 		// 
 		outline_set_font(font_gui_small);
 		draw_set_halign(fa_center);
 		draw_text_outline(_screenCenterX, _screenCenterY + 6, info, HEX_WHITE, RGB_GRAY, alpha);
-		draw_text_outline(_screenCenterX, _height - 12, "Press [Z] to continue.", HEX_WHITE, RGB_GRAY, alpha);
-		draw_set_halign(fa_left);
 		
+		// 
+		if (soundID == NO_SOUND){
+			draw_text_outline(_screenCenterX, _height - 12, "Press [Z] to continue.", 
+				HEX_WHITE, RGB_GRAY, auxAlpha * alpha);
+			
+			// 
+			auxAlpha += DELTA_TIME * 0.1;
+			if (auxAlpha > 1.0) {auxAlpha = 1.0;}
+		}
+		
+		draw_set_halign(fa_left);
 		shader_reset();
 	}
 	
@@ -67,9 +96,10 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		
 		// Close out the menu once the collection theme has finished playing; fading it out until its
 		// opacity reaches zero and pinging its destruction after that condition has been met.
-		if (MENU_SELECT_PRESSED){
-			// TODO -- Check if song has finished before allowing item collection screen to close
+		if (MENU_SELECT_PRESSED && soundID == NO_SOUND){
 			menu_set_next_state(state_animation_alpha, [0.0, 0.1, state_destroy_menu]);
+		} else if (!audio_is_playing(soundID)){
+			soundID = NO_SOUND; // Allows the collection screen to be closed by user input.
 		}
 	}
 	
@@ -89,9 +119,10 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	/// @param {Real}	flag		The bit that represents this item's collected state in the code.
 	/// @param {Real}	maxWidth	The maximum possible width that a single line of the info text can be.
 	set_item_data = function(_item, _info, _flag, _maxWidth){
-		title	= _item;
-		info	= string_format_width(_info, _maxWidth, font_gui_small);
-		flag	= _flag;
+		title		= _item;
+		info		= string_format_width(_info, _maxWidth, font_gui_small);
+		infoHeight	= string_height(info);
+		flag		= _flag;
 	}
 }
 
