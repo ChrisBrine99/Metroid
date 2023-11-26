@@ -7,7 +7,7 @@ application_surface_draw_enable(false);
 instance_create_singleton_struct(obj_camera);
 instance_create_singleton_struct(obj_music_handler);
 instance_create_singleton_struct(obj_effect_handler);
-instance_create_singleton_struct(obj_cutscene_manager);
+//instance_create_singleton_struct(obj_cutscene_manager);
 //instance_create_singleton_struct(obj_textbox_handler);
 //instance_create_singleton_struct(obj_control_info);
 instance_create_singleton_struct(obj_game_hud);
@@ -17,11 +17,9 @@ instance_create_singleton_struct(obj_debugger);
 instance_create_singleton_object(0, 0, obj_controller);
 instance_create_singleton_object(0, 0, obj_player);
 instance_create_singleton_object(0, 0, obj_controller);
-with(PLAYER){ // FOR TESTING PURPOSES
-	initialize(state_intro);
-	//entity_set_position(480, 320);
-	entity_set_position(480, 336);
-}
+
+//
+audio_group_load(samus_intro);
 
 // Attempt to load in the game's settings from a saved .ini file. If no file currently exists, default settings
 // will be used instead.
@@ -36,11 +34,10 @@ room_goto(rm_test_main);
 
 /// FOR TESTING
 camera_set_target_object(PLAYER, 0, -16);
-show_debug_overlay(true);
+//show_debug_overlay(true);
 //audio_debug(true);
-texture_debug_messages(true);
+//texture_debug_messages(true);
 audio_set_linked_object(PLAYER);
-
 
 /*with(MAP_MANAGER){
 	// -- "rm_test01" map cells -- //

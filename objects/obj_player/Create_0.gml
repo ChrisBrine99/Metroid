@@ -21,6 +21,7 @@
 #macro	PLYR_ESHIELD_ACTIVE		0x00000400
 #macro	PLYR_PSHIFT_ACTIVE		0x00000800
 // --- Miscellaneous Substates --- //
+#macro	PLYR_PLAY_INTRO_SONG	0x00020000
 #macro	PLYR_SLOW_AIR_MOVEMENT	0x00040000
 #macro	PLYR_SPRITE_FLICKER		0x00080000
 #macro	PLYR_BEAM_VISIBLE		0x00100000
@@ -1473,7 +1474,8 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 state_intro = function(){
 	process_input();
 	var _movement = PLYR_RIGHT_HELD - PLYR_LEFT_HELD;
-	if (_movement != 0){
+	if (_movement != 0 && !audio_is_playing(mus_samus_enters)){
+		audio_group_unload(samus_intro);	// Unload the song from memory as it's no longer required.
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
 		image_xscale = _movement;
@@ -2283,3 +2285,5 @@ event_set_flag(FLAG_BOMBS, true);
 event_set_flag(FLAG_SPRING_BALL, true);
 event_set_flag(FLAG_POWER_BOMBS, true);
 event_set_flag(FLAG_SPACE_JUMP, true);
+event_set_flag(FLAG_SCREW_ATTACK, true);
+jumpSpriteSpin = spr_power_jump0b;
