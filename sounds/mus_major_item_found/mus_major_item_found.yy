@@ -6,7 +6,7 @@
     "name": "music_fanfares",
     "path": "audiogroups/music_fanfares",
   },
-  "bitDepth": 1,
+  "bitDepth": 0,
   "bitRate": 128,
   "compression": 1,
   "conversionMode": 0,

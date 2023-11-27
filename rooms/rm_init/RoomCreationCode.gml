@@ -19,7 +19,7 @@ instance_create_singleton_object(0, 0, obj_player);
 instance_create_singleton_object(0, 0, obj_controller);
 
 //
-audio_group_load(samus_intro);
+audio_group_load(samus_fanfares);
 
 // Attempt to load in the game's settings from a saved .ini file. If no file currently exists, default settings
 // will be used instead.

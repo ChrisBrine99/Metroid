@@ -1474,8 +1474,8 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 state_intro = function(){
 	process_input();
 	var _movement = PLYR_RIGHT_HELD - PLYR_LEFT_HELD;
-	if (_movement != 0 && !audio_is_playing(mus_samus_enters)){
-		audio_group_unload(samus_intro);	// Unload the song from memory as it's no longer required.
+	if (_movement != 0 && !audio_is_playing(mus_samus_enters_b)){
+		audio_group_unload(samus_fanfares);		// Unload the songs from memory as they're no longer required.
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
 		image_xscale = _movement;

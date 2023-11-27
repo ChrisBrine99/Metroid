@@ -98,6 +98,8 @@
     {"name":"inst_244D176F","path":"rooms/rm_test_main/rm_test_main.yy",},
     {"name":"inst_47565C0D","path":"rooms/rm_test_main/rm_test_main.yy",},
     {"name":"inst_6F082999","path":"rooms/rm_test_main/rm_test_main.yy",},
+    {"name":"inst_640DA807","path":"rooms/rm_test_main/rm_test_main.yy",},
+    {"name":"inst_1ACF58A2","path":"rooms/rm_test_main/rm_test_main.yy",},
   ],
   "isDnd": false,
   "layers": [
@@ -200,6 +202,8 @@
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_1CF69B0C","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_missile_launcher","path":"objects/obj_missile_launcher/obj_missile_launcher.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":392.0,"y":328.0,},
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_4C17588F","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_missile_tank_small","path":"objects/obj_missile_tank_small/obj_missile_tank_small.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":824.0,"y":296.0,},
         {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_518ABB71","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":true,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_chute_leech","path":"objects/obj_chute_leech/obj_chute_leech.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":424.0,"y":328.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_640DA807","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_ripper","path":"objects/obj_ripper/obj_ripper.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":464.0,"y":264.0,},
+        {"resourceType":"GMRInstance","resourceVersion":"1.0","name":"inst_1ACF58A2","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"objectId":{"name":"obj_ripper","path":"objects/obj_ripper/obj_ripper.yy",},"properties":[],"rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":296.0,"y":168.0,},
       ],"layers":[],"properties":[],"userdefinedDepth":true,"visible":true,},
     {"resourceType":"GMRTileLayer","resourceVersion":"1.1","name":"Background_Tiles","depth":50,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"properties":[],"tiles":{"SerialiseHeight":0,"SerialiseWidth":0,"TileSerialiseData":[
 ],},"tilesetId":null,"userdefinedDepth":true,"visible":true,"x":0,"y":0,},
