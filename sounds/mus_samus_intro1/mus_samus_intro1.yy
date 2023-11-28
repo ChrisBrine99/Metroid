@@ -1,10 +1,10 @@
 {
   "resourceType": "GMSound",
   "resourceVersion": "1.0",
-  "name": "mus_samus_enters_a",
+  "name": "mus_samus_intro1",
   "audioGroupId": {
-    "name": "samus_intro",
-    "path": "audiogroups/samus_intro",
+    "name": "samus_fanfares",
+    "path": "audiogroups/samus_fanfares",
   },
   "bitDepth": 0,
   "bitRate": 128,
@@ -17,7 +17,7 @@
   },
   "preload": false,
   "sampleRate": 44100,
-  "soundFile": "mus_samus_enters_a.wav",
+  "soundFile": "mus_samus_intro1.wav",
   "type": 1,
   "volume": 1.0,
 }

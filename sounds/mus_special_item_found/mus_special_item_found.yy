@@ -10,7 +10,7 @@
   "bitRate": 128,
   "compression": 1,
   "conversionMode": 0,
-  "duration": 6.510612,
+  "duration": 6.507234,
   "parent": {
     "name": "Fanfares",
     "path": "folders/Resources/Audio/Music/Fanfares.yy",

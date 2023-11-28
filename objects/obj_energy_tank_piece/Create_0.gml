@@ -23,7 +23,7 @@ flagID = ENERGY_TANK_PIECE0;
 collectibleName = "Energy Tank Piece";
 collectibleInfo = "A small energy piece. When four are combined, Samus's maximum energy will be increased by 100 units.";
 // Change the fanfare to a shortened version for all energy tank pieces.
-fanfare = mus_minor_item_found;
+fanfare = mus_missile_tank_found;
 // Setup the ambient light source to match the energy tank piece's color scheme.
 baseRadius = 24;
 baseStrength = 0.4;

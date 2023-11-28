@@ -22,7 +22,7 @@ flagID = LARGE_MISSILE_TANK0;
 collectibleName = "Large Missile Tank";
 collectibleInfo = "Samus's missile capacity has been permanently increased by ten!";
 // Change the fanfare to a shortened version for all large missile tanks.
-fanfare = mus_minor_item_found;
+fanfare = mus_missile_tank_found;
 // Setup the ambient light source to match the energy tank's color scheme.
 baseRadius = 30;
 baseStrength = 0.7;

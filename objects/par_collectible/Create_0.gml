@@ -48,7 +48,7 @@ baseStrength	= 0.0;
 
 // Determines the fanfare that is played upon collection of the item. This can be changed from the default to
 // whatever the item requires (Ex. shorter fanfares for tank pickups, etc.) for its collection music.
-fanfare		= mus_major_item_found;
+fanfare		= mus_item_found;
 
 #endregion
 
