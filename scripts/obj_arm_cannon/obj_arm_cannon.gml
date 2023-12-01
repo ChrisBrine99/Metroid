@@ -84,7 +84,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					if (curWeapon == curMissile) {_imageIndex = 3;}
 					else						 {_imageIndex = 1;}
 					break;
-				case state_airbourne: // Beam positions for whenever Samus is in the air.
+				case state_airborne: // Beam positions for whenever Samus is in the air.
 					if (PLYR_IS_AIMING_UP){
 						if (jumpStartTimer < PLYR_JUMP_START_TIME){ // Temporarily use the standing while aiming up coordinates for the intro animation.
 							_x = -(1 * image_xscale);

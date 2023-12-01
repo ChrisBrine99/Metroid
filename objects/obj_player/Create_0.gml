@@ -205,7 +205,7 @@
 //	impact with the ground (THis bounce doesn't occur while in water without the Gravity Suit equipped).   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PLYR_MBALL_BOUNCE_VSPD	4.5
+#macro	PLYR_MBALL_BOUNCE_VSPD	6.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Simply holds the value for the length of the array storing "obj_player_ghost_effect" structs so the	   //
@@ -576,9 +576,9 @@ process_horizontal_movement = function(_hspdFactor, _hAccelFactor, _snapToZero, 
 
 /// @description 
 /// @param {Bool}	skipAnimTime	Optional skip over start up animation that plays after the player presses the jump button.
-grounded_to_airbourne = function(_skipAnimTime = true){
+grounded_to_airborne = function(_skipAnimTime = true){
 	if (!DNTT_IS_GROUNDED && !PLYR_IN_MORPHBALL){
-		object_set_next_state(state_airbourne);
+		object_set_next_state(state_airborne);
 		entity_set_sprite(jumpSpriteFw, jumpingMask);
 		stateFlags	   &= ~PLYR_MOVING;
 		aimReturnTimer	= 0.0;
@@ -1207,7 +1207,7 @@ fallthrough_floor_collision = function(){
 	}
 	
 	if (_floorCollapsed && !place_meeting(x, y + 1, par_collider)){
-		grounded_to_airbourne(false);
+		grounded_to_airborne(false);
 		hspd = 0.0;
 		vspd = 0.0;
 	}
@@ -1431,8 +1431,8 @@ __entity_apply_hitstun = entity_apply_hitstun;
 entity_apply_hitstun = function(_duration, _damage = 0){
 	__entity_apply_hitstun(_duration, _damage);
 	play_sound_effect(snd_damaged, 0, false, true, 0.5, 0.0, random_range(0.95, 1.05));
-	if (!PLYR_IN_MORPHBALL){ // Make Samus airbourne if she isn't in her morphball at the time of the hitstun.
-		object_set_next_state(state_airbourne);
+	if (!PLYR_IN_MORPHBALL){ // Make Samus airborne if she isn't in her morphball at the time of the hitstun.
+		object_set_next_state(state_airborne);
 		
 		// During a somersault, a sound will be looping. This sound must be stopped upon incurring a hit by
 		// an enemy, damaging, liquid, or environmental hazard since Samus gets forced out of her somersault.
@@ -1559,7 +1559,7 @@ state_room_warp = function(){
 
 /// @description Samus's default or "grounded, but standing" state. She can find herself in this state whenever
 /// she is on the ground, but not in her morphball form OR crouching; aiming up doesn't affect anything either
-/// than the sprite drawn for Samus while she is standing or walking. From here, she can enter her airbourne
+/// than the sprite drawn for Samus while she is standing or walking. From here, she can enter her airborne
 /// state whenever there is no longer a viable floor beneath her, and she can also enter into her crouching
 /// state if the player presses the input they've bound to her "down" action.
 state_default = function(){
@@ -1569,9 +1569,9 @@ state_default = function(){
 	process_input();
 	
 	// Call Samus's gravity function. Then, call the check to see if Samus should transition from grounded to
-	// airbourne. This function will return true when she is no longer grounded to signify the substate change.
+	// airborne. This function will return true when she is no longer grounded to signify the substate change.
 	apply_gravity(PLYR_MAX_FALL_SPEED);
-	if (grounded_to_airbourne()) 
+	if (grounded_to_airborne()) 
 		return;
 	
 	// Another method of activating Samus's airborune state, but this is done by pressing the input set for
@@ -1579,7 +1579,7 @@ state_default = function(){
 	// as her "maxVspd") and she will either enter a standard jump (Horizontal speed lower than 1) or a
 	// somersault jump (Moving fast enough and not firing from Samus's arm cannon).
 	if (PLYR_JUMP_PRESSED && !place_meeting(x, y - 1, par_collider)){
-		object_set_next_state(state_airbourne);
+		object_set_next_state(state_airborne);
 		play_sound_effect(snd_jumpstart, 0, false, true, PLYR_JUMPSTART_VOLUME);
 		if (abs(hspd) >= 1.0 && !PLYR_IS_AIMING){
 			if (event_get_flag(FLAG_SCREW_ATTACK)){
@@ -1710,7 +1710,7 @@ state_default = function(){
 /// directly downward, which is only possible in this state. On top of that, she'll be allowed to jump multiple
 /// timers if the proper item has been acquired. Other than those differences, it will act nearly identical
 /// to the default and morphball states, respectively.
-state_airbourne = function(){
+state_airborne = function(){
 	// First, player input is processed for the frame by calling the function responsible for handling that
 	// logic within the player object. Must be done first to avoid inputs from the previous frame triggering
 	// code on this frame when it really shouldn't have.
@@ -1721,7 +1721,7 @@ state_airbourne = function(){
 	// her horizontal velocity is reset as well as any jumping-specific substate flags.
 	apply_gravity(PLYR_MAX_FALL_SPEED);
 	if (DNTT_IS_GROUNDED){
-		// Reset all variables that were altered by the airbourne state and no longer required. Also reset
+		// Reset all variables that were altered by the airborne state and no longer required. Also reset
 		// Samus's horizontal velocity to make it add to the impact of Samus landing. Also reset the light
 		// source to act as the visor once again.
 		stateFlags	   &= ~(PLYR_SOMERSAULT | PLYR_SCREWATK | PLYR_AIMING_DOWN | PLYR_SLOW_AIR_MOVEMENT);
@@ -1740,7 +1740,7 @@ state_airbourne = function(){
 			jumpSoundID = NO_SOUND;
 		}
 		
-		// Offset Samus by the difference between the bottom of her collision mask while airbourne and her
+		// Offset Samus by the difference between the bottom of her collision mask while airborne and her
 		// collision mask for standing on the ground; ensuring she will be colliding perfectly with the floor
 		// beneath her.
 		var _bboxBottom	= bbox_bottom;
@@ -1769,7 +1769,7 @@ state_airbourne = function(){
 		// Samus cannot be aiming in any direction to enable somersaulting in the air and her space jump.
 		var _hasScrewAttack = event_get_flag(FLAG_SCREW_ATTACK);
 		if (!PLYR_IS_AIMING_DOWN && !PLYR_IS_AIMING_UP){
-			if (!PLYR_IN_SOMERSAULT){ // Entering a somersault jump when airbourne.
+			if (!PLYR_IN_SOMERSAULT){ // Entering a somersault jump when airborne.
 				if (_hasScrewAttack){ // Toggle screw attack and play its sound effect.
 					jumpSoundID = play_sound_effect(snd_screwattack, 0, false, true, 0);
 					audio_sound_gain(jumpSoundID, PLYR_SCREWATK_VOLUME, 150);
@@ -1794,7 +1794,7 @@ state_airbourne = function(){
 	if (PLYR_JUMP_RELEASED && vspd < 0.0) 
 		vspd *= 0.5;
 	
-	// Process horizontal movement while airbourne, which functions a bit different to how Samus moves while
+	// Process horizontal movement while airborne, which functions a bit different to how Samus moves while
 	// on the ground. Her maximum velocity will be reduced to 40% if she isn't somersaulting -- 65% if she is, 
 	// and her acceleration is reduced to 35%. On top of that, switching directions doesn't zero out her velocity.
 	if (!PLYR_IS_MOVING_SLOW && abs(hspd) < 1.0){
@@ -1956,7 +1956,7 @@ state_airbourne = function(){
 	
 	// Assign Samus's jumping animation, which is determined by her aiming substates, and also her "jumpspin"
 	// substate; the latter being applied based on if she was moving before the jump was entered OR if the
-	// jump button is pressed while airbourne and not somersaulting. Aside from that, the sprite will be
+	// jump button is pressed while airborne and not somersaulting. Aside from that, the sprite will be
 	// assigned based on what her aiming direction is: upward, downward (Unique to jumping), or forward.
 	var _substate = stateFlags & (PLYR_FIRING_CANNON | PLYR_AIMING_UP
 								| PLYR_AIMING_DOWN | PLYR_SOMERSAULT);
@@ -2000,7 +2000,7 @@ state_crouching = function(){
 	process_input();
 	
 	// 
-	if (grounded_to_airbourne())
+	if (grounded_to_airborne())
 		return;
 	
 	// By pressing the up OR the jump input, Samus will exit her crouching state.
@@ -2054,7 +2054,7 @@ state_enter_morphball = function(){
 	if (mBallEnterTimer >= PLYR_ENTER_BALL_TIME){
 		mBallEnterTimer = 0.0;
 		
-		// ENTERING MORPHBALL -- Occurs when Samus was previously in her crouching or airbourne states, 
+		// ENTERING MORPHBALL -- Occurs when Samus was previously in her crouching or airborne states, 
 		// respectively. She will be set to her default morphball state, and her substate flags will be 
 		// updated to reflect her new state swap.
 		if (!PLYR_IN_MORPHBALL){
@@ -2068,12 +2068,12 @@ state_enter_morphball = function(){
 		}
 		
 		// EXITING MORPHBALL -- Occurs when Samus was in her default morphball state before entering this one.
-		// She will be set to either her airbourne state if she was in the air when she exited her morphball
+		// She will be set to either her airborne state if she was in the air when she exited her morphball
 		// mode, or her crouching state if she was on the ground.
 		stateFlags &= ~PLYR_MORPHBALL;
 		reset_light_source();
 		if (!DNTT_IS_GROUNDED){
-			object_set_next_state(state_airbourne);
+			object_set_next_state(state_airborne);
 			var _bboxBottom = bbox_bottom;
 			entity_set_sprite(jumpSpriteFw, jumpingMask);
 			y			   -= bbox_bottom - _bboxBottom;
@@ -2251,10 +2251,10 @@ state_phase_shift = function(){
 	// Check if Samus has moved the required distance for a phase shift (Or she was stopped by a collision that
 	// set her horizontal velocity to 0). If so, she'll return to her previous state.
 	if (curShiftDist >= PLYR_PSHIFT_DISTANCE || hspd == 0.0){
-		// Since gravity isn't updated during the ability, a check to see if Samus is airbourne after it has
+		// Since gravity isn't updated during the ability, a check to see if Samus is airborne after it has
 		// ended will occur so she isn't set back to her "grounded" state despite that not being the case.
 		if (place_meeting(x, y + 1, par_collider))	{object_set_next_state(lastState);}
-		else										{object_set_next_state(state_airbourne);}
+		else										{object_set_next_state(state_airborne);}
 		
 		reset_light_source();
 		stateFlags	   &= ~PLYR_PHASE_SHIFT;
