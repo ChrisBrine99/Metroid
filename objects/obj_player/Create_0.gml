@@ -269,7 +269,8 @@
 #macro	LGHT_SCREWATK_Y		   -20
 
 // ------------------------------------------------------------------------------------------------------- //
-//
+//	Constants for the volume of sound effects that Samus can have play when she performs various actions.  //
+//	These values will reduce the sound relative to the current global for all sound effects in the game.   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	PLYR_STEP_MIN_VOLUME	0.12
@@ -1474,7 +1475,7 @@ entity_apply_hitstun = function(_duration, _damage = 0){
 state_intro = function(){
 	process_input();
 	var _movement = PLYR_RIGHT_HELD - PLYR_LEFT_HELD;
-	if (_movement != 0 && !audio_is_playing(mus_samus_intro2)){
+	if (_movement != 0/* && !audio_is_playing(mus_samus_intro1)*/){
 		audio_group_unload(samus_fanfares);		// Unload the songs from memory as they're no longer required.
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
@@ -1778,8 +1779,8 @@ state_airbourne = function(){
 				}
 				stateFlags	   &= ~(PLYR_FIRING_CANNON | PLYR_AIMING_DOWN | PLYR_SLOW_AIR_MOVEMENT);
 				stateFlags	   |= PLYR_SOMERSAULT;
-				hspd			= get_max_hspd() * image_xscale;
-				jumpHspdFactor	= 1.0;
+				hspd			= get_max_hspd() * image_xscale * PLYR_SPIN_HSPD_FACTOR;
+				jumpHspdFactor	= PLYR_SPIN_HSPD_FACTOR;
 				aimReturnTimer	= 0.0;
 				effectTimer		= PLYR_JUMP_INTERVAL;
 			} else if (vspd >= 2.0 && event_get_flag(FLAG_SPACE_JUMP)){ // Utilizing Samus's Space Jump ability (Overwrites the double jump).
@@ -2117,11 +2118,13 @@ state_morphball = function(){
 		if (_vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
 			stateFlags &= ~DNTT_GROUNDED;
 			vspd		= -(_vspd * 0.5);
-		} else{ 
-			// Allows deceleration after the morphball bomb causes horizontal recoil (So long as no movement 
-			// inputs are pressed in that time).
-			if (hspd != 0.0 && vspd == 0.0)
-				stateFlags |= PLYR_MOVING;
+			hspd	   *= 0.5;
+		} else{
+			// Toggle the "moving" substate bit so Samus doesn't decelerate after being blasted horizontally
+			// by her offset from the center of a bomb's explosion. Otherwise, stop Samus's horizontal velocity
+			// upon impact with the ground.
+			if (!PLYR_IS_MOVING && hspd != 0.0)	{stateFlags |= PLYR_MOVING;}
+			else								{hspd = 0.0;}
 		}
 	}
 	
@@ -2139,9 +2142,10 @@ state_morphball = function(){
 	// Handling horizontal movement while in morphball mode, which functions very similar to how said movement
 	// works in Samus's default suit form. Holding left or right (But not both at once) will result in her
 	// moving in the desired direction; releasing said key will slow her down until she is no longer moving.
-	var _hspdFactor = place_meeting(x + sign(movement), y, obj_collider_slope) ? 0.7 : 1.0;
-	var _isGrounded = DNTT_IS_GROUNDED;
-	process_horizontal_movement(_hspdFactor, 0.6, _isGrounded, _isGrounded);
+	var _hspdFactor  = place_meeting(x + sign(movement), y, obj_collider_slope) ? 0.7 : 1.0;
+	var _isGrounded	 = DNTT_IS_GROUNDED;
+	var _accelFactor = _isGrounded ? 0.6 : 0.3;
+	process_horizontal_movement(_hspdFactor, _accelFactor, _isGrounded, _isGrounded);
 
 	// Exiting out of morphball mode, which will call the function that checks for a collision directly above
 	// Samus's head. If there's a collision, she'll be unable to transform back into her standard form.
