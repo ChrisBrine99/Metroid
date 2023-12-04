@@ -1,3 +1,14 @@
+#region Macros that are useful/related to par_item_drop and its children
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the final output volume of the item drops relative to the player's current setting for the  //
+//	game's sound effects and the actual volume of the sound used.										   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ITMDRP_COLLECT_VOLUME	0.7		// 70% of the sound's actual volume
+
+#endregion
+
 #region Editing inherited variables
 
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 

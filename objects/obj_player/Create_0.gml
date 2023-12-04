@@ -601,6 +601,7 @@ grounded_to_airborne = function(_skipAnimTime = true){
 crouch_to_standing = function(){
 	mask_index = standingMask; // Swap masks for accurate collision processing.
 	if (!place_meeting(x, y, par_collider)){
+		play_sound_effect(snd_aimcannon, 0, false, true, PLYR_AIMCANNON_VOLUME, 0.0, 0.8);
 		object_set_next_state(state_default);
 		entity_set_sprite(standSpriteFw, standingMask);
 		stateFlags	   &= ~PLYR_CROUCHED;
@@ -1734,7 +1735,7 @@ state_airborne = function(){
 		
 		// Play a "thump" sound for Samus hitting the floor. On top of that, stop the "jump sound" if one
 		// was currently playing (Only during somersault jump).
-		audio_play_sound(snd_land, 0, false, PLYR_LAND_VOLUME, 0.0, random_range(0.9, 1.10));
+		play_sound_effect(snd_land, 0, false, true, PLYR_LAND_VOLUME, 0.0, random_range(0.9, 1.10));
 		if (jumpSoundID != NO_SOUND){
 			audio_stop_sound(jumpSoundID);
 			jumpSoundID = NO_SOUND;

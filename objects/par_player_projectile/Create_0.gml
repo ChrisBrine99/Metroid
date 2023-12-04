@@ -318,6 +318,7 @@ projectile_enemy_collision = function(_x2, _y2){
 			// immediately destroyed and the for loop through all collider collisions will exit early should
 			// the projectile not have its "IGNORE_ENTITIES" flags set to 1.
 			if (isImmunityArea){
+				play_sound_effect(snd_ineffective, 0, false, true, 0.5);
 				if (!_ignoreEntities){
 					_stateFlags |= ENTT_DESTROYED;
 					break;
@@ -334,9 +335,15 @@ projectile_enemy_collision = function(_x2, _y2){
 				if (ds_list_find_index(_hitEntityIDs, id) != -1)
 					continue;
 				ds_list_add(_hitEntityIDs, id);
-			
+				
 				// 
-				if (!inflict_freeze(_damage, _canFreeze) && (weaknessFlags & _stateFlags))
+				if (!(weaknessFlags & _stateFlags)){
+					play_sound_effect(snd_ineffective, 0, false, true, 0.5);
+					continue;
+				}
+				
+				// 
+				if (!inflict_freeze(_damage, _canFreeze))
 					entity_apply_hitstun(8.0, _damage);
 			}
 		}

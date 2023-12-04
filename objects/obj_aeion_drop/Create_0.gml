@@ -1,12 +1,18 @@
-#region Macros that are useful/related to par_enemy and its children
+#region Macros that are useful/related to obj_aeion_drop
 
-// A macro for determining the lifespan of the missile ammunition in "frames per second". On top of that, there
-// is another other macro for the amount of energy restored for Samus upon collection of the missile ammo.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro for determining the lifespan of the aeion energy in "frames per second". On top of that, there //
+//	is another other macro for the amount of energy restored for Samus upon collection of the aeion.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AEION_DROP_LIFESPAN			750
 #macro	AEION_DROP_RESTORATION		50
 
-// Two macros for the missile drop's ambient light source characteristics; the first being the size of the
-// light and the second being the intensity/brightness of the light that is cast.
+// ------------------------------------------------------------------------------------------------------- //
+//	Two macros for the aeion drop's ambient light source characteristics; the first being the size of the  //
+//	light and the second being the intensity/brightness of the light that is cast.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AEION_DROP_BASE_RADIUS		16.0
 #macro	AEION_DROP_BASE_STRENGTH	0.7
 

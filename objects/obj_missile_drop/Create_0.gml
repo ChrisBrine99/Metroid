@@ -1,12 +1,18 @@
-#region Macros that are useful/related to par_enemy and its children
+#region Macros that are useful/related to obj_missile_drop
 
-// A macro for determining the lifespan of the missile ammunition in "frames per second". On top of that, there
-// is another other macro for the amount of energy restored for Samus upon collection of the missile ammo.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro for determining the lifespan of the missile ammunition in "frames per second". On top of that, //
+//	there is another other macro for the amount of energy restored for Samus upon collection of the ammo.  //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	MISSILE_DROP_LIFESPAN		600
 #macro	MISSILE_DROP_RESTORATION	5
 
-// Two macros for the missile drop's ambient light source characteristics; the first being the size of the
-// light and the second being the intensity/brightness of the light that is cast.
+// ------------------------------------------------------------------------------------------------------- //
+//	Two macros for the missile drop's ambient light source characteristics; the first being the size of	   //
+//	the light and the second being the intensity/brightness of the light that is cast.					   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	MISSILE_DROP_BASE_RADIUS	14.0
 #macro	MISSILE_DROP_BASE_STRENGTH	0.8
 
@@ -42,6 +48,7 @@ item_drop_collect_self = function() {
 		if (numMissiles > maxMissiles) 
 			numMissiles = maxMissiles;
 	}
+	play_sound_effect(snd_missile_pickup, 0, false, true, ITMDRP_COLLECT_VOLUME);
 	stateFlags |= ENTT_DESTROYED;
 }
 

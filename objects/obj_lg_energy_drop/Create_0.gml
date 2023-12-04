@@ -1,12 +1,19 @@
-#region Macros that are useful/related to par_enemy and its children
+#region Macros that are useful/related to obj_lg_energy_drop
 
-// A macro for determining the lifespan of the large energy drop in "frames per second". On top of that, there
-// is another other macro for the amount of energy restored for Samus upon collection of the energy drop.
+
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro for determining the lifespan of the large energy drop in "frames per second". On top of that,  //
+//	there is another other macro for the amount of energy restored for Samus upon collection of the drop.  //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	LG_ENERGY_LIFESPAN			900
 #macro	LG_ENERGY_RESTORATION		30
 
-// Two macros for the large energy drop's ambient light source characteristics; the first being the size of the
-// light and the second being the intensity/brightness of the light that is cast.
+// ------------------------------------------------------------------------------------------------------- //
+//	Two macros for the large energy drop's ambient light source characteristics; the first being the size  //
+//	of the light and the second being the intensity/brightness of the light that is cast.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	LG_ENERGY_BASE_RADIUS		24.0
 #macro	LG_ENERGY_BASE_STRENGTH		0.8
 
@@ -38,6 +45,7 @@ maxHitpoints	= (hitpoints * 0.25);
 /// points of energy upon collection and then destroy itself.
 item_drop_collect_self = function() {
 	with(PLAYER) {update_hitpoints(LG_ENERGY_RESTORATION);}
+	play_sound_effect(snd_energy_pickup, 0, false, true, ITMDRP_COLLECT_VOLUME, 0.0, 0.7);
 	stateFlags |= ENTT_DESTROYED;
 }
 
