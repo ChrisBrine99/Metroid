@@ -13,7 +13,7 @@
   "duration": 0.210045,
   "parent": {
     "name": "Beams",
-    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Beams.yy",
+    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Weapons/Beams.yy",
   },
   "preload": false,
   "sampleRate": 44100,

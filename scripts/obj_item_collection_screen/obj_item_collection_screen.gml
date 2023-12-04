@@ -1,6 +1,12 @@
 #region Initializing any macros that are useful/related to obj_item_collection_screen
 
-#macro ITEM_SCREEN_DEFAULT		obj_item_collection_screen.state_default
+// ------------------------------------------------------------------------------------------------------- //
+//	Macro that stores the value representing the denominator that determines the speed that an item's	   //
+//	description text types itself onto the screen. Each line uses this value as a normalization relative   //
+//	to their total number of characters so all lines finish at the same time							   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ITMSCRN_TEXT_SPEED		15.0
 
 #endregion
 
@@ -164,7 +170,8 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		// 
 		showTimer	= array_create(numLines, 0.0);
 		showSpeed	= array_create(numLines, 0.0);
-		for (var i = 0; i < numLines; i++) {showSpeed[i] = string_length(info[i]) / 25.0;}
+		for (var i = 0; i < numLines; i++) 
+			showSpeed[i] = string_length(info[i]) / ITMSCRN_TEXT_SPEED;
 	}
 }
 

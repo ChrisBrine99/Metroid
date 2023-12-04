@@ -10,10 +10,10 @@
   "bitRate": 128,
   "compression": 0,
   "conversionMode": 0,
-  "duration": 0.898299,
+  "duration": 0.500998,
   "parent": {
-    "name": "Other",
-    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Other.yy",
+    "name": "Weapons",
+    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Weapons.yy",
   },
   "preload": false,
   "sampleRate": 44100,

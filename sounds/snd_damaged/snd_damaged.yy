@@ -12,8 +12,8 @@
   "conversionMode": 0,
   "duration": 0.226939,
   "parent": {
-    "name": "Other",
-    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Other.yy",
+    "name": "Misc",
+    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Misc.yy",
   },
   "preload": false,
   "sampleRate": 44100,

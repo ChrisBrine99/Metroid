@@ -13,7 +13,7 @@
   "duration": 1.855442,
   "parent": {
     "name": "Bombs",
-    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Bombs.yy",
+    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Weapons/Bombs.yy",
   },
   "preload": false,
   "sampleRate": 44100,
