@@ -1857,7 +1857,7 @@ state_airborne = function(){
 			var _bboxBottom		= bbox_bottom; // Store previous coordinate for southern edge of the bounding box.
 			object_set_next_state(state_enter_morphball);
 			entity_set_sprite(ballEnterSprite, morphballMask);
-			play_sound_effect(snd_transform, 0, false, true, PLYR_TRANSFORM_VOLUME);
+			play_sound_effect(snd_enter_morphball, 0, false, true, PLYR_TRANSFORM_VOLUME);
 			y				   -= bbox_bottom - _bboxBottom;
 			stateFlags		   &= ~(PLYR_AIMING_DOWN);
 			jumpStartTimer		= 0.0;
@@ -2020,7 +2020,7 @@ state_crouching = function(){
 	if (PLYR_DOWN_PRESSED && event_get_flag(FLAG_MORPHBALL)){
 		object_set_next_state(state_enter_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
-		play_sound_effect(snd_transform, 0, false, true, PLYR_TRANSFORM_VOLUME);
+		play_sound_effect(snd_enter_morphball, 0, false, true, PLYR_TRANSFORM_VOLUME);
 		return; // State was changed; don't process any more code in this function.
 	}
 	
@@ -2120,7 +2120,7 @@ state_morphball = function(){
 	var _wasAirbourne	= !DNTT_IS_GROUNDED;
 	apply_gravity(PLYR_MAX_FALL_SPEED);
 	if (_wasAirbourne && DNTT_IS_GROUNDED){
-		play_sound_effect(snd_morphland, 0, false, true, PLYR_MORPHLAND_VOLUME, 0.0, random_range(0.95, 1.05));
+		play_sound_effect(snd_land_morphball, 0, false, true, PLYR_MORPHLAND_VOLUME, 0.0, random_range(0.95, 1.05));
 		if (_vspd >= PLYR_MBALL_BOUNCE_VSPD){ // Make the Morphball bounce.
 			stateFlags &= ~DNTT_GROUNDED;
 			vspd		= -(_vspd * 0.5);
@@ -2156,6 +2156,7 @@ state_morphball = function(){
 	// Exiting out of morphball mode, which will call the function that checks for a collision directly above
 	// Samus's head. If there's a collision, she'll be unable to transform back into her standard form.
 	if (PLYR_UP_PRESSED){
+		play_sound_effect(snd_exit_morphball, 0, false, true, PLYR_TRANSFORM_VOLUME);
 		morphball_to_crouch();
 		return; // State potentially changed; exit the current state function prematurely.
 	}

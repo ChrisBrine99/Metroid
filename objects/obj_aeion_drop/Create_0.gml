@@ -45,7 +45,7 @@ maxHitpoints	= (hitpoints * 0.25);
 item_drop_collect_self = function() {
 	with(PLAYER){
 		curAeion += AEION_DROP_RESTORATION;
-		if (curAeion > maxAeion) 
+		if (curAeion > maxAeion)
 			curAeion = maxAeion;
 	}
 	stateFlags |= ENTT_DESTROYED;

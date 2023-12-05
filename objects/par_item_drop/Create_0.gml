@@ -5,7 +5,7 @@
 //	game's sound effects and the actual volume of the sound used.										   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	ITMDRP_COLLECT_VOLUME	0.7		// 70% of the sound's actual volume
+#macro	ITMDRP_COLLECT_VOLUME	0.5		// 50% of the sound's actual volume
 
 #endregion
 

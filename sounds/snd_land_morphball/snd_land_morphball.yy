@@ -1,7 +1,7 @@
 {
   "resourceType": "GMSound",
   "resourceVersion": "1.0",
-  "name": "snd_transform",
+  "name": "snd_land_morphball",
   "audioGroupId": {
     "name": "audiogroup_default",
     "path": "audiogroups/audiogroup_default",
@@ -10,14 +10,14 @@
   "bitRate": 128,
   "compression": 0,
   "conversionMode": 0,
-  "duration": 0.288367,
+  "duration": 0.163605,
   "parent": {
-    "name": "Misc",
-    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Misc.yy",
+    "name": "Movement",
+    "path": "folders/Resources/Audio/Entities/Dynamic/Player/Movement.yy",
   },
   "preload": false,
   "sampleRate": 44100,
-  "soundFile": "snd_transform.wav",
+  "soundFile": "snd_land_morphball.wav",
   "type": 0,
   "volume": 1.0,
 }
