@@ -15,7 +15,8 @@ function object_set_next_state(_nextState){
 /// @param {Asset.GMObject}	object	Asset index for the object that will be created.
 /// @param {Real}			depth	Optional depth level to place the object at. (Default = 30)
 function instance_create_object(_x, _y, _object, _depth = 30){
-	if (!singleton_instance_exists(_object)) {return instance_create_depth(_x, _y, _depth, _object);}
+	if (!singleton_instance_exists(_object)) 
+		return instance_create_depth(_x, _y, _depth, _object);
 	return noone;
 }
 

@@ -144,10 +144,11 @@
 #macro	PLYR_AIM_BUFFER_TIME	8.0		// Time before Samus can aim upward after standing up from a crouch.
 #macro	PLYR_STAND_UP_TIME		10.0	// How long a horizontal movement input must be pressed while crouching to make Samus stand.
 // --- Animation Values --- //
-#macro	PLYR_JUMP_START_TIME	4.0		// Time that the first "frame" of the jump animation will last for.
+#macro	PLYR_JUMP_START_TIME	5.0		// Time that the first "frame" of the jump animation will last for.
 #macro	PLYR_FLIP_START_TIME	8.0		// How long in frames before Samus begins somersaulting after starting a jump.
 #macro	PLYR_CHARGE_LOOP_TIME	80.0	// Time before Samus's charge effect begins its two frame loop.
-#macro	PLYR_ENTER_BALL_TIME	2.0		// How long Samus will be in her "enter/exit" morphball sprite for.
+#macro	PLYR_ENTER_BALL_TIME	2.0		// How long Samus will be in her "enter" morphball animation for.
+#macro	PLYR_EXIT_BALL_TIME		2.0		// This value matches Samus's enter morphball animation length.
 // --- Weapon Values --- //
 #macro	PLYR_CHARGE_TIME		55.0	// Minimum amount of time the beam must be charged for before the fired beam is its charged variant.
 #macro	PLYR_BEAM_SWAP_TIME		15.0	// Time before Samus can use the beam she just swapped to.
@@ -164,8 +165,8 @@
 //	jump after acquiring the High Jump Boots, and her maximum falling speed due to gravity.				   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PLYR_BASE_JUMP		   -5.1
-#macro	PLYR_UPGRADED_JUMP	   -7.0
+#macro	PLYR_BASE_JUMP		   -5.4
+#macro	PLYR_UPGRADED_JUMP	   -7.2
 #macro	PLYR_MAX_FALL_SPEED		8.0
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -251,26 +252,29 @@
 #macro	LGHT_VISOR_X_GENERAL	4 * image_xscale
 #macro	LGHT_VISOR_Y_GENERAL   -33
 // --- Coordinates for Visor While Aiming Down --- //
-#macro	LGHT_VISOR_X_DOWN		7 * image_xscale
-#macro	LGHT_VISOR_Y_DOWN	   -28
+#macro	LGHT_VISOR_X_DOWN		6 * image_xscale
+#macro	LGHT_VISOR_Y_DOWN	   -19
 // --- Coordinates for Visor While Crouching --- //
 #macro	LGHT_VISOR_X_CROUCH		3 * image_xscale
 #macro	LGHT_VISOR_Y_CROUCH	   -23
 // --- Coordinates for Visor During Morphball Enter/Exit Animation --- //
 #macro	LGHT_VISOR_X_TRANSFORM	2 * image_xscale
 #macro	LGHT_VISOR_Y_TRANSFORM -18
+// --- Coordinates for Visor While Airborne --- //
+#macro	LGHT_VISOR_X_JUMP		4 * image_xscale
+#macro	LGHT_VISOR_Y_JUMP	   -24
 // --- Coordinates for Visor During Somersault Animation --- //
 #macro	LGHT_VISOR_X_FLIP0		3 * image_xscale
-#macro	LGHT_VISOR_Y_FLIP0	   -26
+#macro	LGHT_VISOR_Y_FLIP0	   -21
 #macro	LGHT_VISOR_X_FLIP1		6 * image_xscale
-#macro	LGHT_VISOR_Y_FLIP1	   -16
+#macro	LGHT_VISOR_Y_FLIP1	   -11
 #macro	LGHT_VISOR_X_FLIP2	   -5 * image_xscale
-#macro	LGHT_VISOR_Y_FLIP2	   -14
+#macro	LGHT_VISOR_Y_FLIP2	   -9
 #macro	LGHT_VISOR_X_FLIP3	   -7 * image_xscale
-#macro	LGHT_VISOR_Y_FLIP3	   -24
+#macro	LGHT_VISOR_Y_FLIP3	   -19
 // --- Coordinates for Screw Attack Flashes --- //
 #macro	LGHT_SCREWATK_X			0
-#macro	LGHT_SCREWATK_Y		   -20
+#macro	LGHT_SCREWATK_Y		   -12
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Constants for the volume of sound effects that Samus can have play when she performs various actions.  //
@@ -443,7 +447,7 @@ aimReturnTimer = 0.0;			// Tracks amount of time before Samus can return to aimi
 aimSwitchTimer = 0.0;			// Prevents Samus from aiming upward instantly after a crouch by waiting a small amount.
 
 // Animation Timers
-mBallEnterTimer	= 0.0;			// Tracks time that Samus's enter/exit morphball animation has been active.
+mBallTransformTimer	= 0.0;		// Tracks time that Samus's enter/exit morphball animation has been active.
 jumpStartTimer = 0.0;			// Interval used to swap between the two-frame animation that occurs at the beginning of a jump.
 flickerTimer = 0.0;				// Increments to a given value before flipping Samus from being invisible to seen.
 
@@ -618,7 +622,7 @@ crouch_to_standing = function(){
 morphball_to_crouch = function(){
 	mask_index = crouchingMask; // Swap masks for accurate collision processing.
 	if (!place_meeting(x, y, par_collider)){
-		object_set_next_state(state_enter_morphball);
+		object_set_next_state(state_exit_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
 		bombDropTimer	= 0.0;
 		bombExplodeID	= noone;
@@ -1592,8 +1596,8 @@ state_default = function(){
 			stateFlags |= PLYR_SOMERSAULT;
 			effectTimer	= PLYR_JUMP_INTERVAL;
 		}
-		stateFlags &= ~(DNTT_GROUNDED | PLYR_MOVING);
-		vspd		= get_max_vspd();
+		stateFlags	   &= ~(DNTT_GROUNDED | PLYR_MOVING);
+		vspd			= get_max_vspd();
 		return; // State changed; don't process movement/animation within this function.
 	}
 	
@@ -1803,7 +1807,10 @@ state_airborne = function(){
 		if (PLYR_SOMERSAULT)	{jumpHspdFactor = PLYR_SPIN_HSPD_FACTOR;}
 		else					{jumpHspdFactor = PLYR_JUMP_HSPD_FACTOR;}
 	}
+	var _prevDirection = image_xscale;
 	process_horizontal_movement(jumpHspdFactor, 0.35, false, false);
+	if (image_xscale != _prevDirection)
+		lightOffsetX *= image_xscale;
 	
 	// Determine if Samus's downward aim should end depending on how long the player holds either the left
 	// or right movement inputs for; much like how aiming down in the air functions in Super Metroid.
@@ -1844,8 +1851,8 @@ state_airborne = function(){
 		} else{ // Exiting from aiming downward.
 			stateFlags	&= ~PLYR_AIMING_DOWN;
 		}
-		lightOffsetX = LGHT_VISOR_X_GENERAL;
-		lightOffsetY = LGHT_VISOR_Y_GENERAL;
+		lightOffsetX = LGHT_VISOR_X_JUMP;
+		lightOffsetY = LGHT_VISOR_Y_JUMP;
 	} else if (_vInput == 1){
 		if (!PLYR_IS_AIMING_DOWN){ // Entering a downward aiming state.
 			play_sound_effect(snd_aimcannon, 0, false, true, PLYR_AIMCANNON_VOLUME);
@@ -1882,9 +1889,7 @@ state_airborne = function(){
 	// When Samus isn't using her screw attack, the ambient light position is updated to match Samus's visor's
 	// position during her somersaulting jump animation depending on the current frame of the animation that
 	// is visible on-screen.
-	if (!_inSomersault){
-		lightOffsetX = LGHT_VISOR_X_GENERAL;
-	} else if (jumpStartTimer == PLYR_FLIP_START_TIME){
+	if (_inSomersault && jumpStartTimer == PLYR_FLIP_START_TIME){
 		// Update offset of the light to match where Samus's visor is for each frame of her somersault.
 		switch(floor(imageIndex)){
 			case 0: // Visor is on top of the image.
@@ -1924,6 +1929,9 @@ state_airborne = function(){
 			create_ghosting_effect(c_white, 0.5, false);
 			effectTimer -= PLYR_JUMP_INTERVAL;
 		}
+	} else if (!PLYR_IS_AIMING && jumpStartTimer >= PLYR_JUMP_START_TIME){
+		lightOffsetX = LGHT_VISOR_X_JUMP;
+		lightOffsetY = LGHT_VISOR_Y_JUMP;
 	}
 	
 	// Code that is ran when Samus is executing a somersault jump after she has collected the Screw Attack.
@@ -2051,57 +2059,74 @@ state_crouching = function(){
 }
 
 /// @description A passing state that will play Samus's one-frame animation for entering her morphball form.
-/// The time for this transition being determined by the value of the "MORPHBALL_ANIM_TIME" constant. After
-/// that amount of time has elapsed, she'll either enter or exit morphball depending on what state she was in
-/// previously.
+/// The time for this transition being determined by the value of the "PLYR_ENTER_BALL_TIME" macro that is
+/// defined at the top of this event's code.
 state_enter_morphball = function(){
-	mBallEnterTimer += DELTA_TIME;
-	if (mBallEnterTimer >= PLYR_ENTER_BALL_TIME){
-		mBallEnterTimer = 0.0;
-		
-		// ENTERING MORPHBALL -- Occurs when Samus was previously in her crouching or airborne states, 
-		// respectively. She will be set to her default morphball state, and her substate flags will be 
-		// updated to reflect her new state swap.
-		if (!PLYR_IN_MORPHBALL){
-			object_set_next_state(state_morphball);
-			entity_set_sprite(morphballSprite, morphballMask);
-			stateFlags &= ~(PLYR_AIMING_DOWN | PLYR_CROUCHED);
-			stateFlags |=  PLYR_MORPHBALL;
-			curWeapon	= curBeam;
-			lightComponent.isActive = false;
-			return;
-		}
-		
-		// EXITING MORPHBALL -- Occurs when Samus was in her default morphball state before entering this one.
-		// She will be set to either her airborne state if she was in the air when she exited her morphball
-		// mode, or her crouching state if she was on the ground.
-		stateFlags &= ~PLYR_MORPHBALL;
-		reset_light_source();
-		if (!DNTT_IS_GROUNDED){
-			object_set_next_state(state_airborne);
-			var _bboxBottom = bbox_bottom;
-			entity_set_sprite(jumpSpriteFw, jumpingMask);
-			y			   -= bbox_bottom - _bboxBottom;
-			vspd			= 0.0;
-			jumpStartTimer	= PLYR_JUMP_START_TIME;
-			return;
-		}
-		object_set_next_state(state_crouching);
-		entity_set_sprite(crouchSprite, crouchingMask);
-		stateFlags	   |= PLYR_CROUCHED;
-		standingTimer	= 0.0;
-		hspdFraction	= 0.0;
-		hspd			= 0.0;
-		lightOffsetX	= LGHT_VISOR_X_CROUCH;
-		lightOffsetY	= LGHT_VISOR_Y_CROUCH;
-	} else{ // Position ambient light at the visor's position in the sprite.
-		lightOffsetX	= LGHT_VISOR_X_TRANSFORM;
-		lightOffsetY	= LGHT_VISOR_Y_TRANSFORM;
-	}
-	
 	// Despite the playing not being in control during this state, Samus can still be damaged by entities if
 	// she comes into contact with one while in this standard/morphball transition state.
 	player_enemy_collision();
+	
+	// 
+	mBallTransformTimer += DELTA_TIME;
+	if (mBallTransformTimer < PLYR_ENTER_BALL_TIME){
+		lightOffsetX	= LGHT_VISOR_X_TRANSFORM;
+		lightOffsetY	= LGHT_VISOR_Y_TRANSFORM;
+		return;
+	}
+		
+	// 
+	object_set_next_state(state_morphball);
+	entity_set_sprite(morphballSprite, morphballMask);
+	stateFlags		   &= ~(PLYR_AIMING_DOWN | PLYR_CROUCHED);
+	stateFlags		   |=  PLYR_MORPHBALL;
+	curWeapon			= curBeam;
+	mBallTransformTimer = 0.0;
+	
+	// 
+	lightComponent.isActive = false;
+}
+
+/// @description 
+state_exit_morphball = function(){
+	// Despite the playing not being in control during this state, Samus can still be damaged by entities if
+	// she comes into contact with one while in this standard/morphball transition state.
+	player_enemy_collision();
+	
+	// 
+	mBallTransformTimer += DELTA_TIME;
+	if (mBallTransformTimer < PLYR_EXIT_BALL_TIME){
+		lightOffsetX	= LGHT_VISOR_X_TRANSFORM;
+		lightOffsetY	= LGHT_VISOR_Y_TRANSFORM;
+		return;
+	}
+	
+	// 
+	stateFlags		   &= ~PLYR_MORPHBALL;
+	mBallTransformTimer = 0.0;
+	reset_light_source();
+	
+	// 
+	if (!DNTT_IS_GROUNDED){
+		object_set_next_state(state_airborne);
+		var _bboxBottom = bbox_bottom;
+		entity_set_sprite(jumpSpriteFw, jumpingMask);
+		y			   -= bbox_bottom - _bboxBottom;
+		vspd			= 0.0;
+		jumpStartTimer	= PLYR_JUMP_START_TIME;
+		lightOffsetX	= LGHT_VISOR_X_JUMP;
+		lightOffsetY	= LGHT_VISOR_Y_JUMP;
+		return;
+	}
+	
+	// 
+	object_set_next_state(state_crouching);
+	entity_set_sprite(crouchSprite, crouchingMask);
+	stateFlags	   |= PLYR_CROUCHED;
+	standingTimer	= 0.0;
+	hspdFraction	= 0.0;
+	hspd			= 0.0;
+	lightOffsetX	= LGHT_VISOR_X_CROUCH;
+	lightOffsetY	= LGHT_VISOR_Y_CROUCH;
 }
 
 /// @description The state Samus exists in whenever she's inside her morphball. It functions somewhat like 
@@ -2175,7 +2200,7 @@ state_morphball = function(){
 			bombDropTimer = _maxHitpoints + 30.0; // Lasts half a second longer than the power bomb explosion's full length.
 			numPowerBombs--;
 		} else if (event_get_flag(FLAG_BOMBS) && instance_number(obj_player_bomb) < PLYR_MAX_BOMBS){ // Deploying a standard bomb.
-			with(instance_create_object(x, y - 5, obj_player_bomb, depth - 1)) 
+			with(instance_create_object(x, y - 5, obj_player_bomb, depth - 1))
 				initialize(state_default);
 			bombDropTimer = PLYR_BOMB_SET_INTERVAL;
 		}
@@ -2291,7 +2316,7 @@ state_phase_shift = function(){
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
 
-//event_set_flag(FLAG_MORPHBALL, true);
+event_set_flag(FLAG_MORPHBALL, true);
 //event_set_flag(FLAG_BOMBS, true);
 //event_set_flag(FLAG_SPRING_BALL, true);
 //event_set_flag(FLAG_POWER_BOMBS, true);

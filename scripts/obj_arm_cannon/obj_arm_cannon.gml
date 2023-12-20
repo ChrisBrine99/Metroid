@@ -52,7 +52,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 					_visible = other.visible;
 					break;
 				case state_phase_shift: // Determining visibility of arm cannon during a phase shift.
-					_visible = !IS_GROUNDED;
+					_visible = !DNTT_IS_GROUNDED;
 					break;
 				case state_room_warp: // When warping the position isn't updated, but the cannon will be drawn if it was previously.
 					_visible = (PLYR_IS_AIMING && !PLYR_IN_MORPHBALL) || 
@@ -91,7 +91,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 							_y = -43;
 						} else{ // Animation is finished; use standard coordinates for jumping while aiming up.
 							_x = -(1 * image_xscale);
-							_y = -40;
+							_y = -35;
 						}
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
@@ -100,7 +100,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 						break;
 					} else if (PLYR_IS_AIMING_DOWN){
 						_x = 0;
-						_y = -18;
+						_y = -12;
 						// Determines if the player's missiles are active, which will change the image that is 
 						// used to respresent the arm cannon.
 						if (curWeapon == curMissile) {_imageIndex = 7;}
@@ -114,7 +114,7 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 							|| jumpStartTimer < PLYR_JUMP_START_TIME) 
 						_visible = false;
 					_x = (5 * image_xscale);
-					_y = -25;
+					_y = -19;
 					// Determines if the player's missiles are active, which will change the image that is 
 					// used to respresent the arm cannon (Index one and three have the cutout for her hand).
 					if (curWeapon == curMissile) {_imageIndex = 3;}
