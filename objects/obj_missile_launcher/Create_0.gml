@@ -37,14 +37,10 @@ object_add_light_component(x, y, 0, 0, baseRadius, HEX_WHITE, baseStrength);
 
 #region Editing collection function
 
-/// @description Enables the "Missiles" flag, which allows the player to activate Samus's arm cannon's missile
-/// mode and fire missiles from it should they have sufficient ammo to do so. Grants her a starting amount of
-/// 10 missiles on top of enabling use of the mode.
+/// @description Override the default function to grants Samus a starting amount of 10 missiles on top of 
+/// enabling use of those missiles due to "FLAG_MISSILES" being set.
 collectible_apply_effects = function(){
-	with(PLAYER){
-		event_set_flag(FLAG_MISSILES, true);
-		update_maximum_missiles(START_MISSILE_AMOUNT);
-	}
+	with(PLAYER) {update_maximum_missiles(START_MISSILE_AMOUNT);}
 }
 
 #endregion

@@ -35,7 +35,8 @@ fanfare = mus_missile_tank_found;
 
 #region Editing collection function
 
-/// @description 
+/// @description Increment the current number of held energy tank pieces by one. If the value held equals
+/// four, Samus will be granted 100 units to her maximum energy capacity, and it will reset the count to 0.
 collectible_apply_effects = function(){
 	with(PLAYER){
 		energyTankPieces++;

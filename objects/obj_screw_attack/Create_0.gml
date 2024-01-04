@@ -22,12 +22,17 @@ object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_ORANGE, baseStrengt
 
 #region Editing collection function
 
-/// @description 
+/// @description Override the default function in order to allow Samus's somersaulting animation to be replaced
+/// by the relevant Screw Attack animation based on the suit she is currently wearing.
 collectible_apply_effects = function(){
 	with(PLAYER){
-		if (event_get_flag(FLAG_VARIA_SUIT))		{jumpSpriteSpin = spr_power_jump0b;}
-		else if (event_get_flag(FLAG_GRAVITY_SUIT))	{jumpSpriteSpin = spr_power_jump0b;}
-		else										{jumpSpriteSpin = spr_power_jump0b;}
+		var _hasGravity = event_get_flag(FLAG_GRAVITY_SUIT);
+		if (!_hasGravity && event_get_flag(FLAG_VARIA_SUIT)) // Currently wearing the Varia Suit.
+			jumpSpriteSpin = spr_power_jump0b;
+		else if (_hasGravity) // Currently wearing the Gravity Suit.
+			jumpSpriteSpin = spr_power_jump0b;
+		else // Currently wearing the standard Power Suit. 
+			jumpSpriteSpin = spr_power_jump0b;
 	}
 }
 

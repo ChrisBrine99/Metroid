@@ -22,15 +22,22 @@ object_add_light_component(x, y, 0, -2, baseRadius, HEX_LIGHT_BLUE, baseStrength
 
 #region Editing collection function
 
-/// @description 
+/// @description Override the default function in order to allow Samus's somersaulting animation to be replaced
+/// by the relevant Space Jump somersault animation for the suit she currently has equipped.
 collectible_apply_effects = function(){
+	// Don't overwrite the animation if Samus already has the Screw Attack.
 	if (event_get_flag(FLAG_SCREW_ATTACK)) 
 		return;
-		
+	
+	// Update the somersaulting animation should Samus not have the Screw Attack.
 	with(PLAYER){
-		if (event_get_flag(FLAG_VARIA_SUIT))		{jumpSpriteSpin = spr_power_jump0a;}
-		else if (event_get_flag(FLAG_GRAVITY_SUIT))	{jumpSpriteSpin = spr_power_jump0a;}
-		else										{jumpSpriteSpin = spr_power_jump0a;}
+		var _hasGravity = event_get_flag(FLAG_GRAVITY_SUIT);
+		if (!_hasGravity && event_get_flag(FLAG_VARIA_SUIT)) // Currently wearing the Varia Suit.
+			jumpSpriteSpin = spr_power_jump0a;
+		else if (_hasGravity) // Currently wearing the Gravity Suit.
+			jumpSpriteSpin = spr_power_jump0a;
+		else // Currently wearing the standard Power Suit.
+			jumpSpriteSpin = spr_power_jump0a;
 	}
 }
 

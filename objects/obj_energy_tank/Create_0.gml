@@ -31,7 +31,8 @@ object_add_light_component(x, y, 0, -4, baseRadius, HEX_LIGHT_PURPLE, baseStreng
 
 #region Editing collection function
 
-/// @description 
+/// @description Permanently increase Samus's energy capcity by 100 units. Also increases her current energy
+/// by the same amount of units.
 collectible_apply_effects = function(){
 	with(PLAYER) {update_maximum_energy(ENERGY_TANK_CAPACITY);}
 }

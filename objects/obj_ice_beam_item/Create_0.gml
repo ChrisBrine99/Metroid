@@ -22,7 +22,7 @@ object_add_light_component(x, y, 4, -4, baseRadius, HEX_LIGHT_BLUE, baseStrength
 
 #region Editing collection function
 
-/// @description
+/// @description Override the default function in order to make Samus equip the Ice Beam upon collection.
 collectible_apply_effects = function(){
 	with(PLAYER){
 		inputFlags |= (1 << PLYR_ICEBEAM);

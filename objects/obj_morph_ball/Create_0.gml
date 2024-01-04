@@ -10,9 +10,9 @@ entity_set_sprite(spr_morph_ball, spr_empty_mask);
 flagBit = FLAG_MORPHBALL;
 itemID	= ID_MORPH_BALL;
 
-// Setup the ambient light source to match the morph ball's color scheme.
-baseRadius		= 32;
-baseStrength	= 0.7;
+// Setup the ambient light source to match the Morph Ball's color scheme.
+baseRadius = 32;
+baseStrength = 0.7;
 object_add_light_component(x, y, 0, 0, baseRadius, HEX_LIGHT_ORANGE, baseStrength);
 
 #endregion

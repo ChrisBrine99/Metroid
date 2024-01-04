@@ -1,4 +1,6 @@
-// 
+// Make sure the audio group for the various item collection fanfares is loaded into memory upon execution of
+// this event's code. The group is unloaded once a room change occurs, and is only loaded if there is an item
+// within a given room.
 if (!audio_group_is_loaded(music_fanfares))
 	audio_group_load(music_fanfares);
 

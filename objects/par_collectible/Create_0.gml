@@ -86,7 +86,9 @@ fanfare		= mus_item_found;
 
 #region Collection effect function initialization
 
-/// @description 
+/// @description The function that is called upon the item collection screen being closed by the player. It
+/// is only a skeleton function here, but it can be overridden to allow for any number of effects to occur
+/// upon collecting an item.
 collectible_apply_effects = function() {}
 
 #endregion

@@ -32,7 +32,8 @@ object_add_light_component(x, y, 0, -4, baseRadius, HEX_WHITE, baseStrength);
 
 #region Editing collection function
 
-/// @description 
+/// @description Permanently increase Samus's reserve energy capacity by 100 units. The tank itself is empty,
+/// so no energy is actually added to her current reserves.
 collectible_apply_effects = function(){
 	with(PLAYER) {maxReserveHitpoints += RESERVE_TANK_CAPACITY;}
 }

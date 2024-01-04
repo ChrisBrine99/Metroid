@@ -22,7 +22,8 @@ object_add_light_component(x, y, -1, 0, baseRadius, HEX_LIGHT_RED, baseStrength)
 
 #region Editing collection function
 
-/// @description 
+/// @description Override the default function in order to allow Samus's maximum jumping velocity to be
+/// increased by the acquisition of the High Jump Boots.
 collectible_apply_effects = function(){
 	with(PLAYER) {maxVspd = PLYR_UPGRADED_JUMP;}
 }

@@ -14,10 +14,13 @@ var _instance = noone;
 var _length = ds_list_size(global.structs);
 for (var i = 0; i < _length; i++){
 	_instance = global.structs[| i];
-	if (is_undefined(_instance)) {continue;}
-	with(_instance) {cleanup();}
+	if (is_undefined(_instance))
+		continue;
+	with(_instance)
+		cleanup();
 	delete _instance;
 }
+ds_list_clear(global.structs);
 ds_list_destroy(global.structs);
 
 // Remove the map that stored the instance pointers for all singleton objects that existed within the game.
@@ -26,14 +29,20 @@ ds_map_destroy(global.sInstances);
 
 // Destroy the list that held all the currently active instances of menu structs. Their cleanup functions and
 // "pointer" values do not need to be managed because the main list for all struct instances does that already.
+ds_list_clear(global.menuInstances);
 ds_list_destroy(global.menuInstances);
 
-// 
+// Loop through all existing light sources; freeing their pointers from memory before the list is completely
+// cleared and destroyed; freeing it from memory as well.
 _length = ds_list_size(global.lightSources);
-for (var i = 0; i < _length; i++) {delete global.lightSources[| i];}
+for (var i = 0; i < _length; i++) 
+	delete global.lightSources[| i];
+ds_list_clear(global.lightSources);
+ds_list_destroy(global.lightSources);
 
 // Loop through the entire data structure of item data to delete the structs containing said information as
-// they wouldn't be cleared by the loop through "global.structs" since they aren't "true structs".
+// they wouldn't be cleared by the loop through "global.structs" since they aren't "true structs". Then, the
+// map itself is destroyed.
 var _key = ds_map_find_first(global.items);
 while(!is_undefined(_key)){
 	delete global.items[? _key];

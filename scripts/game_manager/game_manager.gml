@@ -1,5 +1,6 @@
 #region Initializing any macros that are useful/related to the game manager
 
+
 // A macro to simplify the look of the code whenever the game manager struct needs to be referenced.
 #macro	GAME_MANAGER			global.gameManager
 
