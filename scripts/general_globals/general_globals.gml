@@ -1,8 +1,10 @@
 #region Item data (Names and descriptions)
 
-// 
+// A global data structure that stores information about an item's name and its description text.
 global.items = ds_map_create();
-// 
+// Creating the structs that will hold the name and information about the various items that player can pick
+// up throughout the game world. These are all held in memory for the entirety of the game's runtime so all
+// the string data never has to be re-initialized after this one time.
 ds_map_add(global.items, ID_MORPH_BALL,	{
 	itemName	: "Morph Ball",
 	itemInfo	: 
@@ -190,6 +192,12 @@ ds_map_add(global.items, ID_PULSE_BOMBS, {
 	itemName	: "Pulse Bombs",
 	itemInfo	: 
 	@""
+});
+ds_map_add(global.items, ID_UNKNOWN_ITEM, {
+	itemName	: "Unknown Item",
+	itemInfo	:
+	@"The item that has been collected is incompatible with the Power Suit.
+	Another upgrade may be required in order to properly use it."
 });
 
 #endregion

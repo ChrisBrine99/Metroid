@@ -1,7 +1,7 @@
 #region Macros utilized by all collectibles
 
 // ------------------------------------------------------------------------------------------------------- //
-// 
+//	Substate flag bits that are unique to par_collectible and all of its children.						   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	CLCT_SHOW_ITEM_INFO		0x00400000
@@ -12,6 +12,7 @@
 //	within the global ds_map that stores item information.												   //
 // ------------------------------------------------------------------------------------------------------- //
 
+#macro	ID_NO_ITEM				0x00
 #macro	ID_MORPH_BALL			0x01
 #macro	ID_SPRING_BALL			0x02
 #macro	ID_SPIDER_BALL			0x03
@@ -42,6 +43,7 @@
 #macro	ID_LOCKON_MISSILES		0x1C
 #macro	ID_BEAM_SPLITTER		0x1D
 #macro	ID_PULSE_BOMBS			0x1E
+#macro	ID_UNKNOWN_ITEM			0x1F
 
 #endregion
 
@@ -61,9 +63,10 @@ visible			= true;
 
 #region Unique variable initialization
 
-// 
+// Variables that determine the flag that is set by the Event Handler upon collection of the item and the info
+// tied to that item found within the global item data structure, respectively.
 flagBit = EVENT_FLAG_INVALID;
-itemID = 0;
+itemID = ID_NO_ITEM;
 
 // Keeps track of the destructible object that is nearest to the collectible. If that desctructible
 // is on top of the item, it will be set to invisible until the destructible above it has been

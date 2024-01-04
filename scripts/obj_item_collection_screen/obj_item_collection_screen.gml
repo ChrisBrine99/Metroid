@@ -134,9 +134,9 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 		
 		// Close out the menu once the collection theme has finished playing; fading it out until its
 		// opacity reaches zero and pinging its destruction after that condition has been met.
-		if (MENU_SELECT_PRESSED && soundID == NO_SOUND){
+		if (soundID == NO_SOUND && MENU_SELECT_PRESSED){
 			menu_set_next_state(state_animation_alpha, [0.0, 0.1, state_destroy_menu]);
-		} else if (!audio_is_playing(soundID)){
+		} else if (soundID != NO_SOUND && !audio_is_playing(soundID)){
 			soundID = NO_SOUND; // Allows the collection screen to be closed by user input.
 		}
 	}

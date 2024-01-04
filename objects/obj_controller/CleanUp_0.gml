@@ -32,6 +32,16 @@ ds_list_destroy(global.menuInstances);
 _length = ds_list_size(global.lightSources);
 for (var i = 0; i < _length; i++) {delete global.lightSources[| i];}
 
+// Loop through the entire data structure of item data to delete the structs containing said information as
+// they wouldn't be cleared by the loop through "global.structs" since they aren't "true structs".
+var _key = ds_map_find_first(global.items);
+while(!is_undefined(_key)){
+	delete global.items[? _key];
+	_key = ds_map_find_next(global.items, _key);
+}
+ds_map_clear(global.items);
+ds_map_destroy(global.items);
+
 // Destroy all of the interactable components that existed within the game's data when it was set to close
 // down. After all the interact components have been freed from memory, the list is destroyed to clear it
 // from memory.

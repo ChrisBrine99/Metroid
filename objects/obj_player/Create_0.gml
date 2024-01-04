@@ -236,11 +236,11 @@
 //  there are already a plethora of macros for various colors), and strength are altered for each one.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	LGHT_VISOR_RADIUS		8
+#macro	LGHT_VISOR_RADIUS		8.0
 #macro	LGHT_VISOR_STRENGTH		0.5
-#macro	LGHT_SCREWATK_RADIUS	80
+#macro	LGHT_SCREWATK_RADIUS	80.0
 #macro	LGHT_SCREWATK_STRENGTH	0.9
-#macro	LGHT_PSHIFT_RADIUS		120
+#macro	LGHT_PSHIFT_RADIUS		120.0
 #macro	LGHT_PSHIFT_STRENGTH	1.0
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -296,7 +296,7 @@
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	ENERGY_LIMIT			1299
-#macro	RESERVE_ENERGY_LIMIT	499
+#macro	RESERVE_ENERGY_LIMIT	500
 #macro	AEION_LIMIT				100
 #macro	MISSILE_LIMIT			250
 #macro	POWER_BOMB_LIMIT		15
