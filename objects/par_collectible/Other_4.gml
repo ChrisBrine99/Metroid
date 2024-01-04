@@ -4,7 +4,7 @@ if (!audio_group_is_loaded(music_fanfares))
 
 // Perform a check to see if the item that this collectible represents has been collected by the player or not.
 // If they've collected it already, it will be deleted so they can't collect it again.
-if (event_get_flag(flagID)){
+if (event_get_flag(flagBit)){
 	instance_destroy(self);
 	return; // Object destroyed; skip all other code.
 }

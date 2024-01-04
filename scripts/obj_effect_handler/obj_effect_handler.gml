@@ -122,8 +122,8 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// obj_effect_handler. In short, it will update any variables/effects that need to be altered on a
 	/// frame-by-frame basis. (Ex. Smoothly fading blur/grain effects in and out)
 	step = function(){
-		blurAmount = value_set_relative(blurAmount, blurAmountTarget, blurAmountModifier);
-		fgAlpha = value_set_linear(fgAlpha, fgAlphaTarget, fgAlphaModifier);
+		blurAmount	= value_set_relative(blurAmount, blurAmountTarget, blurAmountModifier);
+		fgAlpha		= value_set_linear(fgAlpha, fgAlphaTarget, fgAlphaModifier);
 	}
 	
 	/// @description Code that should be placed into the "Draw End" event of whatever object is controlling 

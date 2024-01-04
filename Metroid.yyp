@@ -116,7 +116,7 @@
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
-    "IDEVersion": "2023.11.0.121",
+    "IDEVersion": "2023.11.1.129",
   },
   "resources": [
     {"id":{"name":"font_gui_medium","path":"fonts/font_gui_medium/font_gui_medium.yy",},},
@@ -129,6 +129,7 @@
     {"id":{"name":"snd_somersault","path":"sounds/snd_somersault/snd_somersault.yy",},},
     {"id":{"name":"snd_land_morphball","path":"sounds/snd_land_morphball/snd_land_morphball.yy",},},
     {"id":{"name":"obj_gawron","path":"objects/obj_gawron/obj_gawron.yy",},},
+    {"id":{"name":"general_globals","path":"scripts/general_globals/general_globals.yy",},},
     {"id":{"name":"obj_controller","path":"objects/obj_controller/obj_controller.yy",},},
     {"id":{"name":"obj_cutscene_trigger","path":"objects/obj_cutscene_trigger/obj_cutscene_trigger.yy",},},
     {"id":{"name":"snd_energy_pickup","path":"sounds/snd_energy_pickup/snd_energy_pickup.yy",},},

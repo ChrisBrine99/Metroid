@@ -206,12 +206,12 @@ function obj_debugger(_index) : base_struct(_index) constructor{
 		if (!CAN_SHOW_COLLIDERS) {return;}
 		
 		with(par_dynamic_entity){
-			if (!IS_ON_SCREEN || mask_index == spr_empty_mask) {continue;}
+			if (!ENTT_ON_SCREEN || mask_index == spr_empty_mask) {continue;}
 			draw_sprite_ext(spr_rectangle, 0, bbox_left, bbox_top, (bbox_right - bbox_left) + 1, (bbox_bottom - bbox_top) + 1, 0, collisionMaskColor, 0.5);
 		}
 
 		with(par_static_entity){
-			if (!IS_ON_SCREEN || mask_index == spr_empty_mask) {continue;}
+			if (!ENTT_ON_SCREEN || mask_index == spr_empty_mask) {continue;}
 			draw_sprite_ext(spr_rectangle, 0, bbox_left, bbox_top, (bbox_right - bbox_left) + 1, (bbox_bottom - bbox_top) + 1, 0, collisionMaskColor, 0.5);
 		}
 	}

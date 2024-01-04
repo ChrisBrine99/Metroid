@@ -74,7 +74,7 @@ function instance_find_struct(_id){
 	return noone; // Default value returned if no instance with that ID value was found
 }
 
-/// @description Finds where the desire struct instance is placed within the management list for all currently
+/// @description Finds where the desired struct instance is placed within the management list for all currently
 /// existing instances of structs within the game. If no instance is found, the function will return a -1 to
 /// signify no valid index was found.
 /// @param {Id.Instance}	id

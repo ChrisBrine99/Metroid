@@ -1243,10 +1243,23 @@ destructible_screw_attack_collision = function(){
 /// the collider for the item (If one exists) and checking those collision bounds with the player's. If they
 /// are intersecting, the collectible will be given to the player.
 player_collectible_collision = function(){
+	var _playerID = id;
 	with(instance_nearest(x, y, par_collectible)){
 		mask_index = -1; // Temporarily enable the collectible's collision box to check again the player's.
-		if (!DEST_IS_HIDDEN && place_meeting(x, y, PLAYER)) 
-			collectible_collect_self();
+		if (!DEST_IS_HIDDEN && place_meeting(x, y, _playerID)){
+			var _instanceID	= id;
+			var _itemID		= itemID;
+			var _sound		= audio_play_sound(fanfare, 0, false);
+			var _menu		= instance_create_menu_struct(obj_item_collection_screen);
+			with(_menu){
+				menu_set_next_state(state_animation_alpha, [1.0, 0.1, state_default]);
+				set_item_data(_itemID);
+				hudAlphaTarget		 = GAME_HUD.alphaTarget;
+				itemInstance		 = _instanceID;
+				soundID				 = _sound;
+				GAME_HUD.alphaTarget = 0.0; // Fade HUD out until item is "collected" by the player.
+			}
+		}
 		mask_index = spr_empty_mask;
 	}
 }
@@ -1867,6 +1880,7 @@ state_airborne = function(){
 			play_sound_effect(snd_enter_morphball, 0, false, true, PLYR_TRANSFORM_VOLUME);
 			y				   -= bbox_bottom - _bboxBottom;
 			stateFlags		   &= ~(PLYR_AIMING_DOWN);
+			stateFlags		   |= PLYR_MORPHBALL;
 			jumpStartTimer		= 0.0;
 			return;
 		}
@@ -1929,7 +1943,7 @@ state_airborne = function(){
 			create_ghosting_effect(c_white, 0.5, false);
 			effectTimer -= PLYR_JUMP_INTERVAL;
 		}
-	} else if (!PLYR_IS_AIMING && jumpStartTimer >= PLYR_JUMP_START_TIME){
+	} else if (_vInput == 0 && jumpStartTimer >= PLYR_JUMP_START_TIME){
 		lightOffsetX = LGHT_VISOR_X_JUMP;
 		lightOffsetY = LGHT_VISOR_Y_JUMP;
 	}
@@ -2029,6 +2043,7 @@ state_crouching = function(){
 		object_set_next_state(state_enter_morphball);
 		entity_set_sprite(ballEnterSprite, morphballMask);
 		play_sound_effect(snd_enter_morphball, 0, false, true, PLYR_TRANSFORM_VOLUME);
+		stateFlags |= PLYR_MORPHBALL;
 		return; // State was changed; don't process any more code in this function.
 	}
 	
@@ -2078,7 +2093,6 @@ state_enter_morphball = function(){
 	object_set_next_state(state_morphball);
 	entity_set_sprite(morphballSprite, morphballMask);
 	stateFlags		   &= ~(PLYR_AIMING_DOWN | PLYR_CROUCHED);
-	stateFlags		   |=  PLYR_MORPHBALL;
 	curWeapon			= curBeam;
 	mBallTransformTimer = 0.0;
 	

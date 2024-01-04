@@ -2,7 +2,7 @@
 
 // A macro constant that prevents the deletion of a light source due to its lifespan value being at or going
 // below a value of zero. This value will completely bypass the code for the optional mechanic.
-#macro	INF_LIFESPAN		-75
+#macro	INF_LIFESPAN		-75.0
 
 #endregion
 
@@ -30,21 +30,21 @@ function obj_light_component(_index) : base_struct(_index) constructor{
 	// source is; its color; the "strength" of the light at the origin; the "field of view" for the light,
 	// which allows for directional light sources; and whether or not the light ir persistent--staying in
 	// existence between various rooms.
-	radius = 0;
-	baseRadius = 0;
-	color = HEX_WHITE;
-	strength = 0;
-	isPersistent = false;
-	isActive = true;
+	radius			= 0;
+	baseRadius		= 0;
+	color			= HEX_WHITE;
+	strength		= 0.0;
+	isPersistent	= false;
+	isActive		= true;
 	
 	// The variables that manage the light component's optional flickering effect. This effect will alter
 	// the radius of the light to be somewhere within the percentage range of the minimum and maximum flicker
 	// values. The rate that is changes radius size to produce that "flicker" is based on the value stored in
 	// the "flickerInterval" variable.
-	minFlicker = 1;
-	maxFlicker = 1;
-	flickerInterval = 0;
-	flickerTimer = 0;
+	minFlicker		= 1.0;
+	maxFlicker		= 1.0;
+	flickerInterval = 0.0;
+	flickerTimer	= 0.0;
 	
 	// Stores a timer (60 units = 1 second of real-world time) that counts down until it reaches zero. Once
 	// zero has been reached or surpassed, the light component will automatically be deleted.
@@ -60,7 +60,8 @@ function obj_light_component(_index) : base_struct(_index) constructor{
 		if (lifespan != INF_LIFESPAN){
 			lifespan -= DELTA_TIME;
 			if (lifespan <= 0){
-				with(parentID) {object_remove_light_component(true);}
+				with(parentID) 
+					object_remove_light_component(true);
 				return;
 			}
 		}
@@ -124,6 +125,46 @@ function obj_light_component(_index) : base_struct(_index) constructor{
 
 #region Global functions related to obj_light_component
 
+/// @description Creates an instance of the "obj_light_component" struct; returning its pointer value to
+/// wherever called the function so that it can be referenced, managed, or manipulated further. That pointer
+/// is also stored in a global list that manages all existing light instances which aids with rendering.
+/// @param {Real}			x				Position of the light's origin along the current room's x axis.
+/// @param {Real}			y				Position of the light's origin along the current room's y axis.
+/// @param {Real}			radius			How far from the origin of the light in pixels that the light will propagate.
+/// @param {Real}			color			Determines what color will be used when rendering the light source into the world.
+/// @param {Real}			strength		Represents how bright or dim the light will look. (Ranging from 0.0 to 1.0) 
+/// @param {Bool}			persistent		If true, the light will not be destroyed between rooms.
+function create_light_component(_x, _y, _radius, _color, _strength = 1.0, _persistent = false){
+	var _light = instance_create_struct(obj_light_component);
+	with(_light){
+		x				= _x;
+		y				= _y;
+		radius			= _radius;
+		baseRadius		= _radius;
+		color			= _color;
+		strength		= _strength;
+		isPersistent	= _persistent;
+	}
+	ds_list_add(global.lightSources, _light);
+	return _light;
+}
+
+
+/// @description Removes a light component struct from the game by deleting its pointer from the ds_list that
+/// manages all existing instances of said struct as well as deleting that struct itself before passing back
+/// a value of "noone" (-4) to signify a successful deletion.
+/// @param {Id.Instance}	lightID				The pointer to the light component struct that is being deleted.
+/// @param {Bool}			removePersistent	If true, the persistent flag within the light is ignored and a deletion is carried out regardless of its value.
+function delete_light_component(_lightID, _removePersistent = false){
+	var _index = ds_list_find_index(global.lightSources, _lightID);
+	if (_index == -1)
+		return _lightID;
+		
+	ds_list_delete(global.lightSources, _index);
+	instance_destroy_struct(_lightID);
+	return noone;
+}
+
 /// @description A simple function that creates a new light component struct; adding it to the ID storage
 /// variable found on each entity object while also placing that same ID into the list used to render all of
 /// those light sources from within "obj_effect_handler".
@@ -135,24 +176,13 @@ function obj_light_component(_index) : base_struct(_index) constructor{
 /// @param {Constant.Color}	color		The cover for the light.
 /// @param {Real}			strength	Determines the overall brightness of the light.
 /// @param {Bool}			persistent	If true, the light source will not be deleted between rooms.
-function object_add_light_component(_x, _y, _offsetX, _offsetY, _radius, _color, _strength = 1, _persistent = false){
-	if (lightComponent == noone){
-		lightOffsetX =		_offsetX;
-		lightOffsetY =		_offsetY;
-		lightComponent =	instance_create_struct(obj_light_component);
-		var _parentID =		id;
-		with(lightComponent){
-			x =				_x + _offsetX;
-			y =				_y + _offsetY;
-			radius =		_radius;
-			baseRadius =	_radius;
-			color =			_color;
-			strength =		_strength;
-			isPersistent =	_persistent;
-			parentID =		_parentID;
-		}
-		ds_list_add(global.lightSources, lightComponent);
-	}
+function object_add_light_component(_x, _y, _offsetX, _offsetY, _radius, _color, _strength = 1.0, _persistent = false){
+	if (lightComponent != noone)
+		return;
+		
+	lightOffsetX = _offsetX;
+	lightOffsetY = _offsetY;
+	lightComponent = create_light_component(_x + _offsetX, _y + _offsetY, _radius, _color, _strength, _persistent);
 }
 
 /// @description Another light component function that removes it from memory to prevent any leaking when the
@@ -161,15 +191,9 @@ function object_add_light_component(_x, _y, _offsetX, _offsetY, _radius, _color,
 /// from ever being an issue.
 /// @param {Bool}	removePersistent		Will delete the light source regardless of its persistence flag being set to "true".
 function object_remove_light_component(_removePersistent = false){
-	if (lightComponent != noone && (!lightComponent.isPersistent || _removePersistent)){
-		var _index = ds_list_find_index(global.lightSources, lightComponent);
-		if (_index != -1){
-			instance_destroy_struct(lightComponent);
-			delete global.lightSources[| _index];
-			ds_list_delete(global.lightSources, _index);
-			lightComponent = noone;
-		}
-	}
+	if (lightComponent == noone || (lightComponent.isPersistent && !_removePersistent))
+		return;
+	lightComponent = delete_light_component(lightComponent, _removePersistent);
 }
 
 #endregion

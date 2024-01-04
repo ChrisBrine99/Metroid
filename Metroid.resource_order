@@ -96,6 +96,7 @@
     {"name":"snd_somersault","order":2,"path":"sounds/snd_somersault/snd_somersault.yy",},
     {"name":"snd_land_morphball","order":4,"path":"sounds/snd_land_morphball/snd_land_morphball.yy",},
     {"name":"obj_gawron","order":1,"path":"objects/obj_gawron/obj_gawron.yy",},
+    {"name":"general_globals","order":9,"path":"scripts/general_globals/general_globals.yy",},
     {"name":"obj_cutscene_trigger","order":3,"path":"objects/obj_cutscene_trigger/obj_cutscene_trigger.yy",},
     {"name":"obj_destructible_all","order":1,"path":"objects/obj_destructible_all/obj_destructible_all.yy",},
     {"name":"obj_destructible_bomb","order":3,"path":"objects/obj_destructible_bomb/obj_destructible_bomb.yy",},

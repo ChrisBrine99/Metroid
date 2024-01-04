@@ -13,15 +13,13 @@
 // Inherit the component variables that are initialized in the parent object. Otherwise, any child object will 
 // cause a crash once its "cleanup" event ic called by GameMaker.
 event_inherited();
-// Set the sprite to match the one set in the object section (This one is only set so it can be placed inside
-// the game's room without causing confusion due to the sprite actually being set in code) and also set the bit
-// that the collectible will use.
+
+// Set the proper sprite for the Small Missile Tank and make sure its collision mask is completely disabled. 
+// Then, set the proper value for the Small Missile Tank's internal item ID.
 entity_set_sprite(spr_energy_tank, spr_empty_mask);
-flagID = ENERGY_TANK0;
-// Set the collectible's name and information to match what this child object represents in the code.
-collectibleName = "Energy Tank";
-collectibleInfo = "Samus's maximum energy capacity has been permanently increased by 100 units.";
-// Setup the ambient light source to match the energy tank's color scheme.
+itemID = ID_ENERGY_TANK;
+
+// Setup the ambient light source to match the Energy Tank's color scheme.
 baseRadius = 32;
 baseStrength = 0.5;
 object_add_light_component(x, y, 0, -4, baseRadius, HEX_LIGHT_PURPLE, baseStrength);
@@ -33,12 +31,8 @@ object_add_light_component(x, y, 0, -4, baseRadius, HEX_LIGHT_PURPLE, baseStreng
 
 #region Editing collection function
 
-// Stores the parent function in another variable so it can be called through the overrided version found
-// within this child object. Otherwise, that original function's code would be unaccessible.
-__collectible_collect_self = collectible_collect_self;
-/// @description Increases Samus's current energy and its maximum possible capacity by 100 units.
-collectible_collect_self = function(){
-	__collectible_collect_self();
+/// @description 
+collectible_apply_effects = function(){
 	with(PLAYER) {update_maximum_energy(ENERGY_TANK_CAPACITY);}
 }
 

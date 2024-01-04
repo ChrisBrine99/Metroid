@@ -22,7 +22,6 @@
 function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	// 
 	info		= [];
-	flag		= -1;
 	
 	// Stores the total length of the "info" array and the height in pixels of a single line of text in the
 	// item description font. These are both used in tandem to make the individual lines stored in array "info"
@@ -146,21 +145,25 @@ function obj_item_collection_screen(_index) : par_menu(_index) constructor{
 	/// the item that created the screen in the first place. On top of that, the game's HUD alpha target
 	/// is reset to its value prior to this screen being opened.
 	state_destroy_menu = function(){
-		with(itemInstance) {stateFlags |= ENTT_DESTROYED;}
-		stateFlags			|= MENU_DESTROYED;
+		with(itemInstance){
+			event_set_flag(flagBit, true);
+			collectible_apply_effects();
+			stateFlags |= ENTT_DESTROYED;
+		}
+		stateFlags |= MENU_DESTROYED;
 		GAME_HUD.alphaTarget = hudAlphaTarget;
-		event_set_flag(flag, true);
 	}
 	
 	/// @description 
-	/// @param {String}	item		The name of the item that was collected.
-	/// @param {String}	info		The text that explains what the collectible gives to Samus.
-	/// @param {Real}	flag		The bit that represents this item's collected state in the code.
-	/// @param {Real}	maxWidth	The maximum possible width that a single line of the info text can be.
-	set_item_data = function(_item, _info, _flag, _maxWidth){
-		title		= _item;
-		flag		= _flag;
-		info		= string_split_ext(string_format_width(_info, _maxWidth, font_gui_small), ["\n"], true);
+	/// @param {Real}	itemID		The unique ID value for the item.
+	set_item_data = function(_itemID){
+		// 
+		var _data = ds_map_find_value(global.items, _itemID);
+		if (is_undefined(_data)) {return;}
+		
+		// 
+		title		= _data.itemName;
+		info		= string_split_ext(_data.itemInfo, ["\n"], true);
 		
 		// 
 		numLines	= array_length(info);

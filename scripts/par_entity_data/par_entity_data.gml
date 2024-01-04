@@ -54,7 +54,7 @@
 function entity_cleanup(){
 	//object_remove_audio_component();
 	//object_remove_interact_component();
-	object_remove_light_component();
+	object_remove_light_component(true);
 }
 
 /// @description Renders the entity to the screen using the proper animation system for said animations to not
