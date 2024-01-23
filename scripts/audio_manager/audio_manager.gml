@@ -1,11 +1,18 @@
 #region Initializing any macros that are useful/related to the audio listener
 
-// Macros for referencing the audio manager itself without having to type "global.audioManager" and another for
-// quickly referencing the variable that stores the instance id for the object the audio listener is linked to.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros for referencing the audio manager itself without having to type "global.audioManager" and	   //
+//	another for quickly referencing the variable that stores the instance id for the object the audio	   //
+//	listener is linked to.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AUDIO_MANAGER				global.audioManager
 #macro	AUDIO_LINKED_OBJECT			global.audioManager.linkedObject
 
-// Condenses the code required to reference the audio manager's loaded sounds and custom audio buses.
+// ------------------------------------------------------------------------------------------------------- //
+//	Condenses the code required to reference the audio manager's loaded sounds and custom audio buses.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SOUND_DATA					global.audioManager.soundData
 #macro	AUDIO_BUSES					global.audioManager.audioBuses
 

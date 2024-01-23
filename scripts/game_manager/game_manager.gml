@@ -1,20 +1,37 @@
 #region Initializing any macros that are useful/related to the game manager
 
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the game manager struct needs to be referenced.	   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// A macro to simplify the look of the code whenever the game manager struct needs to be referenced.
 #macro	GAME_MANAGER			global.gameManager
 
-// Macros that allow easy referencing of the game's current and previous states, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that allow easy referencing of the game's current and previous states, respectively.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GAME_CURRENT_STATE		global.gameManager.curState
 #macro	GAME_PREVIOUS_STATE		global.gameManager.lastState
 
-// The constant that will return the delta time value for the current frame to allow for proper 
-// frame-independent physics calculations and value incrementing/decrementing.
+// ------------------------------------------------------------------------------------------------------- //
+//	The constant that will return the delta time value for the current frame to allow for proper		   //
+//	frame-independent physics calculations and value incrementing/decrementing.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	DELTA_TIME				global.gameManager.deltaTime
 
-// Constants that represent each of the game's global states; the priority of said states being determined
-// by the highest value to the lowest value. This means "GSTATE_PAUSED" cannot be overwritten by another 
-// state through normal means.
+// ------------------------------------------------------------------------------------------------------- //
+//
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	TARGET_FPS				60.0
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Constants that represent each of the game's global states; the priority of said states being		   //
+//	determined by the highest value to the lowest value. This means "GSTATE_PAUSED" cannot be overwritten  //
+//	by another state through normal means.																   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GSTATE_NONE				0
 #macro	GSTATE_NORMAL			1
 #macro	GSTATE_MENU				2
@@ -36,12 +53,10 @@ global.gameManager = {
 	curState			: GSTATE_NONE,
 	lastState			: GSTATE_NONE,
 	
-	// The top variable will store the current value for delta timing to apply to all physics calculations
-	// for processing the current game frame, and the target FPS determines how many times a value in processed
-	// in a real-world section (Ex. Increasing a value by 2 every frame with a target FPS of 60 will result in
-	// the value increasing by 120 units every second).
-	deltaTime			: 0,
-	targetFPS			: 60.0,
+	// Stores the current "delta time" which represents the amount of time in seconds between in-game frames.
+	// One unit within the game's physics is equal to 1/60th of a real-world second; meaning physics should be
+	// calculated as if the game is running at 60 frames per second.
+	deltaTime			: 0.0,
 	
 	// Stores the current amount of time in seconds and milliseconds, resepctively. Differs from playtime timer
 	// which only increments when it is active. Total time is always incrementing as long as the "targetFPS"
@@ -60,20 +75,26 @@ global.gameManager = {
 	/// "obj_controller" object for the game. It will update the value of delta time for the new frame, and
 	/// will update the player's in-game playtime if the tracking flag is enabled.
 	begin_step : function(){
-		deltaTime = (delta_time / 1000000) * targetFPS;
-		if (targetFPS == 0.0) {return;}
+		deltaTime = (delta_time / 1000000) * TARGET_FPS;
+		// Limit delta time to framerates of 30 and above to avoid potential physics issues.
+		if (deltaTime >= 2.0)
+			deltaTime = 2.0;
 		
 		// Update the total playtime value regardless of if the in-game time is ticking up or not.
-		var _curMillisecondDelta = deltaTime / targetFPS;
+		var _curMillisecondDelta = deltaTime / TARGET_FPS;
 		totalTimeMillis += _curMillisecondDelta;
 		if (totalTimeMillis >= 1.0){
 			totalTimeMillis -= 1.0;
 			totalTime++;
 		}
 		
-		// Update the current playtime if the timer hasn't been disabled by the current game state (The timer
-		// will always be paused when the game is in a cutscene or completely paused).
-		if (!isTimerActive) {return;}
+		// Only continue through this function is the game's playtime timer is set to active. Otheriwse, the
+		// function will exit out here.
+		if (!isTimerActive) 
+			return;
+			
+		// The playtime counter is enabled, so it will be updated in much the same way as the program's total 
+		// playtime counter logic is handled.
 		playtimeMillis += _curMillisecondDelta;
 		if (playtimeMillis >= 1.0){
 			playtimeMillis -= 1.0;

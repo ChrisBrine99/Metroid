@@ -1,6 +1,9 @@
 #region Initializing any macros that are useful/related to the outline shader handler
 
-// A macro to simplify the look of the code whenever the outline shader struct needs to be referenced.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the outline shader struct needs to be referenced.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SHADER_OUTLINE			global.shaderOutline
 
 #endregion
@@ -14,8 +17,8 @@
 // shader is in use. Otherwise, these IDs would need to be retrieved every frame within the code.
 global.fontTextures = ds_map_create();
 ds_map_add(global.fontTextures, font_gui_small,		font_get_texture(font_gui_small));
-ds_map_add(global.fontTextures, font_gui_large,	font_get_texture(font_gui_large));
-ds_map_add(global.fontTextures, font_gui_medium,		font_get_texture(font_gui_medium));
+ds_map_add(global.fontTextures, font_gui_large,		font_get_texture(font_gui_large));
+ds_map_add(global.fontTextures, font_gui_medium,	font_get_texture(font_gui_medium));
 
 #endregion
 

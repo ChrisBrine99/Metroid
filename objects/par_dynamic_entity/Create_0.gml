@@ -18,11 +18,6 @@
 #macro	DNTT_IS_DESTRUCTIBLE	(stateFlags & DNTT_DESTRUCTIBLE)
 #macro	DNTT_IS_GROUNDED		(stateFlags & DNTT_GROUNDED)
 
-// Flags for the Entity slope collision function to let it know which direction a slope is so the function
-// can calculate collisions according to that direction.
-#macro	DNTT_SLOPE_UPWARD	   -1
-#macro	DNTT_SLOPE_DOWNWARD		1
-
 #endregion
 
 #region Editing default variables, initializing unique variables, and other important initializations
@@ -171,17 +166,12 @@ update_hitpoints = function(_modifier){
 /// that state is flipped and the vspd value is reset to 0.
 /// @param {Real}	maxFallSpeed
 apply_gravity = function(_maxFallSpeed){
-	// Always apply gravity on the Entity, which is cancelled out if they are on the ground. Otherwise, their
-	// vspd will be constantly increased by their vertical acceleration until they hit their terminal velocity.
-	vspd	   += get_vert_accel() * DELTA_TIME;
-	if (vspd > _maxFallSpeed)
-		vspd	= _maxFallSpeed;
-	
-	// Determine if the Entity is currently on the grounded or are airbourne; flipping their "grounded" state
-	// flag to true or false while removing gravity's effect, respectively.
 	var _onGround		= place_meeting(x, y + 1, par_collider);
 	if (!_onGround){
 		stateFlags	   &= ~DNTT_GROUNDED;
+		vspd		   += get_vert_accel() * DELTA_TIME;
+		if (vspd > _maxFallSpeed)
+			vspd		= _maxFallSpeed;
 	} else if (!DNTT_IS_GROUNDED && vspd >= 0.0 && _onGround){
 		stateFlags	   |= DNTT_GROUNDED;
 		vspdFraction	= 0.0;
@@ -241,104 +231,92 @@ apply_frame_movement = function(_collisionFunction = NO_FUNCTION, _ignoreSlopes 
 /// @param {Real}	deltaVspd		Movement along the Y-axis in whole pixels for the current frame.
 /// @param {Bool}	ignoreSlopes	Bool that enables/disables Entity's ability to traverse slopes.
 entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
-	// Check horizontal collision only if the value of "_deltaHspd" is a value other than 0. Otherwise, checks
-	// for collision on the x-axis would be pointless since there isn't any movement occurring.
+	// HANDLING HORIZONTAL COLLISION -- If there is a non-zero value within "_deltaHspd" the branch will be
+	// taken and collision along the x-axis is processed. This includes sloped floors if the entity is allowed
+	// to move along such colliders.
 	if (_deltaHspd != 0){
-		// Store the destination position to avoid having to calculate it on every collision check. Then, check
-		// to see if that destination position is blocked by a collider. If so, a horizontal collision process
-		// will be processed.
 		var _destX = x + _deltaHspd;
 		if (place_meeting(_destX, y, par_collider)){
-			// First, a check for a potential upward slope is processed prior to any horizontal movement
-			// occurring. If there is, the Entity will be moved along it if allowed, and the main chunk of the
-			// horizontal collision processing will occur if a collision is still occurring.
-			if (!_ignoreSlopes) {entity_world_slope_collision(_destX, y, DNTT_SLOPE_UPWARD, false);}
-			if (place_meeting(_destX, y, par_collider)){
-				// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
-				// direction of their current horizontal velocity.
+			// HANDLING UPWARD SLOPES -- This branch is taken by entities that can move along upward slopes.
+			// It utilizes their maximum horizontal velocity to determine the maximum slope height they can
+			// reach before having the collider treated like a wall instead of a slope.
+			if (!_ignoreSlopes){
+				// Move pixel-by-pixel until the maximum allowed slope movement is reached OR there is no
+				// longer an obstruction in front of the entity.
+				var _maxSlope = floor(maxHspd);
+				var _curSlope = 0;
+				while(place_meeting(_destX, y - _curSlope, par_collider)){
+					_curSlope++;
+					if (_curSlope >= _maxSlope)
+						break;
+				}
+					
+				// After determining the maximum required slope movement for the entity, a final collision
+				// check is used to see if that area is free in the event the while loop exited because
+				// of the "(_curSlope == _maxSlope)" line. If the check passes, the entity is moved upward.
+				if (!place_meeting(_destX, y - _curSlope, par_collider))
+					y -= _curSlope;
+			}
+			
+			// HANDLING PIXEL PERFECT MOVEMENT -- If the entity ignores slopes, the branch is taken and they
+			// will be moved pixel-by-pixel until they meet with a collider. Otherwise, another check is made
+			// to see if the entity is colliding along the x-axis relative to the y position that the slope
+			// moved them up to before performing the collision code. Otherwise, the entity is simply moved
+			// to their target x position since no collision was found after the slope movement.
+			if (_ignoreSlopes || place_meeting(_destX, y, par_collider)){
+				// Move pixel-by-pixel until the collider is reached.
 				var _signHspd = sign(hspd);
-				while(!place_meeting(x + _signHspd, y, par_collider))
+				while(!place_meeting(x + _signHspd, y, par_collider)) 
 					x += _signHspd;
 				
-				// If the Entity is destroyed by wall collisions, it will be destroyed here. Then, the function 
-				// is exited early since the remaining code doesn't need to be processed for a new destroyed 
-				// Entity. Otherwise, "_destX" is set to X to prevent further movement and "hspd" is set to 0.
-				if (DNTT_IS_DESTRUCTIBLE){
-					stateFlags |= ENTT_DESTROYED;
-					return;
-				}
-				
-				_destX		 = x;
+				// Clear whatever values were stored for the entity's horizontal velocity.
+				hspd = 0.0;
 				hspdFraction = 0.0;
-				hspd		 = 0.0;
+			} else{ // Final collision check for upward slope failed; entity can move to position with no issue.
+				x = _destX;
 			}
-		} else if (!_ignoreSlopes && DNTT_IS_GROUNDED){
-			// If there is no horizontal collision, a check still needs to be made to see if there is a downward
-			// slope instead. If there is, this function call will move the Entity properly as a result.
-			entity_world_slope_collision(_destX, y + 1, DNTT_SLOPE_DOWNWARD, true);
+		} else{
+			// HANDLING DOWNWARD SLOPES -- The entity will be moved pixel-by-pixel much like how the pixel-
+			// perfect movement works when there is a collision, but there will be an additional check that 
+			// considers if there is also a free spot one pixel below the entity vertically. If so, the entity 
+			// is moved down along the sloped surface.
+			if (!_ignoreSlopes && DNTT_IS_GROUNDED){
+				var _signHspd	= sign(hspd);
+				var _nextX		= abs(_destX - x);
+				while(_nextX != 0){
+					x += _signHspd;
+					_nextX--;
+					
+					// The downward slope check occurs after each movement along the x-axis.
+					if (!place_meeting(_destX, y + 1, par_collider))
+						y++;
+				}
+			} else{ // DEFAULT MOVEMENT -- The entity doesn't move along slopes and should simply move to the target position.
+				x = _destX;
+			}
 		}
-		x = _destX;
 	}
 	
-	// Check vertical collision only if the value of "_deltaVspd" is a value other than 0. Otherwise, checks
-	// for collision on the y-axis would be pointless since there isn't any movement occurring.
+	// HANDLING VERTICAL COLLISION -- Slopes aren't considered for vertical movement, so the entity will simply
+	// be moved pixel-by-pixel until they reach the collider that they are set to bump into. Otherwise, the
+	// entity is just moved to their target position as it is free from obstructions.
 	if (_deltaVspd != 0){
-		// Store the destination position to avoid having to calculate it on every collision check. Then, check
-		// to see if that destination position is blocked by a collider. If so, a vertical collision process
-		// will be processed.
 		var _destY = y + _deltaVspd;
 		if (place_meeting(x, _destY, par_collider)){
 			if (_destY > y) {stateFlags |= DNTT_GROUNDED;}
 			
-			// Move pixel-by-pixel until the Entity is colliding with a collider at the NEXT pixel in the
-			// direction of their current vertical velocity.
-			var _signVspd = sign(_deltaVspd);
+			// Move pixel-by-pixel until the collider is reached.
+			var _signVspd = sign(vspd);
 			while(!place_meeting(x, y + _signVspd, par_collider))
 				y += _signVspd;
-			
-			// If the Entity is destroyed by wall collisions, it will be destroyed here. Then, the function is 
-			// exited early since the remaining code doesn't need to be processed for a new destroyed Entity.
-			// Otherwise, "_destY" is set to Y to prevent further movement and "vspd" is set to 0.
-			if (DNTT_IS_DESTRUCTIBLE){
-				stateFlags |= ENTT_DESTROYED;
-				return;
-			}
-			
-			_destY		 = y;
+				
+			// Clear whatever values were stored for the entity's vertical velocity.
+			vspd = 0.0;
 			vspdFraction = 0.0;
-			vspd		 = 0.0;
+		} else{ // DEFAULT MOVEMENT -- No collision was found along the y-axis; move entity to target position.
+			y = _destY;
 		}
-		y = _destY;
 	}
-}
-
-/// @description Processes collision between a given Entity and sloped surfaces in the game world. It will move
-/// stepwise (upward or downward depending on the direction that is set to be checked) on a per-pixel basis until
-/// the Entity can no longer move up the slope. After that, a final collision check for the desired outcome 
-/// occurs to see if the post-slope destination can be moved to.
-/// @param {Real}	x				Destination x position for the Entity.
-/// @param {Real}	y				Destination y position for the Entity.
-/// @param {Real}	slopeDirection	Determines the "direction" of the slope (1 = downward slope, -1 = upward slope).
-/// @param {Bool}	desiredOutcome	Keeps track of what the final "place_meeting" function should return for the slope to be traversable.
-entity_world_slope_collision = function(_x, _y, _slopeDirection, _desiredOutcome){
-	// Store the maximum possible slope based on the Entity's maximum horizontal velocity. Another local value
-	// will be stored for the current pixel offset of the slope collision check.
-	var _maxSlopeOffset = floor(maxHspd) * _slopeDirection;
-	var _curSlopeOffset	= 0;
-	
-	// Loop and check pixel-by-pixel until the offset matches the maximum possible offset OR the desired outcome
-	// for the collision was met prior to the final collision check. Either outcome will exit the loop.
-	while(place_meeting(_x, _y + _curSlopeOffset, par_collider) != _desiredOutcome){
-		_curSlopeOffset += _slopeDirection;
-		if ((_slopeDirection == DNTT_SLOPE_UPWARD	&& _curSlopeOffset <= _maxSlopeOffset) ||
-			(_slopeDirection == DNTT_SLOPE_DOWNWARD	&& _curSlopeOffset >= _maxSlopeOffset)) 
-				break;
-	}
-	
-	// Perform one last collision check to see if the desired outcome is returned. If not, no slope movement
-	// is possible and the Entity will not be moved.
-	if (place_meeting(_x, _y + _curSlopeOffset, par_collider) == _desiredOutcome)
-		y += _curSlopeOffset;
 }
 
 #endregion

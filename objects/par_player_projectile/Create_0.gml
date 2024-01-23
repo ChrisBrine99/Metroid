@@ -80,12 +80,14 @@ hitEntityIDs	= ds_list_create();
 // Store the pointer for the inherited initialization function within another variable. Then, that variable is
 // used to call the parent function within this child object's own initialization function.
 __initialize = initialize;
-/// @description 
+/// @description Initializes the projectile by applying the substate flags determined by the value of the final
+/// argument in the function, as well as calling the function that sets the initial position of the projectile
+/// relative to the position it was created at (Should be equal to Samus's current position).
 /// @param {Function}	state			The state to initially use for the projectile in question. 
 /// @param {Real}		x				Samus's horizontal position in the room.
 /// @param {Real}		y				Samus's vertical position in the room.
-/// @param {Real}		playerFlags		
-/// @param {Real}		flags			
+/// @param {Real}		playerFlags		A copy of relevant substate flags carried over from Samus.
+/// @param {Real}		flags			Substate flags that should be set by the projectile.
 initialize = function(_state, _x, _y, _playerFlags, _flags){
 	__initialize(_state); // Calls initialize function found in "par_dynamic_entity".
 	stateFlags |= ENTT_DRAW_SELF | _flags;
@@ -96,57 +98,70 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 
 #region Projectile utility functions
 
-/// @description 
+/// @description Determines the position to place the projectile at relative to Samus's position at the time
+/// of her creating it; her substate flags altering the outcome of this function.
 /// @param {Real}	x				Samus's current X position within the room.
 /// @param {Real}	y				Samus's current Y position within the room.
 /// @param {Real}	playerFlags		Tracks Samus's substates that are required for properly positioning the projectile.
 set_initial_position = function(_x, _y, _playerFlags){
-	// 
+	// First, determine if Samus is facing to the right (The "PLYR_FACING_RIGHT" bit being set) and set the
+	// value for this local variable accordingly (-1 to represent left, +1 to represent right).
 	var _facing = (_playerFlags & PLYR_FACING_RIGHT) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
 	
-	// 
+	// If the projectile should move horizontally, this branch will be taken and the proper position will be
+	// determines based on Samus's substate setup relative to the horizontal projectile movement.
 	if (PROJ_MOVING_HORIZONTAL){
 		image_xscale = _facing;	// Flips sprite horizontally if the projectile is moving left.
 		
-		// 
+		// Samus is airborne, so the projectile is placed in the same region that her arm cannon is located
+		// on her jumping sprite that has the arm cannon facing forward.
 		if (!(_playerFlags & DNTT_GROUNDED)){
 			x = _x + (15 * _facing);
-			y = _y - 23;
+			y = _y - 16;
 			return;
 		}
 		
-		// 
+		// Samus is crouched, so the projectile is placed much like how it is for her airborne substate, but
+		// lowered slightly to compensate for her arm cannon being lower in the sprite.
 		if (_playerFlags & PLYR_CROUCHED){
 			x = _x + (14 * _facing);
 			y = _y - 13;
 			return;
 		}
 		
-		// 
+		// Samus is walking in either direction, so place the projectile at the arm cannon's position while in
+		// this substate (It's slightly higher than standing since her arm is higher while walking).
 		if (_playerFlags & PLYR_MOVING){
 			x = _x + (14 * _facing);
 			y = _y - 26;
 			return;
 		}
 		
-		// 
+		// The default position for the projectile if it's moving horizontally. This should only be used by
+		// the projectile if Samus is standing still.
 		x = _x + (15 * _facing);
 		y = _y - 23;
 		return;
 	}
 	
-	// 
+	// The projectile should be moving upward, which only has a difference in vertical offsets depending on if
+	// Samus is airborne or not; the horizontal offset is the same for both conditions.
 	if (PROJ_MOVING_UP){
 		x = _x + (3 * _facing);
-		y = _y - 42;
+		
+		if (!(_playerFlags & DNTT_GROUNDED)) {y = _y - 34;}
+		else								 {y = _y - 42;}
+		
 		image_angle = 90;	// Rotate the projectile so it is facing upward.
 		return;
 	}
 	
-	// 
+	// The projectile is moving downward, which should only occur while airborne. As it is also the most
+	// uncommon way for a projectile to move, it's placed at the bottom of the function to avoid constantly
+	// checking it during other states.
 	if (PROJ_MOVING_DOWN){
 		x = _x + (4 * _facing);
-		y = _y - 9;
+		y = _y - 3;
 		image_angle = 270; // Rotate the projectile so it is facing downward.
 	}
 }

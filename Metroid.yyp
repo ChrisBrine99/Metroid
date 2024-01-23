@@ -182,6 +182,7 @@
     {"id":{"name":"obj_halzyn","path":"objects/obj_halzyn/obj_halzyn.yy",},},
     {"id":{"name":"obj_spring_ball","path":"objects/obj_spring_ball/obj_spring_ball.yy",},},
     {"id":{"name":"obj_super_missiles","path":"objects/obj_super_missiles/obj_super_missiles.yy",},},
+    {"id":{"name":"obj_zoomer","path":"objects/obj_zoomer/obj_zoomer.yy",},},
     {"id":{"name":"obj_super_missile_door","path":"objects/obj_super_missile_door/obj_super_missile_door.yy",},},
     {"id":{"name":"obj_water","path":"objects/obj_water/obj_water.yy",},},
     {"id":{"name":"obj_wavebeam_door","path":"objects/obj_wavebeam_door/obj_wavebeam_door.yy",},},

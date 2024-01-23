@@ -133,7 +133,7 @@ initialize = function(_state){
 	// starting movement as either to the left or right, and storing the initial y position as the mid-point of
 	// its normal movement (When direction is ~0.0 or ~180.0).
 	movement	= choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
-	hFlipTimer	= HLZN_HMOVE_INTERVAL >> 1;
+	hFlipTimer	= HLZN_HMOVE_INTERVAL * 2.0;
 	startY		= y;
 }
 

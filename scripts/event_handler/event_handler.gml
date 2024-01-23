@@ -1,20 +1,33 @@
 #region Initializing any macros that are useful/related to the event handler
 
-// A macro to simplify the look of the code whenever the event flag buffer needs to be referenced.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the event flag buffer needs to be referenced.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	EVENT_HANDLER			global.eventFlags
 
-// Macro that determines the total number of event flags that exist for the game to use. The value is 1/8th
-// of the total number of flags because buffers can only be created in bytes at the smallest. The true value
-// will be the macro times 8, as a result.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macro that determines the total number of event flags that exist for the game to use. The value is     //
+//	1/8th of the total number of flags because buffers can only be created in bytes at the smallest. The   //
+//	true value will be the macro times 8, as a result.													   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	TOTAL_EVENT_FLAG_BYTES	64	// 64 bytes * 8 = 512 flags
 
-// Macro to represent a value that will cause the functions "event_set_flag" and "event_get_flag" to perform
-// no event flag manipulation. Useful for systems that have to automatically call either function in order
-// to account for scenarios where a flag is used and also not used.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macro to represent a value that will cause the functions "event_set_flag" and "event_get_flag" to	   //
+//	perform no event flag manipulation. Useful for systems that have to automatically call either function //
+//	in order to account for scenarios where a flag is used and also not used.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	INVALID_FLAG		   -100
 
-// Item event flags. When these are true, Samus will have access to the abilities they provide and the item
-// objects that exist in the world representing these items for her to collect will also no longer spawn.
+// ------------------------------------------------------------------------------------------------------- //
+//	Item event flags. When these are true, Samus will have access to the abilities they provide and the	   //
+//	item objects that exist in the world representing these items for her to collect will also no longer   //
+//	spawn.																								   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	FLAG_VARIA_SUIT			0x00	// Suit upgrades
 #macro	FLAG_GRAVITY_SUIT		0x01
 #macro	FLAG_HIJUMP_BOOTS		0x02	// Jump upgrades
@@ -41,60 +54,85 @@
 #macro	FLAG_LOCK_ON_MISSILES	0x17
 // Bits 24 to 31 are left unused in case new items are added throughout development.
 
-// Missile tank flags; collecting one in the world will flip this flag and prevent it from spawning again.
-// There are 60 total to find in the game, and will occupy the bits 32-91 as a reault. Each small missile tank
-// object will have its own offset out of 60 relative to this initial bit's position, so this is the only
-// macro that is required.
+// ------------------------------------------------------------------------------------------------------- //
+//	Missile tank flags; collecting one in the world will flip this flag and prevent it from spawning	   //
+//	again. There are 60 total to find in the game, and will occupy the bits 32-91 as a reault. Each small  //
+//	missile tank object will have its own offset out of 60 relative to this initial bit's position, so	   //
+//	this is the only macro that is required.															   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SMALL_MISSILE_TANK0		0x20
 //								 .
 //								 .
 //								0x5B
 
-// The bit flags used for the large missile tanks that can be found in the game, of which there are 12 total.
-// As a result, they will occupy bits 92-103 in the event flag buffer.
+// ------------------------------------------------------------------------------------------------------- //
+//	The bit flags used for the large missile tanks that can be found in the game, of which there are 12	   //
+//	total. As a result, they will occupy bits 92-103 in the event flag buffer.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	LARGE_MISSILE_TANK0		0x5C
 //								 .
 //								 .
 //								0x67
 
-// Power bomb tanks flags. They function just like the small and large missile tank flags, but they occupy the
-// 104-115th bits in the buffer, so the 12 bit flags right after the 12 large missile tank flags.
+// ------------------------------------------------------------------------------------------------------- //
+//	Power bomb tanks flags. They function just like the small and large missile tank flags, but they	   //
+//	occupy the 104-115th bits in the buffer, so the 12 bit flags ahead of the 12 large missile tank flags. //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	POWER_BOMB_TANK0		0x68
 //								 .
 //								 .
 //								0x73
 
-// Bit flags from the 116th bit to the 123rd that are occupied by the complete energy tanks that Samus can pick
-// up in the game world. They function just like every other "expansion item" that can be collected.
+// ------------------------------------------------------------------------------------------------------- //
+//	Bit flags from the 116th bit to the 123rd that are occupied by the complete energy tanks that Samus	   //
+//	can pick up in the game world. They function just like every other "expansion item" that can be		   //
+//	collected.																							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	ENERGY_TANK0			0x74
 //								 .
 //								 .
 //								0x7B
 
-// The bit flags that are occupied by each of the 16 energy tank pieces that the player can find throughout the
-// game's world. They represent 1/4th of a full energy tank, so collecting 4 will expand Samus's energy by 100
-// units. There are sixteen, so bits 124-137 will be used for these collectibles.
+// ------------------------------------------------------------------------------------------------------- //
+//	The bit flags that are occupied by each of the 16 energy tank pieces that the player can find		   //
+//	throughout the game's world. They represent 1/4th of a full energy tank, so collecting 4 will expand   //
+//	Samus's energy by 100 units. There are sixteen, so bits 124-137 will be used for these collectibles.   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	ENERGY_TANK_PIECE0		0x7C
 //								 .
 //								 .
 //								0x89
 
-// Reserve tank bit flags, which will occupy the 138th to the 141st bits in the buffer. They allow Samus to
-// store energy that is consumed when she would've died by her main energy reaching 0.
+// ------------------------------------------------------------------------------------------------------- //
+//	Reserve tank bit flags, which will occupy the 138th to the 141st bits in the buffer. They allow Samus  //
+//	to store energy that is consumed when she would've died by her main energy reaching 0.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	RESERVE_TANK0			0x8A
 //								 .
 //								 .
 //								0x8D
 
-// Bit flags for the aeion tanks that Samus can collect throughout the game world. There are a total of four
-// to find, which expand her aeion storage by 10 units each. Their collection flags occupy the 142nd to the
-// 145th bits in the event flag buffer.
+// ------------------------------------------------------------------------------------------------------- //
+//	Bit flags for the aeion tanks that Samus can collect throughout the game world. There are a total of   //
+//	four to find, which expand her aeion storage by 10 units each. Their collection flags occupy the 142nd //
+//	to the 145th bits in the event flag buffer.															   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AEION_TANK0				0x8E
 //								 .
 //								 .
 //								0x91
 
+// ------------------------------------------------------------------------------------------------------- //
 // 
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	FLAG_SPECIAL_DOOR0		0x96
 
 #endregion

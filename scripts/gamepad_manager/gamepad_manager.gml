@@ -1,12 +1,18 @@
 #region Initializing any macros that are useful/related to the gamepad manager
 
-// A macro to simplify the look of the code whenever the gamepad manager struct needs to be referenced.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the gamepad manager struct needs to be referenced.   //	
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GAMEPAD_MANAGER			global.gamepadManager
 
-// Macros that shorten the code needed to reference these important values from other objects. The first
-// will return the ID for the connected gamepad that was first found by the game, and the second will
-// return the state of the gamepad's "activity" flag to determine if keyboard input is polled or not.
-#macro	GAMEPAD_ID				global.gamepadManager.gamepadID
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that shorten the code needed to reference these important values from other objects. The first  //
+//	will return the ID for the connected gamepad that was first found by the game, and the second will     //
+//	return the state of the gamepad's "activity" flag to determine if keyboard input is polled or not.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	GAMEPAD_ID				global.gamepadManager.deviceID
 #macro	GAMEPAD_IS_ACTIVE		global.gamepadManager.isActive
 
 #endregion
@@ -32,11 +38,16 @@ global.gamepadManager = {
 	/// controller hotswapping to work within the game. In short, it does nothing if no device exists, and
 	/// it will switch the "isActive" flag to true or false depending on the last detected input.
 	step : function(){
-		if (deviceID == -1) {return;}
+		if (deviceID == -1) 
+			return;
 		
 		var _isActive = isActive;
-		if ((!isActive && gamepad_any_button(deviceID, true)) || (isActive && keyboard_check_pressed(vk_anykey))) {isActive = !isActive;}
-		if (_isActive != isActive) {CONTROL_INFO.initialize_input_icons();}
+		if ((!isActive && gamepad_any_button(deviceID, true)) 
+				|| (isActive && keyboard_check_pressed(vk_anykey))) 
+			isActive = !isActive;
+			
+		if (_isActive != isActive)
+			CONTROL_INFO.initialize_input_icons();
 	},
 }
 

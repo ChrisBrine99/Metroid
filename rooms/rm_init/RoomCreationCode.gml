@@ -34,7 +34,7 @@ room_goto(rm_test_main);
 
 /// FOR TESTING
 camera_set_target_object(PLAYER, 0, -16);
-//show_debug_overlay(true);
+show_debug_overlay(true);
 //audio_debug(true);
 //texture_debug_messages(true);
 audio_set_linked_object(PLAYER);

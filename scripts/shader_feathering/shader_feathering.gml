@@ -1,6 +1,9 @@
 #region Initializing any macros that are useful/related to the feathering shader
 
-// A macro to simplify the look of the code whenever the feathering shader struct needs to be referenced.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the feathering shader needs to be utilized.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SHADER_FEATHERING		global.shaderFeathering
 
 #endregion

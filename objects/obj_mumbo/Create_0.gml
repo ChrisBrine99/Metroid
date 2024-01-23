@@ -4,7 +4,7 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// The mumbo will move left to right; reversing its horizontal direction once it hits a wall. However, it will
+// The Mumbo will move left to right; reversing its horizontal direction once it hits a wall. However, it will
 // also slowly move towards Samus's direction along the vertical axis, so its max vertical velocity is set low.
 maxHspd = 0.5;
 maxVspd = 0.05;

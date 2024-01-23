@@ -1,9 +1,15 @@
 #region Initializing any macros that are useful/related to the game settings struct
 
-// A macro to simplify the look of the code whenever the game settings struct needs to be referenced.
+// ------------------------------------------------------------------------------------------------------- //
+//	A macro to simplify the look of the code whenever the game settings struct needs to be referenced.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GAME_SETTINGS			global.gameSettings
 
-// Stores the strings that represent each of the sections found within the game's "settings.ini" file.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the strings that represent each of the sections found within the game's "settings.ini" file.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SECTION_VIDEO			"VIDEO"
 #macro	SECTION_AUDIO			"AUDIO"
 #macro	SECTION_ACCESSIBILITY	"ACCESSIBILITY"
@@ -11,8 +17,11 @@
 #macro	SECTION_GAMEPAD			"GAMEPAD"
 #macro	SECTION_GAMEPAD_EXT		"GAMEPAD EXTRAS"
 
-// The bits that enable/disable certain features of the game's video settings. If they are set, the effects
-// will be active. If not set, none of the unset effects are applied (Bloom, aberration, etc.).
+// ------------------------------------------------------------------------------------------------------- //
+//	The bits that enable/disable certain features of the game's video settings. If they are set, the	   //
+//	effects will be active. If not set, none of the unset effects are applied (Bloom, aberration, etc.).   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	FULL_SCREEN				0
 #macro	VERTICAL_SYNC			1
 #macro	BLOOM_EFFECT			2
@@ -20,10 +29,16 @@
 #macro	FILM_GRAIN_FILTER		4
 #macro	SCANLINE_FILTER			5
 
-// The single bit for audio settings that will determine if music should be audible or not.
+// ------------------------------------------------------------------------------------------------------- //
+//	The single bit for audio settings that will determine if music should be audible or not.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	PLAY_MUSIC				10
 
-// The bits that store the flags for a few of the game's accessibility settings. 
+// ------------------------------------------------------------------------------------------------------- //
+//	The bits that store the flags for a few of the game's accessibility settings.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	OBJECTIVE_HINTS			20
 #macro	ITEM_HIGHLIGHTING		21
 #macro	INTERACTION_PROMPTS		22
@@ -31,20 +46,28 @@
 #macro	IS_AIM_TOGGLE			24
 #macro	SWAP_MOVEMENT_STICK		25
 
-// The bit that enables vibration for a connected gamepad (If that gamepad's vibrators can be interfaced by
-// GameMaker's code).
+// ------------------------------------------------------------------------------------------------------- //
+//	The bit that enables vibration for a connected gamepad.												   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GAMEPAD_VIBRATION		30
 
-// Unique values for the aspect ratios that are supported in the game similar to how all assets in the engine
-// are assigned a unique value starting from 0.
+// ------------------------------------------------------------------------------------------------------- //
+//	Unique values for the aspect ratios that are supported in the game similar to how all assets in the	   //
+//	engine are assigned a unique value starting from 0 (THESE ARE UNUSED IN THIS PROJECT).				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	AR_SIXTEEN_BY_NINE		800
 #macro	AR_SIXTEEN_BY_TEN		801
 #macro	AR_THREE_BY_TWO			802
 #macro	AR_SEVEN_BY_THREE		803
 
-// The values that will tell the game settings which volume group needs to be dealt with when calling the
-// "game_get_audio_group" function. The bottom three will all have their volume adjusted based on the global
-// volume's current value.
+// ------------------------------------------------------------------------------------------------------- //
+//	The values that will tell the game settings which volume group needs to be dealt with when calling the //
+//	"game_get_audio_group" function. The bottom three will all have their volume adjusted based on the	   //
+//	global volume's current value.																		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GLOBAL_VOLUME			0
 #macro	MUSIC_VOLUME			1
 #macro	SOUND_VOLUME			2
@@ -52,8 +75,12 @@
 #macro	AMBIENCE_VOLUME			4
 #macro	UI_VOLUME				5
 
-// The positions within the buffer for the player's current input configuration that each of these actions' 
-// respective keybindings are stored. Each is a 2-byte value storing each input's virtual key code.
+// ------------------------------------------------------------------------------------------------------- //
+//	The positions within the buffer for the player's current input configuration that each of these		   //
+//	actions' respective keybindings are stored. Each is a 2-byte value storing each input's virtual key    //
+//	code.																								   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	KEY_GAME_RIGHT			0		// Player movement inputs
 #macro	KEY_GAME_LEFT			2
 #macro	KEY_GAME_UP				4		// Aiming/morphball mode inputs
@@ -83,8 +110,11 @@
 #macro	KEY_AUX_MENU_LEFT		56
 #macro	KEY_PAUSE				58		// Accesses the pause menu while in-game
 
-// Macros to simply the typing required to check each respective input binding for the keyboard whenever
-// player input needs to be processed in the code.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros to simply the typing required to check each respective input binding for the keyboard whenever  //
+//	player input needs to be processed in the code.														   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	KEYCODE_GAME_RIGHT		game_get_input_binding(KEY_GAME_RIGHT)		// Player movement inputs 
 #macro	KEYCODE_GAME_LEFT		game_get_input_binding(KEY_GAME_LEFT)
 #macro	KEYCODE_GAME_UP			game_get_input_binding(KEY_GAME_UP)			// Aiming/morphball mode inputs
@@ -113,21 +143,28 @@
 #macro	KEYCODE_AUX_MENU_RIGHT	game_get_input_binding(KEY_AUX_MENU_RIGHT)	// Auxiliary inputs for moving left and right in a menu
 #macro	KEYCODE_AUX_MENU_LEFT	game_get_input_binding(KEY_AUX_MENU_LEFT)	
 #macro	KEYCODE_PAUSE			game_get_input_binding(KEY_PAUSE)
-																			
-// The positions within the buffer for the player's current input configuration that each of these actions'
-// respective gamepad input bindings are stored. Each is a 2-byte value storing the values for Game Maker's
-// constants for gamepad input bindings that match up to what the player has configured for their gamepad
-// control scheme.
+
+// ------------------------------------------------------------------------------------------------------- //
+//	The positions within the buffer for the player's current input configuration that each of these		   //
+//	actions' respective gamepad input bindings are stored. Each is a 2-byte value storing the values for   //
+//	Game Maker's constants for gamepad input bindings that match up to what the player has configured for  //
+//	their gamepad control scheme.																		   //
+// ------------------------------------------------------------------------------------------------------- //
 
 // TODO -- Add macros for gamepad input binding position within buffer
 
-// Macros to simply the typing required to check each respective input binding for the connected and active
-// gamepad whenever player input needs to be processed in the code.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros to simply the typing required to check each respective input binding for the connected and	   //
+//	active gamepad whenever player input needs to be processed in the code.								   //
+// ------------------------------------------------------------------------------------------------------- //
 
 // TODO -- Add gamepad macros for inputs here
 
-// A shorten-downed version that returns the volume for each of the four groups; the bottom three being 
-// influenced by what the current global volume is (Values all range from 0 to 1).
+// ------------------------------------------------------------------------------------------------------- //
+//	A shorten-downed version that returns the volume for each of the four groups; the bottom three being   //
+//	influenced by what the current global volume is (Values all range from 0.0 to 1.0).					   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	GET_GLOBAL_VOLUME		game_get_group_volume(GLOBAL_VOLUME)
 #macro	GET_MUSIC_VOLUME		game_get_group_volume(MUSIC_VOLUME)
 #macro	GET_SOUND_VOLUME		game_get_group_volume(SOUND_VOLUME)
@@ -135,16 +172,22 @@
 #macro	GET_AMBIENCE_VOLUME		game_get_group_volume(AMBIENCE_VOLUME)
 #macro	GET_UI_VOLUME			game_get_group_volume(UI_VOLUME)
 
-// Macros that provide an easy method of referencing various setting values without having to constantly
-// typing out "global.gameSettings.*" for each of these values whenever they are needed.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that provide an easy method of referencing various setting values without having to constantly  //
+//	typing out "global.gameSettings.*" for each of these values whenever they are needed.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	RESOLUTION_SCALE		global.gameSettings.resolutionScale
-#macro	ASPECT_RATIO			global.gameSettings.aspectRatio
+#macro	ASPECT_RATIO			global.gameSettings.aspectRatio			// UNUSED IN THIS PROJECT
 #macro	BRIGHTNESS				global.gameSettings.brightness
 #macro	GAMMA					global.gameSettings.gamma
 #macro	TEXT_SPEED				global.gameSettings.textSpeed
 
-// Macros that allow easy interfacing with the difficulty-reliant variables that aren't stored as
-// individual bits in the "difficultyFlags" variable.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that allow easy interfacing with the difficulty-reliant variables that aren't stored as		   //
+//	individual bits in the "difficultyFlags" variable.													   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	PLAYER_DAMAGE_MOD		global.gameSettings.pDamageModifier
 #macro	ENEMY_DAMAGE_MOD		global.gameSettings.eDamageModifier
 
