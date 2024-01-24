@@ -1,2 +1,2 @@
 stateFlags |= ENTT_DESTROYED;
-visible = false;
+visible		= false;

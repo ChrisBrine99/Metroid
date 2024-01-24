@@ -4,7 +4,7 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-//
+// 
 maxHspd			= 0.6;	// Used for all movement directions.
 maxVspd			= 4.0;	// Used only while falling.
 
@@ -40,7 +40,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_zoomer, -1);
-	create_general_collider();
+	create_weapon_collider(-8, -9, 14, 15, false);
 	
 	// Set up weakness flags such that the Zoomer is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (
@@ -65,11 +65,10 @@ initialize = function(_state){
 	// 
 	movement = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
 	if (movement == MOVE_DIR_LEFT){
-		direction = 180.0;
-		hspd = -maxHspd;
+		hspd		= -maxHspd;
 	} else{
-		direction = 0.0;
-		hspd = maxHspd;
+		direction  -= 180.0;
+		hspd		= maxHspd;
 	}
 }
 
@@ -77,43 +76,70 @@ initialize = function(_state){
 
 #region
 
+/// @description 
+/// @param {Real}	deltaHspd
+/// @param {Real}	deltaVspd
+/// @param {Bool}	ignoreSlopes
 zoomer_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
-	if (_deltaHspd != 0){
-		var _destX		= x + _deltaHspd;
-		var _signHspd	= sign(hspd);
-		if (place_meeting(_destX, y, par_collider)){
-			while(!place_meeting(x + _signHspd, y, par_collider))
+	if (_deltaHspd == 0 && _deltaVspd == 0)
+		return;
+	
+	// 
+	if ((movement == MOVE_DIR_RIGHT && (direction == DIRECTION_NORTHEAST || direction == DIRECTION_SOUTHWEST)) 
+			|| (movement == MOVE_DIR_LEFT && (direction == DIRECTION_NORTHWEST || direction == DIRECTION_SOUTHEAST))){
+		zoomer_y_axis_collision(y + _deltaVspd);
+		zoomer_x_axis_collision(x + _deltaHspd);
+		return;
+	}
+	
+	// 
+	zoomer_x_axis_collision(x + _deltaHspd);
+	zoomer_y_axis_collision(y + _deltaVspd);
+}
+
+/// @description 
+/// @param {Real}	target	
+zoomer_x_axis_collision = function(_target){
+	if (_target == x) {return;}
+	
+	var _signHspd	= sign(hspd);
+	if (place_meeting(_target, y, par_collider)){
+		while(!place_meeting(x + _signHspd, y, par_collider))
+			x += _signHspd;
+			
+	} else{
+		while(x != _target){
+			if (!place_meeting(x + _signHspd, y, par_collider))
 				x += _signHspd;
-		} else{
-			while(_destX != x){
-				if (!place_meeting(x + _signHspd, y, par_collider))
-					x += _signHspd;
-				
-				if (!place_meeting(x, y + lengthdir_y(1, direction), par_collider)){
-					hspd		 = 0.0;
-					hspdFraction = 0.0;
-					break;
-				}
+			
+			if (!place_meeting(x, y + lengthdir_y(1, direction), par_collider)){
+				hspd		 = 0.0;
+				hspdFraction = 0.0;
+				break;
 			}
 		}
 	}
+}
+
+/// @description
+/// @param {Real}	target
+zoomer_y_axis_collision = function(_target){
+	if (_target == y) {return;}
 	
-	if (_deltaVspd != 0){
-		var _destY		= y + _deltaVspd;
-		var _signVspd	= sign(vspd);
-		if (place_meeting(x, _destY, par_collider)){
-			while(!place_meeting(x, y + _signVspd, par_collider))
+	var _signVspd	= sign(vspd);
+	if (place_meeting(x, _target, par_collider)){
+		while(!place_meeting(x, y + _signVspd, par_collider))
+			y += _signVspd;
+
+	} else{
+		while(y != _target){
+			if (!place_meeting(x, y + _signVspd, par_collider))
 				y += _signVspd;
-		} else{
-			while(_destY != y){
-				if (!place_meeting(x, y + _signVspd, par_collider))
-					y += _signVspd;
-				
-				if (!place_meeting(x + lengthdir_x(1, direction), y, par_collider)){
-					vspd		 = 0.0;
-					vspdFraction = 0.0;
-					break;
-				}
+			
+			if (!place_meeting(x + lengthdir_x(1, direction), y, par_collider)){
+				vspd		 = 0.0;
+				vspdFraction = 0.0;
+				break;
 			}
 		}
 	}
@@ -125,15 +151,15 @@ get_next_x_position = function(_direction){
 	switch(_direction){
 		default:
 			return 0;
-		case 0.0:
-		case 45.0:
-		case 315.0:
-		case 360.0:
-		case -45.0:
+		case DIRECTION_EAST:
+		case DIRECTION_NORTHEAST:
+		case DIRECTION_SOUTHEAST:
+		case DIRECTION_EAST + 360.0:
+		case DIRECTION_EAST - 45.0:
 			return 1;
-		case 135.0:
-		case 180.0:
-		case 225.0:
+		case DIRECTION_NORTHWEST:
+		case DIRECTION_WEST:
+		case DIRECTION_SOUTHWEST:
 			return -1;
 	}
 }
@@ -144,17 +170,17 @@ get_next_y_position = function(_direction){
 	switch(_direction){
 		default:		
 			return 0;
-		case 45.0:
-		case 90.0:
-		case 135.0:
-		case 405.0:
-		case 450.0:
+		case DIRECTION_NORTHEAST:
+		case DIRECTION_NORTH:
+		case DIRECTION_NORTHWEST:
+		case DIRECTION_NORTHEAST + 360.0:
+		case DIRECTION_NORTH	 + 360.0:
 			return -1;
-		case 225.0:
-		case 270.0:		
-		case 315.0:
-		case -45.0:
-		case -90.0:
+		case DIRECTION_SOUTHWEST:
+		case DIRECTION_SOUTH:		
+		case DIRECTION_SOUTHEAST:
+		case DIRECTION_EAST - 45.0:
+		case DIRECTION_EAST - 90.0:
 			return 1;
 	}
 }
@@ -188,7 +214,7 @@ state_default = function(){
 			if (!place_meeting(_xx, _yy, par_collider)){
 				object_set_next_state(state_falling);
 				stateFlags  &= ~DNTT_GROUNDED;
-				direction	 = (movement == MOVE_DIR_RIGHT) ? 0.0 : 180.0;
+				direction	 = (movement == MOVE_DIR_RIGHT) ? DIRECTION_EAST : DIRECTION_WEST;
 				hspd		 = 0.0;
 				vspd		 = 0.0;
 				hspdFraction = 0.0;
@@ -226,7 +252,6 @@ state_falling = function(){
 		object_set_next_state(state_default);
 		return;
 	}
-	show_debug_message("TEST");
 	
 	apply_frame_movement(entity_world_collision, true);
 }

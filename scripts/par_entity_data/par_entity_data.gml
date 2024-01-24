@@ -35,16 +35,6 @@
 #macro	ENTT_IS_INVINCIBLE		(stateFlags & ENTT_INVINCIBLE)
 #macro	ENTT_IS_DESTROYED		(stateFlags & ENTT_DESTROYED)
 
-
-
-// TODO -- Move to general macro script
-#macro	DIRECTION_NORTH			90.0
-#macro	DIRECTION_SOUTH			270.0
-#macro	DIRECTION_EAST			0.0
-#macro	DIRECTION_WEST			180.0
-#macro	MOVE_DIR_RIGHT			1
-#macro	MOVE_DIR_LEFT			-1
-
 #endregion
 
 #region Functions utilized by both entity classes

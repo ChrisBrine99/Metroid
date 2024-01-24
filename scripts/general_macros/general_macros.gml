@@ -74,7 +74,6 @@
 //	variable SHOULD be set to whenever it doesn't have a valid reference to whatever they represent.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
-
 #macro	NO_STATE			   -20
 #macro	NO_SOUND			   -21
 #macro	NO_FUNCTION			   -22
@@ -108,6 +107,27 @@
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	ANIMATION_FPS			60.0
+
+// ------------------------------------------------------------------------------------------------------- //
+//	The 8 cardinal directions that are utilized countless times throughout the code.					   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	DIRECTION_EAST			0.0
+#macro	DIRECTION_NORTHEAST		45.0
+#macro	DIRECTION_NORTH			90.0
+#macro	DIRECTION_NORTHWEST		135.0
+#macro	DIRECTION_WEST			180.0
+#macro	DIRECTION_SOUTHWEST		225.0
+#macro	DIRECTION_SOUTH			270.0
+#macro	DIRECTION_SOUTHEAST		315.0
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Values that are utilized to represent an object (Usually an entity like the player or an enemy)		   //
+//	moving to the right or to the left, respectively.													   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	MOVE_DIR_RIGHT			1
+#macro	MOVE_DIR_LEFT		   -1
 
 #endregion
 

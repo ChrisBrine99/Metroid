@@ -178,7 +178,7 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 	// line of movement for the projectile in question. After the initial collision_line check occurs, a check
 	// against any special colliders is performed.
 	ds_list_clear(colliderList);
-	var _length			= collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, true, true, colliderList, true);
+	var _length			= collision_line_list(x, y, x + _deltaHspd, y + _deltaVspd, par_collider, false, true, colliderList, true);
 	var _collider		= noone;
 	for (var i = 0; i < _length; i++){
 		_collider		= colliderList[| i];
@@ -192,11 +192,13 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 		if (ENTT_IS_DESTROYED)
 			break;
 	}
+	
+	// 
+	projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 
 	// The projectile doesn't collide with the walls, ceilings, and floors in the world; move it to its next
 	// position and exit the function early.
 	if (PROJ_IGNORES_WALLS){
-		projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 		x += _deltaHspd;
 		y += _deltaVspd;
 		return;
@@ -211,7 +213,6 @@ projectile_world_collision = function(_deltaHspd, _deltaVspd){
 		_deltaVspd = 0;
 		return;
 	}
-	projectile_enemy_collision(x + _deltaHspd, y + _deltaVspd);
 	x += _deltaHspd;
 	y += _deltaVspd;
 }

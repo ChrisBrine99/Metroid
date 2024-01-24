@@ -243,7 +243,7 @@ entity_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 			if (!_ignoreSlopes){
 				// Move pixel-by-pixel until the maximum allowed slope movement is reached OR there is no
 				// longer an obstruction in front of the entity.
-				var _maxSlope = floor(maxHspd);
+				var _maxSlope = floor(get_max_hspd() * DELTA_TIME);
 				var _curSlope = 0;
 				while(place_meeting(_destX, y - _curSlope, par_collider)){
 					_curSlope++;

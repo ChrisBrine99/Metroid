@@ -76,9 +76,9 @@ global.gameManager = {
 	/// will update the player's in-game playtime if the tracking flag is enabled.
 	begin_step : function(){
 		deltaTime = (delta_time / 1000000) * TARGET_FPS;
-		// Limit delta time to framerates of 30 and above to avoid potential physics issues.
-		if (deltaTime >= 2.0)
-			deltaTime = 2.0;
+		// Limit delta time to framerates of 20 and above to avoid potential physics issues.
+		if (deltaTime >= 4.0)
+			deltaTime = 4.0;
 		
 		// Update the total playtime value regardless of if the in-game time is ticking up or not.
 		var _curMillisecondDelta = deltaTime / TARGET_FPS;
