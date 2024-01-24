@@ -64,12 +64,9 @@ initialize = function(_state){
 	
 	// 
 	movement = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
-	if (movement == MOVE_DIR_LEFT){
-		hspd		= -maxHspd;
-	} else{
+	if (movement == MOVE_DIR_RIGHT)
 		direction  -= 180.0;
-		hspd		= maxHspd;
-	}
+
 }
 
 #endregion
@@ -80,7 +77,7 @@ initialize = function(_state){
 /// @param {Real}	deltaHspd
 /// @param {Real}	deltaVspd
 /// @param {Bool}	ignoreSlopes
-zoomer_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
+/*zoomer_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 	if (_deltaHspd == 0 && _deltaVspd == 0)
 		return;
 	
@@ -102,21 +99,18 @@ zoomer_world_collision = function(_deltaHspd, _deltaVspd, _ignoreSlopes){
 zoomer_x_axis_collision = function(_target){
 	if (_target == x) {return;}
 	
+	var _floor		= lengthdir_y(1, direction);
 	var _signHspd	= sign(hspd);
 	if (place_meeting(_target, y, par_collider)){
 		while(!place_meeting(x + _signHspd, y, par_collider))
 			x += _signHspd;
 			
+		hspd		 = 0.0;
+		hspdFraction = 0.0;
 	} else{
 		while(x != _target){
 			if (!place_meeting(x + _signHspd, y, par_collider))
 				x += _signHspd;
-			
-			if (!place_meeting(x, y + lengthdir_y(1, direction), par_collider)){
-				hspd		 = 0.0;
-				hspdFraction = 0.0;
-				break;
-			}
 		}
 	}
 }
@@ -126,24 +120,21 @@ zoomer_x_axis_collision = function(_target){
 zoomer_y_axis_collision = function(_target){
 	if (_target == y) {return;}
 	
+	var _floor		= lengthdir_x(1, direction);
 	var _signVspd	= sign(vspd);
 	if (place_meeting(x, _target, par_collider)){
 		while(!place_meeting(x, y + _signVspd, par_collider))
 			y += _signVspd;
-
+			
+		vspd		 = 0.0;
+		vspdFraction = 0.0;
 	} else{
 		while(y != _target){
 			if (!place_meeting(x, y + _signVspd, par_collider))
 				y += _signVspd;
-			
-			if (!place_meeting(x + lengthdir_x(1, direction), y, par_collider)){
-				vspd		 = 0.0;
-				vspdFraction = 0.0;
-				break;
-			}
 		}
 	}
-}
+}*/
 
 /// @description 
 /// @param {Real}	direction
@@ -191,8 +182,76 @@ get_next_y_position = function(_direction){
 
 /// @description 
 state_default = function(){
+	var _deltaTime = DELTA_TIME;
+	var _deltaMove = maxHspd * _deltaTime;
+	
+	_deltaMove	   += hspdFraction;
+	hspdFraction	= _deltaMove - (floor(abs(_deltaMove)) * sign(_deltaMove));
+	_deltaMove	   -= hspdFraction;
+
+	var _below = 0.0;
+	var _nextX = 0;
+	var _nextY = 0;
+	repeat(_deltaMove){
+		_below = direction - (45.0 * movement);
+		_nextX = get_next_x_position(_below);
+		_nextY = get_next_y_position(_below);
+		if (!place_meeting(x + _nextX, y + _nextY, par_collider)){
+			direction = _below;
+			
+			// 
+			_below = direction - (45.0 * movement);
+			_nextX = get_next_x_position(_below);
+			_nextY = get_next_y_position(_below);
+			if (!place_meeting(x + _nextX, y + _nextY, par_collider)){
+				direction = _below;
+			
+				// 
+				_below = direction - (90.0 * movement);
+				_nextX = get_next_x_position(_below);
+				_nextY = get_next_y_position(_below);
+				if (!place_meeting(x + _nextX, y + _nextY, par_collider)){
+					object_set_next_state(state_falling);
+					stateFlags  &= ~DNTT_GROUNDED;
+					direction	 = (movement == MOVE_DIR_RIGHT) ? DIRECTION_EAST : DIRECTION_WEST;
+					return;
+				}
+			}
+		}
+		
+		// 
+		_nextX = get_next_x_position(direction);
+		_nextY = get_next_y_position(direction);
+		if (place_meeting(x + _nextX, y + _nextY, par_collider)){
+			direction += (45.0 * movement);
+			
+			// 
+			_nextX = get_next_x_position(direction);
+			_nextY = get_next_y_position(direction);
+			if (place_meeting(x + _nextX, y + _nextY, par_collider))
+				direction += (45.0 * movement);
+		}
+		
+		// 
+		if (direction == DIRECTION_NORTHEAST || direction == DIRECTION_NORTHWEST 
+				|| direction == DIRECTION_SOUTHWEST || direction == DIRECTION_SOUTHEAST){
+			_deltaMove		= 0.7071;
+			_deltaMove	   += vspdFraction;
+			vspdFraction	= _deltaMove - (floor(abs(_deltaMove)) * sign(_deltaMove));
+			_deltaMove	   -= vspdFraction;
+			
+			x += _deltaMove * get_next_x_position(direction);
+			y += _deltaMove * get_next_y_position(direction);
+			continue;
+		}
+		
+		// 
+		x += get_next_x_position(direction);
+		y += get_next_y_position(direction);
+	}
+	
 	// 
-	var _below = direction - (45.0 * movement);
+	/*var _below = direction - (45.0 * movement);
 	var _xx = x + get_next_x_position(_below);
 	var _yy = y + get_next_y_position(_below);
 	if (!place_meeting(_xx, _yy, par_collider)){
@@ -242,7 +301,7 @@ state_default = function(){
 		_yy = y + get_next_y_position(direction);
 		if (place_meeting(_xx, _yy, par_collider))
 			direction += (45.0 * movement);
-	}
+	}*/
 }
 
 /// @description 

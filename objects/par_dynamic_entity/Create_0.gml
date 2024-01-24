@@ -218,10 +218,10 @@ apply_frame_movement = function(_collisionFunction = NO_FUNCTION, _ignoreSlopes 
 	// vspd values will simply be added to their positions if they don't process world collision.
 	if (_collisionFunction != NO_FUNCTION){
 		_collisionFunction(_deltaHspd, _deltaVspd, _ignoreSlopes);
-	} else if (_deltaHspd != 0 || _deltaVspd != 0){
-		x += _deltaHspd;
-		y += _deltaVspd;
+		return;
 	}
+	x += _deltaHspd;
+	y += _deltaVspd;
 }
 
 /// @description Checks for collision between the entity and the world's collision bounds. If no collision is

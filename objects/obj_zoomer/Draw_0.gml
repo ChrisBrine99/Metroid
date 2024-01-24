@@ -1,9 +1,17 @@
-image_angle = floor(direction / 90.0) * 90.0;
-if (movement == MOVE_DIR_LEFT){
-	if (direction == 315.0)			{image_angle = 360.0;}
-	else if (direction == 135.0)	{image_angle = 180.0;}
-	image_angle -= 180.0;
+// 
+if (direction == DIRECTION_NORTH || direction == DIRECTION_SOUTH){
+	image_angle = direction;
+	if (movement == MOVE_DIR_LEFT)
+		image_angle -= 180.0;
+} else if (direction >= DIRECTION_NORTH && direction < DIRECTION_SOUTH){
+	image_angle = DIRECTION_EAST;
+} else{
+	image_angle = DIRECTION_WEST;
 }
 
+// 
+if (movement == MOVE_DIR_RIGHT && image_angle != direction)
+	image_angle += 180.0;
+
 entity_draw();
-image_angle = 0.0;
+image_angle = DIRECTION_EAST;
