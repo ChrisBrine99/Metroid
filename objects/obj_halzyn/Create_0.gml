@@ -275,11 +275,12 @@ state_attack = function(){
 	var _yy = y + _deltaVspd;
 	if (place_meeting(x, _yy, par_collider)){
 		_yy		   += HLZN_YCOLLIDE_OFFSET;	// Offset so Halzyn crashes into the ground upon collision.
-		while(!place_meeting(x, _yy, par_collider)) {_yy += _signVspd;}
+		while(!place_meeting(x, _yy, par_collider)) 
+			_yy += _signVspd;
 		object_set_next_state(state_end_attack);
 		y			= _yy - HLZN_YCOLLIDE_OFFSET;
 		vspd		= 0.0;
-		_deltaVspd	= 0.0;
+		return;
 	}
 	y += _deltaVspd;
 }
