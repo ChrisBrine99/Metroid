@@ -13,8 +13,8 @@ maxVspd			= 4.0;
 vAccel			= 0.25;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Zoomer will be able to 
-// take four hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
-maxHitpoints	= 4;
+// take three hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
+maxHitpoints	= 3;
 hitpoints		= maxHitpoints;
 
 // Set the damage output and hitstun duration for the Zoomer. These values are increased/decreased by the
@@ -70,6 +70,8 @@ initialize = function(_state){
 }
 
 #endregion
+
+#region Utility function initialization
 
 /// @description Returns either a -1, 0, or 1 based on the directional value supplied to the function. It is
 /// assumed only 8 directions are being considered (0, 45, 90, 135, 180, 225, 270, 315, and any overlapping
@@ -222,11 +224,17 @@ state_default = function(){
 state_falling = function(){
 	// Applying gravity for the current frame.
 	apply_gravity(maxVspd);
+	if (DNTT_IS_GROUNDED){
+		object_set_next_state(state_default);
+		vspd		 = 0.0;
+		vspdFraction = 0.0;
+		return;
+	}
 	
 	// Removing fractional values from the Zoomer's vspd value; storing those fractional values into a buffer
 	// variable until a whole number can be parsed out of that variable.
 	var _signVspd	= sign(vspd);
-	var _deltaVspd	= vspd * _deltaTime;
+	var _deltaVspd	= vspd * DELTA_TIME;
 	_deltaVspd	   += vspdFraction;
 	vspdFraction	= _deltaVspd - (floor(abs(_deltaVspd)) * _signVspd);
 	_deltaVspd	   -= vspdFraction;
@@ -235,15 +243,11 @@ state_falling = function(){
 	// contact with the floor, it will be set to GROUNDED and switch to its default state once again.
 	var _yy = y + _deltaVspd;
 	if (place_meeting(x, _yy, par_collider)){
-		while(!place_meeting(x, _yy, par_collider)) 
-			_yy += _signVspd;
-		object_set_next_state(state_default);
-		stateFlags |= DNTT_GROUNDED;
-		y			= _yy;
-		vspd		= 0.0;
+		while(!place_meeting(x, y + _signVspd, par_collider))
+			y += _signVspd;
 		return;
 	}
-	y += _deltaVspd;
+	y = _yy;
 }
 
 #endregion

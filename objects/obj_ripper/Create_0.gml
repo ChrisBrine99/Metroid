@@ -42,6 +42,7 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_ripper, -1);
+	object_add_light_component(x, y, 8, 2, 10, HEX_LIGHT_BLUE, 0.5);
 	create_general_collider();
 	
 	// Only one weakness aside from a Power Bomb, Screw Attack, or an ice-based weapon: Super Missiles.
@@ -58,7 +59,7 @@ initialize = function(_state){
 	// Randomly determine a starting direction: left (-1) or right (+1); flipping the Ripper's facing direction 
 	// if the chosen starting direction is to the left.
 	movement = choose(1, -1);
-	if (movement == -1){ // 
+	if (movement == -1){ // Flip the Ripper's eye light and set the leftward moving sprite.
 		lightOffsetX   *= -1;
 		imageIndex		= 1;
 	}
@@ -76,7 +77,7 @@ state_default = function(){
 	if (hspd > maxHspd || hspd < -maxHspd) 
 		hspd = maxHspd * movement;
 	
-	var _deltaHspd	= hspd * _deltaTime;						// Remove decimal values from velocity.
+	var _deltaHspd	= hspd * _deltaTime;		// Remove decimal values from velocity.
 	var _signHspd	= sign(_deltaHspd);
 	_deltaHspd	   += hspdFraction;
 	hspdFraction	= _deltaHspd - (floor(abs(_deltaHspd)) * _signHspd);
