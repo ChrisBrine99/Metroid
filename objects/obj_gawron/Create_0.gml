@@ -22,19 +22,20 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Gawron will be able to 
-// take two hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
-maxHitpoints	= 2;
-hitpoints		= maxHitpoints;
-
-// Set the damage output and hitstun duration for the Gawron. These values are increased/decreased by the
-// difficulty level selected by the player.
-damage			= 8;
-stunDuration	= 8;
+// Determines the direction that Gawron faces, which is based on Samus's horizontal position relative to its 
+// own. It will always face towards Samus unless she doesn't exist. In that case, the Gawron will always move 
+// to the right.
+var _playerX = 0xFFFFFFFF;
+with(PLAYER) {_playerX = x;}
+image_xscale = (_playerX >= x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
 
 #endregion
 
 #region Unique variable initializations
+
+// 
+timeToSpawn = 0.0;
+timeToWait	= 0.0;
 
 // 
 spawnTimer	= 0.0;
@@ -55,13 +56,25 @@ initialize = function(_state){
 	entity_set_sprite(spr_gawron, -1);
 	create_general_collider();
 	
-	// 
+	// Set the Gawron's maximum horizontal and vertical velocities. The vertical will determine how fast they
+	// ascend from their spawn point, and the horizontal determines how fast they will charge at Samus.
 	maxHspd	=  2.5;
 	maxVspd = -1.4;
 	
-	// 
+	// Set how fast the Gawron will accelerate along each axis in order to reach its maximum velocity along
+	// each axis.
 	hAccel	= 0.5;
 	vAccel	= 0.1;
+	
+	// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Gawron will be able to 
+	// take two hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
+	maxHitpoints	= 2;
+	hitpoints		= maxHitpoints;
+	
+	// Set the damage output and hitstun duration for the Gawron. These values are increased/decreased by the
+	// difficulty level selected by the player.
+	damage			= 8;
+	stunDuration	= 8;
 	
 	// Set up weakness flags such that the Gawron is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (
@@ -83,12 +96,9 @@ initialize = function(_state){
 	dropChances[ENMY_AEION_DROP]		= 0;
 	dropChances[ENMY_POWBOMB_DROP]		= 5;
 	
-	// Determines the direction that Gawron faces, which is based on Samus's horizontal position relative to
-	// its own. It will always face towards Samus unless she doesn't exist. In that case, the Gawron will
-	// always move to the right.
-	var _playerX = 0xFFFFFFFF;
-	with(PLAYER) {_playerX = x;}
-	image_xscale = (_playerX >= x) ? MOVE_DIR_RIGHT : MOVE_DIR_LEFT;
+	// 
+	timeToSpawn = GWRN_SPAWN_TIME;
+	timeToWait = GWRN_WAIT_TIME;
 }
 
 #endregion
@@ -112,7 +122,7 @@ state_intro = function(){
 	// Increment time since spawn until it reaches the required value. Once that occurs, the Gawron will be
 	// able to charge at Samus should she be at or below the current target y position.
 	spawnTimer += DELTA_TIME;
-	if (spawnTimer < GWRN_SPAWN_TIME)
+	if (spawnTimer < timeToSpawn)
 		return;
 
 	// Calculate the target y position based on Samus's current y position and an offset that is applied to
@@ -132,7 +142,7 @@ state_intro = function(){
 	// first of those being the brief "beginning attack" state to let the player know the Gawron is about to
 	// do something else.
 	object_set_next_state(state_begin_attack);
-	waitTimer	= GWRN_WAIT_TIME;
+	waitTimer	= timeToWait;
 	vspd		= 0.0;
 	shiftBaseX	= x;
 }
@@ -150,7 +160,7 @@ state_begin_attack = function(){
 		return;
 	}
 	
-	if (waitTimer < GWRN_WAIT_TIME * 0.5)
+	if (waitTimer < timeToWait * 0.5)
 		apply_horizontal_shift(GWRN_SHIFT_INTERVAL);
 }
 
@@ -170,5 +180,5 @@ state_attack = function(){
 
 #endregion
 
-// Once the create event has executed, initialize the Gullug by setting it to its default state function.
+// Once the create event has executed, initialize the Gawron by setting it to its default state function.
 initialize(state_intro);

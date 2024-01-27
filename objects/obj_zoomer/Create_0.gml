@@ -4,23 +4,10 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// Set the Zoomer's maximum hspd (This value is used for moving along both axes), as well as the Zoomer's
-// maximum vspd (This value is only used when in its falling state).
-maxHspd			= 0.6;
-maxVspd			= 4.0;
-
-// Set the default falling speed for the Zoomer, which should only every be utilized during its falling state.
+// Since all crawling enemies have the ability to fall to the ground if they can't find a surface to attach
+// themselves to, the values for gravity's strength (vAccel) and their terminal velocity are set here.
 vAccel			= 0.25;
-
-// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Zoomer will be able to 
-// take three hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
-maxHitpoints	= 3;
-hitpoints		= maxHitpoints;
-
-// Set the damage output and hitstun duration for the Zoomer. These values are increased/decreased by the
-// difficulty level selected by the player.
-damage			= 8;
-stunDuration	= 8;
+maxVspd			= 4.0;
 
 #endregion
 
@@ -44,6 +31,21 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_zoomer, -1);
 	create_weapon_collider(-8, -9, 14, 15, false);
+	
+	// Setting the Zoomer's maximum horizontal velocity within its state event since it's a parent object to
+	// other crawling enemies (Hitpoints and damage values are also set here). This determines how fast the
+	// Zoomer crawling along a given surface relative to its current movement direction.
+	maxHspd			= 0.6;
+	
+	// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Zoomer will be able to 
+	// take three hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
+	maxHitpoints	= 3;
+	hitpoints		= maxHitpoints;
+	
+	// Set the damage output and hitstun duration for the Zoomer. These values are increased/decreased by the
+	// difficulty level selected by the player.
+	damage			= 8;
+	stunDuration	= 8;
 	
 	// Set up weakness flags such that the Zoomer is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (

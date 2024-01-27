@@ -15,7 +15,7 @@ hitpoints		= maxHitpoints;
 
 // Set the damage output and hitstun duration for the Needler. These values are increased/decreased by the
 // difficulty level selected by the player.
-damage			= 12;
+damage			= 16;
 stunDuration	= 10;
 
 #endregion
@@ -29,6 +29,7 @@ stunDuration	= 10;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_needler, -1);
+	create_general_collider();
 	
 	// Set up weakness flags such that the Needler is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (
