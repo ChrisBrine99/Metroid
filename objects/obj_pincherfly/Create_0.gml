@@ -1,6 +1,13 @@
 #region Macro initialization
 
 // ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PFLY_MOVE_X				0x00000001
+#macro	PFLY_CAN_MOVE_X			(stateFlags & PFLY_MOVE_X)
+
+// ------------------------------------------------------------------------------------------------------- //
 //	Stores the radius that the player must be within relative to the Pincherfly's position in order for    //
 //	it to attempt to attack them.																		   //
 // ------------------------------------------------------------------------------------------------------- //
@@ -14,7 +21,7 @@
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	PFLY_ATK_COOLDOWN_TIME	65.0
-#macro	PFLY_SHIFT_INTERVAL		5.0
+#macro	PFLY_SHIFT_INTERVAL		2.0
 
 
 #endregion
@@ -109,13 +116,19 @@ initialize = function(_state){
 /// pixel region while it checks to see how far it is from Samus. If Samus enters its attack radius, the
 /// Pincherfly will set up its horizontal and vertical velocities in order to move towards Samus.
 state_default = function(){
-	// Use the variable that normally acts as a timer for the default horizontal shift that all enemies can
-	// utilise, but use it to do a similar effect but including the y-axis as well.
+	// Utilize the "shiftTimer" variable that's normally used for the generic horizontal shift logic that
+	// all enemies can utilise and use it to move the Pincherfly randomly along the x or y axis relative to
+	// what the state flag is set to during the interval.
 	shiftTimer -= DELTA_TIME;
 	if (shiftTimer < 0.0){
 		shiftTimer = PFLY_SHIFT_INTERVAL;
-		x = startX + irandom_range(-1, 1);
-		y = startY + irandom_range(-1, 1);
+		if (PFLY_CAN_MOVE_X){
+			stateFlags &= ~PFLY_MOVE_X;
+			x = startX + irandom_range(-1, 1);
+		} else{
+			stateFlags |= PFLY_MOVE_X;
+			y = startY + irandom_range(-1, 1);
+		}
 	}
 	
 	// Decrement the cooldown timer if it is ever above a value of zero. No other code in this state will be
