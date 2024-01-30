@@ -1,32 +1,47 @@
 #region Macros that are useful/related to obj_yumbo
 
-// Stores the values for the Yumbo's damage output when it is in its default and attack states, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the the Yumbo's damage output for when it is in its default and attack state, respectively.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YMBO_BASE_DAMAGE		8
 #macro	YMBO_ATTACK_DAMAGE		16
 
-// Macro values for the radii that the Yumbo uses in order to determine how far Samus needs to be from it before
-// it attempts to charge at her, as well as how far Samus needs to be from the Yumbo's "territory" before it
-// ends the chase.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macro values for the radii that the Yumbo uses in order to determine how far Samus needs to be from it //
+//	before it attempts to charge at her, as well as how far Samus needs to be from the Yumbo's "territory" //
+//	before it ends the chase.																			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YMBO_DETECTION_RADIUS	64.0
 #macro	YMBO_ESCAPE_RADIUS		96.0
 
-// Determines characteristics of the Yumbo's dormant state; how fast it can move along either axes, and the
-// distance from the center of its "territory" that it is allowed to wander around.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines characteristics of the Yumbo's dormant state; how fast it can move along either axes, and   //
+//	the distance from the center of its "territory" that it is allowed to wander around.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YMBO_WANDER_SPEED		1.0
 #macro	YMBO_TARGET_RADIUS		32
 #macro	YMBO_RETURN_RADIUS		8
 
-// Various timers that the Yumbo utilizes to perform actions. In order, they determine the time required to
-// pass before it can attack again, how long it takes to begin its attack state, how long it needs to go from
-// its attack to default state after finishing said attack, and the range of time for its target update time
-// whenever those coordinates are updating in its default state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Various timers that the Yumbo utilizes to perform actions. In order, they determine the time required  //
+//	to pass before it can attack again, how long it takes to begin its attack state, how long it needs to  //
+//	go from its attack to default state after finishing said attack, and the range of time for its target  //
+//	update time whenever those coordinates are updating in its default state.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YMBO_ATK_COOLDOWN_TIME	90.0
 #macro	YMBO_ATK_BEGIN_TIME		20.0
 #macro	YMBO_ATK_END_TIME		12.0
 #macro	YMBO_TUPDATE_MIN_TIME	45.0
 #macro	YMBO_TUPDATE_MAX_TIME	150.0
 
-// Determines how fast the Yumbo shifts to the left and right during its attack begin state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines how fast the Yumbo shifts to the left and right during its attack begin state.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YMBO_SHAKE_SPEED		2.0
 
 #endregion

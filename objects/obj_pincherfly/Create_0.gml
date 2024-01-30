@@ -1,18 +1,11 @@
 #region Macro initialization
 
 // ------------------------------------------------------------------------------------------------------- //
-//	
-// ------------------------------------------------------------------------------------------------------- //
-
-#macro	PFLY_MOVE_X				0x00000001
-#macro	PFLY_CAN_MOVE_X			(stateFlags & PFLY_MOVE_X)
-
-// ------------------------------------------------------------------------------------------------------- //
 //	Stores the radius that the player must be within relative to the Pincherfly's position in order for    //
 //	it to attempt to attack them.																		   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PFLY_ATTACK_DISTANCE	90.0
+#macro	PFLY_ATTACK_DISTANCE	64.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Macros that stores intervals of time that apply to various parts of the Pincherfly. In this case, the  //
@@ -21,8 +14,15 @@
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	PFLY_ATK_COOLDOWN_TIME	65.0
-#macro	PFLY_SHIFT_INTERVAL		2.0
 
+// ------------------------------------------------------------------------------------------------------- //
+//
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	PFLY_MAXHSPD_DORMANT	0.7
+#macro	PFLY_MAXVSPD_DORMANT	1.1
+#macro	PFLY_DIRECTION_INTERVAL	30.0
+#macro	PFLY_DIRECTION_OFFSET	90.0
 
 #endregion
 
@@ -35,8 +35,8 @@ event_inherited();
 // Determines how maximum possible speed the Pincherfly can move at towards and away from Samus when it 
 // attempts to attack her (These values are altered relative to the angle between the Pincherfly's and Samus's
 // position at the beginning of the attack).
-maxHspd			= 4.2;
-maxVspd			= 4.2;
+maxHspd			= 3.2;
+maxVspd			= 3.2;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Pincherfly will be able 
 // to take a single hit before dying; regardless of the weapon used
@@ -72,6 +72,10 @@ targetDistance	= 0.0;
 // is zero.
 cooldownTimer	= 0.0;
 
+// 
+moveDirection	= 0.0;
+movement		= 1;
+
 #endregion
 
 #region Initialize function override
@@ -106,30 +110,34 @@ initialize = function(_state){
 	dropChances[ENMY_LGMISSILE_DROP]	= 10;
 	dropChances[ENMY_AEION_DROP]		= 20;
 	dropChances[ENMY_POWBOMB_DROP]		= 10;
+	
+	// 
+	movement = choose(MOVE_DIR_RIGHT, MOVE_DIR_LEFT);
 }
 
 #endregion
 
 #region State function initialization
 
-/// @description The Pincherfly's default/dormant state. It will simply move around sporadically in a 3x3
-/// pixel region while it checks to see how far it is from Samus. If Samus enters its attack radius, the
-/// Pincherfly will set up its horizontal and vertical velocities in order to move towards Samus.
+/// @description The Pincherfly's default/dormant state. If Samus enters its attack radius, the Pincherfly will 
+///	set up its horizontal and vertical velocities in order to charge towards Samus.
 state_default = function(){
-	// Utilize the "shiftTimer" variable that's normally used for the generic horizontal shift logic that
-	// all enemies can utilise and use it to move the Pincherfly randomly along the x or y axis relative to
-	// what the state flag is set to during the interval.
-	shiftTimer -= DELTA_TIME;
-	if (shiftTimer < 0.0){
-		shiftTimer = PFLY_SHIFT_INTERVAL;
-		if (PFLY_CAN_MOVE_X){
-			stateFlags &= ~PFLY_MOVE_X;
-			x = startX + irandom_range(-1, 1);
-		} else{
-			stateFlags |= PFLY_MOVE_X;
-			y = startY + irandom_range(-1, 1);
-		}
+	// Instead of utilizing GameMaker's built-in direction variable, a unique variable is used to achieve the
+	// same thing while also allowing a shift to occur for every full circle the value makes. This wouldn't be
+	// possible with the built-in variable.
+	moveDirection += PFLY_DIRECTION_INTERVAL * DELTA_TIME;
+	if (moveDirection >= FULL_CIRCLE){
+		moveDirection -= FULL_CIRCLE;
+		movement	  *= -1;
 	}
+	
+	// Move the Picherfly along its figure-8 pattern relative to the current movement direction and movement
+	// sign (+1 moves the Pincherfly to the right, -1 moves it to the left). The direction is offset by 90
+	// degrees to make the figure-8 horizontal instead of vertical.
+	var _direction = moveDirection - PFLY_DIRECTION_OFFSET;
+	hspd = lengthdir_x(PFLY_MAXHSPD_DORMANT, _direction) * movement;
+	vspd = lengthdir_y(PFLY_MAXVSPD_DORMANT, _direction); // Multiplication against "movement" not required.
+	apply_frame_movement(NO_FUNCTION);
 	
 	// Decrement the cooldown timer if it is ever above a value of zero. No other code in this state will be
 	// executed until this condition has been met.
@@ -206,6 +214,8 @@ state_end_attack = function(){
 		object_set_next_state(state_default);
 		y				= startY; // Snap to target before overwriting variable's contents.
 		cooldownTimer	= PFLY_ATK_COOLDOWN_TIME;
+		moveDirection	= 0.0;
+		movement		= choose(MOVE_DIR_RIGHT, MOVE_DIR_LEFT);
 		startX			= x;
 		startY			= y;
 	}

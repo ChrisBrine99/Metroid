@@ -4,11 +4,13 @@
 // this event, which overrides the former's create event outright.
 event_inherited();
 
-// 
+// Determine the maximum horizontal velocity for the Seerook, as well as its horizontal acceleration so it 
+// doesn't instantly snap to that maximum speed.
 maxHspd = 1.2;
 hAccel	= 0.2;
 
-// 
+// Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Yumbo will be able to take
+// two hits before dying. Other beams and missiles will change the amount of hits needed, obviously.
 maxHitpoints = 2;
 hitpoints = maxHitpoints;
 
@@ -21,7 +23,8 @@ stunDuration	= 6;
 
 #region Unique variable initialization
 
-// 
+// Variables that will store the x coordinates for the leftmost and rightmost x coordinates of the Seerook's
+// path object (obj_seerook_collider).
 pathStart	= 0;
 pathEnd		= 0;
 
@@ -35,7 +38,8 @@ movement	= 0;
 /// Store the pointer for the parent's initialize function into a local variable for the Seerook, which is then
 /// called inside its own initialization function so the original functionality isn't ignored.
 __initialize = initialize;
-/// @description 
+/// @description Initialize the Seerook by setting up its weaknesses, weapon collider bounding box, starting
+/// sprite, drop rates, movement direction, and the starting/ending x coordinates for its movement path.
 /// @param {Function} state		The function to use for this entity's initial state.
 initialize = function(_state){
 	__initialize(_state);
@@ -64,25 +68,31 @@ initialize = function(_state){
 	
 	// Randomly determine a starting direction: left (-1) or right (+1); flipping the Seerook's facing direction 
 	// if the chosen starting direction is to the left.
-	movement = choose(1, -1);
+	movement = choose(MOVE_DIR_LEFT, MOVE_DIR_RIGHT);
 	
-	// 
+	// Check for the Seerook's accompanying path object. If there wasn't one placed within its bounding box,
+	// it will destroy itself since it won't know what path to follow.
 	var _pathID = instance_place(x, y, obj_seerook_collider);
 	if (_pathID == noone){
 		instance_destroy(self);
 		return;
 	}
 	
-	// 
+	// Store the collider's leftmost (The "Starting" value for the path) and leftmost bounds (The "Ending" 
+	// value) into two variables that can be quickly referenced by the Seerook. After that, the path instance
+	// is destroyed since it is no longer needed.
 	pathStart	= _pathID.bbox_left;
 	pathEnd		= _pathID.bbox_right;
+	instance_destroy(_pathID);
 }
 
 #endregion
 
 #region State function initialization
 
-/// @description 
+/// @description The Seerook's default and only state. It is very similar to the Ripper; with the only difference
+///	being it doesn't reverse its horizontal direction because of colliding with a wall, but by exceeds the area
+/// that it is allowed to move (Determines by the horizontal scaling of its "path" object).
 state_default = function(){
 	var _deltaTime = DELTA_TIME;
 	hspd += movement * hAccel * _deltaTime;		// Update horizontal velocity.
@@ -96,7 +106,8 @@ state_default = function(){
 	_deltaHspd	   -= hspdFraction;
 	x			   += _deltaHspd;				// Add whole number value to the Seerook's X position.
 	
-	// 
+	// Check if the Seerook has reached the end of its path relative to its current movement direction. If the
+	// bounds have been reached or exceeded, the Seerook will reverse its horizontal direction.
 	if (movement == MOVE_DIR_RIGHT && x >= pathEnd){
 		movement    = MOVE_DIR_LEFT;
 		x			= pathEnd;

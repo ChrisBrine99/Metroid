@@ -1,17 +1,26 @@
 #region Macro initialization
 
-// The damage dealt to Samus upon collision with the Senjoo while it is stationary and while it is moving to 
-// its next target point, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	The damage dealt to Samus upon collision with the Senjoo while it is stationary and while it is moving //
+//	to its next target point, respectively.																   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SNJO_BASE_DAMAGE		16
 #macro	SNJO_ATTACK_DAMAGE		48
 
-// Determines how fast the Senjoo will move towards its next target position, as well as how long the length
-// of the point between its previous and next target coordinates is.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines how fast the Senjoo will move towards its next target position, as well as how long the	   //
+//	length of the point between its previous and next target coordinates is.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SNJO_ATK_MOVE_SPEED		3.0
 #macro	SNJO_ATK_MOVE_DISTANCE	48
 
-// Determines how long the Senjoo will wait at its current target coordinates once reaching said point before 
-// it will begin to move toward the next target point that is calculated.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines how long the Senjoo will wait at its current target coordinates once reaching said point    //
+//	before it will begin to move toward the next target point that is calculated.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SNJO_WAIT_INTERVAL		20.0
 
 #endregion

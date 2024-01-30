@@ -86,7 +86,8 @@
     {"name":"Visual Effects","order":3,"path":"folders/Resources/Graphics/Sprites/Visual Effects.yy",},
     {"name":"Tilesets","order":3,"path":"folders/Resources/Graphics/Tilesets.yy",},
     {"name":"Levels","order":3,"path":"folders/Resources/Levels.yy",},
-    {"name":"Test Levels","order":2,"path":"folders/Resources/Levels/Test Levels.yy",},
+    {"name":"Test Levels","order":1,"path":"folders/Resources/Levels/Test Levels.yy",},
+    {"name":"Area 1","order":2,"path":"folders/Resources/Levels/Area 1.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},
@@ -100,6 +101,7 @@
     {"name":"obj_gawron","order":1,"path":"objects/obj_gawron/obj_gawron.yy",},
     {"name":"general_globals","order":9,"path":"scripts/general_globals/general_globals.yy",},
     {"name":"obj_cutscene_trigger","order":3,"path":"objects/obj_cutscene_trigger/obj_cutscene_trigger.yy",},
+    {"name":"rm_areaone_02","order":1,"path":"rooms/rm_areaone_02/rm_areaone_02.yy",},
     {"name":"obj_destructible_all","order":1,"path":"objects/obj_destructible_all/obj_destructible_all.yy",},
     {"name":"obj_destructible_bomb","order":3,"path":"objects/obj_destructible_bomb/obj_destructible_bomb.yy",},
     {"name":"obj_destructible_collectible_ball","order":7,"path":"objects/obj_destructible_collectible_ball/obj_destructible_collectible_ball.yy",},

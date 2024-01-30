@@ -167,7 +167,7 @@
 
 #macro	PLYR_BASE_JUMP		   -5.4
 #macro	PLYR_UPGRADED_JUMP	   -7.2
-#macro	PLYR_MAX_FALL_SPEED		8.0
+#macro	PLYR_MAX_FALL_SPEED		6.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	These values determine what percentage of Samus' current hspd will actually count towards her		   //
@@ -2330,7 +2330,7 @@ state_phase_shift = function(){
 // SET A UNIQUE COLOR FOR SAMUS'S BOUNDING BOX (FOR DEBUGGING ONLY)
 collisionMaskColor = HEX_LIGHT_BLUE;
 
-event_set_flag(FLAG_MORPHBALL, true);
+//event_set_flag(FLAG_MORPHBALL, true);
 //event_set_flag(FLAG_BOMBS, true);
 //event_set_flag(FLAG_SPRING_BALL, true);
 //event_set_flag(FLAG_POWER_BOMBS, true);

@@ -1,21 +1,33 @@
 #region Macro initialization
 
-// Bits that represent state flags utilized by the Yodare's AI; allowing it to perform certain actions and make
-// certain checks depending on the values stored at their respective bit positions.
+// ------------------------------------------------------------------------------------------------------- //
+//	Bits that represent state flags utilized by the Yodare's AI; allowing it to perform certain actions    // 
+//	and make certain checks depending on the values stored at their respective bit positions.			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YDRE_IN_CEILING			0x00000001
 #macro	YDRE_IN_FLOOR			0x00000002
 
-// Macros that automate having to type out a bitwise AND check against the state flags that are unique to the
-// Yodare. They determine if it's currently in the "ceiling" (Collider it spawned into) or the "floor" (Collider
-// that is below what it considers its ceiling).
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that automate having to type out a bitwise AND check against the state flags that are unique to //
+//	the Yodare. They determine if it's currently in the "ceiling" (Collider it spawned into) or the		   //
+//	"floor" (Collider that is below what it considers its ceiling).										   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YDRE_IS_IN_CEILING		(stateFlags & YDRE_IN_CEILING)
 #macro	YDRE_IS_IN_FLOOR		(stateFlags & YDRE_IN_FLOOR)
 
-// Determines the maximum vertical speed that the Yodare will move at when it is moving through any collider.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the maximum vertical speed that the Yodare will use when it is moving through a collider.   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YDRE_BURROW_SPEED		0.1
 
-// Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to what
-// it originally started at; making it look like another Yodare is burrowing out of the nest.
+// ------------------------------------------------------------------------------------------------------- //
+//	Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to  //
+//	what it originally started at; making it look like another Yodare is burrowing out of the nest.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	YDRE_RETURN_TIME		160.0
 
 #endregion

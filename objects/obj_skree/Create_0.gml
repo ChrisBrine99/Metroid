@@ -1,22 +1,34 @@
 #region Macro initialization
 
-// The damage the Skree will inflict during its default and post-attacking states, as well as the damage it 
-// will inflict during states not covered by the base daamge value.
+// ------------------------------------------------------------------------------------------------------- //
+//	The damage the Skree will inflict during its default and post-attacking states, as well as the damage  // 
+//	it will inflict during states not covered by the base daamge value.									   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SKRE_BASE_DAMAGE		4
 #macro	SKRE_ATK_DAMAGE			10
 
-// The maximum distance in pixels relative to the Skree's current x position that Samus must be in order to
-// trigger its pre-attack state in order to attack her.
+// ------------------------------------------------------------------------------------------------------- //
+//	The maximum distance in pixels relative to the Skree's current x position that Samus must be in order  //
+//	to trigger its pre-attack state in order to attack her.												   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SKRE_TRIGGER_DISTANCE	20
 
-// Macros for the Skree's animation speed for its attacking states, as well as the speed it will increase its
-// animation speed by in order to reach that required speed during the pre-attack state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros for the Skree's animation speed for its attacking states, as well as the speed it will		   //
+//	increase its animation speed by in order to reach that required speed during the pre-attack state.	   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SKRE_ATK_ANIM_SPEED		3.0
 #macro	SKRE_ANIM_SPD_INCREASE	0.3
 
-// Important time values for the Skree's various attack state waiting times in "frames" (60 of those being one 
-// second of real-time), as well as the amount in "frames" that the Skree will shift back and forth horizontally
-// whenever this effect is required in each state.
+// ------------------------------------------------------------------------------------------------------- //
+//	Important time values for the Skree's various attack state waiting times in "frames" (60 of those	   //
+//	being one second of real-time), as well as the amount in "frames" that the Skree will shift back and   //
+//	forth horizontally whenever this effect is required in each state.									   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SKRE_ATK_BEGIN_TIME		18.0
 #macro	SKRE_ATK_END_TIME		32.0
 #macro	SKRE_POST_DEATH_TIME	8.0
@@ -32,7 +44,7 @@ event_inherited();
 
 // Set the maximum horizontal speed and the Skree's maximum falling speed which are both utilized during the 
 // Skree's main attacking state.
-maxHspd = 1.8;
+maxHspd = 2.0;
 maxVspd = 8.0;
 
 // Instead of having the maximum horizontal and vertical speeds set instantly for the Skree once it begins

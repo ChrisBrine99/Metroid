@@ -29,6 +29,7 @@ initialize = function(_state){
 	maxInstances	= 1;
 	timeToSpawn		= 75.0;
 	spawnTimer		= timeToSpawn * 0.5;
+	spawnRadius		= 0.0; // As long as it's on screen it can spawn Gawron.
 }
 
 #endregion

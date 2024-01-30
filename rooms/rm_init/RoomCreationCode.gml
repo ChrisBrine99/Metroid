@@ -30,11 +30,12 @@ game_load_settings();
 //CONTROL_INFO.initialize_input_icons();
 
 // Finally, once all the initialization has completed, move into the first true room of the game.
-room_goto(rm_test_main);
+//room_goto(rm_test_main);
+room_goto(rm_areaone_01);
 
 /// FOR TESTING
 camera_set_target_object(PLAYER, 0, -16);
-show_debug_overlay(true);
+//show_debug_overlay(true);
 //audio_debug(true);
 //texture_debug_messages(true);
 audio_set_linked_object(PLAYER);

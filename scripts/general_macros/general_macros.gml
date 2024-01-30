@@ -120,6 +120,7 @@
 #macro	DIRECTION_SOUTHWEST		225.0
 #macro	DIRECTION_SOUTH			270.0
 #macro	DIRECTION_SOUTHEAST		315.0
+#macro	FULL_CIRCLE				360.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Values that are utilized to represent an object (Usually an entity like the player or an enemy)		   //

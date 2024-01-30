@@ -205,7 +205,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// object's collision with an instance of "obj_camera_boundary". Also handles smoothly moving the camera
 	/// back onto tracking the target object if the specialized boundaries are no longer required.
 	process_camera_boundaries = function(){
-		if (GAME_CURRENT_STATE != GSTATE_NORMAL) {return;}
+		if (GAME_CURRENT_STATE != GSTATE_NORMAL) 
+			return;
 		
 		var _targetX		= -1;
 		var _targetY		= -1;
@@ -237,8 +238,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			// reset to following the target object along that axis/axes once again.
 			if (_boundary != _prevBoundaryID){
 				_prevBoundaryID = _boundary;
-				if (_stateFlags & CAM_IS_XPOS_LOCKED) {_stateFlags |= CAM_RESET_TARGET_X;}
-				if (_stateFlags & CAM_IS_YPOS_LOCKED) {_stateFlags |= CAM_RESET_TARGET_Y;}
+				if (_targetX == -1 && _stateFlags & CAM_LOCK_X) {_stateFlags |= CAM_RESET_TARGET_X;}
+				if (_targetY == -1 && _stateFlags & CAM_LOCK_Y) {_stateFlags |= CAM_RESET_TARGET_Y;}
 			}
 		}
 		prevBoundaryID	= _prevBoundaryID;
@@ -251,7 +252,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			x				= value_set_relative(x, _targetX, 0.25);
 		} else if (CAM_CAN_RESET_XPOS){
 			var _oTargetX	= targetObject.x + targetOffsetX;
-			x				= value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.2));
+			x				= value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.25));
 			if (abs(x - _oTargetX) <= DEADZONE_WIDTH) 
 				stateFlags &= ~(CAM_RESET_TARGET_X | CAM_LOCK_X);
 		}
@@ -262,7 +263,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			y				= value_set_relative(y, _targetY, 0.25);
 		} else if (CAM_CAN_RESET_YPOS){
 			var _oTargetY	= targetObject.y + targetOffsetY;
-			y				= value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.2));
+			y				= value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.25));
 			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT)
 				stateFlags &= ~(CAM_RESET_TARGET_Y | CAM_LOCK_Y);
 		}

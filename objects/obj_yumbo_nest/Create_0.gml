@@ -30,6 +30,9 @@ maxInstances	= 0;
 timeToSpawn		= 0.0;
 spawnTimer		= 0.0;
 
+// 
+spawnRadius		= 64.0;
+
 #endregion
 
 #region Initialize function override
@@ -72,6 +75,11 @@ state_default = function(){
 	if (!ENTT_ON_SCREEN || curInstances == maxInstances || objToSpawn == noone)
 		return;
 		
+	// Don't allow the spawner to attempt to spawn the enemy if the player is currently too far away from it.
+	// What is "too far" can be determined by each spawner, and defaults to a value of 64.0 units.
+	if (spawnRadius != 0.0 && distance_to_object(PLAYER) > spawnRadius)
+		return;
+	
 	// Don't allow anything to spawn until the spawner in question is no longer colliding with the Player
 	// object. The timer to spawn the enemy in is also reset upon the collision happening.
 	mask_index = -1;
@@ -81,13 +89,17 @@ state_default = function(){
 	}
 	mask_index = spr_empty_mask;
 	
+	// Increment the timer until it reaches the required interval to spawn in the enemy.
 	spawnTimer += DELTA_TIME;
-	if (spawnTimer > timeToSpawn){ // Spawn Enemy object and link it to the spawner that created it.
-		var _instance = instance_create_object(x + spawnOffsetX, y + spawnOffsetY, objToSpawn);
-		_instance.linkedSpawnerID = id;
-		spawnTimer = 0.0;
-		curInstances++;
-	}
+	if (spawnTimer < timeToSpawn)
+		return;
+	
+	// Spawn in the required enemy object at the desired offset relative to the spawner's current position.
+	// Then, reset the timer and increment the number of spawned instances by one.
+	var _instance = instance_create_object(x + spawnOffsetX, y + spawnOffsetY, objToSpawn);
+	_instance.linkedSpawnerID = id;
+	spawnTimer = 0.0;
+	curInstances++;
 }
 
 #endregion
