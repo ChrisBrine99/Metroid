@@ -1,0 +1,1 @@
+viewTargetX = 160;

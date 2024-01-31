@@ -252,7 +252,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			x				= value_set_relative(x, _targetX, 0.25);
 		} else if (CAM_CAN_RESET_XPOS){
 			var _oTargetX	= targetObject.x + targetOffsetX;
-			x				= value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.25));
+			x				= value_set_relative(x, _oTargetX, 0.25 + abs(targetObject.hspd * 0.14));
 			if (abs(x - _oTargetX) <= DEADZONE_WIDTH) 
 				stateFlags &= ~(CAM_RESET_TARGET_X | CAM_LOCK_X);
 		}
@@ -263,7 +263,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			y				= value_set_relative(y, _targetY, 0.25);
 		} else if (CAM_CAN_RESET_YPOS){
 			var _oTargetY	= targetObject.y + targetOffsetY;
-			y				= value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.25));
+			y				= value_set_relative(y, _oTargetY, 0.25 + abs(targetObject.vspd * 0.22));
 			if (abs(y - _oTargetY) <= DEADZONE_HEIGHT)
 				stateFlags &= ~(CAM_RESET_TARGET_Y | CAM_LOCK_Y);
 		}

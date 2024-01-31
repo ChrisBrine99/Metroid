@@ -61,7 +61,7 @@
 //	this is the only macro that is required.															   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	SMALL_MISSILE_TANK0		0x20
+#macro	SMALL_MISSILE_TANK01	0x20
 //								 .
 //								 .
 //								0x5B
@@ -71,7 +71,7 @@
 //	total. As a result, they will occupy bits 92-103 in the event flag buffer.							   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	LARGE_MISSILE_TANK0		0x5C
+#macro	LARGE_MISSILE_TANK01	0x5C
 //								 .
 //								 .
 //								0x67
@@ -134,6 +134,7 @@
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	FLAG_SPECIAL_DOOR0		0x96
+#macro	FLAG_SPECIAL_DOOR1		0x97
 
 #endregion
 
