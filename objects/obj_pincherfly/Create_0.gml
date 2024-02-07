@@ -35,8 +35,8 @@ event_inherited();
 // Determines how maximum possible speed the Pincherfly can move at towards and away from Samus when it 
 // attempts to attack her (These values are altered relative to the angle between the Pincherfly's and Samus's
 // position at the beginning of the attack).
-maxHspd			= 3.2;
-maxVspd			= 3.2;
+maxHspd			= 2.5;
+maxVspd			= 2.5;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Pincherfly will be able 
 // to take a single hit before dying; regardless of the weapon used
