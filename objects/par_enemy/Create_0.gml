@@ -337,7 +337,7 @@ inflict_freeze = function(_damage, _isColdBased){
 	var _bboxLeft	= bbox_left;
 	var _bboxTop	= bbox_top;
 	var _bboxBottom	= bbox_bottom;
-	platformID = instance_create_object(_bboxRight, _bboxTop, obj_enemy_platform);
+	platformID = instance_create_object(_bboxRight, _bboxTop, obj_moving_collider);
 	with(platformID){
 		image_xscale = _bboxLeft - _bboxRight;
 		image_yscale = _bboxBottom - _bboxTop;

@@ -21,7 +21,7 @@
 //	Determines the maximum vertical speed that the Yodare will use when it is moving through a collider.   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	YDRE_BURROW_SPEED		0.1
+#macro	YDRE_BURROW_SPEED		0.25
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Time in "unit frames" (60 unit frames = 1 second) that it takes the Yodare to reset its y position to  //
@@ -40,7 +40,7 @@ event_inherited();
 
 // The Yodare only ever travel downward; having its velocity determined by the effect of gravity relatiive to
 // its terminal velocity, which is stored in "maxVspd". Also determine the speed of gravity for the Yodare.
-maxVspd = 8.0;
+maxVspd = 4.0;
 vAccel	= 0.25;
 
 // Since the Power Beam deals a single point of damage (On "Normal" difficulty), the Yodare will be able to take

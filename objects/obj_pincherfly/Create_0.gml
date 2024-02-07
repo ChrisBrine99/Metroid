@@ -19,9 +19,9 @@
 //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PFLY_MAXHSPD_DORMANT	0.7
-#macro	PFLY_MAXVSPD_DORMANT	1.1
-#macro	PFLY_DIRECTION_INTERVAL	30.0
+#macro	PFLY_MAXHSPD_DORMANT	0.5
+#macro	PFLY_MAXVSPD_DORMANT	0.9
+#macro	PFLY_DIRECTION_INTERVAL	20.0
 #macro	PFLY_DIRECTION_OFFSET	90.0
 
 #endregion
@@ -72,7 +72,9 @@ targetDistance	= 0.0;
 // is zero.
 cooldownTimer	= 0.0;
 
-// 
+// Two variables that determine how the Pincherfly moves while dormant. The first stores the current "direction"
+// it is moving in relative to which half of its figure-8 pattern it is currently moving along, and the second
+// simply determines if the starting movement direction is to the right or left.
 moveDirection	= 0.0;
 movement		= 1;
 
@@ -111,7 +113,7 @@ initialize = function(_state){
 	dropChances[ENMY_AEION_DROP]		= 20;
 	dropChances[ENMY_POWBOMB_DROP]		= 10;
 	
-	// 
+	// Do a "coin flip" to determine the direction of the Pincherfly's dormant movement.
 	movement = choose(MOVE_DIR_RIGHT, MOVE_DIR_LEFT);
 }
 

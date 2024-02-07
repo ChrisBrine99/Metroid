@@ -167,7 +167,7 @@
 
 #macro	PLYR_BASE_JUMP		   -5.4
 #macro	PLYR_UPGRADED_JUMP	   -7.2
-#macro	PLYR_MAX_FALL_SPEED		6.0
+#macro	PLYR_MAX_FALL_SPEED		4.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	These values determine what percentage of Samus' current hspd will actually count towards her		   //
@@ -470,6 +470,36 @@ footstepTimer = 0.0;			// Determines amount of time since the last footstep soun
 screwAtkTimer = 0.0;			// Keeps track of the position into the screw attack sound that is played during the ability's used so it can seamlessly loop. 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endregion
+
+#region Overridden gravity function
+
+/// Store the pointer for the general gravity function into a local variable so it can be called from within
+/// the player's new gravity function. Otherwise, the pointer would be overwritten and impossible to call.
+__apply_gravity = apply_gravity;
+/// @description The player's gravity function, which takes into account any moving colliders beneath their
+/// feet before any general entity gravity logic is performed. If there is a collision with a moving collider,
+/// the general gravity function is skipped since it doesn't consider those types of colliders.
+/// @param {Real}	maxFallSpeed
+apply_gravity = function(_maxFallSpeed){
+	// Only bother checking for moving colliders if the player is moving downward; skip otherwise to prevent
+	// unnecessary code to be performed.
+	if (vspd >= 0.0){
+		var _collider = instance_place(x, y + 1, obj_moving_collider);
+		if (_collider && bbox_bottom <= _collider.bbox_top){
+			if (!DNTT_IS_GROUNDED){ // Like general gravity logic, only reset vspd values when not grounded.
+				stateFlags  |= DNTT_GROUNDED;
+				vspd		 = 0.0;
+				vspdFraction = 0.0;
+			}
+			return;
+		}
+	}
+	
+	// Call the general entity gravity function ONLY AFTER the moving collider gravity check has failed.
+	__apply_gravity(_maxFallSpeed);
+}
 
 #endregion
 
@@ -1201,7 +1231,40 @@ update_aeion = function(_modifier){
 
 #endregion
 
-#region Additional collision functions
+#region Collision functions
+
+/// @description Handles collision between the player, the world, and also moving colliders. The standard
+/// world collision function for entities doesn't consider colliders that can move around the world, so it
+/// has to be added onto that logic within the player object in order for the collision to be allowed.
+/// @param {Real}	deltaHspd	Total number of pixels to move along the x-axis for the current frame.
+/// @param {Real}	deltaVspd	Total number of pixels to move along the y-axis for the current frame.
+player_world_collision = function(_deltaHspd, _deltaVspd){
+	// Handle collision with moving colliders (This also covers frozen enemies since they use the moving
+	// colliders to prevent other enemies from colliding with them while they're frozen).
+	var _collider	 = instance_place(x, y + max(1, _deltaVspd), obj_moving_collider);
+	var _isGrounded  = false;
+	if (_collider && bbox_bottom <= _collider.bbox_top){
+		if (_deltaVspd > 0){
+			while(!place_meeting(x, y + 1, obj_moving_collider))
+				y++;
+			_deltaVspd = 0;
+		}
+		
+		// Temporaryily set the Player to be airborne so they don't end up moving down a slope that isn't 
+		// there due to how the logic works and how it doesn't consider moving colliders.
+		stateFlags &= ~DNTT_GROUNDED;
+		_isGrounded = true;
+		
+		// Move the player along with the collider. 
+		x += _collider.deltaHspd;
+		y += _collider.deltaVspd;
+	}
+	
+	// Finally, handle collision using the default entity/world collision function. If the player is on a
+	// moving platform they will be reset back to grounded after the collision function has been called.
+	entity_world_collision(_deltaHspd, _deltaVspd);
+	if (_isGrounded) {stateFlags |= DNTT_GROUNDED;}
+}
 
 /// @description Processing collision with a collider that interacts with Samus uniquely. It will be destroyed
 /// by Samus is she walks across it, but won't be destroyed or manipulated otherwise. This means any other
@@ -1681,7 +1744,7 @@ state_default = function(){
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
 	// throughout the state.
-	apply_frame_movement(entity_world_collision);
+	apply_frame_movement(player_world_collision);
 	player_collectible_collision();
 	player_item_drop_collision();
 	fallthrough_floor_collision();
@@ -1962,7 +2025,7 @@ state_airborne = function(){
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
 	// throughout the state.
-	apply_frame_movement(entity_world_collision);
+	apply_frame_movement(player_world_collision);
 	player_collectible_collision();
 	player_item_drop_collision();
 	player_liquid_collision();
@@ -2027,6 +2090,7 @@ state_crouching = function(){
 	process_input();
 	
 	// 
+	//apply_gravity(PLYR_MAX_FALL_SPEED);
 	if (grounded_to_airborne())
 		return;
 	
@@ -2242,7 +2306,7 @@ state_morphball = function(){
 	// Call a function that was inherited from the parent object; updating the position of Samus for the 
 	// current frame of gameplay--accounting for and applying delta time on the hspd and vspd values determined
 	// throughout the state.
-	apply_frame_movement(entity_world_collision);
+	apply_frame_movement(player_world_collision);
 	player_collectible_collision();
 	player_item_drop_collision();
 	fallthrough_floor_collision();
