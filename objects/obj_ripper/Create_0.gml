@@ -42,7 +42,8 @@ __initialize = initialize;
 initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_ripper, -1);
-	object_add_light_component(x, y, 8, 2, 10, HEX_LIGHT_BLUE, 0.5);
+	object_add_light_component(x, y, 8, 2, 10.0, HEX_LIGHT_BLUE, 0.5);
+	object_add_audio_component(x, y, 8, 2, 50.0, 150.0, 2.0);
 	create_general_collider();
 	
 	// Only one weakness aside from a Power Bomb, Screw Attack, or an ice-based weapon: Super Missiles.

@@ -1,9 +1,17 @@
 #region Macro initialization
 
-// Macros for the damage output of the standard bomb explosion as well as its stun duration on Enemies that
-// have been hit by said explosion.
+//
+//	Macros for the damage output of the standard bomb explosion as well as its stun duration on enemies 
+//	that have been hit by said explosion.
+//
+
 #macro	BOMB_DAMAGE				4
 #macro	BOMB_STUN_DURATION		10.0
+
+// 
+//	
+// 
+#macro	BOMB_EXPLODE_VOLUME		0.7
 
 #endregion
 
@@ -35,7 +43,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb_explode, -1);
 	object_add_light_component(x, y, 0, 0, 100, HEX_LIGHT_BLUE);
-	play_sound_effect(snd_bombexplode, 0, false, true, 0.7);
+	play_sound_effect(snd_bombexplode, 0, false, true, SND_TYPE_GENERAL, BOMB_EXPLODE_VOLUME);
 	stateFlags |= ENTT_DRAW_SELF;
 }
 
@@ -97,7 +105,8 @@ state_default = function(){
 		if (_isDestroyed){
 			if (flagID != EVENT_FLAG_INVALID)
 				event_set_flag(flagID, true);
-			animSpeed = 1;
+			stateFlags |= DOOR_OPENED;
+			animSpeed	= 1.0;
 		}
 	}
 }

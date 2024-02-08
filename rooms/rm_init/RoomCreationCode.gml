@@ -38,7 +38,7 @@ camera_set_target_object(PLAYER, 0, -16);
 //show_debug_overlay(true);
 //audio_debug(true);
 //texture_debug_messages(true);
-audio_set_linked_object(PLAYER);
+audio_set_linked_object(PLAYER, 0, -16);
 
 /*with(MAP_MANAGER){
 	// -- "rm_test01" map cells -- //

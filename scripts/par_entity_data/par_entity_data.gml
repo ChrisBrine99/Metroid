@@ -42,9 +42,26 @@
 /// @description Removing all of the components from the entity object; preventing memory leaks from occurring 
 /// if these weren't cleaned up during runtime. Over time, this would cause the game to crash.
 function entity_cleanup(){
-	//object_remove_audio_component();
-	//object_remove_interact_component();
+	audioComponent = delete_audio_component(audioComponent);
 	object_remove_light_component(true);
+}
+
+/// @description 
+function entity_end_step(){
+	if (lightComponent != noone){
+		var _x, _y; // Store position as local variables, since Game Maker prefers these when jumping between objects.
+		_x = x + lightOffsetX;
+		_y = y + lightOffsetY;
+		with(lightComponent) {set_position(_x, _y);}
+	}
+
+	// 
+	if (audioComponent != noone){
+		var _x, _y; // Store position as local variables, since Game Maker prefers these when jumping between objects.
+		_x = x + audioOffsetX;
+		_y = y + audioOffsetY;
+		with(audioComponent) {audio_emitter_position(emitterID, _x, _y, 0);}
+	}
 }
 
 /// @description Renders the entity to the screen using the proper animation system for said animations to not

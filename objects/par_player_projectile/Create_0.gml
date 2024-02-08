@@ -301,7 +301,8 @@ projectile_door_collision = function(_instance){
 		if (_isDestroyed){
 			if (flagID != EVENT_FLAG_INVALID) 
 				event_set_flag(flagID, true);
-			animSpeed = 1.0;
+			stateFlags |= DOOR_OPENED;
+			animSpeed	= DOOR_OPEN_ANIM_SPEED;
 		}
 	}
 	
@@ -327,14 +328,15 @@ projectile_enemy_collision = function(_x2, _y2){
 	// Perform a line check that orders all collisions based on distance from the (x1, y1) coordinate; storing
 	// it all in a ds_list that is then looped through to process what will happen to the projectile and the
 	// enemy(s) in question relative to the resulting collision(s).
-	var _length			= collision_line_list(x, y, _x2, _y2, obj_enemy_collider, false, true, enemyList, true);
+	var _length	= collision_line_list(x, y, _x2, _y2, obj_enemy_collider, false, true, enemyList, true);
 	for (var i = 0; i < _length; i++){
 		with(enemyList[| i]){
 			// First, check if the collider is considered an "immunity area". If so, the projectile will be
 			// immediately destroyed and the for loop through all collider collisions will exit early should
 			// the projectile not have its "IGNORE_ENTITIES" flags set to 1.
 			if (isImmunityArea){
-				play_sound_effect(snd_ineffective, 0, false, true, 0.5);
+				if (audioComponent) // Only play the sound effect if the enemy has an audio component.
+					audioComponent.play_sound(snd_ineffective, SND_TYPE_GENERAL, false, true, 0.5);
 				if (!_ignoreEntities){
 					_stateFlags |= ENTT_DESTROYED;
 					break;
@@ -354,7 +356,8 @@ projectile_enemy_collision = function(_x2, _y2){
 				
 				// 
 				if (!(weaknessFlags & _stateFlags)){
-					play_sound_effect(snd_ineffective, 0, false, true, 0.5);
+					if (audioComponent) // Only play the sound effect if the enemy has an audio component.
+						audioComponent.play_sound(snd_ineffective, SND_TYPE_GENERAL, false, true, 0.5);
 					continue;
 				}
 				

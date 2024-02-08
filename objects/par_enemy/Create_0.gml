@@ -54,10 +54,10 @@
 //	priority by comparison.																				   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	AIL_NONE				0
-#macro	AIL_STUNNED				1
-#macro	AIL_SHOCKED				2
-#macro	AIL_FROZEN				3
+#macro	AIL_NONE				0x00
+#macro	AIL_STUNNED				0x01
+#macro	AIL_SHOCKED				0x02
+#macro	AIL_FROZEN				0x03
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Values that represent how long an enemy will be inflicted by its respective ailment. The units are	   //
@@ -72,13 +72,13 @@
 //	
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	ENMY_SMENERGY_DROP		0
-#macro	ENMY_LGENERGY_DROP		1
-#macro	ENMY_SMMISSILE_DROP		2
-#macro	ENMY_LGMISSILE_DROP		3
-#macro	ENMY_AEION_DROP			4
-#macro	ENMY_POWBOMB_DROP		5
-#macro	ENMY_TOTAL_DROPS		6
+#macro	ENMY_SMENERGY_DROP		0x00
+#macro	ENMY_LGENERGY_DROP		0x01
+#macro	ENMY_SMMISSILE_DROP		0x02
+#macro	ENMY_LGMISSILE_DROP		0x03
+#macro	ENMY_AEION_DROP			0x04
+#macro	ENMY_POWBOMB_DROP		0x05
+#macro	ENMY_TOTAL_DROPS		0x06
 
 #endregion
 

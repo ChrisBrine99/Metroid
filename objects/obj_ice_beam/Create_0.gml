@@ -57,7 +57,7 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	// Randomize the starting angle for the sprite so each ice beam bullet looks different from the last.
 	// These angles are locked to 45 degree intervals instead of allowing all possible angles to mimick an
 	// eight-frame spinning animation for the beam.
-	image_angle = 45 * irandom(8);
+	image_angle = 45.0 * irandom(8);
 }
 
 #endregion
@@ -72,8 +72,8 @@ state_default = function(){
 	// Causing the ice beam to spin; simulating an 8-frame rotation animation due to the actual angle of
 	// the sprite only being updated at 45 degree intervals.
 	angleTimer += 0.25 * DELTA_TIME;
-	if (angleTimer >= 1){
-		image_angle += 45;
+	if (angleTimer >= 1.0){
+		image_angle += 45.0;
 		angleTimer--;
 	}
 }

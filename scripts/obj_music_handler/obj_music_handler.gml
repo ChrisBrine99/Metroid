@@ -7,8 +7,8 @@
 // Two constrant values for different fading durations for the currently playing song's volume. The first
 // is how long it takes for the previous song to fade out and the new song to fade in, while the second
 // value represents how long the crossfading occurs for to minimize audio popping.
-#macro	SONG_FADE_DURATION			2500
-#macro	LOOP_CROSSFADE_LENGTH		100
+#macro	SONG_FADE_DURATION			2500.0
+#macro	LOOP_CROSSFADE_LENGTH		100.0
 
 #endregion
 
@@ -26,16 +26,16 @@ function obj_music_handler(_index) : base_struct(_index) constructor{
 	curSong = {
 		song :			NO_SONG,
 		songID :		-1,
-		loopPosition :	0,
-		loopLength :	0,
+		loopPosition :	0.0,
+		loopLength :	0.0,
 	};
 	
 	// 
 	queuedSong = {
 		song :			NO_SONG,
 		songID :		-1,
-		loopPosition :	0,
-		loopLength :	0,
+		loopPosition :	0.0,
+		loopLength :	0.0,
 	};
 	
 	/// @description  Code that should be placed into the "Cleanup" event of whatever object is controlling

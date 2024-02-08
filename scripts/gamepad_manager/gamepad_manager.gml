@@ -62,12 +62,14 @@ global.gamepadManager = {
 /// @param {Bool}	includeSticks
 function gamepad_any_button(_device, _includeSticks){
 	// If there isn't a valid gamepad connected don't bother checking for any input.
-	if (!gamepad_is_connected(_device)) {return;}
+	if (!gamepad_is_connected(_device)) 
+		return -1;
 	
 	// Loop through all possible game pad buttongs and triggers to see if any input from them was triggered.
 	// Return the constant value for the relative input the was detected so the function is deemed "true".
 	for (var i = gp_face1; i <= gp_padr; i++){
-		if (gamepad_button_check(_device, i)) {return i;}
+		if (gamepad_button_check(_device, i)) 
+			return i;
 	}
 	
 	// If the flag to include stick input was toggled, another loop will be mad to check for input on either
@@ -76,7 +78,8 @@ function gamepad_any_button(_device, _includeSticks){
 	if (_includeSticks){
 		var _deadzone = gamepad_get_axis_deadzone(_device);
 		for (var i = gp_axislh; i <= gp_axisrv; i++){
-			if (abs(gamepad_axis_value(_device, i)) >= _deadzone) {return i;}
+			if (abs(gamepad_axis_value(_device, i)) >= _deadzone) 
+				return i;
 		}
 	}
 	

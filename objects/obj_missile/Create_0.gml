@@ -57,7 +57,7 @@ state_default = function(){
 		if (hspd < -maxHspd)		{hspd = -maxHspd;}
 		else if (hspd > maxHspd)	{hspd = maxHspd;}
 	} else if (PROJ_MOVING_VERTICAL){
-		vspd += (image_angle == 90) ? -vAccel * DELTA_TIME : vAccel * DELTA_TIME;
+		vspd += (image_angle == 90.0) ? -vAccel * DELTA_TIME : vAccel * DELTA_TIME;
 		if (vspd < -maxVspd)		{vspd = -maxVspd;}
 		else if (vspd > maxVspd)	{vspd = maxVspd;}
 	}

@@ -1,8 +1,17 @@
 #region Macro initialization
 
 // 
+//	
+// 
+
 #macro	POWER_BOMB_DAMAGE			50
 #macro	POWER_BOMB_STUN_DURATION	20.0
+
+//
+//	
+//
+
+#macro	PBOMB_EXPLODE_VOLUME		0.8
 
 #endregion
 
@@ -18,7 +27,7 @@ maxHitpoints	= 90.0;
 hitpoints		= maxHitpoints;
 
 // 
-play_sound_effect(snd_powerbombexplode, 0, false, true, 0.8);
+play_sound_effect(snd_powerbombexplode, 0, false, true, SND_TYPE_GENERAL, PBOMB_EXPLODE_VOLUME);
 
 #endregion
 
@@ -116,6 +125,7 @@ state_default = function(){
 		if (_isDestroyed){
 			if (flagID != EVENT_FLAG_INVALID) 
 				event_set_flag(flagID, true);
+			stateFlags	   |= DOOR_OPENED;
 			animSpeed		= 1.0;
 			_isDestroyed	= false;
 		}

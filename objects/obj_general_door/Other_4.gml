@@ -6,23 +6,30 @@ var _y = lengthdir_y(1, image_angle);
 var _xx = _x * 24;
 var _yy = _y * 24;
 if (place_meeting(x + _xx, y + _yy, PLAYER)){
-	imageIndex = spriteLength - 1;
-	animSpeed = -1;
+	stateFlags |= (ENTT_PAUSE_ANIM | DOOR_CLOSING);
+	imageIndex	= spriteLength - 1;
+	animSpeed	= -DOOR_OPEN_ANIM_SPEED;
 	
 	// The door doesn't exist in the frozen entities list within the "Screen Fade" instance, so the door must
 	// be added here if required (Allows the door to close behind Samus since she just traveled through it).
-	var _id = id;
-	with(SCREEN_FADE) {ds_list_add(prevAnimationFlags, [_id, false]);}
-	stateFlags |= ENTT_PAUSE_ANIM;
+	with(SCREEN_FADE) {ds_list_add(prevAnimationFlags, [other.id, false]);}
 }
 
-// Properly offset the light such that it is always in the center of the sprite; regardless of what angle the
-// sprite for the door is being positioned at.
-lightComponent.set_position(x - _yy + (4 * _x), y + _xx + (4 * _y));
+// 
+var _centerX = -(_yy + (4 * _x));
+var _centerY = _xx + (4 * _y);
+
+// 
+audioOffsetX = _centerX;
+audioOffsetY = _centerY;
+
+// 
+lightOffsetX = _centerX;
+lightOffsetY = _centerY;
 
 // FOR DOORS WITH LOCKS ONLY -- Check if the flag tied to the door has already been set. If so, switch this door
 // to a general door as it is now considered unlocked.
-if (object_index == obj_general_door || !event_get_flag(flagID)) 
+if (object_index == obj_general_door || !event_get_flag(flagID))
 	return;
 lightComponent.set_properties(LGHT_ACTIVE_RADIUS, HEX_LIGHT_BLUE, LGHT_ACTIVE_STRENGTH);
 flagID = EVENT_FLAG_INVALID;

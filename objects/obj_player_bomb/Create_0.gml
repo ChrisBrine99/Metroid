@@ -1,9 +1,19 @@
 #region Macro initialization
 
-// Macro for the timer in frames (60 = 1 real-world second) that it takes for a bomb to detonate whenever
-// deployed by Samus and for the value that timer must ge below in order to speed up the blinking animation.
+//
+//	Macro for the timer in frames (60 = 1 real-world second) that it takes for a bomb to detonate 
+//	whenever deployed by Samus and for the value that timer must ge below in order to speed up the 
+//	blinking animation.
+//
+
 #macro	BOMB_EXPLOSION_TIME		50.0
 #macro	ANIM_SPEEDUP_TIME		15.0
+
+// 
+//	
+// 
+
+#macro	BOMB_SET_VOLUME			0.3
 
 #endregion
 
@@ -44,7 +54,7 @@ initialize = function(_state){
 	__initialize(_state);
 	entity_set_sprite(spr_player_bomb, spr_empty_mask);
 	object_add_light_component(x, y, 0, 0, 30, HEX_LIGHT_BLUE, 0.7);
-	play_sound_effect(snd_bombset, 0, false, true, 0.3);
+	play_sound_effect(snd_bombset, 0, false, true, SND_TYPE_GENERAL, BOMB_SET_VOLUME);
 	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM;
 }
 

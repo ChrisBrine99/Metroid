@@ -1,20 +1,38 @@
 #region Macro value initialization
 
-// The positions for the bit flags that when toggled will determine if the beam is the upper, lower, or center
-// projectile of the three that exist for the split power beam.
-#macro	UPPER_POWER_BEAM		12
-#macro	LOWER_POWER_BEAM		13
+// ------------------------------------------------------------------------------------------------------- //
+//	The positions for the bit flags that when toggled will determine if the beam is the upper, lower, or   //
+//	center projectile of the three that exist for the split power beam.									   //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Condenses the code required to check if the current instance of the beam projectile is the upper (Moves away
-// from the center beam in negative values) or the lower (Moves away in positive values) of the three instances.
-#macro	IS_UPPER_POWER_BEAM		(stateFlags & (1 << UPPER_POWER_BEAM))
-#macro	IS_LOWER_POWER_BEAM		(stateFlags & (1 << LOWER_POWER_BEAM))
+#macro	UPPER_POWER_BEAM		0x00001000
+#macro	LOWER_POWER_BEAM		0x00002000
 
-// Determines how fast and for how long the upper and lower power beam projectils will split away from the 
-// center one whenever Samus's arm cannon is fired while having the beam splitter item and this beam active.
+// ------------------------------------------------------------------------------------------------------- //
+//	Condenses the code required to check if the current instance of the beam projectile is the upper	   //
+//	(Moves away from the center beam in negative values) or the lower (Moves away in positive values) of   //
+//	the three instances.																				   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	IS_UPPER_POWER_BEAM		(stateFlags & UPPER_POWER_BEAM)
+#macro	IS_LOWER_POWER_BEAM		(stateFlags & LOWER_POWER_BEAM)
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines how fast and for how long the upper and lower power beam projectils will split away from	   //
+//	the center one whenever Samus's arm cannon is fired while having the beam splitter item and this beam  //
+//	active.																								   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	SPLIT_MOVEMENT_SPEED	7.5
 #macro	SPLIT_BEAM_OFFSET		12
 #macro	SPLIT_CHARGE_OFFSET		18
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the volume of the Power Beam's normal and charged shot sound effects relative to the current	   //
+//	percentage value set for the volume of general sound effects by the player.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	POWERBEAM_VOLUME		0.3
 
 #endregion
 
@@ -28,8 +46,8 @@ event_inherited();
 damage = 1;
 // Set the maximum horizontal and vertical movement speeds for all power beam instances (These values can be
 // surpassed by the initial spread movement of any split beam variants).
-maxHspd = 10;
-maxVspd = 10;
+maxHspd = 10.0;
+maxVspd = 10.0;
 
 #endregion
 
@@ -56,20 +74,20 @@ ___initialize = initialize;
 initialize = function(_state, _x, _y, _playerFlags, _flags){
 	___initialize(_state, _x, _y, _playerFlags, _flags); // Calls initialize function found in "par_player_projectile".
 	entity_set_sprite(PROJ_IS_CHARGED ? spr_power_beam_charged : spr_power_beam, -1);
+	object_add_light_component(x, y, 0, 0, 32.0, HEX_YELLOW, 0.7);
 	stateFlags |= PROJ_POWBEAM;
 
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
-	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1)	? -maxHspd : maxHspd;}
-	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90)		? -maxVspd : maxVspd;}
+	if (PROJ_MOVING_HORIZONTAL)		{hspd = (image_xscale == -1.0)	? -maxHspd : maxHspd;}
+	else if (PROJ_MOVING_VERTICAL)	{vspd = (image_angle == 90.0)	? -maxVspd : maxVspd;}
 	
 	// Determine what characteristics to apply to the power beam bullet based on if it was charged or not.
 	// The light component and sound effect are altered relative to the charged state of the projectile.
 	if (PROJ_IS_CHARGED){
-		object_add_light_component(x, y, 0, 0, 50, HEX_LIGHT_YELLOW, 0.9);
-		play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+		lightComponent.set_properties(50.0, HEX_LIGHT_YELLOW, 0.9);
+		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME);
 	} else{
-		object_add_light_component(x, y, 0, 0, 32, HEX_YELLOW, 0.7);
-		play_sound_effect(snd_powerbeam, 0, false, true, 0.3); // TODO: Change to charged powerbeam sound.
+		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME); // TODO: Change to charged powerbeam sound.
 	}
 	
 	// Determine the split beam velocities that will offset the upper and lower beams properly in order to 

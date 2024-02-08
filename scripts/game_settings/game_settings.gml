@@ -22,35 +22,35 @@
 //	effects will be active. If not set, none of the unset effects are applied (Bloom, aberration, etc.).   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	FULL_SCREEN				0
-#macro	VERTICAL_SYNC			1
-#macro	BLOOM_EFFECT			2
-#macro	ABERRATION_EFFECT		3
-#macro	FILM_GRAIN_FILTER		4
-#macro	SCANLINE_FILTER			5
+#macro	FULL_SCREEN				0x00
+#macro	VERTICAL_SYNC			0x01
+#macro	BLOOM_EFFECT			0x02
+#macro	ABERRATION_EFFECT		0x03
+#macro	FILM_GRAIN_FILTER		0x04
+#macro	SCANLINE_FILTER			0x05
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The single bit for audio settings that will determine if music should be audible or not.			   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	PLAY_MUSIC				10
+#macro	PLAY_MUSIC				0x0A
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The bits that store the flags for a few of the game's accessibility settings.						   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	OBJECTIVE_HINTS			20
-#macro	ITEM_HIGHLIGHTING		21
-#macro	INTERACTION_PROMPTS		22
-#macro	IS_RUN_TOGGLE			23
-#macro	IS_AIM_TOGGLE			24
-#macro	SWAP_MOVEMENT_STICK		25
+#macro	OBJECTIVE_HINTS			0x10
+#macro	ITEM_HIGHLIGHTING		0x11
+#macro	INTERACTION_PROMPTS		0x12
+#macro	IS_RUN_TOGGLE			0x13
+#macro	IS_AIM_TOGGLE			0x14
+#macro	SWAP_MOVEMENT_STICK		0x15
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The bit that enables vibration for a connected gamepad.												   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	GAMEPAD_VIBRATION		30
+#macro	GAMEPAD_VIBRATION		0x20
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Unique values for the aspect ratios that are supported in the game similar to how all assets in the	   //
@@ -68,12 +68,12 @@
 //	global volume's current value.																		   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	GLOBAL_VOLUME			0
-#macro	MUSIC_VOLUME			1
-#macro	SOUND_VOLUME			2
-#macro	FOOTSTEP_VOLUME			3
-#macro	AMBIENCE_VOLUME			4
-#macro	UI_VOLUME				5
+#macro	SND_TYPE_GLOBAL			0x00
+#macro	SND_TYPE_MUSIC			0x01
+#macro	SND_TYPE_GENERAL		0x02
+#macro	SND_TYPE_FOOTSTEP		0x03
+#macro	SND_TYPE_AMBIENCE		0x04
+#macro	SND_TYPE_UI				0x05
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The positions within the buffer for the player's current input configuration that each of these		   //
@@ -81,34 +81,34 @@
 //	code.																								   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	KEY_GAME_RIGHT			0		// Player movement inputs
-#macro	KEY_GAME_LEFT			2
-#macro	KEY_GAME_UP				4		// Aiming/morphball mode inputs
-#macro	KEY_GAME_DOWN			6
-#macro	KEY_JUMP				8		// Jumping input
-#macro	KEY_USE_WEAPON			10		// Equipped weapons inputs
-#macro	KEY_SWAP_WEAPON			12		
-#macro	KEY_HOTKEY_ONE			14		// Weapon hotkey inputs; order is:
-#macro	KEY_HOTKEY_TWO			16		//		Power Beam, Ice Beam, Wave Beam, Plasma Beam
-#macro	KEY_HOTKEY_THREE		18		//		Missiles, Ice Missiles, Shock Missiles
-#macro	KEY_HOTKEY_FOUR			20		
-#macro	KEY_HOTKEY_FIVE			22		
-#macro	KEY_HOTKEY_SIX			24		
-#macro	KEY_HOTKEY_SEVEN		26		
-#macro	KEY_ALT_WEAPON			28		// Activates missiles or power bombs
-#macro	KEY_ENERGY_SHIELD		30		// Toggles for all aeion abilities
-#macro	KEY_PHASE_SHIFT			32		
-#macro	KEY_SCAN_PULSE			34
-#macro	KEY_MENU_RIGHT			40		// Menu cursor movement inputs
-#macro	KEY_MENU_LEFT			42
-#macro	KEY_MENU_UP				44
-#macro	KEY_MENU_DOWN			46
-#macro	KEY_SELECT				48		// Selection and deselection/menu-closing inputs
-#macro	KEY_RETURN				50
-#macro	KEY_DELETE_FILE			52		// (Save/Load Game Menu ONLY) deletes highlighted save slot
-#macro	KEY_AUX_MENU_RIGHT		54		// Auxiliary inputs for moving left and right in a menu
-#macro	KEY_AUX_MENU_LEFT		56
-#macro	KEY_PAUSE				58		// Accesses the pause menu while in-game
+#macro	KEY_GAME_RIGHT			0x00	// Player movement inputs
+#macro	KEY_GAME_LEFT			0x02
+#macro	KEY_GAME_UP				0x04	// Aiming/morphball mode inputs
+#macro	KEY_GAME_DOWN			0x06
+#macro	KEY_JUMP				0x08	// Jumping input
+#macro	KEY_USE_WEAPON			0x0A	// Equipped weapons inputs
+#macro	KEY_SWAP_WEAPON			0x0C		
+#macro	KEY_HOTKEY_ONE			0x0E	// Weapon hotkey inputs; order is:
+#macro	KEY_HOTKEY_TWO			0x10	//		Power Beam, Ice Beam, Wave Beam, Plasma Beam
+#macro	KEY_HOTKEY_THREE		0x12	//		Missiles, Ice Missiles, Shock Missiles
+#macro	KEY_HOTKEY_FOUR			0x14		
+#macro	KEY_HOTKEY_FIVE			0x16		
+#macro	KEY_HOTKEY_SIX			0x18		
+#macro	KEY_HOTKEY_SEVEN		0x1A		
+#macro	KEY_ALT_WEAPON			0x1C	// Activates missiles or power bombs
+#macro	KEY_ENERGY_SHIELD		0x1E	// Toggles for all aeion abilities
+#macro	KEY_PHASE_SHIFT			0x20		
+#macro	KEY_SCAN_PULSE			0x22
+#macro	KEY_MENU_RIGHT			0x24	// Menu cursor movement inputs
+#macro	KEY_MENU_LEFT			0x26
+#macro	KEY_MENU_UP				0x28
+#macro	KEY_MENU_DOWN			0x2A
+#macro	KEY_SELECT				0x2C	// Selection and deselection/menu-closing inputs
+#macro	KEY_RETURN				0x2E
+#macro	KEY_DELETE_FILE			0x30	// (Save/Load Game Menu ONLY) deletes highlighted save slot
+#macro	KEY_AUX_MENU_RIGHT		0x32	// Auxiliary inputs for moving left and right in a menu
+#macro	KEY_AUX_MENU_LEFT		0x34
+#macro	KEY_PAUSE				0x36	// Accesses the pause menu while in-game
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Macros to simply the typing required to check each respective input binding for the keyboard whenever  //
@@ -161,18 +161,6 @@
 // TODO -- Add gamepad macros for inputs here
 
 // ------------------------------------------------------------------------------------------------------- //
-//	A shorten-downed version that returns the volume for each of the four groups; the bottom three being   //
-//	influenced by what the current global volume is (Values all range from 0.0 to 1.0).					   //
-// ------------------------------------------------------------------------------------------------------- //
-
-#macro	GET_GLOBAL_VOLUME		game_get_group_volume(GLOBAL_VOLUME)
-#macro	GET_MUSIC_VOLUME		game_get_group_volume(MUSIC_VOLUME)
-#macro	GET_SOUND_VOLUME		game_get_group_volume(SOUND_VOLUME)
-#macro	GET_FOOTSTEP_VOLUME		game_get_group_volume(FOOTSTEP_VOLUME)
-#macro	GET_AMBIENCE_VOLUME		game_get_group_volume(AMBIENCE_VOLUME)
-#macro	GET_UI_VOLUME			game_get_group_volume(UI_VOLUME)
-
-// ------------------------------------------------------------------------------------------------------- //
 //	Macros that provide an easy method of referencing various setting values without having to constantly  //
 //	typing out "global.gameSettings.*" for each of these values whenever they are needed.				   //
 // ------------------------------------------------------------------------------------------------------- //
@@ -219,12 +207,12 @@ global.gameSettings = {
 	// Much like the group of variables above, these will store setting values that can be represented by a
 	// single bit, but for audio levels instead of various video setttings. Each is represented by a percentage
 	// that is stored as a value between 0 and 1, determining the overall volume of the group they represent.
-	globalVolume :			0,
-	musicVolume :			0,
-	soundVolume :			0,
-	footstepVolume :		0,
-	ambienceVolume :		0,
-	uiVolume :				0,
+	globalVolume :			0.0,
+	musicVolume :			0.0,
+	soundVolume :			0.0,
+	footstepVolume :		0.0,
+	ambienceVolume :		0.0,
+	uiVolume :				0.0,
 	
 	// The input binding buffer will store the currently set inputs for each action that were set up by the
 	// player (Or the defaults if they haven't altered the base controls). Each of these buffer values is a
@@ -232,14 +220,14 @@ global.gameSettings = {
 	// values of somwhere around 32700, I believe). The last three variables will store values that can be
 	// adjusted by the user so that they fit their gamepad well.
 	inputBindings :			buffer_create(128, buffer_fixed, 2),
-	vibrationIntensity :	0,
-	stickDeadzone :			0,
-	triggerThreshold :		0,
+	vibrationIntensity :	0.0,
+	stickDeadzone :			0.0,
+	triggerThreshold :		0.0,
 	
 	// An accessibility setting that can't be stored as a single bit. It will determine how fast characters
 	// appear on the screen when they use a typewriter-like effect during rendering. The higher the value,
 	// the faster that effect occurs.
-	textSpeed :				0,
+	textSpeed :				0.0,
 	
 	// Damage modification values for the game's difficulty that can't be represented by individual bits.
 	// Instead, they are decimal values that will increased or decrease the damage output for the player or
@@ -380,7 +368,7 @@ function game_save_settings(){
 		// into account.
 		ini_write_real(SECTION_AUDIO, "global_volume",				globalVolume);
 		ini_write_real(SECTION_AUDIO, "music_volume",				musicVolume);
-		ini_write_real(SECTION_AUDIO, "play_music",					settingFlags & (1 << PLAY_MUSIC));
+		ini_write_real(SECTION_AUDIO, "play_music",					(settingFlags & (1 << PLAY_MUSIC)));
 		ini_write_real(SECTION_AUDIO, "sound_volume",				soundVolume);
 		ini_write_real(SECTION_AUDIO, "footstep_volume",			footstepVolume);
 		ini_write_real(SECTION_AUDIO, "ambience_volume",			ambienceVolume);
@@ -513,13 +501,13 @@ function game_get_aspect_ratio_height(_arConstant){
 function game_get_group_volume(_volumeGroup){
 	with(GAME_SETTINGS){
 		switch(_volumeGroup){
-			case GLOBAL_VOLUME:		return globalVolume;
-			case MUSIC_VOLUME:		return musicVolume;
-			case SOUND_VOLUME:		return soundVolume;
-			case FOOTSTEP_VOLUME:	return footstepVolume;
-			case AMBIENCE_VOLUME:	return ambienceVolume;
-			case UI_VOLUME:			return uiVolume;
-			default:				return 0;
+			case SND_TYPE_GLOBAL:		return globalVolume;
+			case SND_TYPE_MUSIC:		return musicVolume		* globalVolume;
+			case SND_TYPE_GENERAL:		return soundVolume		* globalVolume;
+			case SND_TYPE_FOOTSTEP:		return footstepVolume	* globalVolume;
+			case SND_TYPE_AMBIENCE:		return ambienceVolume	* globalVolume;
+			case SND_TYPE_UI:			return uiVolume			* globalVolume;
+			default:					return 0.0;
 		}
 	}
 }

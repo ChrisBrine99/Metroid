@@ -40,13 +40,36 @@ function place_meeting_3d(_x, _y, _z, _object){
 /// @param {Real}			priority		Set the channel priority for the sound.
 /// @param {Bool}			loop			Toggle the sound to play once or repeat indefinitely.
 /// @param {Bool}			stopPrevious	Stop any previous instances of the sound from playing or not.
+///	@param {Real}			soundType		What "group" the sound effect falls under (Music, General, UI, etc.).
 /// @param {Real}			gain			Set the volume of the sound (Default is 1.0).
 /// @param {Real}			offset			The offset position (in seconds) of the sound to begin its playback at.
 /// @param {Real}			pitch			Set the pitch of the sound relative to its default value (1.0). 
-function play_sound_effect(_sound, _priority, _loop, _stopPrevious, _gain = 1.0, _offset = 0.0, _pitch = 1.0){
+function play_sound_effect(_sound, _priority, _loop, _stopPrevious, _soundType, _gain = 1.0, _offset = 0.0, _pitch = 1.0){
 	if (_stopPrevious && audio_is_playing(_sound))
 		audio_stop_sound(_sound);
-	return audio_play_sound(_sound, _priority, _loop, _gain, _offset, _pitch);
+	return audio_play_sound(_sound, _priority, _loop, 
+				_gain * game_get_group_volume(_soundType), _offset, _pitch);
+}
+
+/// @description An extension of the "audio_play_sound_at" function that simply adds the ability to stop any
+/// previous instance of the sound effect that is being called to begin playing should that be necessary.
+///	@param {Id.AudioEmitter}	emitter			The index of emitter to play the sound effect on.
+/// @param {Asset.GMSound}		sound			The index of sound resource to play.
+/// @param {Real}				refDistance		The "Reference" distance for when the sound should begin falling off.
+///	@param {Real}				maxDistance		The maximum distance that the sound will be audible from.
+/// @param {Real}				falloffFactor	How fast the volume decreases between ref and max distances.
+/// @param {Real}				priority		Set the channel priority for the sound.
+/// @param {Bool}				loop			Toggle the sound to play once or repeat indefinitely.
+/// @param {Bool}				stopPrevious	Stop any previous instances of the sound from playing or not.
+///	@param {Real}				soundType		What "group" the sound effect falls under (Music, General, UI, etc.).
+/// @param {Real}				gain			Set the volume of the sound (Default is 1.0).
+/// @param {Real}				offset			The offset position (in seconds) of the sound to begin its playback at.
+/// @param {Real}				pitch			Set the pitch of the sound relative to its default value (1.0). 
+function play_sound_effect_on(_emitter, _sound, _refDistance, _maxDistance, _falloffFactor, _priority, _loop, _stopPrevious, _soundType, _gain = 1.0, _offset = 0.0, _pitch = 1.0){
+	if (_stopPrevious && audio_is_playing(_sound))
+		audio_stop_sound(_sound);
+	return audio_play_sound_on(_emitter, _sound, _loop, _priority, _gain * game_get_group_volume(_soundType), 
+				_offset, _pitch, audio_emitter_get_listener_mask(_emitter));
 }
 
 #endregion

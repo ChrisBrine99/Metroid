@@ -36,13 +36,18 @@ global.audioManager = {
 	audioBuses : ds_map_create(),
 	
 	// Stores the unique id for the object that is linked to the audio listener, which will determine how
-	// sounds are heard in the game.
+	// sounds are heard in the game. There are offset values to allow the listener's position to be moved
+	// relative to the linked object's actual position.
 	linkedObject : noone,
+	offsetX	: 0,
+	offsetY : 0,
 	
 	/// @description Updates the position of the audio listener to match the linked object's actual position
 	/// within the currently loaded room. Function does nothing is no linked object is specified.
 	end_step : function(){
-		with(linkedObject) {audio_listener_position(x, y, 0);}
+		var _offsetX = offsetX;
+		var _offsetY = offsetY;
+		with(linkedObject) {audio_listener_position(x + _offsetX, y + _offsetY, 0);}
 	},
 	
 	/// @description Removes all volitile data from memory before the audio manager itself is completely cleared
@@ -71,7 +76,7 @@ global.audioManager = {
 // orientation (The default orientation is upside down because of GameMaker's y coordinates going from the top
 // down) and applies the audio falloff model for all sounds in the game.
 audio_listener_orientation(0, 0, 1, 0, -1, 0);
-audio_falloff_set_model(audio_falloff_linear_distance);
+audio_falloff_set_model(audio_falloff_linear_distance_clamped);
 
 #endregion
 
@@ -80,10 +85,14 @@ audio_falloff_set_model(audio_falloff_linear_distance);
 /// @description Assigns an object as the game's "listener" which will determine how audio is heard by the
 /// player within the game world relative to the linked object's position and the sound's position.
 /// @param {Id.Instance}	objectID	The object in the game to assign the listener to.
-function audio_set_linked_object(_objectID){
+/// @param {Real}			offsetX		Number of pixels to offset the listener relative to the linked object's x position.
+///	@param {Real}			offsetY		Number of pixels to offset the listener relative to the linked object's y position.
+function audio_set_linked_object(_objectID, _offsetX = 0, _offsetY = 0){
 	with(AUDIO_MANAGER){
-		with(_objectID) {audio_listener_position(x, y, 0);}
+		with(_objectID) {audio_listener_position(x + _offsetX, y + _offsetY, 0);}
 		linkedObject = _objectID;
+		offsetX = _offsetX;
+		offsetY = _offsetY;
 	}
 }
 
