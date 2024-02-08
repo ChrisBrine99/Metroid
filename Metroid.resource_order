@@ -9,6 +9,7 @@
     {"name":"Bombs","order":2,"path":"folders/Resources/Audio/Entities/Dynamic/Player/Weapons/Bombs.yy",},
     {"name":"Missiles","order":1,"path":"folders/Resources/Audio/Entities/Dynamic/Player/Weapons/Missiles.yy",},
     {"name":"Static","order":1,"path":"folders/Resources/Audio/Entities/Static.yy",},
+    {"name":"Doors","order":1,"path":"folders/Resources/Audio/Entities/Static/Doors.yy",},
     {"name":"Drops","order":2,"path":"folders/Resources/Audio/Entities/Static/Drops.yy",},
     {"name":"Music","order":3,"path":"folders/Resources/Audio/Music.yy",},
     {"name":"Fanfares","order":2,"path":"folders/Resources/Audio/Music/Fanfares.yy",},
@@ -87,7 +88,6 @@
     {"name":"Levels","order":3,"path":"folders/Resources/Levels.yy",},
     {"name":"Area 1","order":2,"path":"folders/Resources/Levels/Area 1.yy",},
     {"name":"Test Levels","order":1,"path":"folders/Resources/Levels/Test Levels.yy",},
-    {"name":"Doors","order":1,"path":"folders/Resources/Audio/Entities/Static/Doors.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},

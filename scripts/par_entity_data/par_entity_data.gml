@@ -46,7 +46,8 @@ function entity_cleanup(){
 	object_remove_light_component(true);
 }
 
-/// @description 
+/// @description Updates the positions of any components that are active and attached to the entity calling
+/// this function. It takes into account the offsets stored wihtin the entity themselves.
 function entity_end_step(){
 	if (lightComponent != noone){
 		var _x, _y; // Store position as local variables, since Game Maker prefers these when jumping between objects.
@@ -55,7 +56,6 @@ function entity_end_step(){
 		with(lightComponent) {set_position(_x, _y);}
 	}
 
-	// 
 	if (audioComponent != noone){
 		var _x, _y; // Store position as local variables, since Game Maker prefers these when jumping between objects.
 		_x = x + audioOffsetX;

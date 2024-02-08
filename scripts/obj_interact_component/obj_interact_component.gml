@@ -7,7 +7,7 @@
 #region Initializing any globals that are useful/related to obj_interact_component
 #endregion
 
-#region The main object code for obj_interact_component
+/*#region The main object code for obj_interact_component
 
 /// @param {Real}			x					Position on the x-axis to place the component at within the room.
 /// @param {Real}			y					Position on the y-axis to place the component at within the room.

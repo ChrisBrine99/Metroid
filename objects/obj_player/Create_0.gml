@@ -2139,6 +2139,7 @@ state_crouching = function(){
 	
 	// 
 	player_world_collision(0, 0);
+	fallthrough_floor_collision();
 	player_enemy_collision();
 }
 
@@ -2146,11 +2147,14 @@ state_crouching = function(){
 /// The time for this transition being determined by the value of the "PLYR_ENTER_BALL_TIME" macro that is
 /// defined at the top of this event's code.
 state_enter_morphball = function(){
-	// 
+	// Process the required collision logic for this state, which involves collision with the world, floors
+	// that can be broken by being under Samus, and any potential collisions with enemies in the current room.
 	player_world_collision(0, 0);
+	fallthrough_floor_collision();
 	player_enemy_collision();
 	
-	// 
+	// Increment the timer for the morphball's enter/exit states until it exceeds the required value. Until 
+	// it does, the state is exited early and the visor light is set to the proper offset for the animation.
 	mBallTransformTimer += DELTA_TIME;
 	if (mBallTransformTimer < PLYR_ENTER_BALL_TIME){
 		lightOffsetX = LGHT_VISOR_X_TRANSFORM;
@@ -2158,24 +2162,32 @@ state_enter_morphball = function(){
 		return;
 	}
 		
-	// 
+	// After the time exceeds the required value, Samus will be transitioned into her main moprhball state.
+	// The necessary state flags are cleared and the current arm cannon wepaon is reset back to the currently
+	// equipped beam--which is the default.
 	object_set_next_state(state_morphball);
 	entity_set_sprite(morphballSprite, morphballMask);
 	stateFlags		   &= ~(PLYR_AIMING_DOWN | PLYR_CROUCHED);
+	stateFlags		   |= PLYR_MORPHBALL;
 	curWeapon			= curBeam;
 	mBallTransformTimer = 0.0;
 	
-	// 
+	// No light is required for the morphball, so it will remain inactive until exiting from the mode.
 	lightComponent.isActive = false;
 }
 
-/// @description 
+/// @description Another passing state that will play Samus's one-frame animation for exiting her morphball 
+///	form. The time for this transition being determined by the value of the "PLYR_EXIT_BALL_TIME" macro that 
+/// is defined at the top of this event's code.
 state_exit_morphball = function(){
-	// 
+	// Process the required collision logic for this state, which involves collision with the world, floors
+	// that can be broken by being under Samus, and any potential collisions with enemies in the current room.
 	player_world_collision(0, 0);
+	fallthrough_floor_collision();
 	player_enemy_collision();
 	
-	// 
+	// Increment the timer for the morphball's enter/exit states until it exceeds the required value. Until 
+	// it does, the state is exited early and the visor light is set to the proper offset for the animation.
 	mBallTransformTimer += DELTA_TIME;
 	if (mBallTransformTimer < PLYR_EXIT_BALL_TIME){
 		lightOffsetX	= LGHT_VISOR_X_TRANSFORM;
@@ -2183,31 +2195,33 @@ state_exit_morphball = function(){
 		return;
 	}
 	
-	// 
-	stateFlags		   &= ~PLYR_MORPHBALL;
-	mBallTransformTimer = 0.0;
-	reset_light_source();
+	// Clear the morphball flag bit, and activate the visor light once again.
+	stateFlags		       &= ~PLYR_MORPHBALL;
+	mBallTransformTimer		= 0.0;
+	lightComponent.isActive = true;
 	
-	// 
+	// If the player exited morphball mode in the air, Samus will transition into her aitborne state instead
+	// of her crouching state--which is the default. After going airborne, the state exits early.
 	if (!DNTT_IS_GROUNDED){
 		object_set_next_state(state_airborne);
 		var _bboxBottom = bbox_bottom;
 		entity_set_sprite(jumpSpriteFw, jumpingMask);
 		y			   -= bbox_bottom - _bboxBottom;
-		vspd			= 0.0;
+		vspd			= 0.0;	// Halt any vertical veloity due to transition.
+		vspdFraction	= 0.0;
 		jumpStartTimer	= PLYR_JUMP_START_TIME;
 		lightOffsetX	= LGHT_VISOR_X_JUMP;
 		lightOffsetY	= LGHT_VISOR_Y_JUMP;
 		return;
 	}
 	
-	// 
+	// By default, Samus will return to her crouching state; flipping the proper flag bit to signify as such.
 	object_set_next_state(state_crouching);
 	entity_set_sprite(crouchSprite, crouchingMask);
 	stateFlags	   |= PLYR_CROUCHED;
 	standingTimer	= 0.0;
+	hspd			= 0.0;	// Hald any horizontal velocity due to transition.
 	hspdFraction	= 0.0;
-	hspd			= 0.0;
 	lightOffsetX	= LGHT_VISOR_X_CROUCH;
 	lightOffsetY	= LGHT_VISOR_Y_CROUCH;
 }
@@ -2252,7 +2266,7 @@ state_morphball = function(){
 		stateFlags &= ~DNTT_GROUNDED;
 	}
 	if (PLYR_JUMP_RELEASED && vspd < 0.0) 
-		vspd /= 2;
+		vspd /= 2.0;
 	
 	// Handling horizontal movement while in morphball mode, which functions very similar to how said movement
 	// works in Samus's default suit form. Holding left or right (But not both at once) will result in her

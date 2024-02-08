@@ -21,7 +21,16 @@
 #macro	DELTA_TIME				global.gameManager.deltaTime
 
 // ------------------------------------------------------------------------------------------------------- //
-//
+//	The maximum possible value that delta time will be able to reach. This means that the lowest possible  //
+//	FPS for the game's physics to work in a frame-independent manner is the game's target FPS divided by   //
+//	whatever this number is set to.																		   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	DELTA_LIMIT				4.0
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines at what frame rate the value for delta time will be around 1.0 units. All physics should	   //
+//	be based on this target FPS value.																	   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	TARGET_FPS				60.0
@@ -32,11 +41,11 @@
 //	by another state through normal means.																   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	GSTATE_NONE				0
-#macro	GSTATE_NORMAL			1
-#macro	GSTATE_MENU				2
-#macro	GSTATE_CUTSCENE			3
-#macro	GSTATE_PAUSED			10
+#macro	GSTATE_NONE				0x00
+#macro	GSTATE_NORMAL			0x01
+#macro	GSTATE_MENU				0x02
+#macro	GSTATE_CUTSCENE			0x03
+#macro	GSTATE_PAUSED			0x10
 
 #endregion
 
@@ -75,10 +84,10 @@ global.gameManager = {
 	/// "obj_controller" object for the game. It will update the value of delta time for the new frame, and
 	/// will update the player's in-game playtime if the tracking flag is enabled.
 	begin_step : function(){
-		deltaTime = (delta_time / 1000000) * TARGET_FPS;
-		// Limit delta time to framerates of 20 and above to avoid potential physics issues.
-		if (deltaTime >= 4.0)
-			deltaTime = 4.0;
+		deltaTime = (delta_time / 1000000.0) * TARGET_FPS;
+		// Limit delta time to framerates of 15 and above to avoid potential physics issues.
+		if (deltaTime >= DELTA_LIMIT)
+			deltaTime = DELTA_LIMIT;
 		
 		// Update the total playtime value regardless of if the in-game time is ticking up or not.
 		var _curMillisecondDelta = deltaTime / TARGET_FPS;
@@ -114,9 +123,9 @@ global.gameManager = {
 function game_set_state(_state, _highPriority = false){
 	with(GAME_MANAGER){
 		if ((!_highPriority && _state > curState) || _highPriority){ 
-			lastState = curState;
-			curState = _state;
-			isTimerActive = (curState < GSTATE_CUTSCENE);
+			lastState		= curState;
+			curState		= _state;
+			isTimerActive	= (_state < GSTATE_CUTSCENE);
 		}
 	}
 }
@@ -137,11 +146,11 @@ function game_state_get_name(_state){
 	with(GAME_MANAGER){
 		switch(_state){
 			default:
-			case GSTATE_NONE:		return "NoState (" + string(_state) + ")";
-			case GSTATE_NORMAL:		return "InGame (" + string(_state) + ")";
-			case GSTATE_MENU:		return "InMenu (" + string(_state) + ")";
+			case GSTATE_NONE:		return "NoState ("	+ string(_state) + ")";
+			case GSTATE_NORMAL:		return "InGame ("	+ string(_state) + ")";
+			case GSTATE_MENU:		return "InMenu ("	+ string(_state) + ")";
 			case GSTATE_CUTSCENE:	return "Cutscene (" + string(_state) + ")";
-			case GSTATE_PAUSED:		return "Paused (" + string(_state) + ")";
+			case GSTATE_PAUSED:		return "Paused ("	+ string(_state) + ")";
 		}
 	}
 	return "";
