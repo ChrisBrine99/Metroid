@@ -61,30 +61,102 @@
 //	this is the only macro that is required.															   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	SMALL_MISSILE_TANK01	0x20
-//								 .
-//								 .
-//								0x5B
+#macro	SMALL_MISSILE_TANK01	0x20	// Used in "rm_areaone_04" by inst_2ABF6D5F
+#macro	SMALL_MISSILE_TANK02	0x21
+#macro	SMALL_MISSILE_TANK03	0x22
+#macro	SMALL_MISSILE_TANK04	0x23
+#macro	SMALL_MISSILE_TANK05	0x24
+#macro	SMALL_MISSILE_TANK06	0x25
+#macro	SMALL_MISSILE_TANK07	0x26
+#macro	SMALL_MISSILE_TANK08	0x27
+#macro	SMALL_MISSILE_TANK09	0x28
+#macro	SMALL_MISSILE_TANK10	0x29
+#macro	SMALL_MISSILE_TANK11	0x2A
+#macro	SMALL_MISSILE_TANK12	0x2B
+#macro	SMALL_MISSILE_TANK13	0x2C
+#macro	SMALL_MISSILE_TANK14	0x2D
+#macro	SMALL_MISSILE_TANK15	0x2E
+#macro	SMALL_MISSILE_TANK16	0x2F
+#macro	SMALL_MISSILE_TANK17	0x30
+#macro	SMALL_MISSILE_TANK18	0x31
+#macro	SMALL_MISSILE_TANK19	0x32
+#macro	SMALL_MISSILE_TANK20	0x33
+#macro	SMALL_MISSILE_TANK21	0x34
+#macro	SMALL_MISSILE_TANK22	0x35
+#macro	SMALL_MISSILE_TANK23	0x36
+#macro	SMALL_MISSILE_TANK24	0x37
+#macro	SMALL_MISSILE_TANK25	0x38
+#macro	SMALL_MISSILE_TANK26	0x39
+#macro	SMALL_MISSILE_TANK27	0x3A
+#macro	SMALL_MISSILE_TANK28	0x3B
+#macro	SMALL_MISSILE_TANK29	0x3C
+#macro	SMALL_MISSILE_TANK30	0x3D
+#macro	SMALL_MISSILE_TANK31	0x3E
+#macro	SMALL_MISSILE_TANK32	0x3F
+#macro	SMALL_MISSILE_TANK33	0x40
+#macro	SMALL_MISSILE_TANK34	0x41
+#macro	SMALL_MISSILE_TANK35	0x42
+#macro	SMALL_MISSILE_TANK36	0x43
+#macro	SMALL_MISSILE_TANK37	0x44
+#macro	SMALL_MISSILE_TANK38	0x45
+#macro	SMALL_MISSILE_TANK39	0x46
+#macro	SMALL_MISSILE_TANK40	0x47
+#macro	SMALL_MISSILE_TANK41	0x48
+#macro	SMALL_MISSILE_TANK42	0x49
+#macro	SMALL_MISSILE_TANK43	0x4A
+#macro	SMALL_MISSILE_TANK44	0x4B
+#macro	SMALL_MISSILE_TANK45	0x4C
+#macro	SMALL_MISSILE_TANK46	0x4D
+#macro	SMALL_MISSILE_TANK47	0x4E
+#macro	SMALL_MISSILE_TANK48	0x4F
+#macro	SMALL_MISSILE_TANK49	0x50
+#macro	SMALL_MISSILE_TANK50	0x51
+#macro	SMALL_MISSILE_TANK51	0x52
+#macro	SMALL_MISSILE_TANK52	0x53
+#macro	SMALL_MISSILE_TANK53	0x54
+#macro	SMALL_MISSILE_TANK54	0x55
+#macro	SMALL_MISSILE_TANK55	0x56
+#macro	SMALL_MISSILE_TANK56	0x57
+#macro	SMALL_MISSILE_TANK57	0x58
+#macro	SMALL_MISSILE_TANK58	0x59
+#macro	SMALL_MISSILE_TANK59	0x5A
+#macro	SMALL_MISSILE_TANK60	0x5B
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The bit flags used for the large missile tanks that can be found in the game, of which there are 12	   //
 //	total. As a result, they will occupy bits 92-103 in the event flag buffer.							   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	LARGE_MISSILE_TANK01	0x5C
-//								 .
-//								 .
-//								0x67
+#macro	LARGE_MISSILE_TANK01	0x5C	// Used in "rm_areaone_02" by inst_3404912F
+#macro	LARGE_MISSILE_TANK02	0x5D
+#macro	LARGE_MISSILE_TANK03	0x5E
+#macro	LARGE_MISSILE_TANK04	0x5F
+#macro	LARGE_MISSILE_TANK05	0x60
+#macro	LARGE_MISSILE_TANK06	0x61
+#macro	LARGE_MISSILE_TANK07	0x62
+#macro	LARGE_MISSILE_TANK08	0x63
+#macro	LARGE_MISSILE_TANK09	0x64
+#macro	LARGE_MISSILE_TANK10	0x65
+#macro	LARGE_MISSILE_TANK11	0x66
+#macro	LARGE_MISSILE_TANK12	0x67
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Power bomb tanks flags. They function just like the small and large missile tank flags, but they	   //
 //	occupy the 104-115th bits in the buffer, so the 12 bit flags ahead of the 12 large missile tank flags. //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	POWER_BOMB_TANK0		0x68
-//								 .
-//								 .
-//								0x73
+#macro	POWER_BOMB_TANK01		0x68	
+#macro	POWER_BOMB_TANK02		0x69
+#macro	POWER_BOMB_TANK03		0x6A
+#macro	POWER_BOMB_TANK04		0x6B
+#macro	POWER_BOMB_TANK05		0x6C
+#macro	POWER_BOMB_TANK06		0x6D
+#macro	POWER_BOMB_TANK07		0x6E
+#macro	POWER_BOMB_TANK08		0x6F
+#macro	POWER_BOMB_TANK09		0x70
+#macro	POWER_BOMB_TANK10		0x71
+#macro	POWER_BOMB_TANK11		0x72
+#macro	POWER_BOMB_TANK12		0x73
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Bit flags from the 116th bit to the 123rd that are occupied by the complete energy tanks that Samus	   //
@@ -92,10 +164,14 @@
 //	collected.																							   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	ENERGY_TANK0			0x74
-//								 .
-//								 .
-//								0x7B
+#macro	ENERGY_TANK01			0x74
+#macro	ENERGY_TANK02			0x75
+#macro	ENERGY_TANK03			0x76
+#macro	ENERGY_TANK04			0x77
+#macro	ENERGY_TANK05			0x78
+#macro	ENERGY_TANK06			0x79
+#macro	ENERGY_TANK07			0x7A
+#macro	ENERGY_TANK08			0x7B
 
 // ------------------------------------------------------------------------------------------------------- //
 //	The bit flags that are occupied by each of the 16 energy tank pieces that the player can find		   //
@@ -103,38 +179,52 @@
 //	Samus's energy by 100 units. There are sixteen, so bits 124-137 will be used for these collectibles.   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	ENERGY_TANK_PIECE0		0x7C
-//								 .
-//								 .
-//								0x89
+#macro	ENERGY_TANK_PIECE01		0x7C
+#macro	ENERGY_TANK_PIECE02		0x7D
+#macro	ENERGY_TANK_PIECE03		0x7E
+#macro	ENERGY_TANK_PIECE04		0x7F
+#macro	ENERGY_TANK_PIECE05		0x80
+#macro	ENERGY_TANK_PIECE06		0x81
+#macro	ENERGY_TANK_PIECE07		0x82
+#macro	ENERGY_TANK_PIECE08		0x83
+#macro	ENERGY_TANK_PIECE09		0x84
+#macro	ENERGY_TANK_PIECE10		0x85
+#macro	ENERGY_TANK_PIECE11		0x86
+#macro	ENERGY_TANK_PIECE12		0x87
+#macro	ENERGY_TANK_PIECE13		0x88
+#macro	ENERGY_TANK_PIECE14		0x89
+#macro	ENERGY_TANK_PIECE15		0x8A
+#macro	ENERGY_TANK_PIECE16		0x8B
 
 // ------------------------------------------------------------------------------------------------------- //
-//	Reserve tank bit flags, which will occupy the 138th to the 141st bits in the buffer. They allow Samus  //
+//	Reserve tank bit flags, which will occupy the 140th to the 143rd bits in the buffer. They allow Samus  //
 //	to store energy that is consumed when she would've died by her main energy reaching 0.				   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	RESERVE_TANK0			0x8A
-//								 .
-//								 .
-//								0x8D
+#macro	RESERVE_TANK01			0x8C
+#macro	RESERVE_TANK02			0x8D
+#macro	RESERVE_TANK03			0x8E
+#macro	RESERVE_TANK04			0x8F
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Bit flags for the aeion tanks that Samus can collect throughout the game world. There are a total of   //
-//	four to find, which expand her aeion storage by 10 units each. Their collection flags occupy the 142nd //
-//	to the 145th bits in the event flag buffer.															   //
+//	five to find, which expand her aeion storage by 10 units each. Their collection flags occupy the 144th //
+//	to the 147th bits in the event flag buffer.															   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	AEION_TANK0				0x8E
-//								 .
-//								 .
-//								0x91
+#macro	AEION_TANK01			0x90
+#macro	AEION_TANK02			0x91
+#macro	AEION_TANK03			0x92
+#macro	AEION_TANK04			0x93
+#macro	AEION_TANK05			0x94
 
 // ------------------------------------------------------------------------------------------------------- //
-// 
+//	
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	FLAG_SPECIAL_DOOR0		0x96
-#macro	FLAG_SPECIAL_DOOR1		0x97
+#macro	FLAG_SPECIAL_DOOR01		0x95	// Used in "rm_areaone_02" by inst_7990F49A
+#macro	FLAG_SPECIAL_DOOR02		0x96	// Used in "rm_areaone_03" by inst_290123A9
+#macro	FLAG_SPECIAL_DOOR03		0x97	// Used in "rm_areaone_02" by inst_FF14D5B
 
 #endregion
 

@@ -93,15 +93,6 @@ function create_audio_component(_x, _y, _falloffRefDist, _falloffMaxDist, _fallo
 	return _audio;
 }
 
-
-/// @description Deletes the audio component struct if one is found to exist within the entity.
-/// @param {Id.Instance}	emitterID	The pointer to the audio component struct that is being deleted.
-function delete_audio_component(_emitterID){
-	if (audioComponent != noone)
-		instance_destroy_struct(_emitterID);
-	return noone;
-}
-
 /// @description Adds an audio component to a given Entity. It calls the "create_audio_component" function 
 /// and stores the struct instance value that is returned by that function into the Entity's "audioComponent"
 /// variable--the offsets being stored in their own respective variables as well.

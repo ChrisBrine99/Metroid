@@ -14,7 +14,7 @@ maxVspd			= 4.0;
 #region Unique variable initialization
 
 // Determines the direction that the Zoomer is currently moving in; right or left.
-movement	= 0;
+movement = 0;
 
 #endregion
 
@@ -45,7 +45,7 @@ initialize = function(_state){
 	// Set the damage output and hitstun duration for the Zoomer. These values are increased/decreased by the
 	// difficulty level selected by the player.
 	damage			= 8;
-	stunDuration	= 8;
+	stunDuration	= 8.0;
 	
 	// Set up weakness flags such that the Zoomer is weak to every type of weapon Samus can utilize.
 	weaknessFlags  |= (

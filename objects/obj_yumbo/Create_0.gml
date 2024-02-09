@@ -23,7 +23,7 @@
 
 #macro	YMBO_WANDER_SPEED		1.0
 #macro	YMBO_TARGET_RADIUS		32
-#macro	YMBO_RETURN_RADIUS		8
+#macro	YMBO_RETURN_RADIUS		8.0
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Various timers that the Yumbo utilizes to perform actions. In order, they determine the time required  //

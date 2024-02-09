@@ -1,0 +1,1 @@
+flagID = FLAG_SPECIAL_DOOR03;

@@ -42,7 +42,11 @@
 /// @description Removing all of the components from the entity object; preventing memory leaks from occurring 
 /// if these weren't cleaned up during runtime. Over time, this would cause the game to crash.
 function entity_cleanup(){
-	audioComponent = delete_audio_component(audioComponent);
+	if (audioComponent != noone){
+		instance_destroy_struct(audioComponent);
+		audioComponent = noone;
+	}
+	
 	object_remove_light_component(true);
 }
 
@@ -87,11 +91,11 @@ function entity_draw(){
 			} else{ // Animation cannot loop; lock it at the end of the sprite.
 				imageIndex = spriteLength - 1;
 			}
-		} else if (imageIndex <= 0 && animSpeed < 0.0){
+		} else if (imageIndex <= 0.0 && animSpeed < 0.0){
 			if (ENTT_CAN_LOOP_ANIM){ // Animation is reversed; reset back to end, which is the start in this case.
 				imageIndex += spriteLength - loopOffset;
 			} else{ // Animation does not loop; set it to the zeroth indexed frame of the animation and freeze it.
-				imageIndex = 0;
+				imageIndex = 0.0;
 			}
 		} else{ // Clear the "animation end" otherwise.
 			stateFlags &= ~ENTT_ANIM_END;
@@ -100,7 +104,8 @@ function entity_draw(){
 
 	// After the new animation logic has been updated; draw the sprite to the screen using all the other 
 	// default image/sprite manipulation variables that are built into every Game Maker object.
-	if (!ENTT_CAN_DRAW_SELF || !ENTT_IS_ON_SCREEN) {return;}
+	if (!ENTT_CAN_DRAW_SELF || !ENTT_IS_ON_SCREEN) 
+		return;
 	draw_sprite_ext(sprite_index, imageIndex, x, y, image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 }
 

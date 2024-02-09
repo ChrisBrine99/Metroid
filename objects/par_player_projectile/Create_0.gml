@@ -248,7 +248,8 @@ projectile_destructible_collision = function(_instance){
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !PROJ_IGNORES_WALLS) {stateFlags |= ENTT_DESTROYED;}
+	if (_isDestroyed && !PROJ_IGNORES_WALLS) 
+		stateFlags |= ENTT_DESTROYED;
 }
 
 /// @description Checks the projectile against the various door types that exist within the game to see if it
@@ -303,11 +304,14 @@ projectile_door_collision = function(_instance){
 				event_set_flag(flagID, true);
 			stateFlags |= DOOR_OPENED;
 			animSpeed	= DOOR_OPEN_ANIM_SPEED;
+		} else if (audioComponent){ // Only play the sound effect if the door has an audio component.
+			audioComponent.play_sound(snd_ineffective, SND_TYPE_GENERAL, false, true, 0.5);
 		}
 	}
 	
 	// Destroy the projectile if it can't pass through walls and the collision was a success.
-	if (_isDestroyed && !PROJ_IGNORES_WALLS) {stateFlags |= ENTT_DESTROYED;}
+	if (_isDestroyed && !PROJ_IGNORES_WALLS)
+		stateFlags |= ENTT_DESTROYED;
 }
 
 /// @description Checks collision against any enemy colliders the projectile instance may have come into contact
@@ -377,7 +381,8 @@ projectile_enemy_collision = function(_x2, _y2){
 	
 	// Finally, clear out the list of collisions and update the projectile's state flags to match any 
 	// adjustments made during the processing of said collisions.
-	if (ds_list_size(enemyList) > 0) {ds_list_clear(enemyList);}
+	if (ds_list_size(enemyList) > 0) 
+		ds_list_clear(enemyList);
 	stateFlags = _stateFlags;
 }
 

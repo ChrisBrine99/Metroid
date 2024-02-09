@@ -91,7 +91,7 @@
   ],
   "ResourceOrderSettings": [
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},
-    {"name":"rm_areaone_p01","order":4,"path":"rooms/rm_areaone_p01/rm_areaone_p01.yy",},
+    {"name":"rm_areaone_morphball","order":4,"path":"rooms/rm_areaone_morphball/rm_areaone_morphball.yy",},
     {"name":"font_gui_small","order":2,"path":"fonts/font_gui_small/font_gui_small.yy",},
     {"name":"obj_bombs","order":3,"path":"objects/obj_bombs/obj_bombs.yy",},
     {"name":"obj_gullug","order":2,"path":"objects/obj_gullug/obj_gullug.yy",},

@@ -51,7 +51,7 @@ hitpoints		= maxHitpoints;
 // Set the damage output and hitstun duration for the Yodare. These values are increased/decreased by the
 // difficulty level selected by the player.
 damage			= 10;
-stunDuration	= 12;
+stunDuration	= 12.0;
 
 #endregion
 
@@ -166,6 +166,9 @@ state_default = function(){
 			stateFlags	|=  YDRE_IN_CEILING;
 			returnTimer	 = 0.0;
 			y			 = startY;
+			
+			// Restore the Yodare's HP back to its maximum so it seems like a new one has spawned.
+			hitpoints = maxHitpoints;
 		}
 	}
 }

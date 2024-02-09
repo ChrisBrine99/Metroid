@@ -16,7 +16,9 @@
 #macro	PFLY_ATK_COOLDOWN_TIME	65.0
 
 // ------------------------------------------------------------------------------------------------------- //
-//
+//	Macros that determine how the Pincherfly moves while in its dormant state. Note that the direction	   //
+//	offset should be one of the four cardinal directions in order to ensure the figure-8 pattern is axis   //
+//	aligned; it may not work otherwise.																	   //
 // ------------------------------------------------------------------------------------------------------- //
 
 #macro	PFLY_MAXHSPD_DORMANT	0.5
@@ -148,24 +150,20 @@ state_default = function(){
 		return;
 	}
 	
-	// Check is Samus is close enough for the Pincherfly to attack her. If not, no other code in this state
-	// will be executed.
-	if (distance_to_object(PLAYER) > PFLY_ATTACK_DISTANCE)
-		return;
-	
-	// Grab the player's current position so the direction that the Pincherfly must move toward can be found.
-	// The y position value is offset by different amounts based on if Samus is crouching, standing, or in her
-	// morphball form.
+	// The player's position needs to be grabbed in order to check the distance between it and the Pincherfly's
+	// "origin point" which should be in the exact center of its dormant movement pattern. The y position is
+	// offset by 16 pixels so it is centered on Samus relative to the height of her bounding box. 
 	var _playerX = 0;
 	var _playerY = 0;
 	with(PLAYER){
 		_playerX = x;
-		
-		// Determine proper y position offset based on Samus's current state flags.
-		if (PLYR_IN_MORPHBALL)		{_playerY = y - 8;}
-		else if (PLYR_IS_CROUCHED)	{_playerY = y - 12;}
-		else						{_playerY = y - 16;}
+		_playerY = y - 16;
 	}
+	
+	// If Samus is too far from the Pincherfly, the state will exit early and it will not begin charging
+	// towards Samus's current position.
+	if (point_distance(startX, startY, _playerX, _playerY) > PFLY_ATTACK_DISTANCE)
+		return;
 	
 	// Caluclate the angle between Samus's current position and the Pincherfly's current position. Then, the
 	// velocity for the Pincherfly along both axes is determined based on the resulting angle.

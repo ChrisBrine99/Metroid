@@ -1,34 +1,51 @@
 #region Macro initialization
 
-// Stores the coordinates (x, y) of the Halzyn's vulnerable collider relative to its own coordinates, as well 
-// as the size (Both width and height) of said area. The ID for this collider is also stored since it is used
-// during the transition between dormancy and attacking to disable vulnerability during the attacking states.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the coordinates (x, y) of the Halzyn's vulnerable collider relative to its own coordinates, as  //
+//	well as the size (Both width and height) of said area. The ID for this collider is also stored since   //
+//	it is used during the transition between dormancy and attacking to disable vulnerability during the	   //
+//	attacking states.																					   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_COLLIDER_ID		0
 #macro	HLZN_COLLIDER_X		   -6
 #macro	HLZN_COLLIDER_Y		   -5
 #macro	HLZN_COLLIDER_SIZE		12
 
-// Macros that help determine how the Halzyn processes a vertical collision with the world during its attacking
-// state. The top value determines the offset relative to its actual Y to perform the "place_meeting" collision
-// checks, and the last macros determines how fast it'll shake back and forth when a collision occurs.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that help determine how the Halzyn processes a vertical collision with the world during its	   //
+//	attacking state. The top value determines the offset relative to its actual Y to perform the		   //
+//	"place_meeting" collision checks, and the last macros determines how fast it'll shake back and forth   //
+//	when a collision occurs.																			   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_YCOLLIDE_OFFSET   -4
 #macro	HLZN_YCOLL_SHAKE_SPEED	1.5
 
-// Values for the damage the Halzyn can inflict on Samus while it is dormant (Flying in a "sine" pattern) state
-// versus its attacking state, respectively.
+// ------------------------------------------------------------------------------------------------------- //
+//	Values for the damage the Halzyn can inflict on Samus while it is dormant (Flying in a "sine" pattern) //
+//	state versus its attacking state, respectively.														   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_BASE_DAMAGE		30
 #macro	HLZN_ATTACK_DAMAGE		50
 
-// Macros that determine how the Halzyn moves during its dormant/default state. THe top value is how long in
-// "unit frames" (60 units = 1 second) it will move along the x axis before it switches directions, and the
-// bottom value determines how quick it will bob up and down along that horizontal path.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros that determine how the Halzyn moves during its dormant/default state. THe top value is how long //
+//	in "unit frames" (60 units = 1 second) it will move along the x axis before it switches directions,    //
+//	and the bottom value determines how quick it will bob up and down along that horizontal path.		   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_HMOVE_INTERVAL		150.0
 #macro	HLZN_VMOVE_INTERVAL		7.0
 
-// Macros for various attack state checks/conditions. The first two values are the how close Samus needs to be
-// to the Halzyn's left or right, and how far below she needs to be for it to try attacking her. The next three
-// store durations of time (60.0 = 1 second) for various things related to attacking. THe final value is the
-// speed it will shake back and forth at prior to dropping onto Samus.
+// ------------------------------------------------------------------------------------------------------- //
+//	Macros for various attack state checks/conditions. The first two values are the how close Samus needs  //
+//	to be to the Halzyn's left or right, and how far below she needs to be for it to try attacking her.	   // 
+//	The next three store durations of time (60.0 = 1 second) for various things related to attacking. The  //
+//	final value is the speed it will shake back and forth at prior to dropping onto Samus.				   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_ATTACK_XBOUNDS		38
 #macro	HLZN_ATTACK_YBOUNDS		56
 #macro	HLZN_ATK_BEGIN_TIME		8.0
@@ -36,10 +53,16 @@
 #macro	HLZN_ATK_COOLDOWN_TIME	80.0
 #macro	HLZN_ATK_SHAKE_SPEED	2.0
 
-// Stores the upward velocity the Halzyn will use to return to its pre-attack y position after an attack.
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the upward velocity the Halzyn will use to return to its pre-attack y position after an attack. //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_ATK_RETURN_VSPD   -2.0
 
-// Determines the maximum downward velocity the Halzyn can move at when attacking.
+// ------------------------------------------------------------------------------------------------------- //
+//	Determines the maximum downward velocity the Halzyn can move at when attacking.						   //
+// ------------------------------------------------------------------------------------------------------- //
+
 #macro	HLZN_MAX_FALL_SPEED		9.0
 
 #endregion
