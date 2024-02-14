@@ -48,6 +48,7 @@ item_drop_collect_self = function() {
 		if (curAeion > maxAeion)
 			curAeion = maxAeion;
 	}
+	// TODO -- Add sound effect for aeion energy pickup.
 	stateFlags |= ENTT_DESTROYED;
 }
 

@@ -1629,15 +1629,16 @@ state_room_warp = function(){
 			// Move the player sprite that exists above the screen fade for a nice effect until it reaches
 			// where the object itself is on the screen after the warp.
 			var _closeScreenFade = false;
-			playerX += (_targetX - playerX) / 5 * DELTA_TIME;
-			playerY += (_targetY - playerY) / 5 * DELTA_TIME;
-			if (point_distance(playerX, playerY, _targetX, _targetY) <= 1){
+			playerX += (_targetX - playerX) / 5.0 * DELTA_TIME;
+			playerY += (_targetY - playerY) / 5.0 * DELTA_TIME;
+			if (point_distance(playerX, playerY, _targetX, _targetY) <= 1.0){
 				_closeScreenFade = true;
 				playerY = _targetX;
 				playerY = _targetY;
 			}
 			// Once the positions match, the screen fade's alpha target is set to fully opaque to close it out.
-			if (_closeScreenFade) {alphaTarget = 0.0;}
+			if (_closeScreenFade) 
+				alphaTarget = 0.0;
 		} else if (alpha == 0.0 && alphaTarget == 0.0){
 			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
 				object_set_next_state(lastState);

@@ -48,7 +48,7 @@ item_drop_collect_self = function() {
 		if (numMissiles > maxMissiles) 
 			numMissiles = maxMissiles;
 	}
-	play_sound_effect(snd_missile_pickup, 0, false, true, ITMDRP_COLLECT_VOLUME);
+	play_sound_effect(snd_missile_pickup, 0, false, true, SND_TYPE_GENERAL, ITMDRP_COLLECT_VOLUME);
 	stateFlags |= ENTT_DESTROYED;
 }
 

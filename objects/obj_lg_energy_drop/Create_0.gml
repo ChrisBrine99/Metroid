@@ -45,7 +45,7 @@ maxHitpoints	= (hitpoints * 0.25);
 /// points of energy upon collection and then destroy itself.
 item_drop_collect_self = function() {
 	with(PLAYER) {update_hitpoints(LG_ENERGY_RESTORATION);}
-	play_sound_effect(snd_energy_pickup, 0, false, true, ITMDRP_COLLECT_VOLUME, 0.0, 0.7);
+	play_sound_effect(snd_energy_pickup, 0, false, true, SND_TYPE_GENERAL, ITMDRP_COLLECT_VOLUME);
 	stateFlags |= ENTT_DESTROYED;
 }
 

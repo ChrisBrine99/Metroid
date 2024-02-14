@@ -141,7 +141,7 @@ function obj_effect_handler(_index) : base_struct(_index) constructor{
 	/// @param {Real}	height		The height in pixels of the GUI surface.
 	draw_gui_begin = function(_width, _height){
 		if (game_get_setting_flag(BLOOM_EFFECT))		{apply_screen_bloom(_width, _height);}
-		if (game_get_setting_flag(ABERRATION_EFFECT))	{apply_aberration(0.01);}
+		//if (game_get_setting_flag(ABERRATION_EFFECT))	{apply_aberration(0.01);}
 		apply_screen_blurring(application_surface, round(blurRadius), blurAmount);
 	}
 	

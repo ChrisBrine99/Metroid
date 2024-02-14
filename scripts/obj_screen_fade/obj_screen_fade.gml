@@ -97,7 +97,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	
 	/// @description
 	cleanup = function(){
-		if (surface_exists(playerSurf)) {surface_free(playerSurf);}
+		if (surface_exists(playerSurf)) 
+			surface_free(playerSurf);
 		ds_list_destroy(prevAnimationFlags);
 	}
 	
@@ -108,7 +109,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	/// @param {Real}	width		The width in pixels of the GUI surface.
 	/// @param {Real}	height		The height in pixels of the GUI surface.
 	draw_gui = function(_width, _height){
-		if (alpha == 0) {return;}
+		if (alpha == 0) 
+			return;
 		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, fadeColor, alpha);
 		
 		// 
@@ -137,7 +139,8 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, 
 					image_xscale, image_yscale, image_angle, image_blend, image_alpha);
 				with(armCannon){
-					if (!visible) {break;}
+					if (!visible) 
+						break;
 					draw_sprite_ext(spr_samus_cannon0, imageIndex, 
 							x + _offsetX,
 							y + _offsetY, image_xscale, 

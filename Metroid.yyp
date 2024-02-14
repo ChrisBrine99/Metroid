@@ -333,6 +333,7 @@
     {"id":{"name":"spr_hijump_boots","path":"sprites/spr_hijump_boots/spr_hijump_boots.yy",},},
     {"id":{"name":"spr_icebeam_door","path":"sprites/spr_icebeam_door/spr_icebeam_door.yy",},},
     {"id":{"name":"spr_ice_beam","path":"sprites/spr_ice_beam/spr_ice_beam.yy",},},
+    {"id":{"name":"rm_areaone_save_01","path":"rooms/rm_areaone_save_01/rm_areaone_save_01.yy",},},
     {"id":{"name":"spr_ice_beam_bullet","path":"sprites/spr_ice_beam_bullet/spr_ice_beam_bullet.yy",},},
     {"id":{"name":"par_enemy_projectile","path":"objects/par_enemy_projectile/par_enemy_projectile.yy",},},
     {"id":{"name":"spr_power_bomb_icon","path":"sprites/spr_power_bomb_icon/spr_power_bomb_icon.yy",},},
@@ -451,6 +452,7 @@
     {"roomId":{"name":"rm_areaone_03","path":"rooms/rm_areaone_03/rm_areaone_03.yy",},},
     {"roomId":{"name":"rm_areaone_04","path":"rooms/rm_areaone_04/rm_areaone_04.yy",},},
     {"roomId":{"name":"rm_areaone_morphball","path":"rooms/rm_areaone_morphball/rm_areaone_morphball.yy",},},
+    {"roomId":{"name":"rm_areaone_save_01","path":"rooms/rm_areaone_save_01/rm_areaone_save_01.yy",},},
   ],
   "templateType": null,
   "TextureGroups": [

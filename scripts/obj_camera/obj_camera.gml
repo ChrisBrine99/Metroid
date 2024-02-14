@@ -129,7 +129,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		}
 		
 		// 
-		prevBoundaryID = _boundaryID;
+		prevBoundaryID	= _boundaryID;
 		if (_boundaryID != noone){
 			with(_boundaryID){
 				if (viewTargetX != -1) {_x = viewTargetX;}
@@ -148,6 +148,17 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		view_set_camera(0, camera);
 		view_set_visible(0, true);
 		view_enabled = true;
+		
+		// 
+		var _width	= camera_get_view_width(camera);
+		var _height	= camera_get_view_height(camera);
+		var _camX	= floor(_x - (_width * 0.5));
+		var _camY	= floor(_y - (_height * 0.5));
+		if (CAM_VIEW_BOUNDS_ACTIVE){
+			_camX = clamp(_camX, 0, max(room_width - _width, 0));
+			_camY = clamp(_camY, 0, max(room_height - _height, 0));
+		}
+		camera_set_view_pos(camera, _x, _y);
 	}
 	
 	/// @description Update the view's position to the coordinates supplied into the function arguments. If the
@@ -205,9 +216,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// object's collision with an instance of "obj_camera_boundary". Also handles smoothly moving the camera
 	/// back onto tracking the target object if the specialized boundaries are no longer required.
 	process_camera_boundaries = function(){
-		if (GAME_CURRENT_STATE != GSTATE_NORMAL) 
-			return;
-		
 		var _targetX		= -1;
 		var _targetY		= -1;
 		var _stateFlags		= stateFlags;

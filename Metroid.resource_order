@@ -91,7 +91,7 @@
   ],
   "ResourceOrderSettings": [
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},
-    {"name":"rm_areaone_morphball","order":4,"path":"rooms/rm_areaone_morphball/rm_areaone_morphball.yy",},
+    {"name":"rm_areaone_morphball","order":5,"path":"rooms/rm_areaone_morphball/rm_areaone_morphball.yy",},
     {"name":"font_gui_small","order":2,"path":"fonts/font_gui_small/font_gui_small.yy",},
     {"name":"obj_bombs","order":3,"path":"objects/obj_bombs/obj_bombs.yy",},
     {"name":"obj_gullug","order":2,"path":"objects/obj_gullug/obj_gullug.yy",},
@@ -248,6 +248,7 @@
     {"name":"spr_hijump_boots","order":4,"path":"sprites/spr_hijump_boots/spr_hijump_boots.yy",},
     {"name":"spr_icebeam_door","order":1,"path":"sprites/spr_icebeam_door/spr_icebeam_door.yy",},
     {"name":"spr_ice_beam","order":8,"path":"sprites/spr_ice_beam/spr_ice_beam.yy",},
+    {"name":"rm_areaone_save_01","order":4,"path":"rooms/rm_areaone_save_01/rm_areaone_save_01.yy",},
     {"name":"spr_ice_beam_bullet","order":3,"path":"sprites/spr_ice_beam_bullet/spr_ice_beam_bullet.yy",},
     {"name":"par_enemy_projectile","order":1,"path":"objects/par_enemy_projectile/par_enemy_projectile.yy",},
     {"name":"spr_power_bomb_icon","order":3,"path":"sprites/spr_power_bomb_icon/spr_power_bomb_icon.yy",},
