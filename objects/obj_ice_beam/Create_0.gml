@@ -1,4 +1,12 @@
 #region Macro value initialization
+
+// ------------------------------------------------------------------------------------------------------- //
+//	Stores the volume of the Ice Beam's normal and charged shot sound effects relative to the current	   //
+//	percentage value set for the volume of general sound effects by the player.							   //
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	ICEBEAM_VOLUME			0.3
+
 #endregion
 
 #region	Editing inherited variables
@@ -38,6 +46,7 @@ ___initialize = initialize;
 initialize = function(_state, _x, _y, _playerFlags, _flags){
 	___initialize(_state, _x, _y, _playerFlags, _flags); // Calls initialize function found in "par_player_projectile".
 	entity_set_sprite(PROJ_IS_CHARGED ? spr_ice_beam_charged : spr_ice_beam_bullet, -1);
+	object_add_light_component(x, y, 0, 0, 32.0, HEX_VERY_LIGHT_BLUE, 0.7);
 	stateFlags |= PROJ_ICEBEAM;
 	
 	// Determine the velocity of the beam in four base directions by default (Right, left, up, and down).
@@ -47,11 +56,10 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	// Determine what characteristics to apply to the power beam bullet based on if it was charged or not.
 	// The light component and sound effect are altered relative to the charged state of the projectile.
 	if (PROJ_IS_CHARGED){
-		object_add_light_component(x, y, 0, 0, 48, HEX_WHITE, 1.0);
-		//play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+		lightComponent.set_properties(48.0, HEX_VERY_LIGHT_BLUE, 1.0);
+		play_sound_effect(snd_icebeam, 0, false, true, SND_TYPE_GENERAL, ICEBEAM_VOLUME); // TODO: change to charged Ice Beam sound.
 	} else{
-		object_add_light_component(x, y, 0, 0, 26, HEX_WHITE, 0.7);
-		//play_sound_effect(snd_powerbeam, 0, false, true, 0.3);
+		play_sound_effect(snd_icebeam, 0, false, true, SND_TYPE_GENERAL, ICEBEAM_VOLUME);
 	}
 	
 	// Randomize the starting angle for the sprite so each ice beam bullet looks different from the last.
@@ -71,10 +79,10 @@ state_default = function(){
 	
 	// Causing the ice beam to spin; simulating an 8-frame rotation animation due to the actual angle of
 	// the sprite only being updated at 45 degree intervals.
-	angleTimer += 0.25 * DELTA_TIME;
+	angleTimer += 0.5 * DELTA_TIME;
 	if (angleTimer >= 1.0){
 		image_angle += 45.0;
-		angleTimer--;
+		angleTimer -= 1.0;
 	}
 }
 

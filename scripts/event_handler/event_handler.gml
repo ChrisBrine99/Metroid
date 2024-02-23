@@ -12,7 +12,7 @@
 //	true value will be the macro times 8, as a result.													   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	TOTAL_EVENT_FLAG_BYTES	64	// 64 bytes * 8 = 512 flags
+#macro	TOTAL_EVENT_FLAG_BYTES	0x40	// 64 (0x40) bytes * 8 = 512 flags
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Macro to represent a value that will cause the functions "event_set_flag" and "event_get_flag" to	   //
@@ -52,7 +52,7 @@
 #macro	FLAG_ICE_MISSILES		0x15
 #macro	FLAG_SHOCK_MISSILES		0x16
 #macro	FLAG_LOCK_ON_MISSILES	0x17
-// Bits 24 to 31 are left unused in case new items are added throughout development.
+// Bits 24 (0x18) to 31 (0x1F) are left unused in case new items are added throughout development.
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Missile tank flags; collecting one in the world will flip this flag and prevent it from spawning	   //
@@ -236,7 +236,7 @@
 // The buffer that stores all the event flags in the game. It is aligned to the smallest value possible of
 // a single bit, so the total number of event flags is the buffer's size multiplied by 8. As a result, it
 // uses basically no memory, and it's extremely efficient when setting/getting flag states.
-global.eventFlags = buffer_create(TOTAL_EVENT_FLAG_BYTES, buffer_fast, 1);
+global.eventFlags = buffer_create(TOTAL_EVENT_FLAG_BYTES, buffer_fast, 0x01);
 
 #endregion
 
@@ -249,7 +249,8 @@ global.eventFlags = buffer_create(TOTAL_EVENT_FLAG_BYTES, buffer_fast, 1);
 /// @param {Bool}	flagState	The state to set the flag bit. (0 = False, 1 = True).
 function event_set_flag(_flagID, _flagState){
 	var _offset = (_flagID >> 3); // Calculates the byte-aligned offset that the flag bit is found.
-	if (_flagID == INVALID_FLAG || _offset >= TOTAL_EVENT_FLAG_BYTES) {return;}
+	if (_flagID == INVALID_FLAG || _offset >= TOTAL_EVENT_FLAG_BYTES) 
+		return;
 	
 	// Grab the byte that contains the desired bit from the event flag buffer (There's no way to grab a single
 	// bit from a buffer; smallest amount is 8 bits per read) and set the flag bit or clear it depending on
@@ -265,7 +266,8 @@ function event_set_flag(_flagID, _flagState){
 /// @param {Real}	flagID		The position of this requested flag's bit relative to the first bit in the buffer.
 function event_get_flag(_flagID){
 	var _offset = (_flagID >> 3); // Calculates the byte-aligned offset that the flag bit is found.
-	if (_flagID == INVALID_FLAG || _offset >= TOTAL_EVENT_FLAG_BYTES) {return false;}
+	if (_flagID == INVALID_FLAG || _offset >= TOTAL_EVENT_FLAG_BYTES) 
+		return false;
 	
 	// Grab the byte that contains the bit from the buffer. Then, perform a bitwise and with a value that will
 	// have the desired bit set to 1 and all other bits set to zero. This way all other bits in the byte that
@@ -277,16 +279,16 @@ function event_get_flag(_flagID){
 /// current playthrough. It does this by checking each item's bit and taking the total number of 1s found
 /// and dividing that by the total sum of bits; returning it as a rounded value between 0 and 100.
 function event_get_item_percentage(){
-	var _totalItems = AEION_TANK0 + 3; // 145th bit is the final item ("AEION_TANK0" represents bit 142)
+	var _totalItems = AEION_TANK04;
 	var _collectedItems = 0;
 	for (var i = 0; i < _totalItems; i++){
-		if (i > FLAG_LOCK_ON_MISSILES && i < SMALL_MISSILE_TANK0) // Skip over unused bits
+		if (i > FLAG_LOCK_ON_MISSILES && i < SMALL_MISSILE_TANK01) // Skip over unused bits
 			continue;
 		_collectedItems += event_get_flag(i);
 	}
 	// Remove the unnecessary bits after the loop to avoid missing the last few bits if done before.
 	// Then, return the ratio between this value and the calculated amount of collected items.
-	_totalItems -= (SMALL_MISSILE_TANK0 - FLAG_LOCK_ON_MISSILES);
+	_totalItems -= (SMALL_MISSILE_TANK01 - FLAG_LOCK_ON_MISSILES);
 	return round(_collectedItems / _totalItems) * 100;
 }
 

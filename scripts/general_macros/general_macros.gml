@@ -4,66 +4,66 @@
 //	Virtual keyboard constants for all numberical keys ABOVE the letters on the player's actual keyboard.  //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	vk_0					48
-#macro	vk_1					49
-#macro	vk_2					50
-#macro	vk_3					51
-#macro	vk_4					52
-#macro	vk_5					53
-#macro	vk_6					54
-#macro	vk_7					55
-#macro	vk_8					56
-#macro	vk_9					57
+#macro	vk_0					0x30
+#macro	vk_1					0x31
+#macro	vk_2					0x32
+#macro	vk_3					0x33
+#macro	vk_4					0x34
+#macro	vk_5					0x35
+#macro	vk_6					0x36
+#macro	vk_7					0x37
+#macro	vk_8					0x38
+#macro	vk_9					0x39
 
 // ------------------------------------------------------------------------------------------------------- //
 // Virtual keyboard constants for all letters of the alphabet (Saves having to perform "ord(x)" calls).    //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	vk_a					65
-#macro	vk_b					66
-#macro	vk_c					67
-#macro	vk_d					68
-#macro	vk_e					69
-#macro	vk_f					70
-#macro	vk_g					71
-#macro	vk_h					72
-#macro	vk_i					73
-#macro	vk_j					74
-#macro	vk_k					75
-#macro	vk_l					76
-#macro	vk_m					77
-#macro	vk_n					78
-#macro	vk_o					79
-#macro	vk_p					80
-#macro	vk_q					81
-#macro	vk_r					82
-#macro	vk_s					83
-#macro	vk_t					84
-#macro	vk_u					85
-#macro	vk_v					86
-#macro	vk_w					87
-#macro	vk_x					88
-#macro	vk_y					89
-#macro	vk_z					90
+#macro	vk_a					0x41
+#macro	vk_b					0x42
+#macro	vk_c					0x43
+#macro	vk_d					0x44
+#macro	vk_e					0x45
+#macro	vk_f					0x46
+#macro	vk_g					0x47
+#macro	vk_h					0x48
+#macro	vk_i					0x49
+#macro	vk_j					0x4A
+#macro	vk_k					0x4B
+#macro	vk_l					0x4C
+#macro	vk_m					0x4D
+#macro	vk_n					0x4E
+#macro	vk_o					0x4F
+#macro	vk_p					0x50
+#macro	vk_q					0x51
+#macro	vk_r					0x52
+#macro	vk_s					0x53
+#macro	vk_t					0x54
+#macro	vk_u					0x55
+#macro	vk_v					0x56
+#macro	vk_w					0x57
+#macro	vk_x					0x58
+#macro	vk_y					0x59
+#macro	vk_z					0x5A
 
 // ------------------------------------------------------------------------------------------------------- //
 //	Virtual keyboard constants for any keys that aren't covered by Game Maker's default vk_* constants.	   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	vk_capslock				20
-#macro	vk_numberlock			144
-#macro	vk_scrolllock			145
-#macro	vk_semicolon			186		// Also ":"
-#macro	vk_equal				187		// Also "+"
-#macro	vk_comma				188		// Also "<"
-#macro	vk_underscore			189		// Also "-"
-#macro	vk_period				190		// Also ">"
-#macro	vk_fslash				191		// Also "?"
-#macro	vk_backquote			192		// Also "~"
-#macro	vk_openbracket			218		// Also "{"
-#macro	vk_bslash				220		// Also "|"
-#macro	vk_closebracket			221		// Also "}"
-#macro	vk_quotation			222		// Also "'"
+#macro	vk_capslock				0x14
+#macro	vk_numberlock			0x90
+#macro	vk_scrolllock			0x91
+#macro	vk_semicolon			0xBA	// Also ":"
+#macro	vk_equal				0xBB	// Also "+"
+#macro	vk_comma				0xBC	// Also "<"
+#macro	vk_underscore			0xBD	// Also "-"
+#macro	vk_period				0xBE	// Also ">"
+#macro	vk_fslash				0xBF	// Also "?"
+#macro	vk_backquote			0xC0	// Also "~"
+#macro	vk_openbracket			0xDA	// Also "{"
+#macro	vk_bslash				0xDC	// Also "|"
+#macro	vk_closebracket			0xDD	// Also "}"
+#macro	vk_quotation			0xDE	// Also "'"
 
 #endregion
 
@@ -185,33 +185,33 @@
 #macro	RGB_LIGHT_GRAY			[0.737, 0.737, 0.737] // RGB = 188, 188, 188
 #macro	RGB_GRAY				[0.486, 0.486, 0.486] // RGB = 124, 124, 124
 #macro	RGB_DARK_GRAY			[0.251, 0.251, 0.251] // RGB =  64,  64,  64
-#macro	RGB_BLACK				[0,     0,     0    ] // RGB =   0,   0,   0
+#macro	RGB_BLACK				[0.0,   0.0,   0.0  ] // RGB =   0,   0,   0
 
-#macro	RGB_LIGHT_RED			[0.973, 0.226, 0    ] // RGB = 248,  56,   0
-#macro	RGB_RED					[0.737, 0.063,      ] // RGB = 188,  16,   0
-#macro	RGB_DARK_RED			[0.345, 0,	   0	] // RGB =  88,   0,   0
+#macro	RGB_LIGHT_RED			[0.973, 0.226, 0.0  ] // RGB = 248,  56,   0
+#macro	RGB_RED					[0.737, 0.063, 0.0  ] // RGB = 188,  16,   0
+#macro	RGB_DARK_RED			[0.345, 0.0,   0.0	] // RGB =  88,   0,   0
 
 #macro	RGB_VERY_LIGHT_GREEN	[0.722, 0.973, 0.772] // RGB = 184, 248, 184
 #macro	RGB_LIGHT_GREEN			[0.345, 0.973, 0.329] // RGB =  88, 248,  84
-#macro	RGB_GREEN				[0,     0.659, 0    ] // RGB =   0, 168,   0
-#macro	RGB_DARK_GREEN			[0,     0.471, 0    ] // RGB =   0, 120,   0
-#macro	RGB_VARY_DARK_GREEN		[0,     0.345, 0    ] // RGB =   0,  88,   0
+#macro	RGB_GREEN				[0.0,   0.659, 0.0  ] // RGB =   0, 168,   0
+#macro	RGB_DARK_GREEN			[0.0,   0.471, 0.0  ] // RGB =   0, 120,   0
+#macro	RGB_VARY_DARK_GREEN		[0.0,   0.345, 0.0  ] // RGB =   0,  88,   0
 
 #macro	RGB_VERY_LIGHT_BLUE		[0.643, 0.894, 0.988] // RGB = 164, 228, 252
 #macro	RGB_LIGHT_BLUE			[0.235, 0.737, 0.988] // RGB =  60, 188, 252
-#macro	RGB_BLUE				[0,     0.471, 0.973] // RGB =   0, 120, 248
-#macro	RGB_DARK_BLUE			[0,     0.345, 0.973] // RGB =   0,  88, 248
-#macro	RGB_VERY_DARK_BLUE		[0,     0,     0.737] // RGB =   0,   0, 188
+#macro	RGB_BLUE				[0.0,   0.471, 0.973] // RGB =   0, 120, 248
+#macro	RGB_DARK_BLUE			[0.0,   0.345, 0.973] // RGB =   0,  88, 248
+#macro	RGB_VERY_DARK_BLUE		[0.0,   0.0,   0.737] // RGB =   0,   0, 188
 
 #macro	RGB_LIGHT_YELLOW		[0.988, 0.878, 0.659] // RGB = 252, 224, 168
-#macro	RGB_YELLOW				[0.972, 0.722, 0    ] // RGB = 248, 184,   0
-#macro	RGB_DARK_YELLOW			[0.675, 0.486, 0    ] // RGB = 172, 124,   0
-#macro	RGB_VERY_DARK_YELLOW	[0.314, 0.188, 0    ] // RGB =  80,  48,   0
+#macro	RGB_YELLOW				[0.972, 0.722, 0.0  ] // RGB = 248, 184,   0
+#macro	RGB_DARK_YELLOW			[0.675, 0.486, 0.0  ] // RGB = 172, 124,   0
+#macro	RGB_VERY_DARK_YELLOW	[0.314, 0.188, 0.0  ] // RGB =  80,  48,   0
 
 #macro	RGB_VERY_LIGHT_ORANGE	[0.942, 0.816, 0.690] // RGB = 240, 208, 176
 #macro	RGB_LIGHT_ORANGE		[0.973, 0.627, 0.267] // RGB = 252, 160,  68
 #macro	RGB_ORANGE				[0.894, 0.361, 0.063] // RGB = 228,  92,  16
-#macro	RGB_DARK_ORANGE			[0.533, 0.078, 0    ] // RGB = 136,  20,   0
+#macro	RGB_DARK_ORANGE			[0.533, 0.078, 0.0  ] // RGB = 136,  20,   0
 
 #macro	RGB_VERY_LIGHT_PURPLE	[0.847, 0.722, 0.973] // RGB = 216, 184, 248
 #macro	RGB_LIGHT_PURPLE		[0.596, 0.471, 0.973] // RGB = 248, 120, 152

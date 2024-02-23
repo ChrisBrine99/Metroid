@@ -533,7 +533,7 @@ process_input = function(){
 	// --- Arm Cannon/Bomb Use Input Check --- //
 	if (keyboard_check(KEYCODE_USE_WEAPON))		{inputFlags |= PLYR_USE_WEAPON;}
 	// --- Beam Switch/Shortcut Input Checks --- //
-	if (keyboard_check(KEYCODE_SWAP_WEAPON))	{inputFlags |= PLYR_SWAP_WEAPON;}
+	//if (keyboard_check(KEYCODE_SWAP_WEAPON))	{inputFlags |= PLYR_SWAP_WEAPON;}
 	if (keyboard_check(KEYCODE_HOTKEY_ONE))		{inputFlags |= PLYR_POWBEAM;}
 	if (keyboard_check(KEYCODE_HOTKEY_TWO))		{inputFlags |= PLYR_ICEBEAM;}
 	if (keyboard_check(KEYCODE_HOTKEY_THREE))	{inputFlags |= PLYR_WAVBEAM;}
@@ -620,6 +620,7 @@ grounded_to_airborne = function(_skipAnimTime = true){
 		entity_set_sprite(jumpSpriteFw, jumpingMask);
 		stateFlags	   &= ~PLYR_MOVING;
 		aimReturnTimer	= 0.0;
+		
 		if (_skipAnimTime)  {jumpStartTimer = PLYR_FLIP_START_TIME;}
 		else				{jumpStartTimer = 0.0;}
 		
@@ -627,7 +628,6 @@ grounded_to_airborne = function(_skipAnimTime = true){
 			stateFlags	  |= PLYR_SLOW_AIR_MOVEMENT;
 			jumpHspdFactor = PLYR_JUMP_HSPD_FACTOR;
 		}
-		
 		return true; // Samus is no longer on the ground; return true to signify such.
 	}
 	
@@ -1132,9 +1132,13 @@ check_swap_current_weapon = function(){
 		// Swap to the next missile depending on which of the input(s) has been pressed by the player. The
 		// priority of missiles is: standard, ice, and shock, whenever multiple of these inputs are pressed
 		// at once occurs.
-		if (PLYR_REGMISSILE_PRESSED)		{curMissile = WEAPON_REG_MISSILE;}
-		else if (PLYR_ICEMISSILE_PRESSED)	{curMissile = WEAPON_ICE_MISSILE;}
-		else if (PLYR_SHKMISSILE_PRESSED)	{curMissile = WEAPON_SHOCK_MISSILE;}
+		if (PLYR_REGMISSILE_PRESSED){
+			curMissile = WEAPON_REG_MISSILE;
+		} else{ // A check is required before allowing the swap to the ice or shock missiles.
+			var _missileFlags = (buffer_peek(EVENT_HANDLER, 0x02, buffer_u8) << 16);
+			if (PLYR_ICEMISSILE_PRESSED && (_missileFlags & (1 << FLAG_ICE_MISSILES)))			{curMissile = WEAPON_ICE_MISSILE;}
+			else if (PLYR_SHKMISSILE_PRESSED && (_missileFlags & (1 << FLAG_SHOCK_MISSILES)))	{curMissile = WEAPON_SHOCK_MISSILE;}
+		}
 		
 		// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 		if (curWeapon != curMissile){
@@ -1150,10 +1154,14 @@ check_swap_current_weapon = function(){
 	// Much like for missiles, the beam will be switched to whichever one has its hotkey pressed relative to
 	// that beam hotkey's priority if multiple happn to be pressed at the same time by the player. The priority
 	// order is as follows: power, ice, wave, and plasma, respectively.
-	if (PLYR_POWBEAM_PRESSED)		{curBeam = PLYR_POWBEAM;}
-	else if (PLYR_ICEBEAM_PRESSED)	{curBeam = PLYR_ICEBEAM;}
-	else if (PLYR_WAVBEAM_PRESSED)	{curBeam = PLYR_WAVBEAM;}
-	else if (PLYR_PLSBEAM_PRESSED)	{curBeam = PLYR_PLSBEAM;}
+	if (PLYR_POWBEAM_PRESSED){
+		curBeam = PLYR_POWBEAM;
+	} else{ // A check is required before allowing the swap to the ice, wave, or plasma beams.
+		var _beamFlags = buffer_peek(EVENT_HANDLER, 0x00, buffer_u8);
+		if (PLYR_ICEBEAM_PRESSED && (_beamFlags & (1 << FLAG_ICE_BEAM)))			{curBeam = WEAPON_ICE_BEAM;} 
+		else if (PLYR_WAVBEAM_PRESSED && (_beamFlags & (1 << FLAG_WAVE_BEAM)))		{curBeam = WEAPON_WAVE_BEAM;} 
+		else if (PLYR_PLSBEAM_PRESSED && (_beamFlags & (1 << FLAG_PLASMA_BEAM)))	{curBeam = WEAPON_PLASMA_BEAM;}
+	}
 	
 	// Update the variables for the fire rate timers and charging timers to reflect this change in weapon.
 	if (curWeapon != curBeam){

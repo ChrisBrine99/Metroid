@@ -85,9 +85,9 @@ initialize = function(_state, _x, _y, _playerFlags, _flags){
 	// The light component and sound effect are altered relative to the charged state of the projectile.
 	if (PROJ_IS_CHARGED){
 		lightComponent.set_properties(50.0, HEX_LIGHT_YELLOW, 0.9);
-		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME);
+		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME); // TODO:change to charged Power Beam sound.
 	} else{
-		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME); // TODO: Change to charged powerbeam sound.
+		play_sound_effect(snd_powerbeam, 0, false, true, SND_TYPE_GENERAL, POWERBEAM_VOLUME);
 	}
 	
 	// Determine the split beam velocities that will offset the upper and lower beams properly in order to 

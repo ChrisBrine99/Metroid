@@ -1,1 +1,0 @@
-draw_text(100, 100, string(camera_get_view_x(CAMERA.camera)) + "\n" + string(camera_get_view_y(CAMERA.camera)));
