@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "gamepad_manager",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Globals",
-    "path": "folders/Resources/Core/Globals.yy",
+  "$GMScript":"",
+  "%Name":"gamepad_manager",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"gamepad_manager",
+  "parent":{
+    "name":"Globals",
+    "path":"folders/Resources/Core/Globals.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

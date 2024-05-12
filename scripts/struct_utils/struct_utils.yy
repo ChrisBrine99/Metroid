@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "struct_utils",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Utilities",
-    "path": "folders/Resources/Core/Utilities.yy",
+  "$GMScript":"",
+  "%Name":"struct_utils",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"struct_utils",
+  "parent":{
+    "name":"Utilities",
+    "path":"folders/Resources/Core/Utilities.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

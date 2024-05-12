@@ -1,5 +1,5 @@
 {
-  "FolderOrderSettings": [
+  "FolderOrderSettings":[
     {"name":"Resources","order":13,"path":"folders/Resources.yy",},
     {"name":"Audio","order":2,"path":"folders/Resources/Audio.yy",},
     {"name":"Entities","order":1,"path":"folders/Resources/Audio/Entities.yy",},
@@ -89,7 +89,7 @@
     {"name":"Area 1","order":2,"path":"folders/Resources/Levels/Area 1.yy",},
     {"name":"Test Levels","order":1,"path":"folders/Resources/Levels/Test Levels.yy",},
   ],
-  "ResourceOrderSettings": [
+  "ResourceOrderSettings":[
     {"name":"font_gui_medium","order":1,"path":"fonts/font_gui_medium/font_gui_medium.yy",},
     {"name":"rm_areaone_morphball","order":5,"path":"rooms/rm_areaone_morphball/rm_areaone_morphball.yy",},
     {"name":"font_gui_small","order":2,"path":"fonts/font_gui_small/font_gui_small.yy",},

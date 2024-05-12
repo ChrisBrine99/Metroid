@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "obj_light_component",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Components",
-    "path": "folders/Resources/Core/Entities/Components.yy",
+  "$GMScript":"",
+  "%Name":"obj_light_component",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"obj_light_component",
+  "parent":{
+    "name":"Components",
+    "path":"folders/Resources/Core/Entities/Components.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

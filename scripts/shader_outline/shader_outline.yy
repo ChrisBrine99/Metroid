@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "shader_outline",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Globals",
-    "path": "folders/Resources/Core/Globals.yy",
+  "$GMScript":"",
+  "%Name":"shader_outline",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"shader_outline",
+  "parent":{
+    "name":"Globals",
+    "path":"folders/Resources/Core/Globals.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

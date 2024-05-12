@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "obj_music_handler",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Singletons",
-    "path": "folders/Resources/Core/Singletons.yy",
+  "$GMScript":"",
+  "%Name":"obj_music_handler",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"obj_music_handler",
+  "parent":{
+    "name":"Singletons",
+    "path":"folders/Resources/Core/Singletons.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

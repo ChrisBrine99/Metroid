@@ -1,10 +1,12 @@
 {
-  "resourceType": "GMShader",
-  "resourceVersion": "1.0",
-  "name": "shd_scanlines",
-  "parent": {
-    "name": "Scanlines",
-    "path": "folders/Resources/Graphics/Shaders/Scanlines.yy",
+  "$GMShader":"",
+  "%Name":"shd_scanlines",
+  "name":"shd_scanlines",
+  "parent":{
+    "name":"Scanlines",
+    "path":"folders/Resources/Graphics/Shaders/Scanlines.yy",
   },
-  "type": 1,
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
 }

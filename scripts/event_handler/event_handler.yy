@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "event_handler",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Globals",
-    "path": "folders/Resources/Core/Globals.yy",
+  "$GMScript":"",
+  "%Name":"event_handler",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"event_handler",
+  "parent":{
+    "name":"Globals",
+    "path":"folders/Resources/Core/Globals.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

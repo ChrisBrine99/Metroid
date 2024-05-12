@@ -1,10 +1,12 @@
 {
-  "resourceType": "GMShader",
-  "resourceVersion": "1.0",
-  "name": "shd_bloom_blend",
-  "parent": {
-    "name": "Bloom",
-    "path": "folders/Resources/Graphics/Shaders/Bloom.yy",
+  "$GMShader":"",
+  "%Name":"shd_bloom_blend",
+  "name":"shd_bloom_blend",
+  "parent":{
+    "name":"Bloom",
+    "path":"folders/Resources/Graphics/Shaders/Bloom.yy",
   },
-  "type": 1,
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
 }

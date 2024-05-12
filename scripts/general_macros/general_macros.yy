@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "general_macros",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Globals",
-    "path": "folders/Resources/Core/Globals.yy",
+  "$GMScript":"",
+  "%Name":"general_macros",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"general_macros",
+  "parent":{
+    "name":"Globals",
+    "path":"folders/Resources/Core/Globals.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

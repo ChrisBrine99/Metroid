@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "obj_destructible_effect",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Destructible",
-    "path": "folders/Resources/Core/Entities/Static/Destructible.yy",
+  "$GMScript":"",
+  "%Name":"obj_destructible_effect",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"obj_destructible_effect",
+  "parent":{
+    "name":"Destructible",
+    "path":"folders/Resources/Core/Entities/Static/Destructible.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

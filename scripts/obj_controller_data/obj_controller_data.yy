@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "obj_controller_data",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Controller",
-    "path": "folders/Resources/Core/Singletons/Controller.yy",
+  "$GMScript":"",
+  "%Name":"obj_controller_data",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"obj_controller_data",
+  "parent":{
+    "name":"Controller",
+    "path":"folders/Resources/Core/Singletons/Controller.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
