@@ -1,3 +1,13 @@
+// Determine if the item fanfares should be loaded into memory or not by checking if the audio group isn't loaded
+// into memory already AND that there are collectibles within the newly loaded room. If both of these conditions
+// are revered, the audio group will be unloaded as it's no longer needed.
+var _collectibleExists	= instance_exists(par_collectible);
+var _fanfaresLoaded		= audio_group_is_loaded(music_fanfares);
+if (_collectibleExists && !_fanfaresLoaded)
+	audio_group_load(music_fanfares);
+else if (!_collectibleExists && _fanfaresLoaded)
+	audio_group_unload(music_fanfares);
+
 // Calling each singleton's room start event, which handles code and logic that is required to be refreshed on a
 // per-room basis. (Ex. the camera for each room needs to be initialized otherwise it won't function)
 with(CAMERA)		{room_start();}

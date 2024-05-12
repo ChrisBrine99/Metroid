@@ -65,13 +65,13 @@ visible			= true;
 
 // Variables that determine the flag that is set by the Event Handler upon collection of the item and the info
 // tied to that item found within the global item data structure, respectively.
-flagBit = EVENT_FLAG_INVALID;
-itemID = ID_NO_ITEM;
+flagBit			= EVENT_FLAG_INVALID;
+itemID			= ID_NO_ITEM;
 
 // Keeps track of the destructible object that is nearest to the collectible. If that desctructible
 // is on top of the item, it will be set to invisible until the destructible above it has been
 // destroyed.
-destructibleID = noone;
+destructibleID	= noone;
 
 // Stores the base size and strength of the ambient light source that is tied to the object. Allows the flashing
 // effect to return to those original values after being changed by the "bright" iteration of the flash.
@@ -80,7 +80,7 @@ baseStrength	= 0.0;
 
 // Determines the fanfare that is played upon collection of the item. This can be changed from the default to
 // whatever the item requires (Ex. shorter fanfares for tank pickups, etc.) for its collection music.
-fanfare		= mus_item_found;
+fanfare			= mus_item_found;
 
 #endregion
 
