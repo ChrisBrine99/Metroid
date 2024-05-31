@@ -2,6 +2,11 @@
 var _width	= display_get_gui_width();
 var _height	= display_get_gui_height();
 
+// Call the map manager's "Draw GUI" event, which is responsible for initializing the surface that is used as
+// the game's map, updating that surface relative to if the player moves into a new cell or not, and making
+// sure the surface containing all this data actually exists.
+with(MAP_MANAGER) {draw_gui();}
+
 // Render the game's HUD first; allowing menus, control information, and all other GUI elements to display on
 // top of the HUD instead of being obscured by it.
 with(GAME_HUD) {draw_gui();}

@@ -386,13 +386,24 @@ function obj_game_hud(_index) : base_struct(_index) constructor{
 	/// @param {Real}	x	Distance from the top-right edge of the screen (In pixels) to display the minimap at along the x axis.
 	/// @param {Real}	y	Distance from the top-right edge of the screen (In pixels) to display the minimap at along the y axis.
 	draw_minimap = function(_x, _y, _alpha){
-		var _width	= MAP_TILE_WIDTH * 5;
-		var _height	= MAP_TILE_HEIGHT * 3;
-		var _xx		= display_get_gui_width() - _x - _width;
+		var _width		= sprite_get_width(spr_map_borders);
+		var _height		= sprite_get_height(spr_map_borders);
+		var _mMapWidth	= _width * 5;
+		var _mMapHeight = _height * 3;
+		var _xx		= display_get_gui_width() - _x - _mMapWidth;
 		
-		draw_sprite_ext(spr_rectangle, 0, _xx - 2, _y - 2, _width + 4, _height + 4, 0, HEX_DARK_GRAY,	_alpha * 0.6);
-		draw_sprite_ext(spr_rectangle, 0, _xx - 1, _y - 1, _width + 2, _height + 2, 0, HEX_BLACK,		_alpha * 0.4);
-		map_draw_area_centered(_xx, _y, 5, 3, _alpha * 0.5);
+		draw_sprite_ext(spr_rectangle, 0, _xx - 2, _y - 2, _mMapWidth + 4, _mMapHeight + 4, 
+			0, HEX_DARK_GRAY,	_alpha * 0.6);
+		draw_sprite_ext(spr_rectangle, 0, _xx - 1, _y - 1, _mMapWidth + 2, _mMapHeight + 2, 
+			0, HEX_BLACK,		_alpha * 0.4);
+			
+		with(MAP_MANAGER){
+			draw_map_to_screen(_xx, _y, playerCellX - 2, playerCellY - 1, 5, 3);
+			if (MAP_IS_PLAYER_VISIBLE){
+				draw_sprite_ext(spr_rectangle, 0, _xx + _width * 2, _y + _height, 
+					_width, _height, 0.0, HEX_WHITE, 1.0);
+			}
+		}
 	}
 }
 

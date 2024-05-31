@@ -65,11 +65,10 @@ function instance_destroy_struct(_instance){
 function instance_find_struct(_id){
 	var _struct = noone;
 	var _length = ds_list_size(global.structs);
-	for (var i = 0; i < _length * 0.5; i++){
+	for (var i = 0; i < _length; i++){
 		_struct = global.structs[| i];
-		if (_struct.id == _id) {return _struct;}
-		_struct = global.structs[| _length - i];
-		if (_struct.id == _id) {return _struct;}
+		if (_struct.id == _id)
+			return _struct;
 	}
 	return noone; // Default value returned if no instance with that ID value was found
 }
@@ -81,11 +80,10 @@ function instance_find_struct(_id){
 function instance_find_struct_index(_id){
 	var _struct = noone;
 	var _length = ds_list_size(global.structs);
-	for (var i = 0; i < _length * 0.5; i++){
+	for (var i = 0; i < _length; i++){
 		_struct = global.structs[| i];
-		if (_struct.id == _id) {return i;}
-		_struct = global.structs[| _length - i];
-		if (_struct.id == _id) {return _length - i;}
+		if (_struct.id == _id) 
+			return i;
 	}
 	return -1;
 }

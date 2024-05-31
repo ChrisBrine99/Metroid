@@ -40,6 +40,18 @@ camera_set_target_object(PLAYER, 0, -16);
 //texture_debug_messages(true);
 audio_set_linked_object(PLAYER, 0, -16);
 
+// 
+map_initialize(MAP_AREA_ONE, 64, 64);
+with(MAP_MANAGER){
+	// "rm_areaone_01"
+	create_map_cell(20, 16, CELL_TWENTYFIVE_A);
+	create_map_cell(21, 16, CELL_SIX_C);
+	// "rm_areaone_02"
+	create_map_cell(22, 16, CELL_SIX_A);
+	create_map_cell(23, 16, CELL_FOURTEEN_A);
+	create_map_cell(24, 16, CELL_FOURTEEN_A);
+}
+
 /*with(MAP_MANAGER){
 	// -- "rm_test01" map cells -- //
 	initialize_map_cell(12, 12, 50, -1, [

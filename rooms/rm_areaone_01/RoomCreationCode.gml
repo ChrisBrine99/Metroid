@@ -1,0 +1,1 @@
+map_set_room_origin(20, 12);

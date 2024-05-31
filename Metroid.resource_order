@@ -265,7 +265,6 @@
     {"name":"spr_inactive_door","order":4,"path":"sprites/spr_inactive_door/spr_inactive_door.yy",},
     {"name":"spr_keyboard_icons_large","order":2,"path":"sprites/spr_keyboard_icons_large/spr_keyboard_icons_large.yy",},
     {"name":"spr_keyboard_icons_medium","order":1,"path":"sprites/spr_keyboard_icons_medium/spr_keyboard_icons_medium.yy",},
-    {"name":"spr_keyboard_icons_small","order":2,"path":"sprites/spr_keyboard_icons_small/spr_keyboard_icons_small.yy",},
     {"name":"spr_keyboard_icons_xlarge","order":3,"path":"sprites/spr_keyboard_icons_xlarge/spr_keyboard_icons_xlarge.yy",},
     {"name":"spr_large_missile_tank","order":17,"path":"sprites/spr_large_missile_tank/spr_large_missile_tank.yy",},
     {"name":"spr_lg_energy_drop","order":1,"path":"sprites/spr_lg_energy_drop/spr_lg_energy_drop.yy",},

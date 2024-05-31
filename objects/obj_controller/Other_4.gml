@@ -12,6 +12,9 @@ else if (!_collectibleExists && _fanfaresLoaded)
 // per-room basis. (Ex. the camera for each room needs to be initialized otherwise it won't function)
 with(CAMERA)		{room_start();}
 
+// Clear the flag that allows the map's room offset to be set so it can't be adjusted while in that room.
+with(MAP_MANAGER)	{stateFlags &= ~MAP_SET_ROOM_OFFSET;}
+
 // Don't bother with the room initialization code below this line if the current room is the initialization
 // room because there will be no layers to match the onces that get turned invisible, and there is no way
 // for there to be any dynamically created items in the room.
