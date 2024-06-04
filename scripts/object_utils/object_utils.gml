@@ -20,23 +20,6 @@ function instance_create_object(_x, _y, _object, _depth = 30){
 	return noone;
 }
 
-/// @description Performs almost identically to the "instance_create_object" function with the added functionality
-/// of adding the object in question to the singleton object data structure if no instance of the object has
-/// previously been added to said data; after which no copies of the object can be created by either this or
-/// "instance_create_object".
-/// @param {Real}			x		The x position the object will be created at in the current room.
-/// @param {Real}			y		The y position the object will be created at in the current room.
-/// @param {Asset.GMObject}	object	Asset index for the object that will be created.
-/// @param {Real}			depth	Optional depth level to place the object at. (Default = 30)
-function instance_create_singleton_object(_x, _y, _object, _depth = 30){
-	if (!singleton_instance_exists(_object)){
-		var _instance = instance_create_depth(_x, _y, _depth, _object);
-		ds_map_add(global.sInstances, _object, _instance);
-		return _instance;
-	}
-	return noone;
-}
-
 /// @description Destroys any non-singleton object. If the object in question is that of a singleton, this
 /// function will not destroy the object and instead perform none of its deletion logic.
 /// @param {Id.Instance}	instance		The id of the object that will be destroyed.

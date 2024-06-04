@@ -125,7 +125,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		with(targetObject){
 			_x			= x;
 			_y			= y;
-			_boundaryID = instance_place(x, y, obj_camera_boundary);
+			_boundaryID = instance_place(x, y, obj_camera_collider);
 		}
 		
 		// 
@@ -221,7 +221,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		var _stateFlags		= stateFlags;
 		var _prevBoundaryID = prevBoundaryID;
 		with(targetObject){ // Collision check occurs within the instance that the camera is currently following.
-			var _boundary = instance_place(x, y, obj_camera_boundary);
+			var _boundary = instance_place(x, y, obj_camera_collider);
 			with(_boundary){
 				// Only apply a new target along the camera's x axis if the view boundary has an actual value
 				// provided for the axis. Otherwise, it won't have an in-game boundary applied to it.

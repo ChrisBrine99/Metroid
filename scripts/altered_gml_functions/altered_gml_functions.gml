@@ -249,7 +249,8 @@ function draw_number_as_sprite(_x, _y, _value, _sprite, _color = HEX_WHITE, _tot
 function draw_sprite_feathered(_sprite, _imageIndex, _xPos, _yPos, _width, _height, _x1, _y1, _x2, _y2, _angle, _color, _alpha){
 	// Automatically set the target rendering shader to the feathering shader if it wasn't already done
 	// prior to this function being called; mainly for convenience purposes and cleaning overall code.
-	if (shader_current() != shd_feathering) {shader_set(shd_feathering);}
+	if (shader_current() != shd_feathering) 
+		shader_set(shd_feathering);
 	
 	// First, calculate the true with and height by dividing the values placed in the argument fields by the
 	// actual base width and height of the sprite itself; getting how much it needs to be scaled on both axes

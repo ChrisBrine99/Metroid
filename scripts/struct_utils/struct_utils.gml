@@ -1,12 +1,3 @@
-// A variable that uses an ID'ing system that works very similarly to how GameMaker's own instance ID system
-// functions; giving each new instance of a struct (So long as they inherit from "base_struct" found below) a
-// unique number that it can be identified with.
-global.structID = 1000000;
-
-// A list that manages the pointers for all struct instances created during the game's runtime. It will allow
-// reference to these structs through their unique ID values; much like what Game Maker does with its objects.
-global.structs = ds_list_create();
-
 /// @description A basic struct that all others must inherit from (So long as they use the "constructor" moniker
 /// and aren't created and assigned to local variables within an object/struct upon said object/struct's creation).
 /// This means all structs will have their own initialize and cleanup functions regardless of if they inherit
@@ -34,15 +25,6 @@ function instance_create_struct(_struct){
 		return _instance;
 	}
 	return noone;
-}
-
-/// @description Creates a struct that is deemed a singleton, which means calling this function again in an
-/// attempt to intialize another instance of this struct will cause it to create nothing; the same applying
-/// to "instance_create_struct" if used instead.
-/// @param {Struct}	struct	The struct object that will be created and assigned as a singleton to prevent its duplication.
-function instance_create_singleton_struct(_struct){
-	var _instance = instance_create_struct(_struct);
-	if (_instance != noone) {ds_map_add(global.sInstances, _struct, _instance);}
 }
 
 /// @description A function that mimics how GameMaker's own "instance_destroy" function works, but focuses on

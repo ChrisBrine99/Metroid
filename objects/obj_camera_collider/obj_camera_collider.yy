@@ -1,15 +1,15 @@
 {
   "$GMObject":"",
-  "%Name":"obj_camera_boundary",
+  "%Name":"obj_camera_collider",
   "eventList":[
     {"$GMEvent":"","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"obj_camera_boundary",
+  "name":"obj_camera_collider",
   "overriddenProperties":[],
   "parent":{
-    "name":"Camera",
-    "path":"folders/Resources/Core/Singletons/Camera.yy",
+    "name":"Collision",
+    "path":"folders/Resources/Core/Collision.yy",
   },
   "parentObjectId":null,
   "persistent":false,

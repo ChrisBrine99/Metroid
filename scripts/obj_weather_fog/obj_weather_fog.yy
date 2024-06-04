@@ -6,7 +6,7 @@
   "name":"obj_weather_fog",
   "parent":{
     "name":"Visual Effects",
-    "path":"folders/Resources/Core/Visual Effects.yy",
+    "path":"folders/Resources/Graphics/Visual Effects.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

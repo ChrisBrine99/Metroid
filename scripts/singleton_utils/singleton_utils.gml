@@ -1,23 +1,28 @@
-// Constants that shrink down the typing needed and overall clutter caused by having to reference any of the
-// game's singleton objects. If any of these objects are destroyed, the game should close in order to prevent
-// crashes or oddities from occuring.
-#macro	CAMERA						global.sInstances[? obj_camera]
-#macro	MUSIC_HANDLER				global.sInstances[? obj_music_handler]
-#macro	EFFECT_HANDLER				global.sInstances[? obj_effect_handler]
-#macro	CUTSCENE_MANAGER			global.sInstances[? obj_cutscene_manager]
-#macro	TEXTBOX_HANDLER				global.sInstances[? obj_textbox_handler]
-#macro	CONTROL_INFO				global.sInstances[? obj_control_info]
-#macro	SCREEN_FADE					global.sInstances[? obj_screen_fade]
-#macro	GAME_HUD					global.sInstances[? obj_game_hud]
-#macro	MAP_MANAGER					global.sInstances[? obj_map_manager]
-#macro	CONTROLLER					global.sInstances[? obj_controller]
-#macro	PLAYER						global.sInstances[? obj_player]
-#macro	DEBUGGER					global.sInstances[? obj_debugger]
+/// @description Performs almost identically to the "instance_create_object" function with the added functionality
+/// of adding the object in question to the singleton object data structure if no instance of the object has
+/// previously been added to said data; after which no copies of the object can be created by either this or
+/// "instance_create_object".
+/// @param {Real}			x		The x position the object will be created at in the current room.
+/// @param {Real}			y		The y position the object will be created at in the current room.
+/// @param {Asset.GMObject}	object	Asset index for the object that will be created.
+/// @param {Real}			depth	Optional depth level to place the object at. (Default = 30)
+function instance_create_singleton_object(_x, _y, _object, _depth = 30){
+	if (!singleton_instance_exists(_object)){
+		var _instance = instance_create_depth(_x, _y, _depth, _object);
+		ds_map_add(global.sInstances, _object, _instance);
+		return _instance;
+	}
+	return noone;
+}
 
-// A map that stores pointers/references to all singletons that exist within the game currently. An object being
-// in this list will prevent copies of them from being instantiated (When used in tandem with the new functions
-// "instance_create_object" and "instance_create_struct").
-global.sInstances = ds_map_create();
+/// @description Creates a struct that is deemed a singleton, which means calling this function again in an
+/// attempt to intialize another instance of this struct will cause it to create nothing; the same applying
+/// to "instance_create_struct" if used instead.
+/// @param {Struct}	struct	The struct object that will be created and assigned as a singleton to prevent its duplication.
+function instance_create_singleton_struct(_struct){
+	var _instance = instance_create_struct(_struct);
+	if (_instance != noone) {ds_map_add(global.sInstances, _struct, _instance);}
+}
 
 /// @description A simple function that will check to see if the instance being created for an object is an 
 /// already existing singleton object; returning true if one already exists and false if it doesn't exist OR

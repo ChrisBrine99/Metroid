@@ -219,3 +219,23 @@
 #macro	RGB_DARK_PURPLE			[0.267, 0.157, 0.737] // RGB =  68,  40, 188
 
 #endregion
+
+#region Singleton Instance Macros
+
+// Constants that shrink down the typing needed and overall clutter caused by having to reference any of the
+// game's singleton objects. If any of these objects are destroyed, the game should close in order to prevent
+// crashes or oddities from occuring.
+#macro	CAMERA						global.sInstances[? obj_camera]
+#macro	MUSIC_HANDLER				global.sInstances[? obj_music_handler]
+#macro	EFFECT_HANDLER				global.sInstances[? obj_effect_handler]
+#macro	CUTSCENE_MANAGER			global.sInstances[? obj_cutscene_manager]
+#macro	TEXTBOX_HANDLER				global.sInstances[? obj_textbox_handler]
+#macro	CONTROL_INFO				global.sInstances[? obj_control_info]
+#macro	SCREEN_FADE					global.sInstances[? obj_screen_fade]
+#macro	GAME_HUD					global.sInstances[? obj_game_hud]
+#macro	MAP_MANAGER					global.sInstances[? obj_map_manager]
+#macro	CONTROLLER					global.sInstances[? obj_controller]
+#macro	PLAYER						global.sInstances[? obj_player]
+#macro	DEBUGGER					global.sInstances[? obj_debugger]
+
+#endregion

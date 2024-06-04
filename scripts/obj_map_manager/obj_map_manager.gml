@@ -51,7 +51,19 @@
 //	
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	CELL_DOOR_LIMIT			4
+#macro	CELL_DOOR_LIMIT			0x04
+
+// ------------------------------------------------------------------------------------------------------- //
+//	
+// ------------------------------------------------------------------------------------------------------- //
+
+#macro	CELL_DOOR_ANYWEAPON		0x01
+#macro	CELL_DOOR_WAVEBEAM		0x02
+#macro	CELL_DOOR_ICEBEAM		0x03
+#macro	CELL_DOOR_PLASMABEAM	0x04
+#macro	CELL_DOOR_MISSILE		0x05
+#macro	CELL_DOOR_SPR_MISSILE	0x06
+#macro	CELL_DOOR_POWER_BOMB	0x07
 
 // ------------------------------------------------------------------------------------------------------- //
 //	
@@ -158,6 +170,10 @@
 #macro	CELL_TWENTYEIGHT_B		0x62	//		Rotated by  90 degrees
 #macro	CELL_TWENTYEIGHT_C		0x63	//				by 180 degrees
 #macro	CELL_TWENTYEIGHT_D		0x64	//				by 270 degrees
+#macro	CELL_TWENTYNINE_A		0x65	// Thirtieth image in "spr_map_borders"
+#macro	CELL_TWENTYNINE_B		0x66	//		Rotated by  90 degrees
+#macro	CELL_TWENTYNINE_C		0x67	//				by 180 degrees
+#macro	CELL_TWENTYNINE_D		0x68	//				by 270 degrees
 
 #endregion
 
@@ -329,7 +345,6 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		var _yy			= (playerCellY * _cellHeight);
 		var _index		= playerCellX + (playerCellY * mapWidth);
 		with(mapData[curArea][? _index]){
-			show_debug_message("TEST");
 			// 
 			if (flags & CELL_EXPLORED)
 				break;
@@ -350,6 +365,46 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			draw_sprite_ext(spr_rectangle, 0, _xx, _yy, _cellWidth, _cellHeight, 0.0, _color, 1.0);
 			draw_sprite_ext(spr_map_borders, borderIndex, _xx + _offsetX, _yy + _offsetY, 
 				1.0, 1.0, _direction, c_white, 1.0);
+
+			// 
+			var _xScale		= 1.0;
+			var _yScale		= 1.0;
+			var _doorType	= noone;
+			var _color		= HEX_WHITE;
+			for (var ii = 0; ii < CELL_DOOR_LIMIT; ii++){
+				_doorType = doors[ii];
+				if (_doorType == noone)
+					continue;
+				
+				//
+				switch(_doorType){
+					default:
+					case CELL_DOOR_ANYWEAPON:		_color = HEX_BLUE;				break;
+					case CELL_DOOR_ICEBEAM:			_color = HEX_VERY_LIGHT_BLUE;	break;
+					case CELL_DOOR_WAVEBEAM:		_color = HEX_LIGHT_PURPLE;		break;
+					case CELL_DOOR_PLASMABEAM:		_color = HEX_LIGHT_RED;			break;
+					case CELL_DOOR_MISSILE:			_color = HEX_DARK_RED;			break;
+					case CELL_DOOR_SPR_MISSILE:		_color = HEX_DARK_GREEN;		break;
+					case CELL_DOOR_POWER_BOMB:		_color = HEX_DARK_YELLOW;		break;
+				}
+				
+				// 
+				switch(ii * 90.0){
+					case DIRECTION_SOUTH:
+						_yy	   += (_cellHeight - 1);
+					case DIRECTION_NORTH:
+						_xx	   += 3;
+						_xScale = 2.0;
+						break;
+					case DIRECTION_EAST:
+						_xx	   += (_cellWidth - 1);
+					case DIRECTION_WEST:
+						_yy    += 3;
+						_yScale = 2.0;
+						break;
+				}
+				draw_sprite_ext(spr_rectangle, 0, _xx, _yy, _xScale, _yScale, 0.0, _color, 1.0);
+			}
 		}
 		
 		// 
@@ -393,11 +448,12 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 	/// @description Creates a map cell, which is stored in a ds_map at the position determined by the "cellX"
 	/// and "cellY" parameters alongside the map's width. If a map cell already occupies that cell, the new
 	/// cell will not be created and this function will exit early.
-	/// @param {Real}	cellX			One part of what determines the map cell's index value within the ds_map storing each cell.
-	/// @param {Real}	cellY			The second part of what determines the map cell's index value.
-	///	@param {Real}	borderIndex		Determines which rotation flags to toggled, as well as what border image to use for the cell.
-	/// @param {Real}	flags			(Optional) Allows a map cell to be flagged as hidden, explored, its border rotated, and so on.
-	create_map_cell = function(_cellX, _cellY, _borderIndex, _flags = 0){
+	/// @param {Real}			cellX			One part of what determines the map cell's index value within the ds_map storing each cell.
+	/// @param {Real}			cellY			The second part of what determines the map cell's index value.
+	///	@param {Real}			borderIndex		Determines which rotation flags to toggled, as well as what border image to use for the cell.
+	/// @param {Real}			flags			(Optional) Allows a map cell to be flagged as hidden, explored, its border rotated, and so on.
+	/// @param {Array<Real>}	doors			(Optional) 
+	create_map_cell = function(_cellX, _cellY, _borderIndex, _flags = 0, _doors = [noone, noone, noone, noone]){
 		// No map cells will ever be initialized if the map isn't actually active, as that would be wasting
 		// time creating useless data that won't be utilized at that current moment in the game.
 		if (!MAP_IS_ACTIVE || curArea == MAP_AREA_UNDEFINED || curArea >= array_length(mapData))
@@ -413,11 +469,13 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		// Determine the required rotation flags based on the border index that the map cell is using, and then
 		// logically OR that against any other toggled flags within the "_flags" argument parameter.
 		var _borderFlags = get_border_index_flags(_borderIndex);
-		ds_map_add(_curArea, _cellIndex, {
+		var _cellStruct = {
 			borderIndex	: get_border_index_image(_borderIndex),
 			doors		: array_create(CELL_DOOR_LIMIT, noone),
 			flags		: _borderFlags | _flags,
-		});
+		};
+		ds_map_add(_curArea, _cellIndex, _cellStruct);
+		array_copy(_cellStruct.doors, 0, _doors, 0, CELL_DOOR_LIMIT);
 	}
 	
 	/// @description Creates a map icon, which exists independently of any existing map cells. This allows them
@@ -475,7 +533,8 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			case CELL_TWENTYFIVE_A:		//						''
 			case CELL_TWENTYSIX_A:		//						''
 			case CELL_TWENTYSEVEN_A:	//						''
-			case CELL_TWENTYEIGHT_A:	// No rotation adjustments required for border tile.
+			case CELL_TWENTYEIGHT_A:	//						''
+			case CELL_TWENTYNINE_A:		// No rotation adjustments required for border tile.
 				return 0x00000000;
 			case CELL_TWO_B:			// A rotation of 90 degrees is required for the border tile.
 			case CELL_THREE_B:			//						''
@@ -502,7 +561,8 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			case CELL_TWENTYFIVE_B:		//						''
 			case CELL_TWENTYSIX_B:		//						''
 			case CELL_TWENTYSEVEN_B:	//						''
-			case CELL_TWENTYEIGHT_B:	// A rotation of 90 degrees is required for the border tile.
+			case CELL_TWENTYEIGHT_B:	//						''
+			case CELL_TWENTYNINE_B:		// A rotation of 90 degrees is required for the border tile.
 				return CELL_BORDER_ROTATE1;
 			case CELL_TWO_C:			// A rotation of 180 degrees is required for the border tile.
 			case CELL_FOUR_C:			//						''
@@ -526,7 +586,8 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			case CELL_TWENTYFIVE_C:		//						''
 			case CELL_TWENTYSIX_C:		//						''
 			case CELL_TWENTYSEVEN_C:	//						''
-			case CELL_TWENTYEIGHT_C:	// A rotation of 180 degrees is required for the border tile.
+			case CELL_TWENTYEIGHT_C:	//						''
+			case CELL_TWENTYNINE_C:		// A rotation of 180 degrees is required for the border tile.
 				return CELL_BORDER_ROTATE1 | CELL_BORDER_ROTATE2;
 			case CELL_TWO_D:			// A rotation of 270 degrees is required for the border tile.
 			case CELL_FOUR_D:			//						''
@@ -550,7 +611,8 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			case CELL_TWENTYFIVE_D:		//						''
 			case CELL_TWENTYSIX_D:		//						''
 			case CELL_TWENTYSEVEN_D:	//						''
-			case CELL_TWENTYEIGHT_D:	// A rotation of 270 degrees is required for the border tile.
+			case CELL_TWENTYEIGHT_D:	//						''
+			case CELL_TWENTYNINE_D:		// A rotation of 270 degrees is required for the border tile.
 				return CELL_BORDER_ROTATE1 | CELL_BORDER_ROTATE2 | CELL_BORDER_ROTATE3;
 		}
 	}
@@ -687,11 +749,31 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			case CELL_TWENTYSEVEN_C:	//						''
 			case CELL_TWENTYSEVEN_D:	//						''
 				return 27;
-			case CELL_TWENTYEIGHT_A:		// Uses the twenty-ninth image found in "spr_map_borders".
-			case CELL_TWENTYEIGHT_B:		//						''
-			case CELL_TWENTYEIGHT_C:		//						''
-			case CELL_TWENTYEIGHT_D:		//						''
+			case CELL_TWENTYEIGHT_A:	// Uses the twenty-ninth image found in "spr_map_borders".
+			case CELL_TWENTYEIGHT_B:	//						''
+			case CELL_TWENTYEIGHT_C:	//						''
+			case CELL_TWENTYEIGHT_D:	//						''
 				return 28;
+			case CELL_TWENTYNINE_A:		// Uses the thirtieth image found in "spr_map_borders".
+			case CELL_TWENTYNINE_B:		//						''
+			case CELL_TWENTYNINE_C:		//						''
+			case CELL_TWENTYNINE_D:		//						''
+				return 28;
+		}
+	}
+	
+	/// @description 
+	/// @param {Real}	doorType	
+	door_get_color = function(_doorType){
+		switch(_doorType){
+			default:
+			case CELL_DOOR_ANYWEAPON:		return HEX_LIGHT_BLUE;
+			case CELL_DOOR_ICEBEAM:			return HEX_VERY_LIGHT_BLUE;
+			case CELL_DOOR_WAVEBEAM:		return HEX_LIGHT_PURPLE;
+			case CELL_DOOR_PLASMABEAM:		return HEX_LIGHT_RED;
+			case CELL_DOOR_MISSILE:			return HEX_DARK_RED;
+			case CELL_DOOR_SPR_MISSILE:		return HEX_DARK_GREEN;
+			case CELL_DOOR_POWER_BOMB:		return HEX_DARK_YELLOW;
 		}
 	}
 }

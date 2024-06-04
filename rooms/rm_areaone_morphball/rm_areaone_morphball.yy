@@ -1,7 +1,7 @@
 {
   "$GMRoom":"",
   "%Name":"rm_areaone_morphball",
-  "creationCodeFile":"",
+  "creationCodeFile":"rooms/rm_areaone_morphball/RoomCreationCode.gml",
   "inheritCode":false,
   "inheritCreationOrder":false,
   "inheritLayers":false,

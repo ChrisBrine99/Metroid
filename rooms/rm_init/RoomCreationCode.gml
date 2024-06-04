@@ -44,12 +44,42 @@ audio_set_linked_object(PLAYER, 0, -16);
 map_initialize(MAP_AREA_ONE, 64, 64);
 with(MAP_MANAGER){
 	// "rm_areaone_01"
+	create_map_cell(20, 14, CELL_FOURTEEN_B);
+	create_map_cell(20, 15, CELL_FOURTEEN_B);
 	create_map_cell(20, 16, CELL_TWENTYFIVE_A);
-	create_map_cell(21, 16, CELL_SIX_C);
+	create_map_cell(21, 16, CELL_SIX_C, 0, [CELL_DOOR_ANYWEAPON, noone, noone, noone]);
 	// "rm_areaone_02"
-	create_map_cell(22, 16, CELL_SIX_A);
+	create_map_cell(22, 16, CELL_SIX_A, 0, [noone, noone, CELL_DOOR_ANYWEAPON, noone]);
 	create_map_cell(23, 16, CELL_FOURTEEN_A);
 	create_map_cell(24, 16, CELL_FOURTEEN_A);
+	create_map_cell(25, 16, CELL_TWELVE_A);
+	create_map_cell(26, 16, CELL_TWENTYTHREE_D, 0, [noone, CELL_DOOR_MISSILE, noone, noone]);
+	create_map_cell(27, 16, CELL_SIX_C, 0, [CELL_DOOR_ANYWEAPON, noone, noone, noone]);
+	create_map_cell(24, 17, CELL_FOURTEEN_B, CELL_HIDDEN);
+	create_map_cell(26, 17, CELL_FOURTEEN_B);
+	create_map_cell(24, 18, CELL_FOURTEEN_B, CELL_HIDDEN);
+	create_map_cell(26, 18, CELL_FOURTEEN_B);
+	create_map_cell(24, 19, CELL_ELEVEN_D);
+	create_map_cell(26, 19, CELL_FOURTEEN_B);
+	create_map_cell(22, 20, CELL_SIX_A, 0, [noone, noone, CELL_DOOR_ANYWEAPON, noone]);
+	create_map_cell(23, 20, CELL_FOURTEEN_A);
+	create_map_cell(24, 20, CELL_TWENTYTHREE_B);
+	create_map_cell(25, 20, CELL_FOURTEEN_A);
+	create_map_cell(26, 20, CELL_TWENTYTHREE_B);
+	create_map_cell(27, 20, CELL_SIX_C, 0, [CELL_DOOR_MISSILE, noone, noone, noone]);
+	// "rm_areaone_03"
+	create_map_cell(19, 20, CELL_TWENTYSEVEN_D, 0, [noone, noone, CELL_DOOR_MISSILE, noone]);
+	create_map_cell(20, 20, CELL_FOURTEEN_A);
+	create_map_cell(21, 20, CELL_SIX_C, 0, [CELL_DOOR_ANYWEAPON, noone, noone, noone]);
+	create_map_cell(19, 21, CELL_SEVEN_B, 0, [noone, noone, CELL_DOOR_ANYWEAPON, noone]);
+	// "rm_testone_04"
+	create_map_cell(16, 21, CELL_SIX_A, 0, [noone, noone, CELL_DOOR_ANYWEAPON, noone]);
+	create_map_cell(17, 21, CELL_FOURTEEN_A);
+	create_map_cell(18, 21, CELL_SIX_C, 0, [CELL_DOOR_ANYWEAPON, noone, noone, noone]);
+	// "rm_areaone_save_01"
+	create_map_cell(28, 16, CELL_THREE_A, 0, [CELL_DOOR_ANYWEAPON, noone, CELL_DOOR_ANYWEAPON, noone]);
+	// "rm_areaone_morphball"
+	create_map_cell(15, 21, CELL_TWO_C, 0, [CELL_DOOR_ANYWEAPON, noone, noone, noone]);
 }
 
 /*with(MAP_MANAGER){

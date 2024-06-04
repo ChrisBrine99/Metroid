@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"obj_camera",
   "parent":{
-    "name":"Camera",
-    "path":"folders/Resources/Core/Singletons/Camera.yy",
+    "name":"Singletons",
+    "path":"folders/Resources/Core/Singletons.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

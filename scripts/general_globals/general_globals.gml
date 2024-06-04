@@ -1,3 +1,25 @@
+#region Singleton Management Data Structure
+
+// A map that stores pointers/references to all singletons that exist within the game currently. An object being
+// in this list will prevent copies of them from being instantiated (When used in tandem with the new functions
+// "instance_create_object" and "instance_create_struct").
+global.sInstances = ds_map_create();
+
+#endregion
+
+#region Struct Management Globals
+
+// A variable that uses an ID'ing system that works very similarly to how GameMaker's own instance ID system
+// functions; giving each new instance of a struct (So long as they inherit from "base_struct" found below) a
+// unique number that it can be identified with.
+global.structID = 1000000;
+
+// A list that manages the pointers for all struct instances created during the game's runtime. It will allow
+// reference to these structs through their unique ID values; much like what Game Maker does with its objects.
+global.structs = ds_list_create();
+
+#endregion
+
 #region Item data (Names and descriptions)
 
 // A global data structure that stores information about an item's name and its description text.

@@ -16,7 +16,8 @@ switch(async_load[? "event_type"]){
 			// 
 			with(GAMEPAD_MANAGER){
 				deviceID = _gamepadID;
-				if (deviceID >= 4 && deviceID <= 11) {gamepad_test_mapping(deviceID, gamepad_get_mapping_data(_info));}
+				if (deviceID >= 4 && deviceID <= 11) 
+					gamepad_test_mapping(deviceID, gamepad_get_mapping_data(_info));
 			}
 		}
 		break;
@@ -24,7 +25,8 @@ switch(async_load[? "event_type"]){
 		with(GAMEPAD_MANAGER){
 			// 
 			if (!gamepad_is_connected(deviceID)){
-				if (deviceID >= 4 && deviceID <= 11) {gamepad_remove_mapping(deviceID);}
+				if (deviceID >= 4 && deviceID <= 11) 
+					gamepad_remove_mapping(deviceID);
 				deviceID = -1;
 				isActive = false;
 				CONTROL_INFO.initialize_input_icons();

@@ -18,8 +18,8 @@
   "name":"obj_controller",
   "overriddenProperties":[],
   "parent":{
-    "name":"Controller",
-    "path":"folders/Resources/Core/Singletons/Controller.yy",
+    "name":"Singletons",
+    "path":"folders/Resources/Core/Singletons.yy",
   },
   "parentObjectId":null,
   "persistent":true,
