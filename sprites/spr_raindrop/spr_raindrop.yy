@@ -25,8 +25,8 @@
   "nineSlice":null,
   "origin":6,
   "parent":{
-    "name":"Visual Effects",
-    "path":"folders/Resources/Graphics/Sprites/Visual Effects.yy",
+    "name":"Sprites",
+    "path":"folders/Resources/Graphics/Visual Effects/Sprites.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

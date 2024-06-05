@@ -51,12 +51,17 @@
 //	
 // ------------------------------------------------------------------------------------------------------- //
 
+#macro	CELL_DOOR_EAST			0x00
+#macro	CELL_DOOR_NORTH			0x01
+#macro	CELL_DOOR_WEST			0x02
+#macro	CELL_DOOR_SOUTH			0x03
 #macro	CELL_DOOR_LIMIT			0x04
 
 // ------------------------------------------------------------------------------------------------------- //
 //	
 // ------------------------------------------------------------------------------------------------------- //
 
+#macro	CELL_DOOR_UNDEFINED		0x00
 #macro	CELL_DOOR_ANYWEAPON		0x01
 #macro	CELL_DOOR_WAVEBEAM		0x02
 #macro	CELL_DOOR_ICEBEAM		0x03
@@ -191,14 +196,15 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 	stateFlags		= 0;
 	
 	// 
-	mapData			= array_create(MAP_TOTAL_AREAS, noone);
+	mapData			= array_create(MAP_TOTAL_AREAS, -1);
 	mapWidth		= 0;
 	mapHeight		= 0;
 	mapSurf			= -1;
 	mapSurfBuffer	= -1;
 	
 	// 
-	iconData		= ds_map_create();
+	iconData		= array_create(MAP_TOTAL_AREAS, -1);
+	doorData		= array_create(MAP_TOTAL_AREAS, -1);
 	
 	// 
 	curArea			= MAP_AREA_UNDEFINED;
@@ -214,28 +220,42 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 	// 
 	posFlashTimer = 0.0;
 	
-	/// @description 
+	/// @description Called by the global struct manager when the Map Manager is destroyed (It should only ever 
+	/// be destroyed at the end of the game's execution). It will free any memory that is allocated for map
+	/// cells, icons, and surfaces that are all utilized for the game's map system.
 	cleanup = function(){
+		// Increment through all indexes of the mapData array as they could contain lists of struct references
+		// relative to the areas the player has explored during their current playthrough. It also unloads the
+		// icon data for these maps if they exist as well.
 		var _key = -1;
 		var _map = -1;
 		for (var i = 0; i < MAP_TOTAL_AREAS; i++){
 			_map = mapData[i];
+			if (_map == noone) // Ignore all areas that have never been loaded into memory.
+				continue;
+			
+			// Loop through all cell struct instances so they can be cleared from memory before the ds_map that
+			// contains the references to these structs is destroyed. Otherwise, a memory leak may occur.
 			_key = ds_map_find_first(_map);
 			while(!is_undefined(_key)){
 				delete _map[? _key];
 				_key = ds_map_find_next(_map, _key);	
 			}
-			ds_map_clear(_map);
+			ds_map_clear(_map); // "Clears" the pointers to further help the garbage collector know these instances are no longer needed.
 			ds_map_destroy(_map);
-			mapData[i] = noone;
+			
+			// After all the cells have been cleared from memory, the icon data and door data will have their
+			// maps deleted from memory (They don't store structs, so no looping through values are necessary
+			// for either data strcuture).
+			ds_map_destroy(iconData[i]);
+			ds_map_destroy(doorData[i]);
 		}
 		
+		// Free the map's surface from memory if it hasn't been flushed from memory yet and also delete the
+		// buffer that contains a copy of that surface in case of it being flushed while in use.
 		if (surface_exists(mapSurf))	
 			surface_free(mapSurf);
 		buffer_delete(mapSurfBuffer);
-		
-		ds_map_clear(iconData);
-		ds_map_destroy(iconData);
 	}
 	
 	/// @description 
@@ -365,52 +385,52 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			draw_sprite_ext(spr_rectangle, 0, _xx, _yy, _cellWidth, _cellHeight, 0.0, _color, 1.0);
 			draw_sprite_ext(spr_map_borders, borderIndex, _xx + _offsetX, _yy + _offsetY, 
 				1.0, 1.0, _direction, c_white, 1.0);
-
-			// 
-			var _xScale		= 1.0;
-			var _yScale		= 1.0;
-			var _doorType	= noone;
-			var _color		= HEX_WHITE;
-			for (var ii = 0; ii < CELL_DOOR_LIMIT; ii++){
-				_doorType = doors[ii];
-				if (_doorType == noone)
-					continue;
-				
-				//
-				switch(_doorType){
-					default:
-					case CELL_DOOR_ANYWEAPON:		_color = HEX_BLUE;				break;
-					case CELL_DOOR_ICEBEAM:			_color = HEX_VERY_LIGHT_BLUE;	break;
-					case CELL_DOOR_WAVEBEAM:		_color = HEX_LIGHT_PURPLE;		break;
-					case CELL_DOOR_PLASMABEAM:		_color = HEX_LIGHT_RED;			break;
-					case CELL_DOOR_MISSILE:			_color = HEX_DARK_RED;			break;
-					case CELL_DOOR_SPR_MISSILE:		_color = HEX_DARK_GREEN;		break;
-					case CELL_DOOR_POWER_BOMB:		_color = HEX_DARK_YELLOW;		break;
-				}
-				
-				// 
-				switch(ii * 90.0){
-					case DIRECTION_SOUTH:
-						_yy	   += (_cellHeight - 1);
-					case DIRECTION_NORTH:
-						_xx	   += 3;
-						_xScale = 2.0;
-						break;
-					case DIRECTION_EAST:
-						_xx	   += (_cellWidth - 1);
-					case DIRECTION_WEST:
-						_yy    += 3;
-						_yScale = 2.0;
-						break;
-				}
-				draw_sprite_ext(spr_rectangle, 0, _xx, _yy, _xScale, _yScale, 0.0, _color, 1.0);
-			}
 		}
 		
 		// 
-		if (!is_undefined(iconData[? _index])){
+		var _iconData = iconData[curArea];
+		if (ds_exists(_iconData, ds_type_map) && !is_undefined(_iconData[? _index])){
 			draw_sprite_ext(spr_map_icons, iconData[? _index], _xx + _offsetX, _yy + _offsetY, 
 				1.0, 1.0, 0.0, c_white, 1.0);
+		}
+		
+		// 
+		var _doorData = doorData[curArea];
+		if (ds_exists(_doorData, ds_type_map) && !is_undefined(_doorData[? _index])){
+			var _doorType	= CELL_DOOR_UNDEFINED;
+			var _doorX		= 0;
+			var _doorY		= 0;
+			var _xScale		= 1.0;
+			var _yScale		= 1.0;
+			for (var i = 0; i < CELL_DOOR_LIMIT; i++){
+				_doorType = _doorData[? _index][i];
+				if (_doorType == CELL_DOOR_UNDEFINED) // Don't bother drawing a non-existent doorway.
+					continue;
+				_doorX = _xx;
+				_doorY = _yy;
+				
+				// 
+				switch(i){
+					case CELL_DOOR_EAST:
+						_doorX += _cellWidth - 1;
+					case CELL_DOOR_WEST:
+						_xScale	= 1.0;
+						_yScale = 2.0;
+						_doorY	= _yy + 3;
+						break;
+					case CELL_DOOR_SOUTH:
+						_doorY += _cellHeight - 1;
+					case CELL_DOOR_NORTH:
+						_xScale = 2.0;
+						_yScale = 1.0;
+						_doorX  = _xx + 3;
+						break;
+				}
+				
+				// 
+				draw_sprite_ext(spr_rectangle, 0, _doorX, _doorY, _xScale, _yScale, 
+					0.0, door_get_color(_doorType), 1.0);
+			}
 		}
 		
 		// 
@@ -452,13 +472,14 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 	/// @param {Real}			cellY			The second part of what determines the map cell's index value.
 	///	@param {Real}			borderIndex		Determines which rotation flags to toggled, as well as what border image to use for the cell.
 	/// @param {Real}			flags			(Optional) Allows a map cell to be flagged as hidden, explored, its border rotated, and so on.
-	/// @param {Array<Real>}	doors			(Optional) 
-	create_map_cell = function(_cellX, _cellY, _borderIndex, _flags = 0, _doors = [noone, noone, noone, noone]){
+	create_map_cell = function(_cellX, _cellY, _borderIndex, _flags = 0){
 		// No map cells will ever be initialized if the map isn't actually active, as that would be wasting
 		// time creating useless data that won't be utilized at that current moment in the game.
-		if (!MAP_IS_ACTIVE || curArea == MAP_AREA_UNDEFINED || curArea >= array_length(mapData))
+		if (!MAP_IS_ACTIVE || curArea == MAP_AREA_UNDEFINED || curArea >= MAP_TOTAL_AREAS)
 			return;
 		var _curArea = mapData[curArea];
+		if (_curArea == -1) // Map data structure doesn't exist. Don't create a map cell struct.
+			return;
 		
 		// Determine the cell's index value, which is the one-dimensional conversion of its two-dimensional
 		// position within the map itself. Then, check if that cell is already occupied before creating another.
@@ -471,11 +492,9 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		var _borderFlags = get_border_index_flags(_borderIndex);
 		var _cellStruct = {
 			borderIndex	: get_border_index_image(_borderIndex),
-			doors		: array_create(CELL_DOOR_LIMIT, noone),
 			flags		: _borderFlags | _flags,
 		};
 		ds_map_add(_curArea, _cellIndex, _cellStruct);
-		array_copy(_cellStruct.doors, 0, _doors, 0, CELL_DOOR_LIMIT);
 	}
 	
 	/// @description Creates a map icon, which exists independently of any existing map cells. This allows them
@@ -488,14 +507,52 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 	create_map_icon = function(_cellX, _cellY, _iconIndex){
 		// No map icons will ever be initialized if the map isn't actually active, as that would be wasting
 		// time creating useless data that won't be utilized at that current moment in the game.
-		if (!MAP_IS_ACTIVE)
+		if (!MAP_IS_ACTIVE || curArea == MAP_AREA_UNDEFINED || curArea >= MAP_TOTAL_AREAS)
+			return;
+		var _icons = iconData[curArea];
+		if (_icons == noone) // Don't add an icon to an area's map if its data structure doesn't exist.
 			return;
 			
 		// 
 		var _cellIndex = _cellX + (_cellY * mapWidth);
-		if (!is_undefined(iconData[? _cellIndex]))
+		if (!is_undefined(_icons[? _cellIndex]))
 			return;
-		ds_map_add(iconData, _cellIndex, _iconIndex);
+		ds_map_add(_icons, _cellIndex, _iconIndex);
+	}
+	
+	/// @description Create an array of four numbers that represent a map cell's potential doorways (Each array 
+	/// has a size of 4 since doors can only exist on the four cardinal directions). The numbers stored at each
+	/// index relates to one of the game's door types as it is displayed on the map.
+	/// @param {Real}	cellX		One part of the value that determines the "index" used to reference a map cell's door data.
+	///	@param {Real}	cellY		The second part of the value that determine's a map cell's door data.
+	///	@param {Real}	index		Which direction the door will be facing on the map (North, South, East, and West).
+	/// @param {Real}	type		Determines the color of the door to match what type of door is found there in the game.
+	create_map_door = function(_cellX, _cellY, _index, _type){
+		// No door array can be created if the map system itself isn't currently active OR the current area
+		// index not match up with any of the valid area indices. Another fallthrough occurs if the provided
+		// door index is outside of the valid bounds of 0 to 3.
+		if (!MAP_IS_ACTIVE || curArea == MAP_AREA_UNDEFINED || curArea >= MAP_TOTAL_AREAS 
+				|| _index < 0 || _index >= CELL_DOOR_LIMIT)
+			return;
+		var _doors = doorData[curArea];
+		if (_doors == -1) // Don't add any door data to an area's map if that map doesn't actually exist.
+			return;
+			
+		// Determine if the cell already has an array containing data for potential doorways that might already
+		// exist. If this array exists, the index for the desired door is simply set to the value passed into
+		// the function's parameter and the function exits.
+		var _cellIndex = _cellX + (_cellY * mapWidth);
+		if (!is_undefined(_doors[? _cellIndex])){
+			_doors[? _cellIndex][_index] = _type;
+			return;
+		}
+		
+		// Create the array that will store the door information for the desired map cell. Then, the index
+		// that represents the door that the function is creating this array for is set before it is added to
+		// the data structure containing the area's current door information.
+		var _data		= array_create(CELL_DOOR_LIMIT, CELL_DOOR_UNDEFINED);
+		_data[_index]	= _type;
+		ds_map_add(_doors, _cellIndex, _data);
 	}
 	
 	/// @description Determines how many of the three rotation flags should be toggled to a value of one within
@@ -762,18 +819,18 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		}
 	}
 	
-	/// @description 
-	/// @param {Real}	doorType	
-	door_get_color = function(_doorType){
-		switch(_doorType){
+	/// @description
+	/// @param {Real}	doorIndex
+	door_get_color = function(_doorIndex){
+		switch(_doorIndex){
 			default:
-			case CELL_DOOR_ANYWEAPON:		return HEX_LIGHT_BLUE;
+			case CELL_DOOR_ANYWEAPON:		return HEX_BLUE;
 			case CELL_DOOR_ICEBEAM:			return HEX_VERY_LIGHT_BLUE;
-			case CELL_DOOR_WAVEBEAM:		return HEX_LIGHT_PURPLE;
-			case CELL_DOOR_PLASMABEAM:		return HEX_LIGHT_RED;
-			case CELL_DOOR_MISSILE:			return HEX_DARK_RED;
-			case CELL_DOOR_SPR_MISSILE:		return HEX_DARK_GREEN;
-			case CELL_DOOR_POWER_BOMB:		return HEX_DARK_YELLOW;
+			case CELL_DOOR_WAVEBEAM:		return HEX_PURPLE;
+			case CELL_DOOR_PLASMABEAM:		return HEX_DARK_ORANGE;
+			case CELL_DOOR_MISSILE:			return HEX_RED;
+			case CELL_DOOR_SPR_MISSILE:		return HEX_LIGHT_GREEN;
+			case CELL_DOOR_POWER_BOMB:		return HEX_YELLOW;
 		}
 	}
 }
@@ -782,32 +839,44 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 
 #region Global functions related to obj_map_manager
 
-/// @description 
+/// @description Initializes the visual portion of the map system by setting the width and height of said map
+/// in cells, which then determines how large the surface/buffer for the visual aspect of the map will be. 
+/// This also activates the map so it can update itself during the player's gameplay.
 /// @param {Real}	areaIndex		The index for the area that will have its map initialized.
 /// @param {Real}	width			How many columns exist for the initialized area's map.
 /// @param {Real}	height			How many rows exist for the initialized area's map.
 function map_initialize(_areaIndex, _width, _height){
 	with(MAP_MANAGER){
-		// Don't attempt to initialize a map for an area that has already had its map initialized OR the map is
-		// currently considered active.
-		if (mapData[_areaIndex] != noone || MAP_IS_ACTIVE)
-			return;
+		// Don't attempt to initialize a map for an area if the map is currently set to active.
+		if (MAP_IS_ACTIVE) {return;}
 		stateFlags |= MAP_ACTIVE | MAP_INIT_SURFACE;
 		
-		// 
-		if (mapSurfBuffer == -1){
-			var _bufferWidth	= _width * sprite_get_width(spr_map_borders);
-			var _bufferHeight	= _height * sprite_get_height(spr_map_borders);
-			mapSurfBuffer		= buffer_create(_bufferWidth * _bufferHeight * 4, buffer_fixed, buffer_f32);
-		}
+		// Always delete the previous buffer if one happens to exist.
+		if (mapSurfBuffer != -1) 
+			buffer_delete(mapSurfBuffer);
+			
+		// Determine the total size of the buffer by multiplying the width and height of the map in cells by
+		// the dimensions of the cell itself on the map's surface. These values are multiplied with each other
+		// and then multiplied again by 4 to account for the fact that each color is a 32-bit number.
+		var _bufferWidth	= _width * sprite_get_width(spr_map_borders);
+		var _bufferHeight	= _height * sprite_get_height(spr_map_borders);
+		mapSurfBuffer		= buffer_create(_bufferWidth * _bufferHeight * 4, buffer_fast, buffer_u8);
 	
-		// Create a new ds_map that will contain all the cells that create the actual map that the player can 
-		// see and use to navigate the area they're currently in. The map's "current area" is set to the newly 
-		// initialized map data structure.
-		mapData[_areaIndex] = ds_map_create();
-		mapWidth			= _width;
-		mapHeight			= _height;
-		curArea				= _areaIndex;
+		// Create the area's required data structures should it not exist yet, and populate each with the data
+		// that said data structure represents. If these data structures already exist, this step is skipped.
+		if (!ds_exists(mapData[_areaIndex], ds_type_map)){
+			mapData[_areaIndex]		= ds_map_create();
+			iconData[_areaIndex]	= ds_map_create();
+			doorData[_areaIndex]	= ds_map_create();
+			
+			// TODO -- Call to load the area's map here.
+		}
+		
+		// Assign the map's width and height to their respective variables, and then update the current area
+		// index to match the one that just had its map initialized.
+		mapWidth	= _width;
+		mapHeight	= _height;
+		curArea		= _areaIndex;
 	}
 }
 
