@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_map_manager",
   "isCompatibility":false,
   "isDnD":false,

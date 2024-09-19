@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"shader_feathering",
   "isCompatibility":false,
   "isDnD":false,

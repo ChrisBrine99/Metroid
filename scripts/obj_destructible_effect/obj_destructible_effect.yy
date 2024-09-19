@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_destructible_effect",
   "isCompatibility":false,
   "isDnD":false,

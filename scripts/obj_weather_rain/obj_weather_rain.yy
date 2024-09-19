@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_weather_rain",
   "isCompatibility":false,
   "isDnD":false,

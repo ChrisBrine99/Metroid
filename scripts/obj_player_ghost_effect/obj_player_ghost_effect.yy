@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_player_ghost_effect",
   "isCompatibility":false,
   "isDnD":false,

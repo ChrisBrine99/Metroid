@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"par_entity_data",
   "isCompatibility":false,
   "isDnD":false,

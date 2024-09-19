@@ -34,7 +34,6 @@ game_load_settings();
 room_goto(rm_areaone_01);
 
 /// FOR TESTING
-camera_set_target_object(PLAYER, 0, -16);
 show_debug_overlay(true);
 //audio_debug(true);
 //texture_debug_messages(true);

@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"singleton_utils",
   "isCompatibility":false,
   "isDnD":false,

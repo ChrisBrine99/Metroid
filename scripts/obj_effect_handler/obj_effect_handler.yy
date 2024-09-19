@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_effect_handler",
   "isCompatibility":false,
   "isDnD":false,

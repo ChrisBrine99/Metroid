@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"audio_manager",
   "isCompatibility":false,
   "isDnD":false,

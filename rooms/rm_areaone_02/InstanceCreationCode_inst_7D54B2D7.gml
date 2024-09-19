@@ -1,0 +1,2 @@
+viewMinY	= y;
+viewTargetY = y;

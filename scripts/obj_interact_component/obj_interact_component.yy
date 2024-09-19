@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_interact_component",
   "isCompatibility":false,
   "isDnD":false,

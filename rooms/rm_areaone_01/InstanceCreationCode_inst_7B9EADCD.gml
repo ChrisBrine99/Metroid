@@ -1,1 +1,0 @@
-lightComponent.set_properties(30.0, HEX_LIGHT_YELLOW, 0.35);

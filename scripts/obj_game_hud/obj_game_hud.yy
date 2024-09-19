@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_game_hud",
   "isCompatibility":false,
   "isDnD":false,

@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_item_collection_screen",
   "isCompatibility":false,
   "isDnD":false,

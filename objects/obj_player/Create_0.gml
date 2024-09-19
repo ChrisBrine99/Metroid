@@ -330,6 +330,10 @@ hitpoints = maxHitpoints;
 
 #region Initializing unique variables
 
+// 
+previousX		= x;
+previousY		= y;
+
 // Variables relating to player input. The first stores a snapshot of the inputs pressed for the current frame,
 // the second stores the previous frame's inputs, and the final value stores a 1 or -1 to signify is Samus is
 // moving to the right or left, respectively.
@@ -1190,6 +1194,9 @@ initialize = function(_state){
 	object_add_light_component(x, y, 0, 
 		LGHT_VISOR_Y_GENERAL, LGHT_VISOR_RADIUS, HEX_LIGHT_GREEN, LGHT_VISOR_STRENGTH, true);
 	stateFlags |= ENTT_DRAW_SELF | ENTT_LOOP_ANIM | ENTT_INVINCIBLE;
+	
+	entity_set_position(160, 880);
+	camera_set_target_object(PLAYER, 0, -16);
 	
 	// FOR TESTING
 	var _hitpoints = hitpoints;

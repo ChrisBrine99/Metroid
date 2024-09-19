@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"additional_engine_functions",
   "isCompatibility":false,
   "isDnD":false,

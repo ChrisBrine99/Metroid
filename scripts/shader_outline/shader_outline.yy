@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"shader_outline",
   "isCompatibility":false,
   "isDnD":false,

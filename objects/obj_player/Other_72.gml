@@ -6,5 +6,4 @@ if (ds_map_find_value(async_load, "group_id") != samus_fanfares)
 // the intro state could potentially be set BEFORE the intro theme played; allowing the player to quickly press 
 // either the left or right inputs to switch to Samus' default state prematurely.
 initialize(state_intro);
-entity_set_position(160, 896);
 audio_play_sound(mus_samus_intro1, 0, false);

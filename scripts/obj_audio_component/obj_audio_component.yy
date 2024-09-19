@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_audio_component",
   "isCompatibility":false,
   "isDnD":false,

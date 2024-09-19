@@ -76,7 +76,8 @@ function entity_draw(){
 	// Don't process any code within this event if there isn't a valid sprite to draw. The default value for a 
 	// sprite before it is initialized by an object (Which is done using the "set_sprite" function that is 
 	// found in the  "Create" event of this parent object) should be the constant NO_SPRITE.
-	if (sprite_index == NO_SPRITE || !ENTT_IS_ACTIVE) {return;}
+	if (sprite_index == NO_SPRITE || !ENTT_IS_ACTIVE) 
+		return;
 
 	// Animate the sprite as long as the game isn't paused AND the length of the sprite is greater than one 
 	// image. Otherwise, the sprite will only render whatever image is found at the "imageIndex" number. After 

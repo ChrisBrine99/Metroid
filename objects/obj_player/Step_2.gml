@@ -3,6 +3,12 @@
 event_inherited();
 with(armCannon) {end_step();}
 
+// 
+with(instance_place(x, y, obj_event_collider)){
+	if (eventFunction != NO_FUNCTION)
+		eventFunction();
+}
+
 // Don't update any visible ghost effect structs or allow Samus's aeion energy to recharge if the game isn't
 // currently within its standard state.
 if (GAME_CURRENT_STATE != GSTATE_NORMAL) 

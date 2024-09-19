@@ -231,7 +231,7 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		var _map = -1;
 		for (var i = 0; i < MAP_TOTAL_AREAS; i++){
 			_map = mapData[i];
-			if (_map == noone) // Ignore all areas that have never been loaded into memory.
+			if (_map == -1) // Ignore all areas that have never been loaded into memory.
 				continue;
 			
 			// Loop through all cell struct instances so they can be cleared from memory before the ds_map that
@@ -258,13 +258,18 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		buffer_delete(mapSurfBuffer);
 	}
 	
-	/// @description 
+	/// @description A function that should be called within the "End Step" event of whatever object is 
+	/// managing this map manager object. It's responsible for determining the current cell the player is
+	/// occupying relative to the room's origin (The very top-left cell that can be explored) on the map
+	/// and the player's position within the room.
 	end_step = function(){
-		// 
+		// Don't bother wasting time determining the player's current cell position within the map if it isn't
+		// even active to begin with.
 		if (!MAP_IS_ACTIVE)
 			return;
 		
-		// 
+		// First, grab the position of the player within the room and store the x and y values into their
+		// respective temporary variables.
 		var _playerX = 0;
 		var _playerY = 0;
 		with(PLAYER){
@@ -272,29 +277,36 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			_playerY = y;
 		}
 		
-		// 
+		// After the player's position is obtained, the player's "map" position (This is the cell position
+		// including the decimal that represents their exact position in the cell relative to the size of a
+		// cell in pixels [320 by 180 in this case]) is calculated including the room's position on the map.
 		var _camera	= CAMERA.camera;
 		playerMapX	= curRoomX + (_playerX / camera_get_view_width(_camera));
 		playerMapY	= curRoomY + (_playerY / camera_get_view_height(_camera));
 		
-		// 
+		// Then, the player's cell position is updated by flooring their current map position. The previous
+		// cell position is stored and then a check is performed to see if the new position is different on
+		// either axis. If so, the map may need to be updated.
 		var _cellX	= playerCellX;
 		var _cellY	= playerCellY;
 		playerCellX = floor(playerMapX);
 		playerCellY = floor(playerMapY);
 		if (_cellX != playerCellX || _cellY != playerCellY){
-			// 
+			// Check if the map cell has already been explored by the player. If so, the surface isn't updated.
+			// Otherwise, it is updated so it is colored to match other explored cells.
 			var _isExplored = false;
 			with(mapData[curArea][? playerCellX + (playerCellY * mapWidth)]){
 				if (flags & CELL_EXPLORED)
 					_isExplored = true;
 			}
 			
-			// 
+			// Only flip the flag that causes a surface update to occur if the cell isn't explored yet.
 			if (!_isExplored) {stateFlags |= MAP_UPDATE_SURFACE;}
 		}
 		
-		// 
+		// Finally, increment the timer based on the current delta time until it reaches or exceeds the value
+		// set for the player's current cell flashing effect. The bit that determines if this flash is visible
+		// is flipped and the timer ir reset to repeat the process indefinitely.
 		posFlashTimer += DELTA_TIME;
 		if (posFlashTimer >= MAP_POS_FLASH_INTERVAL){
 			if (MAP_IS_PLAYER_VISIBLE)	{stateFlags &= ~MAP_PLAYER_VISIBLE;}
@@ -303,7 +315,10 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		}
 	}
 	
-	/// @description 
+	/// @description A function that should be called within the "Draw GUI" event of whatever object is
+	/// managing this map manager object. It handles initialization of the map surface (Filling it with empty
+	/// cells immediately after an area's map has been initialized) and updating of a map cell if it needs to
+	/// be set to explored by the player moving to a new and currently unexplored cell.
 	draw_gui = function(){
 		// Don't bother processing anything if the map isn't actually active. Otherwise the game will crash
 		// attempting to generate a surface that has a width and height of zero.
@@ -348,15 +363,18 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 			stateFlags &= ~MAP_INIT_SURFACE; // Flip the flag back to zero to avoid processing everything again.
 		}
 		
-		// 
+		// Exit the event early if the map isn't set tp update itself. This update should only occur on the
+		// exact frame that the player moves from one cell to another during gameplay.
 		if (!MAP_SHOULD_UPDATE)
 			return;
 		stateFlags &= ~MAP_UPDATE_SURFACE;
 		
-		// 
+		// Switch surface targets so that everything from this point onward is rendered onto the map surface.
 		surface_set_target(mapSurf);
 
-		// 
+		// Create some local variables that are used throughout the rest of te event in order to properly
+		// render the background and border to the map cell, as well any potential icon and doors that could
+		// also exist within the cell being currently drawn.
 		var _cellWidth	= sprite_get_width(spr_map_borders);
 		var _cellHeight	= sprite_get_height(spr_map_borders);
 		var _offsetX	= sprite_get_xoffset(spr_map_borders);
@@ -365,36 +383,46 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		var _yy			= (playerCellY * _cellHeight);
 		var _index		= playerCellX + (playerCellY * mapWidth);
 		with(mapData[curArea][? _index]){
-			// 
+			// If the cell has already been explored, don't bother wasting time drawing the exact same thing
+			// again. Otherwise, flip the flag within the map cell's struct to signify it has been explored
+			// and drawn to the surface already.
 			if (flags & CELL_EXPLORED)
 				break;
 			flags |= CELL_EXPLORED;
 
-			// 
+			// Borders have their orientation and color dynamically determined based on certain flags being 
+			// set right here, which saves a ton of space on the game's texture page that would have to be
+			// filled with all these variations in direction/color that could potentially arise within the
+			// game's maps.
 			var _direction	= 0.0;
 			var _color		= HEX_LIGHT_BLUE;
 			
-			// 
+			// Rotate the border by 90 degrees for every rotation flag that is set for the map cell. On top
+			// of that, the color is switch to a green hue to signify if any area is hidden from being mapped
+			// or not.
 			for (var i = 0; i < 3; i++){
 				if (flags & (1 << i))
 					_direction += 90.0;
 			}
 			if (flags & CELL_HIDDEN) {_color = HEX_LIGHT_GREEN;}
 			
-			// 
+			// With the proper color and direction found, the cell's background (Uses the color value) and its 
+			// border (Uses the direction value) are render onto the map surface.
 			draw_sprite_ext(spr_rectangle, 0, _xx, _yy, _cellWidth, _cellHeight, 0.0, _color, 1.0);
 			draw_sprite_ext(spr_map_borders, borderIndex, _xx + _offsetX, _yy + _offsetY, 
 				1.0, 1.0, _direction, c_white, 1.0);
 		}
 		
-		// 
+		// Determine if an icon exists for this map cell. If so, it will be drawn on top of the cell's back
+		// and border, but below any of the possible doorways that can exist on a single cell.
 		var _iconData = iconData[curArea];
 		if (ds_exists(_iconData, ds_type_map) && !is_undefined(_iconData[? _index])){
 			draw_sprite_ext(spr_map_icons, iconData[? _index], _xx + _offsetX, _yy + _offsetY, 
 				1.0, 1.0, 0.0, c_white, 1.0);
 		}
 		
-		// 
+		// Check if there is any door data for the map cell that is being drawn to the surface. If so, the
+		// array contained for that cell's door data is looped through in order to render all that exist.
 		var _doorData = doorData[curArea];
 		if (ds_exists(_doorData, ds_type_map) && !is_undefined(_doorData[? _index])){
 			var _doorType	= CELL_DOOR_UNDEFINED;
@@ -409,7 +437,9 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 				_doorX = _xx;
 				_doorY = _yy;
 				
-				// 
+				// Determine the positional offset and "scaling" of the doorway based on the index within the
+				// array that is currently being processed. The "scaling" simply determines if the door is a
+				// 2x1 rectangle (For north and south doors) or a 1x2 rectangle (For east and west doors).
 				switch(i){
 					case CELL_DOOR_EAST:
 						_doorX += _cellWidth - 1;
@@ -427,18 +457,22 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 						break;
 				}
 				
-				// 
+				// Display the door at the determined position relative to the map cell being drawn. Its color
+				// is determined by the type of door that is being rendering onto the map.
 				draw_sprite_ext(spr_rectangle, 0, _doorX, _doorY, _xScale, _yScale, 
 					0.0, door_get_color(_doorType), 1.0);
 			}
 		}
 		
-		// 
+		// Finally, reset the target surface so drawing to the application surface is re-enabled and store the
+		// map surface into its backup buffer so it doesn't get lost due to surface volatility.
 		surface_reset_target();
 		buffer_get_surface(mapSurfBuffer, mapSurf, 0);
 	}
 	
-	/// @description 
+	/// @description Displays a given portion of the map onto the game's GUI. The first two arguments are
+	/// where the map is displayed on the GUI, and the last four arguments determine which region of the
+	/// map is displayed; the last two arguments determining the width and height of the drawn portion.
 	/// @param {Real}	x			The position along the x-axis of the screen to display the map at.
 	/// @param {Real}	y			The position along the y-axis of the screen to display the map at.
 	/// @param {Real}	startX		Determines the first visible column of map tiles.
@@ -513,7 +547,8 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		if (_icons == noone) // Don't add an icon to an area's map if its data structure doesn't exist.
 			return;
 			
-		// 
+		// Make sure that there isn't already an icon occupying the current map cell. If so, the function
+		// exits. Otherwise, the icon's image index is stored in the map.
 		var _cellIndex = _cellX + (_cellY * mapWidth);
 		if (!is_undefined(_icons[? _cellIndex]))
 			return;
@@ -819,8 +854,9 @@ function obj_map_manager(_index) : base_struct(_index) constructor{
 		}
 	}
 	
-	/// @description
-	/// @param {Real}	doorIndex
+	/// @description Gets the corresponding color that matches the type of door that is passed into the function's
+	/// argument parameter. If an invalid index is provided, the "any beam" doorway's color is returned.
+	/// @param {Real}	doorIndex		// Value relating to the door's internal numerical type within the map system's data.
 	door_get_color = function(_doorIndex){
 		switch(_doorIndex){
 			default:
@@ -893,17 +929,5 @@ function map_set_room_origin(_x, _y){
 		curRoomY = _y;
 	}
 }
-
-/// @description 
-/// @param {Real}	cellX		
-/// @param {Real}	cellY		
-/// @param {Real}	iconIndex	
-//function map_update_cell_icon(_cellX, _cellY, _iconIndex){
-//	with(MAP_MANAGER){
-//		var _cellIndex = _cellX + (_cellY * mapWidth);
-//		if (!is_undefined(iconData[? _cellIndex]))
-//			iconData[? _cellIndex] = _iconIndex;
-//	}
-//}
 
 #endregion

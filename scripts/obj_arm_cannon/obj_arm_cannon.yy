@@ -1,5 +1,5 @@
 {
-  "$GMScript":"",
+  "$GMScript":"v1",
   "%Name":"obj_arm_cannon",
   "isCompatibility":false,
   "isDnD":false,
