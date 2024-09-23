@@ -1460,15 +1460,23 @@ player_warp_collision = function(){
 		effect_create_screen_fade(HEX_BLACK, 0.1, FADE_PAUSE_FOR_TOGGLE);
 		object_set_next_state(state_room_warp);
 		
-		// Determine the position to place the surface that contains a snapshot of Samus at. This snapshot
-		// is just the last frame of animation she was in, and her arm cannon if it was being shown for said
-		// animation. The position needs the camera's value remove from it since it is drawn on the GUI layer.
-		var _camera = CAMERA.camera;
-		var _x		= x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camera);
-		var _y		= y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camera);
+		//
+		var _targetX = x;
+		var _targetY = y;
+		with(warpID){
+			_targetX = targetX;
+			_targetY = targetY;
+		}
+		
+		// 
+		var _camera	= CAMERA.camera;
+		var _x		= x - camera_get_view_x(_camera);
+		var _y		= y - camera_get_view_y(_camera);
 		with(SCREEN_FADE){
-			playerX = _x - SURFACE_OFFSET_X;
-			playerY = _y - SURFACE_OFFSET_Y;
+			playerX = _x;
+			playerY = _y;
+			pTargetX = _targetX;	// Camera offsets are applied to these AFTER the room warp occurs.
+			pTargetY = _targetY;
 		}
 	}
 }
@@ -1594,10 +1602,7 @@ state_intro = function(){
 /// snapshot overlaying the screen fade towards what her new position is on the game screen. Once the positions
 /// of each match, the room transition effect is completed, and Samus will return to her previous state.
 state_room_warp = function(){
-	var _warpID		= warpID;
-	var _camera		= CAMERA.camera;
-	var _targetX	= x - sprite_get_xoffset(sprite_index) - camera_get_view_x(_camera) - SURFACE_OFFSET_X;
-	var _targetY	= y - sprite_get_yoffset(sprite_index) - camera_get_view_y(_camera) - SURFACE_OFFSET_Y;
+	var _warpID	= warpID;
 	with(SCREEN_FADE){
 		if (alpha == 1.0 && alphaTarget == 1.0){
 			// Handle position and room swapping code right before any transition effect code is executed;
@@ -1643,17 +1648,13 @@ state_room_warp = function(){
 			
 			// Move the player sprite that exists above the screen fade for a nice effect until it reaches
 			// where the object itself is on the screen after the warp.
-			var _closeScreenFade = false;
-			playerX += (_targetX - playerX) / 5.0 * DELTA_TIME;
-			playerY += (_targetY - playerY) / 5.0 * DELTA_TIME;
-			if (point_distance(playerX, playerY, _targetX, _targetY) <= 1.0){
-				_closeScreenFade = true;
-				playerY = _targetX;
-				playerY = _targetY;
-			}
-			// Once the positions match, the screen fade's alpha target is set to fully opaque to close it out.
-			if (_closeScreenFade) 
+			playerX += (pTargetX - playerX) / 5.0 * DELTA_TIME;
+			playerY += (pTargetY - playerY) / 5.0 * DELTA_TIME;
+			if (point_distance(playerX, playerY, pTargetX, pTargetY) <= 1.0){
 				alphaTarget = 0.0;
+				playerY = pTargetX;
+				playerY = pTargetY;
+			}
 		} else if (alpha == 0.0 && alphaTarget == 0.0){
 			with(other){ // Return Samus to her previous state unpon completion of the screen fade; returning her animation speed to normal as well.
 				object_set_next_state(lastState);

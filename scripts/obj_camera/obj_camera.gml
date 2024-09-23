@@ -30,15 +30,15 @@
 //	be skipped in the rendering process or have its existence deactivated entirely, respectively.		   //
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	RENDER_CULL_PADDING		12
-#macro	OBJECT_CULL_PADDING		80
+#macro	RENDER_CULL_PADDING		0x10
+#macro	OBJECT_CULL_PADDING		0x60
 
 // ------------------------------------------------------------------------------------------------------- //
 //	
 // ------------------------------------------------------------------------------------------------------- //
 
-#macro	CAM_VIEW_MANUAL_XSPEED	5.0
-#macro	CAM_VIEW_MANUAL_YSPEED	3.0
+#macro	CAM_VIEW_MANUAL_XSPEED	0.25
+#macro	CAM_VIEW_MANUAL_YSPEED	0.15
 #macro	CAM_VIEW_AXIS_RESET	   -2
 
 #endregion
@@ -55,10 +55,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	// Stores the positions of the Camera itself, which represents the exact center of the game's viewport.
 	x = 0;
 	y = 0;
-	
-	// 
-	prevX = 0;
-	prevY = 0;
 	
 	// Contains bits that can be toggled on or off to enabled or disable functionalities and characteristics
 	// of the Camera itself. From things like locking view movement to allowing movement outside of the room's
@@ -102,10 +98,6 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// @description 
 	begin_step = function(){
 		// 
-		prevX = x;
-		prevY = y;
-		
-		// 
 		if (targetObject == noone)
 			return;
 		
@@ -147,7 +139,12 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		}
 		
 		// 
-		update_view_position(_x, _y);
+		update_view_position(_x, _y, _width, _height);
+		
+		// 
+		_x = camera_get_view_x(camera);
+		_y = camera_get_view_y(camera);
+		cull_off_screen_entities(_x, _y, _width, _height);
 
 		// Checking if the camera's shaking effect is active or not. If so, the current strength of the effect
 		// will be decayed relative to its duration and starting strength.
@@ -158,8 +155,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		// Choose a random whole-pixel position within the range of (-strength, +strength) for the camera to
 		// snap to; resulting in a frame-by-frame random position to simulate something shaking intensely.
 		var _shakeStrength = round(shakeCurStrength);
-		var _shakeX = camera_get_view_x(camera) + irandom_range(-_shakeStrength, _shakeStrength);
-		var _shakeY = camera_get_view_y(camera) + irandom_range(-_shakeStrength, _shakeStrength);
+		var _shakeX = _x + irandom_range(-_shakeStrength, _shakeStrength);
+		var _shakeY = _y + irandom_range(-_shakeStrength, _shakeStrength);
 		camera_set_view_pos(camera, _shakeX, _shakeY);
 	}
 	
@@ -195,7 +192,15 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		// 
 		x = _targetX;
 		y = _targetY;
-		update_view_position(floor(_targetX - _camHalfWidth), floor(_targetX - _camHalfHeight));
+		update_view_position(floor(_targetX - _camHalfWidth), floor(_targetY - _camHalfHeight),
+								_camHalfWidth * 2, _camHalfHeight * 2);
+
+		// 
+		var _camera = camera;
+		with(SCREEN_FADE){
+			pTargetX -= camera_get_view_x(_camera);
+			pTargetY -= camera_get_view_y(_camera);
+		}
 	}
 	
 	/// @description Update the view's position to the coordinates supplied into the function arguments. If the
@@ -204,28 +209,30 @@ function obj_camera(_index) : base_struct(_index) constructor{
 	/// entities that are currently off-screen.
 	/// @param {Real}	x	Target value for the viewport's next X position.
 	/// @param {Real}	y	Target value for the viewport's next Y position.
-	update_view_position = function(_x, _y){
-		var _width = camera_get_view_width(camera);
-		var _height = camera_get_view_height(camera);
+	update_view_position = function(_x, _y, _width, _height){
 		if (CAM_VIEW_BOUNDS_ACTIVE){
 			_x = clamp(_x, 0, max(room_width - _width, 0));
 			_y = clamp(_y, 0, max(room_height - _height, 0));
 		}
 		camera_set_view_pos(camera, _x, _y);
-		cull_off_screen_entities(_x, _y, _width, _height);
 	}
 	
 	/// @description Updates the position of the camera based on the target object's position, but only if the
 	/// camera is locked along the x and y axes, respectively. If either or both are currently unlocked, this
 	/// function will not update the camera's position along the axis or axes.
-	/// @param {Real}	speed
-	/// @param {Real}	xLimit
+	/// @param {Real}	speed		Determines how fast the camera will move relative to the target object's current movement speeds.
+	/// @param {Real}	xLimit		Determines how far ahead the camera can move along the x axis when following the target object.
+	/// @param {Real}	yLimit		Determines how far ahead the camera can move along the y axis when following the target object.
 	follow_target_object = function(_speed, _xLimit, _yLimit){
-		// 
+		// Don't bother even attempting to follow an object if there isn't an instance set as the camera's
+		// current follow target. At the same time, ignore following an object if the camera's flag that tells
+		// it to follow its target object isn't currently set.
 		if (targetObject == noone || !CAM_CAN_FOLLOW_OBJECT)
 			return;
 		
-		// 
+		// First, the target object's position must be grabbed and stored into two local values for their
+		// current x and y values within the room, respectively. Then, the values set for the offsets along
+		// those axes within the camera itself are applied.
 		var _targetX	= 0;
 		var _targetY	= 0;
 		with(targetObject){
@@ -235,20 +242,25 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		_targetX += targetOffsetX;
 		_targetY += targetOffsetY;
 
-		// 
+		// Handling horizontal movement for the camera. It handles resetting the view back to following the 
+		// target object if it was previously locked by a camera boundary object previously. If no reset needs
+		// to occur, the camera will simply follow slightly ahead of the direction the target object is moving
+		// in along the x axis.
 		if (viewTargetX == CAM_VIEW_AXIS_RESET){
 			if (_targetX >= x - _xLimit && _targetX <= x + _xLimit) {viewTargetX = -1;}
-			else {x = value_set_linear(x, _targetX, CAM_VIEW_MANUAL_XSPEED * camMoveSpeed);}
+			else {x = value_set_relative(x, _targetX, CAM_VIEW_MANUAL_XSPEED * camMoveSpeed);}
 		} else if (targetPrevX != _targetX && viewTargetX == -1){
 			x += (_targetX - targetPrevX) * _speed;
 			if (_targetX < x - _xLimit)			{x = _targetX + _xLimit;}
 			else if (_targetX > x + _xLimit)	{x = _targetX - _xLimit;}
 		}
 		
-		// 
+		// Handling vertical movement. It's the same logic as the horizontal movement, but along the vertical
+		// axis of the room instead of the horizontal. It also follows slightly ahead of the direction the
+		// target object is currently moving along, but for the y axis instead of the x axis.
 		if (viewTargetY == CAM_VIEW_AXIS_RESET){
 			if (_targetY >= y - _yLimit && _targetY <= y + _yLimit) {viewTargetY = -1;}
-			else {y = value_set_linear(y, _targetY, CAM_VIEW_MANUAL_YSPEED * camMoveSpeed);}
+			else {y = value_set_relative(y, _targetY, CAM_VIEW_MANUAL_YSPEED * camMoveSpeed);}
 		} else if (targetPrevY != _targetY && viewTargetY == -1){
 			y += (_targetY - targetPrevY) * _speed;
 			if (_targetY < y - _yLimit)			{y = _targetY + _yLimit;}
@@ -265,7 +277,9 @@ function obj_camera(_index) : base_struct(_index) constructor{
 		if (targetObject == noone || !CAM_CAN_FOLLOW_OBJECT)
 			return;
 		
-		// 
+		// First, a collision check needs to occur to see if the camera should correct its current position
+		// to whatever a collider has set for it. It does this by using the target object's bounding box since
+		// the camera itself is a simple object that contains none of the logic for a bounding box.
 		var _instanceID = noone;
 		var _offsetX	= targetOffsetX;
 		var _offsetY	= targetOffsetY;
@@ -273,7 +287,10 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			_instanceID = instance_place(x + _offsetX, y + _offsetY, obj_camera_collider);
 		}
 		
-		// 
+		// If the collision check returned no valid instance, the functino exists early and the varaibles that
+		// are necessary for the boundary logic will be reset. The two target variables for the camera's x and
+		// y coordinates are set to a special value that allows them to automatically reset themselves to follow
+		// the target object once again.
 		if (_instanceID == noone){
 			if (curBoundaryID != noone){
 				stateFlags	   &= ~CAM_MANUAL_MOVEMENT;
@@ -284,15 +301,20 @@ function obj_camera(_index) : base_struct(_index) constructor{
 				viewMaxY		= -1;
 				viewTargetX		= CAM_VIEW_AXIS_RESET;
 				viewTargetY		= CAM_VIEW_AXIS_RESET;
+				camMoveSpeed	= 1.0;
 			}
 			return;
 		}
 		
-		// 
+		// If the current bounding ID doesn't match the ID that was returned by the collision check, the info
+		// about the camera's current boundaries will need to be updated to match whatever the new camera boundary
+		// instance has set for it instead of whatever info was there previously.
 		if (_instanceID != curBoundaryID){
 			curBoundaryID = _instanceID;
 			
-			// 
+			// Create local variables for all the information that will be copied over from the camera bounds
+			// object into the camera's boundary logic variables. Doing it like this saves GameMaker from
+			// jumping between the two objects to copy the data over one by one, which is less efficient.
 			var _viewMinX		= -1;
 			var _viewMaxX		= -1;
 			var _viewMinY		= -1;
@@ -314,7 +336,9 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			viewMinY = _viewMinY;
 			viewMaxY = _viewMaxY;
 			
-			// 
+			// The view targets are only set if either the x and y target variables are set within the camera
+			// boundary instance. This means that it can override the x value with another despite only locking
+			// thecamera along the y axis, and vice versa.
 			if (_viewTargetX != -1 || _viewTargetY != -1){
 				stateFlags |= CAM_MANUAL_MOVEMENT;
 				viewTargetX = _viewTargetX;
@@ -323,7 +347,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			}
 		}
 		
-		// 
+		// This piece of code 
 		if (CAM_IS_MOVEMENT_MANUAL){
 			// 
 			if ((viewTargetX == -1 && viewTargetY == -1) || (x = viewTargetX && y == viewTargetY)){
@@ -334,8 +358,8 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			}
 			
 			// 
-			if (viewTargetX != -1) {x = value_set_linear(x, viewTargetX, CAM_VIEW_MANUAL_XSPEED * camMoveSpeed);}
-			if (viewTargetY != -1) {y = value_set_linear(y, viewTargetY, CAM_VIEW_MANUAL_YSPEED * camMoveSpeed);}
+			if (viewTargetX != -1) {x = value_set_relative(x, viewTargetX, CAM_VIEW_MANUAL_XSPEED * camMoveSpeed);}
+			if (viewTargetY != -1) {y = value_set_relative(y, viewTargetY, CAM_VIEW_MANUAL_YSPEED * camMoveSpeed);}
 		}
 	}
 	
@@ -367,7 +391,7 @@ function obj_camera(_index) : base_struct(_index) constructor{
 			true // Signifies that the region within the bounds is where entities are reactivated.
 		);
 		instance_activate_object(PLAYER);		// Player is always an active object
-		instance_activate_layer(noCullLayer);	// Also enabled any other objects that shouldn't be culled.
+		instance_activate_layer(noCullLayer);	// Also enabled any other entities that shouldn't be culled.
 	}
 }
 
@@ -413,7 +437,7 @@ function camera_initialize(_x, _y, _width, _height, _scale, _flags){
 		
 		// Update the in-game view's position so it remains centered on whatever was at the middle of the view
 		// prior to the camera's dimensions being altered.
-		update_view_position(_x - (_width * 0.5), _y - (_height * 0.5));
+		update_view_position(_x - (_width * 0.5), _y - (_height * 0.5), _width, _height);
 		
 		// Finally, the effect handler updates the application surface's texel values to match what the new
 		// dimensions need them to be when normalized between 0.0 and 1.0.

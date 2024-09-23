@@ -63,6 +63,7 @@
     {"name":"inst_27B5C43C","path":"rooms/rm_areaone_01/rm_areaone_01.yy",},
     {"name":"inst_3DEF37C7","path":"rooms/rm_areaone_01/rm_areaone_01.yy",},
     {"name":"inst_4F8CCC00","path":"rooms/rm_areaone_01/rm_areaone_01.yy",},
+    {"name":"inst_31B4536D","path":"rooms/rm_areaone_01/rm_areaone_01.yy",},
   ],
   "isDnd":false,
   "layers":[
@@ -145,6 +146,7 @@
         ],"TileDataFormat":1,},"tilesetId":{"name":"ts_main","path":"tilesets/ts_main/ts_main.yy",},"userdefinedDepth":true,"visible":false,"x":0,"y":0,},
     {"$GMRInstanceLayer":"","%Name":"Entities_NO_CULL","depth":25,"effectEnabled":true,"effectType":null,"gridX":8,"gridY":8,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
         {"$GMRInstance":"v1","%Name":"inst_25ABBFA0","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_25ABBFA0","objectId":{"name":"obj_general_door","path":"objects/obj_general_door/obj_general_door.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":180.0,"scaleX":1.0,"scaleY":1.0,"x":624.0,"y":848.0,},
+        {"$GMRInstance":"v1","%Name":"inst_31B4536D","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_31B4536D","objectId":{"name":"obj_destructible_all","path":"objects/obj_destructible_all/obj_destructible_all.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":264.0,"y":848.0,},
       ],"layers":[],"name":"Entities_NO_CULL","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
     {"$GMRInstanceLayer":"","%Name":"Entities","depth":30,"effectEnabled":true,"effectType":null,"gridX":8,"gridY":8,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
         {"$GMRInstance":"v1","%Name":"inst_2611206D","colour":4294967295,"frozen":false,"hasCreationCode":true,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_2611206D","objectId":{"name":"obj_pincherfly","path":"objects/obj_pincherfly/obj_pincherfly.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":464.0,"y":776.0,},

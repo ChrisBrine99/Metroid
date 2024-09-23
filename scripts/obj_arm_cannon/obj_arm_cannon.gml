@@ -147,7 +147,8 @@ function obj_arm_cannon(_index) : base_struct(_index) constructor{
 	/// lightweight object. It will simply draw the arm cannon at its x/y position in the room depending on
 	/// its visibility flag being true.
 	draw = function(){
-		if (!visible) {return;}
+		if (!visible) 
+			return;
 		draw_sprite_ext(spr_samus_cannon0, imageIndex, playerX + x, playerY + y, 
 			image_xscale, 1, 0, c_white, 1);
 	}

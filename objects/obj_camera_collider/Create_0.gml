@@ -6,7 +6,7 @@ visible = false;
 // its base manual horizontal and vertical movement speeds.
 viewTargetX = -1;
 viewTargetY = -1;
-camMoveSpeed = 0.5;
+camMoveSpeed = 1.0;
 
 // Determines the camera's valid positions along the x axis while the camera's followed object is within this
 // collider's bounding box. The viewport will not exceed these values.
@@ -18,3 +18,7 @@ viewMaxX = -1;
 // bounding box of this collider.
 viewMinY = -1;
 viewMaxY = -1;
+
+// A boolean value that will toggle the camera's flag for ignoring boundaru limits for the object until the camera
+// viewport ccompletely enters the boundary's dimensions.
+ignoreBoundsUntilCamInside = false;

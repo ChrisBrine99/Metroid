@@ -1,18 +1,9 @@
-/// @description A simple struct that handles and manages a visual effect that causes the screen to fade in
-/// and out of a given color; hading that color completely fill the screen for a set number of in-game frames
-/// (One "frame" is equal to 1/60th of a second--doesn't represent an actual in game frame because of delta
-/// timing being implemented) before fading back out. All objects will be paused during this process.
-
 #region Initializing any macros that are useful/related to obj_screen_fade
 
 // A constant that will prevent the screen fade from automatically fading itself out once it reaches full
 // opacity and it has depleted the value stored within the "fadeDuration" variable. When this value is set
 // in the duration variable, the fade out must be manually triggered somewhere else within the code.
 #macro	FADE_PAUSE_FOR_TOGGLE	   -250
-
-// 
-#macro	SURFACE_OFFSET_X			4
-#macro	SURFACE_OFFSET_Y			4
 
 #endregion
 
@@ -45,12 +36,9 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	// 
 	playerX		= 0;
 	playerY		= 0;
+	pTargetX	= 0;
+	pTargetY	= 0;
 	drawPlayer	= true;
-	playerSurf	= -1;
-	
-	// 
-	targetX = 0;
-	targetY = 0;
 	
 	// 
 	prevAnimationFlags = ds_list_create();
@@ -82,23 +70,11 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 				}
 				ds_list_clear(prevAnimationFlags);
 			}
-			
-			// Remove the surface that stored the player graphics from memory if it hasn't already been flushed
-			// out by the GPU. All other variables related to it are reset as well.
-			if (surface_exists(playerSurf)){
-				surface_free(playerSurf);
-				playerSurf	= -1;
-				drawPlayer	= false;
-				playerX		= 0;
-				playerY		= 0;
-			}
 		}
 	}
 	
 	/// @description
 	cleanup = function(){
-		if (surface_exists(playerSurf)) 
-			surface_free(playerSurf);
 		ds_list_destroy(prevAnimationFlags);
 	}
 	
@@ -109,48 +85,30 @@ function obj_screen_fade(_index) : base_struct(_index) constructor{
 	/// @param {Real}	width		The width in pixels of the GUI surface.
 	/// @param {Real}	height		The height in pixels of the GUI surface.
 	draw_gui = function(_width, _height){
-		if (alpha == 0) 
+		if (alpha == 0.0) 
 			return;
 		draw_sprite_ext(spr_rectangle, 0, 0, 0, _width, _height, 0, fadeColor, alpha);
 		
 		// 
-		if (drawPlayer){
+		if (!drawPlayer)
+			return;
+			
+		// 
+		var _alpha		= alpha;
+		var _playerX	= playerX;
+		var _playerY	= playerY;
+		with(PLAYER){
 			// 
-			var _spriteWidth = 0;
-			var _spriteHeight = 0;
-			var _offsetX = 0;
-			var _offsetY = 0;
-			with(PLAYER){
-				_spriteWidth	= sprite_get_width(sprite_index);
-				_spriteHeight	= sprite_get_height(sprite_index);
-				_offsetX		= sprite_get_xoffset(sprite_index) + SURFACE_OFFSET_X;
-				_offsetY		= sprite_get_yoffset(sprite_index) + SURFACE_OFFSET_Y;
+			draw_sprite_ext(sprite_index, imageIndex, _playerX, _playerY, image_xscale, image_yscale, 
+								image_angle, image_blend, _alpha);
+			
+			// 
+			with(armCannon){
+				if (!visible) 
+					break;
+				draw_sprite_ext(spr_samus_cannon0, imageIndex, _playerX + x,_playerY + y, image_xscale, 
+				1.0, 0.0, c_white, _alpha);
 			}
-			
-			// 
-			if (!surface_exists(playerSurf)) 
-				playerSurf = surface_create(_spriteWidth + (SURFACE_OFFSET_X * 2), 
-					_spriteHeight + (SURFACE_OFFSET_Y * 2));
-			
-			// 
-			surface_set_target(playerSurf);
-			draw_clear_alpha(c_black, 0);
-			with(PLAYER){
-				draw_sprite_ext(sprite_index, imageIndex, _offsetX, _offsetY, 
-					image_xscale, image_yscale, image_angle, image_blend, image_alpha);
-				with(armCannon){
-					if (!visible) 
-						break;
-					draw_sprite_ext(spr_samus_cannon0, imageIndex, 
-							x + _offsetX,
-							y + _offsetY, image_xscale, 
-					1, 0, c_white, 1);
-				}
-			}
-			surface_reset_target();
-			
-			// 
-			draw_surface_ext(playerSurf, playerX, playerY, 1, 1, 0, HEX_WHITE, alpha);
 		}
 	}
 }

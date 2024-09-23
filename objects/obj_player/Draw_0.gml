@@ -1,4 +1,5 @@
-if (hitpoints == 0) {return;}
+if (hitpoints == 0)
+	return;
 
 // Loop through all existing ghost effect structs and render them at their current positions and opacity levels.
 for (var i = 0; i < PLYR_NUM_GHOST_EFFECTS; i++) 
@@ -11,7 +12,8 @@ if (ENTT_CAN_DRAW_SELF)
 	armCannon.draw();
 
 // Don't flicker Samus's sprite if she's no longer in her hitstun/recovery phase.
-if (!PLYR_CAN_SPRITE_FLICKER) {return;}
+if (!PLYR_CAN_SPRITE_FLICKER) 
+	return;
 
 // Increment timer until the required amount of time has passed to create a uniform flicker that isn't tied to the
 // current frame rate, which is heavily variable.
